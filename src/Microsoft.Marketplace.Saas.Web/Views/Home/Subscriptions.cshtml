@@ -1,0 +1,74 @@
+﻿@using Microsoft.Marketplace.SaasKit.Models;
+@model SubscriptionViewModel
+
+@{
+    ViewData["Title"] = "Subscriptions";
+}
+
+<div class="text-center">
+    <div class="container">
+        <br />
+        @if (!Model.IsSuccess && !string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                <strong>Error!</strong> @Model.ErrorMessage
+            </div>
+        }
+        <form method="post">
+            <div class="card">
+                <div class="card-header text-left">
+                    Subscriptions
+                </div>
+                <div class="card-body">
+                    <div>
+                        @if (Model.Subscriptions.Count() > 0)
+                        {
+                            <table id="table" class="table table-striped table-bordered dt-responsive" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>User Name</th>
+                                        <th>User Email</th>
+                                        <th>Subscription Name</th>
+                                        <th>Plan</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (var i = 0; i < Model.Subscriptions.Count; i++)
+                                    {
+                                        var subscription = Model.Subscriptions[i];
+                                        <tr>
+                                            <td class="text-left">
+                                                @subscription.CustomerName
+                                            </td>
+                                            <td class="text-left">
+                                                @subscription.CustomerEmailAddress
+                                            </td>
+                                            <td class="text-left">
+                                                @Html.HiddenFor(s => s.Subscriptions[i].Id)
+                                                @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
+                                                @subscription.Name
+                                            </td>
+                                            <td class="text-left">@subscription.PlanId</td>
+                                            <td class="text-left">@subscription.SaasSubscriptionStatus</td>
+                                            <td class="text-left text-left">
+                                                @if (subscription.IsMeteringSupported && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                                                {
+                                                    <button type="submit" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId" class="btn btn-primary">Manage Usage</button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+            </div>
+        </form>
+    </div>
+</div>

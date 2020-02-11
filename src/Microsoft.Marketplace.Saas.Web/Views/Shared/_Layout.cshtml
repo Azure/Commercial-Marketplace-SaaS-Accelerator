@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Saas Web Demo</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link href="~/lib/Datatable/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/Datatable/css/responsive.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/Datatable/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <header>
+        <div class="container-fluid">
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="col-md-3 pull-left">
+                    <a class="" asp-area="" asp-controller="Home" asp-action="Index">Saas Web Demo</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-left">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Licenses" asp-action="Index">Licenses</a></li>
+                                @*<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="RecordUsage">Record Usage</a></li>*@
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 pull-right text-right">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <span>Welcome <b>@User.Identity.Name</b> </span>
+
+                        <span>&nbsp; &nbsp;&nbsp;</span> <a class="btn-danger btn" asp-controller="Account" asp-action="SignOut">Sign out</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="SignIn">Sign in</a>
+                    }
+                </div>
+            </nav>
+        </div>
+    </header>
+    <div class="container pb-3">
+        <partial name="_CookieConsentPartial" />
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer style="position:absolute !important" class="border-top bg-white fixed-bottom text-center text-muted">
+        <div class="container">
+            &copy; 2020 - SaasKit - Demo
+        </div>
+    </footer>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha256-E/V4cWE4qvAeO5MOhjtGtqDzPndRO1LBk8lJ/PR7CA4=">
+        </script>
+    </environment>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js" asp-append-version="true"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
+
+

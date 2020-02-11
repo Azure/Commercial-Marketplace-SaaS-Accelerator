@@ -1,0 +1,25 @@
+﻿@model SubscriptionLicensesViewModel
+
+<form asp-action="AddLicenseDetail" method="post">
+    <div class="row">
+        <div class="col-6">
+            @Html.LabelFor(s => s.SubScriptionID, "Select Subscription", new { @class = "font-weight-bold" })
+        </div>
+        <div class="col-6">
+            @Html.DropDownListFor(s => s.SubScriptionID, Model.SubscriptionList, "-- Select Subscription --", new { @class = "form-control", required = "required" })
+        </div>
+    </div>
+    <div class="row pt-1">
+        <div class="col-6">
+            @Html.LabelFor(s => s.LicenseKey, "License Key", new { @class = "font-weight-bold" })
+        </div>
+        <div class="col-6">
+            @Html.TextBoxFor(s => s.LicenseKey, null, new { @class = "form-control", @placeholder = "License Key", required = "required", maxlength = "255" })
+        </div>
+    </div>
+    <div class="row text-left pt-1">
+        <div class="col-md-3 offset-md-6">
+            <button type="submit" class="btn btn-success">Save</button>
+        </div>
+    </div>
+</form>

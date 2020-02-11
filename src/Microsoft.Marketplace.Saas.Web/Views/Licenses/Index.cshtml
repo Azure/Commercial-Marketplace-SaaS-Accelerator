@@ -1,0 +1,119 @@
+﻿@model List<SubscriptionLicensesViewModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+@if (TempData["msg"] != null)
+{
+    @Html.Raw(TempData["msg"])
+}
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-6 text-left">
+                    Licenses
+                </div>
+                <div class="col-6 text-right">
+                    <button type="button" class="btn btn-secondary" onclick="fnAddSubscriptionLicense()" data-toggle="modal" data-target="#AddLicense">Add License</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model != null)
+            {
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered dt-responsive" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <td>Subscription Id</td>
+                                <td>Subscription Name</td>
+                                <td>Plan Name</td>
+                                <td>License Key</td>
+                                <td>Status</td>
+                                <td>Action</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ var i = 0;}
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.AmpsubscriptionId</td>
+                                    <td>@item.SubscriptionName</td>
+                                    <td>@item.PlanName</td>
+                                    <td>@item.LicenseKey</td>
+                                    <td>
+                                        @if (item.Status)
+                                        {
+                                            <span>Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Revoked</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.Status)
+                                        {
+                                            <button type="button" class="btn btn-danger" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID')">Revoke</button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn btn-success" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID')">Activate</button>
+                                        }
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="AddLicense" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add License</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="AddLicense-body">
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    //Update Subscription Status 
+    function fnUpdateSubscriptionStatus(Id, subscriptionId) {
+        var parm = { id: Id, subscriptionId: subscriptionId };
+        $.ajax({
+            type: "GET",
+            url: "/Licenses/UpdateActiveSubscription",
+            data: parm,
+            success: function (result) {
+                if (result != 0) {
+                    alert(result);
+                } else {
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    function fnAddSubscriptionLicense() {
+        $.ajax({
+            type: "GET",
+            url: "/Licenses/AddSubscriptionLicense",
+            success: function (result) {
+                $("#AddLicense-body").html(result);
+            }
+        });
+    }
+</script>
