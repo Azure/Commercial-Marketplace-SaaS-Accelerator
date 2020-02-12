@@ -21,16 +21,16 @@
 
 ## Overview
 
-Azure Marketplace Fulfilment SDK is aimed at helping ISVs integrate their Software as a-Service (SaaS) applications with Azure marketplate via the fulfilment APIs. Primarily, the repository offers two components - the fulfilment SDK (.NET class library) and a sample web application (correlates to the provisioning application) (ASP.NET Core 3.1) that uses the SDK to invoke fulfilment APIs in order to manage the subscriptions against the SaaS offer in Azure.
+Azure Marketplace Fulfillment SDK is aimed at helping ISVs integrate their Software as a-Service (SaaS) applications with Azure marketplate via the fulfillment APIs. Primarily, the repository offers two components - the fulfillment SDK (.NET class library) and a sample web application (correlates to the provisioning application) (ASP.NET Core 3.1) that uses the SDK to invoke fulfillment APIs in order to manage the subscriptions against the SaaS offer in Azure.
 
 The sample and the SDK in this repository cover the components that comprise the highlighted area in the below picture
 
 Azure Marketplace Metering SDK enables SaaS applications publish usage data to Azure so that customers are charged  according to non-standard units. 
 The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
 
-![Usecase](./images/use-case.png)
+![Usecase](./images/UseCaseSaaSAPIs.PNG)
 
-More details on the fulfilment APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-a-subscription) 
+More details on the fulfillment APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-a-subscription) 
 
 More details on the metering APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis).
 
@@ -323,7 +323,7 @@ The usage / consumption is consolidated
 
 The following interface in the **Saas metering service** allows the user to manual report the usage against a selected dimension.
 
-> In this example, suppose the SaaS service is offering a notification service that helps its customers send out emails / text. Email and Text are modelled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
+> In this example, suppose the SaaS service is offering a notification service that helps its customers send out emails / text. Email and Text are modeled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
 
 ![Report usage](./images/post-usage-event.png)
 
