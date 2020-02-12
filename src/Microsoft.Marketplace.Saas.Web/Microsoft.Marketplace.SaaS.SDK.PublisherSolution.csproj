@@ -48,8 +48,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Marketplace.SaasKit.Client.DataAccess\Microsoft.Marketplace.SaasKit.Client.DataAccess.csproj" />
-    <ProjectReference Include="..\Microsoft.Marketplace.SaasKit\Microsoft.Marketplace.SaasKit.csproj" />
+    <ProjectReference Include="..\Microsoft.Marketplace.SaasKit.Client.DataAccess\Microsoft.Marketplace.SaaS.SDK.Client.DataAccess.csproj" />
+    <ProjectReference Include="..\Microsoft.Marketplace.SaasKit\Microsoft.Marketplace.SaaS.SDK.Client.csproj" />
   </ItemGroup>
 
 
