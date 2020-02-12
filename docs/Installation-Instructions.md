@@ -28,7 +28,7 @@ The sample and the SDK in this repository cover the components that comprise the
 Azure Marketplace Metering SDK enables SaaS applications publish usage data to Azure so that customers are charged  according to non-standard units. 
 The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
 
-![Usecase](./images/UseCaseSaaSAPIs.PNG)
+![Usecase](./images/UseCaseSaaSAPIs.png)
 
 More details on the fulfillment APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-a-subscription) 
 
