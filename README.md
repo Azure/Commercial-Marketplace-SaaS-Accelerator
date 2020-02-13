@@ -1,4 +1,7 @@
-# Introduction
+# Microsoft Commercial Marketplace Transactable SaaSo Offer SDK
+![.NET Core](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/workflows/.NET%20Core/badge.svg)
+
+## Introduction
 
 This SDK's goal is to provide guidance and the components needed for Publishers (ISVs and StartUps) to create transactable Software as a-Service (SaaS) offers in the Azure and AppSource marketplaces.  
 
