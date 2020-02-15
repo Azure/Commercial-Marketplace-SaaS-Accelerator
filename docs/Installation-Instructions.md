@@ -84,6 +84,8 @@ Follow the below steps to create a web application resource in an Azure subscrip
 
 > Note: We need to create two web application resources - one for the marketplace provisioning service and the other for SaaS service.
 
+- Create another Web App for the marketplace provisioning service.
+
 ## Marketplace Provisioning Service
 
 The marketplace provisioning service serves as an intermediary between Azure and the target SaaS application. In a real scenario, the intermediary would initiate the provisioning of the SaaS application and activate the subscription against the SaaS offer being purchased.
@@ -104,12 +106,12 @@ For the purpose of the sample, a new marketplace offer is created and is made av
 In this section, we will go over the steps to download the latest sources from the repository, build the application ready for deployment to Azure.
 
 - Clone or download the latest source code from [here](https://dev.azure.com/AMP-SDKs/AMP%20SaaS%20SDK)
-- Open the solution **Microsoft.Marketplace.SaasKit.sln** in Visual Studio 2019
+- Open the solution **Microsoft.Marketplace.SaaS.SDK.sln** in Visual Studio 2019
 
-![Solution Structure](./images/SolutionStructure.png)
+![Solution Structure](./images/SolutionStructure.PNG)
 
-- Right-click on the project named **Microsoft.Marketplace.SaasKit.Client** and click **Set as StartUp Project**.
-- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaasKit.Client** and update the values as follows:
+- Right-click on the project named **Microsoft.Marketplace.SaaS.SDK.Client** and click **Set as StartUp Project**.
+- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaaS.SDK.Client** and update the values as follows:
 
     - **GrantType** - Leave this as *client_credentials*
 
