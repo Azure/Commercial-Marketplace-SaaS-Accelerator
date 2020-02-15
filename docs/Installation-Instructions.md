@@ -106,7 +106,7 @@ In this section, we will go over the steps to download the latest sources from t
 - Clone or download the latest source code from [here](https://dev.azure.com/AMP-SDKs/AMP%20SaaS%20SDK)
 - Open the solution **Microsoft.Marketplace.SaasKit.sln** in Visual Studio 2019
 
-![Solution Structure](./images/SolutionStructure.png)
+![Solution Structure](./images/SolutionStructure.PNG)
 
 - Right-click on the project named **Microsoft.Marketplace.SaasKit.Client** and click **Set as StartUp Project**.
 - Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaasKit.Client** and update the values as follows:
