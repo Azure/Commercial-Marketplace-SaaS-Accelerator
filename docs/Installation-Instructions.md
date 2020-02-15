@@ -110,8 +110,8 @@ In this section, we will go over the steps to download the latest sources from t
 
 ![Solution Structure](./images/SolutionStructure.PNG)
 
-- Right-click on the project named **Microsoft.Marketplace.SaasKit.Client** and click **Set as StartUp Project**.
-- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaasKit.Client** and update the values as follows:
+- Right-click on the project named **Microsoft.Marketplace.SaaS.SDK.Client** and click **Set as StartUp Project**.
+- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaaS.SDK.Client** and update the values as follows:
 
     - **GrantType** - Leave this as *client_credentials*
 
