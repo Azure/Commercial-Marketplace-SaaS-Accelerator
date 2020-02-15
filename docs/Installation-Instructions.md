@@ -84,6 +84,8 @@ Follow the below steps to create a web application resource in an Azure subscrip
 
 > Note: We need to create two web application resources - one for the marketplace provisioning service and the other for SaaS service.
 
+- Create another Web App for the marketplace provisioning service.
+
 ## Marketplace Provisioning Service
 
 The marketplace provisioning service serves as an intermediary between Azure and the target SaaS application. In a real scenario, the intermediary would initiate the provisioning of the SaaS application and activate the subscription against the SaaS offer being purchased.
