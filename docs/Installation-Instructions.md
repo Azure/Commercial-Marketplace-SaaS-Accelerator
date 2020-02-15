@@ -106,7 +106,7 @@ For the purpose of the sample, a new marketplace offer is created and is made av
 In this section, we will go over the steps to download the latest sources from the repository, build the application ready for deployment to Azure.
 
 - Clone or download the latest source code from [here](https://dev.azure.com/AMP-SDKs/AMP%20SaaS%20SDK)
-- Open the solution **Microsoft.Marketplace.SaasKit.sln** in Visual Studio 2019
+- Open the solution **Microsoft.Marketplace.SaaS.SDK.sln** in Visual Studio 2019
 
 ![Solution Structure](./images/SolutionStructure.PNG)
 
