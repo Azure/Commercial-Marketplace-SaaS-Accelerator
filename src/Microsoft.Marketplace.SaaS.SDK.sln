@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning", "Microsoft.Marketplace.SaasKit.Client\Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.csproj", "{F6509E5A-0646-4CEB-B5FC-114CB04FA6D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning", "Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning\Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.csproj", "{F6509E5A-0646-4CEB-B5FC-114CB04FA6D4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace.SaaS.SDK.Client", "Microsoft.Marketplace.SaasKit\Microsoft.Marketplace.SaaS.SDK.Client.csproj", "{F773DC57-0313-48F9-9E79-D545964F4553}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace.SaaS.SDK.Client", "Microsoft.Marketplace.SaaS.SDK.Client\Microsoft.Marketplace.SaaS.SDK.Client.csproj", "{F773DC57-0313-48F9-9E79-D545964F4553}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace.SaaS.SDK.Client.DataAccess", "Microsoft.Marketplace.SaasKit.Client.DataAccess\Microsoft.Marketplace.SaaS.SDK.Client.DataAccess.csproj", "{668640C4-FD6F-47AF-ACD4-5F001EA3CA44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace.SaaS.SDK.Client.DataAccess", "Microsoft.Marketplace.SaaS.SDK.Client.DataAccess\Microsoft.Marketplace.SaaS.SDK.Client.DataAccess.csproj", "{668640C4-FD6F-47AF-ACD4-5F001EA3CA44}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace.SaaS.SDK.UnitTest", "Microsoft.Marketplace.SaasKit.UnitTest\Microsoft.Marketplace.SaaS.SDK.UnitTest.csproj", "{1F179EBA-93C0-4FF4-90A2-BD62613B9FFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace.SaaS.SDK.UnitTest", "Microsoft.Marketplace.SaaS.SDK.UnitTest\Microsoft.Marketplace.SaaS.SDK.UnitTest.csproj", "{1F179EBA-93C0-4FF4-90A2-BD62613B9FFD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace.SaaS.SDK.PublisherSolution", "Microsoft.Marketplace.Saas.Web\Microsoft.Marketplace.SaaS.SDK.PublisherSolution.csproj", "{5002B344-DF27-4E85-B224-726E000BE6B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace.SaaS.SDK.PublisherSolution", "Microsoft.Marketplace.SaaS.SDK.PublisherSolution\Microsoft.Marketplace.SaaS.SDK.PublisherSolution.csproj", "{5002B344-DF27-4E85-B224-726E000BE6B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
