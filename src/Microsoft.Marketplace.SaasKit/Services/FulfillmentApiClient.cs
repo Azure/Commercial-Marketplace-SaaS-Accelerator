@@ -133,7 +133,7 @@
             {
                 var restClient = new FulfillmentApiRestClient<SubscriptionUpdateResult>(this.ClientConfiguration, this.Logger);
                 var payload = new Dictionary<string, object>();
-                payload.Add("planId", subscriptionId);
+                payload.Add("planId", subscriptionPlanID);
                 var url = UrlHelper.GetSaaSApiUrl(this.ClientConfiguration, subscriptionId, null);
                 var subscriptionUpdateResult = await restClient.DoRequest(url, HttpMethods.PATCH, payload).ConfigureAwait(false);
                 
