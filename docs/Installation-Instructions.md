@@ -125,6 +125,16 @@ In this section, we will go over the steps to download the latest sources from t
 
     - **ClientId** - Azure Active Directory Application ID (as provided in the marketplace offer in Partner Center). Steps to create an Azure AD application for SaaS app can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration)
     *Note:* Ensure that you have set the reply URL to the web application for the authentication to work properly
+    > - Log on to [Azure](https://portal.azure.com)
+    > - Click **Azure Active Directory** in the left menu
+    > - Click **App Registrations** in the menu on the left
+    > - Locate the AD application and click to go to details
+    > - Click on the hyperlink next to **Redirect URIs**
+    ![Redirect URIs](./images/ad-app-redirect-uris.png)
+    > - Make sure that you set https://localhost:44363/Home/Index as the redirect uri for the authentication to work when you run the app locally
+    ![Redirect URI](./images/ad-app-redirect-uris-home-index.png)
+    > - Scroll down and check the box that reads **ID tokens** in the **Implicit grant** section
+    ![ID Token](./images/id-token.png)
 
     - **ClientSecret** - Secret from he Azure Active Directory Application
 
