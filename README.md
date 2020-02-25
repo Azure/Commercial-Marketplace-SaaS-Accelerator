@@ -78,7 +78,7 @@ The following is the proposed road map for this SDK:
 
 - **February 2020 - v1.0** Current Release. It includes the full implementation of the Fulfillment V2 and metered APIs with web applications that demonstrate customer provisioning and publisher solutions. 
 - **March 2020 - v1.1** Add the **SaaS Offer as a License Manager Application** blueprint: This is targeted for Publishers that would like to use a combination of two Azure Marketplace offers to transact their SaaS Solution.  The first offer is a SaaS offer that would be use as a mechanism to sell a license for the solution on specific terms (defined by Plan) and a Virtual Machine or an Azure Application offer that will deploy the solution in the Customer Subscription as a BYOL offer.   
-- **May 2020 - v1.2** Add the **SaaS Offer that deploys in the Customer's Azure Subscription** (also refereed as the Hybrid Model) blueprint: Targeted to publishers that:
+- **May 2020 - v1.2** Add the **SaaS Offer that deploys in the Customer's Azure Subscription** (also referred as the Hybrid Model) blueprint: Targeted to publishers that:
 	- Need use the billing capabilities of the SaaS offer for the Virtual Machine and Azure Application (Solution Template) offer
 	- Partners that would like to deploy solutions in the customer’s subscriptions that use technologies (VM + Container, Kubernetes, etc…) that are not currently supported by other offers in Marketplace
 	- Partners that need to deploy solutions in the customer’s subscriptions that use Azure Services that cannot be fully automated via Azure Resource Manager Deployments (need manual steps to complete the full deployment). 
