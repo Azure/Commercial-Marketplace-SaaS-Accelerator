@@ -170,7 +170,7 @@ In this section, we will go over the steps to download the latest sources from t
     "ClientId": "<Azure-AD-Application-ID>",
     "ClientSecret": "******",
     "Resource": "62d94f6c-d599-489b-a797-3e10e42fbe22",
-    "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/api/",
+    "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/",
     "SignedOutRedirectUri": "https://saaskitdemoapp.azurewebsites.net/Home/Index",
     "TenantId": "<TenantID-of-AD-Application>",
     "FulFillmentAPIVersion": "2018-09-15",
