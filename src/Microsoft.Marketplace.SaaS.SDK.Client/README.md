@@ -10,7 +10,7 @@ This is the **core** library for the transactable SaaS SDK. It provides the impl
 
 ### Source Code
 
-The Project is located in the ** Microsoft.Marketplace.SaaS.SDK.Client** folder. The project is composed of the following sections: 
+The Project is located in the **Microsoft.Marketplace.SaaS.SDK.Client** folder. The project is composed of the following sections: 
 
 | Section Name | Description |
 | --- | --- |  
@@ -27,6 +27,6 @@ The Project is located in the ** Microsoft.Marketplace.SaaS.SDK.Client** folder.
 
 ### Implementation Best Practices
 
-** Implement IWebhookHandler to process the data received via Webhook and pass that to the WebhookProcessor.
-** Catch custom exceptions thrown by the implementations of Fulfillment API and Metered API clients and consume the additional information related to the error.
+- Implement IWebhookHandler to process the data received via Webhook and pass that to the WebhookProcessor.
+- Catch custom exceptions thrown by the implementations of Fulfillment API and Metered API clients and consume the additional information related to the error.
 

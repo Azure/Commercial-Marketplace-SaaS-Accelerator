@@ -11,7 +11,7 @@ The application also has a viewer over the licenses assigned by the publisher ag
 
 ### Source Code
 
-The Project is located in the ** Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** folder. The project is composed of the following sections: 
+The Project is located in the **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** folder. The project is composed of the following sections: 
 
 | Section Name | Description |
 | --- | --- |  

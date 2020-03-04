@@ -16,7 +16,4 @@ The Transactable SaaS SDK's solution contains the following components:
 
 
 
-**Notes:**
-
-
 
