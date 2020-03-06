@@ -10,7 +10,7 @@ The Unit Tests project will continue to evolve to include a larger set of tests 
 
 ### Source Code 
 
-The Project is located in the ** Microsoft.Marketplace.SaaS.SDK.UnitTest ** folder. The project is composed of the following sections: 
+The Project is located in the **Microsoft.Marketplace.SaaS.SDK.UnitTest** folder. The project is composed of the following sections: 
 
 | Section Name | Description |
 | --- | --- |  

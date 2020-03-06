@@ -6,8 +6,7 @@ Enables to persist the Plans, Subscriptions, and transactions with the fulfillme
 
 ### Description
 
-[TO DO]
-
+The project contains the repositories to manage entities in the database.
 
 Entities that are persisted in the Database
 
@@ -19,20 +18,20 @@ Entities that are persisted in the Database
 | Subscription Audit Log | This table is an audit trail for all the operations regarding Subscriptions. |  
 | Subscription Licenses | This table tracks the associated licenses for a Subscription. This table is only relevant for the Blueprint: SaaS as a License Service |  
 | Subscriptions | Tracks the Offer's Subscriptions. Associates Customers (users) with their selected Plan|  
-| Users | Tracks the list of Customers |  
+| Users | Tracks the list of Customers (users that created subscriptions against the offer) |  
 
 [Click here](Transactable-SaaS-SDK-Sample-Database.md) for more details on the sample database. 
 ### Source Code 
 
-The Project is located in the ** Microsoft.Marketplace.SaaS.SDK.Client.DataAccess ** folder. The project is composed of the following sections: 
+The Project is located in the **Microsoft.Marketplace.SaaS.SDK.Client.DataAccess** folder. The project is composed of the following sections: 
 
 | Section Name | Description |
 | --- | --- |  
 | Dependencies | EntityFrameworkCore,  EntityFrameworkCore.SqlServer|
-| Context | --- | 
-| Contracts | --- |
+| Context | EntityFramework database context | 
+| Contracts | Interface that defines the methods to manage the entities |
 | Entities | Table entities | 
-| Services | --- |
+| Services | Implementations for the interfaces to manage the persistence and query over entities |
  
 
 
