@@ -1,0 +1,240 @@
+﻿body {
+    font-family: 'Lato', 'sans-serif' !important;
+    color: black !important;
+    font-size: 16px !important;
+    height: 100%;
+    margin: 0;
+}
+
+.cm-content {
+    min-height: 100%;
+    margin-bottom: 20px;
+}
+
+.cm-top-nav-bar {
+    background-color: #2168A6 !important;
+    margin-bottom: 0px;
+    border: 0px;
+    border-radius: 0;
+}
+
+.cm-menu-bar {
+    background-color: #F9F9F9 !important;
+    margin-top:-142px;
+}
+
+.cm-signin {
+    color: #ffffff !important;
+    font-size: 16px;
+    vertical-align: middle;
+    margin-top: 20px;
+}
+
+.cm-username {
+    border-right: solid 1px white;
+    padding-right: 6px;
+}
+
+.cm-logout {
+    vertical-align: middle;
+    padding-left: 2px;
+}
+
+.placeholder {
+    width: 160px !important;
+}
+
+.text-white {
+    color: white !important;
+}
+
+.cm-menu-item {
+    color: black !important;
+    padding: 0px !important;
+}
+
+.cm-menu-item-active {
+    background-color: #D0CCCC;
+}
+
+.cm-logo {
+    -webkit-filter: brightness(0) invert(1);
+    filter: brightness(0) invert(1);
+    border-style: none;
+    width: auto;
+    padding: 8px;
+    max-width: 100%;
+}
+
+.cm-panel-default {
+    background: #F9F9F9 !important;
+    border-radius: 0px;
+    padding: 20px;
+}
+
+.cm-section-heading {
+    font-family: 'Lato', 'sans-serif' !important;
+    font-size: 25px;
+    background-color: #fff;
+    border-bottom: 4px solid #2180a6;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    line-height: 40px;
+}
+
+.p10 {
+    padding: 10px;
+}
+
+.w286 {
+    width: 286px;
+}
+
+.w120 {
+    width: 120px;
+}
+
+.w200 {
+    width: 200px;
+}
+
+.mr250 {
+    margin-right: 250px;
+}
+
+.mt100{
+    margin-top:100px;
+}
+
+.mt20 {
+    margin-top: 20px;
+}
+
+.mt40 {
+    margin-top: 40px;
+}
+
+.cm-button-default {
+    color: #fff;
+    background-color: #2168A6;
+    border-color: #2e6da4;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin-top: 25px;
+    margin-bottom: 20px;
+}
+
+    .cm-button-default:hover {
+        background-color: #EAE7E7;
+        border-radius: 5px;
+        padding: 12px 20px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #2168A6;
+    }
+
+.cm-button-success {
+}
+
+    .cm-button-success:hover {
+    }
+
+.cm-button-danger {
+}
+
+    .cm-button-danger:hover {
+    }
+
+.cm-table {
+    background: #ffffff !important;
+    font-size: 16px;
+}
+
+    .cm-table th {
+        padding: 10px !important;
+    }
+
+    .cm-table td {
+        padding: 10px !important;
+    }
+
+.cm-table-head th {
+    text-align: center;
+    background: #F9F9F9 !important;
+    font-size: 14px;
+}
+
+.cm-ellipsis {
+    text-align: center !important;
+}
+
+    .cm-ellipsis a {
+        color: black !important;
+    }
+
+.cm-minus-circle {
+    text-align: center;
+}
+
+    .cm-minus-circle a {
+        color: black !important;
+    }
+
+.cm-link-button {
+    cursor: pointer;
+}
+
+    .cm-link-button:hover {
+        cursor: pointer;
+        color: #2168A6 !important;
+    }
+
+/*.cm-footer {
+    background-color: #F9F9F9;
+    position: absolute !important
+}*/
+
+.cm-container {
+    margin-left: 80px;
+}
+
+.cm-footer, .cm-push {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #E6E6E6;
+    font-size: 12px !important;
+    color: black !important;
+    height: 20px;
+    line-height: 20px;
+}
+
+a.cm-dropdown-option {
+    background: transparent !important;
+    color: black;
+    cursor: pointer;
+}
+
+    a.cm-dropdown-option:hover {
+        background: transparent !important;
+        color: #2168A6 !important;
+        cursor: pointer;
+    }
