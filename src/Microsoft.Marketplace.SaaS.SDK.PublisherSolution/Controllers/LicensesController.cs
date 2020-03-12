@@ -7,10 +7,12 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Marketplace.Saas.Web.Models;
+    using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Models;
 
+    [KnownUser]
     /// <summary>
     /// Licenses Controller
     /// </summary>
