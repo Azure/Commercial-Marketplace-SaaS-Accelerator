@@ -18,7 +18,7 @@
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json;
 
-    [KnownUser]
+    [ServiceFilter(typeof(KnownUser))]
     /// <summary>
     /// Home Controller
     /// </summary>

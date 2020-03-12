@@ -18,22 +18,23 @@ namespace Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities
         /// <summary>
         /// The known users repository
         /// </summary>
-        //private readonly IKnownUsersRepository knownUsersRepository;
+        private readonly IKnownUsersRepository knownUsersRepository;
 
-        //public KnownUser(IKnownUsersRepository KnownUsersRepository)
-        //{
-        //    knownUsersRepository = KnownUsersRepository;
+        public KnownUser(IKnownUsersRepository KnownUsersRepository)
+        {
+            knownUsersRepository = KnownUsersRepository;
 
-        //}
+        }
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var isKnownuser = false;
             string email = "";
             if (context.HttpContext != null && context.HttpContext.User.Claims.Count() > 0)
             {
+                
                 email = context.HttpContext.User.Claims.Where(s => s.Type == WebConstants.CLAIM_EMAILADDRESS).FirstOrDefault().Value;
                 //KnownUsersRepository 
-                //bool isKnownUser = knownUsersRepository.GetKnownUserDetail(email, 1)?.Id > 0;
+                bool isKnownUser = knownUsersRepository.GetKnownUserDetail(email, 1)?.Id > 0;
                 //if (email == "Phaneendra.Nagubandi@spektrasystems.com")
                 if (!isKnownuser)
                 {

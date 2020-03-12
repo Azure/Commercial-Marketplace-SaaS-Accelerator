@@ -12,7 +12,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Models;
 
-    [KnownUser]
+    [ServiceFilter(typeof(KnownUser))]
     /// <summary>
     /// Licenses Controller
     /// </summary>
