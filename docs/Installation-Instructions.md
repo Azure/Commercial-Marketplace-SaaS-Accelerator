@@ -190,7 +190,10 @@ In this section, we will go over the steps to download the latest sources from t
    ![Deploy database](./images/Deploy-Database.png) 
    - Click **Purchase** after agreeing to the terms and conditions by checking the box to start the deployment of the database by name **AMPSaaSDB**
    - Update the connection string property in **appSettings.json** with the details related to SQL Server name, database and the credentials to connect to the database.
-- If you want to set up the database locally, you could create and initialize the database by the running the SQL scripts available under **Microsoft.Marketplace.SaasKit.Client\Database** folder.Make sure that you are in the master database as the script creates a database by name - **AMP-DB**
+- If you want to set up the database locally, you could create and initialize the database by the running the SQL scripts available under **deployment/Database/AMP-DB.sql** folder.
+  - Create a database named **AMPSaaSDB**
+  - Switch to the database - **AMPSaaSDB**
+  - Run the script - **AMP-DB.sql** to initalize the database
 - Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
 *Note: Make sure that the home page url is listed in the **replyURLs** in the AD application for the authentication against Azure AD to work properly.*
 
