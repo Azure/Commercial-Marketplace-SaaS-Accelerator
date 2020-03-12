@@ -19,7 +19,7 @@
         /// The <see cref="IActionResult" />
         /// </returns>
         public IActionResult SignIn(string returnUrl)
-        {       
+        {
             return this.Challenge(new AuthenticationProperties { RedirectUri = "/" }, OpenIdConnectDefaults.AuthenticationScheme);
         }
 
@@ -38,6 +38,17 @@
                 },
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 OpenIdConnectDefaults.AuthenticationScheme);
+        }
+        /// <summary>
+        /// The SignIn
+        /// </summary>
+        /// <param name="returnUrl">The returnUrl<see cref="string" /></param>
+        /// <returns>
+        /// The <see cref="IActionResult" />
+        /// </returns>
+        public IActionResult AccessDenied(string returnUrl)
+        {
+            return View("Error");
         }
 
         /// <summary>

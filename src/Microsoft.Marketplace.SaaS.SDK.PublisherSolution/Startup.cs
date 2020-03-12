@@ -18,6 +18,7 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Marketplace.SaasKit.Configurations;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Services;
+    using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
 
     /// <summary>
     /// Startup
@@ -107,6 +108,8 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>();
             services.AddScoped<IMeteredDimensionsRepository, MeteredDimensionsRepository>();
             services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
+            services.AddScoped<IKnownUsersRepository, KnownUsersRepository>();
+            services.AddScoped<KnownUser>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

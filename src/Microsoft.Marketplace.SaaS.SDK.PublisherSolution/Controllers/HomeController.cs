@@ -10,6 +10,7 @@
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.Saas.Web.Models;
+    using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Contracts;
@@ -17,6 +18,7 @@
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json;
 
+    [ServiceFilter(typeof(KnownUser))]
     /// <summary>
     /// Home Controller
     /// </summary>
