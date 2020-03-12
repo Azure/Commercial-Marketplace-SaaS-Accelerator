@@ -1,56 +1,64 @@
 ﻿@model Microsoft.Marketplace.SaasKit.Models.SubscriptionResult
 
 <div>
-    <div class="modal-dialog modal-lg" data-backdrop="static" style="padding-left:12%!important;padding-right:12%!important;">
+    <div class="modal-dialog modal-lg mt200" data-backdrop="static">
         <div class="modal-content">
-            <div class="modal-header bg-primary">
-                <h4 class="text-white text-center">Change Plan</h4>
-                <button type="button" class="close text-right text-white" data-dismiss="modal">&times;</button>
+            <div class="modal-header header-bg">
+                <h4><span class="cm-section-heading">Change Plan</span></h4>
+                <button type="button" class="close text-right" data-dismiss="modal">&times;</button>
             </div>
             <form asp-action="ChangeSubscriptionPlan" id="frmSubscriptionDetail" method="post">
-                <div class="modal-body">
-                    <div class="row text-left">
-                        <div class="col-sm-4 text-right font-weight-bold">
+                <div class="modal-body text-center">
+                    <dl class="row text-left">
+                        <dt class="col-sm-4 pl80">
                             @Html.DisplayNameFor(model => model.Id)
-                        </div>
-                        <div class="col-sm-8">
+                        </dt>
+                        <dd class="col-sm-8 pl80">
                             @Html.DisplayFor(model => model.Id)
-                        </div>
-                        <div class="col-sm-4 text-right font-weight-bold">
+                        </dd>
+                        <dt class="col-sm-4 pl80">
                             @Html.DisplayNameFor(model => model.Name)
-                        </div>
-                        <div class="col-sm-8">
+                        </dt>
+                        <dd class="col-sm-8 pl80">
                             @Html.DisplayFor(model => model.Name)
-                        </div>
-                        <div class="col-sm-4 text-right font-weight-bold">
+                        </dd>
+                        <dt class="col-sm-4 pl80">
                             @Html.DisplayNameFor(model => model.SaasSubscriptionStatus)
-                        </div>
-                        <div class="col-sm-8">
+                        </dt>
+                        <dd class="col-sm-8 pl80">
                             @Html.DisplayFor(model => model.SaasSubscriptionStatus)
-                        </div>
-                        <div class="col-sm-4 text-right font-weight-bold">
+                        </dd>
+                        <dt class="col-sm-4 pl80">
                             @Html.DisplayName("Current Plan")
-                        </div>
-                        <div class="col-sm-8 text-capitalize">
+                        </dt>
+                        <dd class="col-sm-8 pl80">
                             @Html.DisplayFor(model => model.PlanId)
-                        </div>
-                    </div>
-                    <div class="row pr-3 pt-3 mt-5 pb-3 text-right" style="background-color:#F2F2F2">
-                        <div class="col-sm-4 text-right  font-weight-bold">
+                        </dd>
+                        <dt class="col-sm-4  pl80">
                             @Html.DisplayName("Change Plan")
-                        </div>
-                        <div class="col-sm-5">
+                        </dt>
+                        <dd class="col-sm-8  pl80">
                             @Html.DropDownListFor(s => s.PlanId, new SelectList(Model.PlanList, "PlanId", "PlanId", Model.PlanId), new { @class = "form-control w-100" })
                             @Html.HiddenFor(s => s.Id)
                             @Html.HiddenFor(s => s.PlanId)
                             @Html.HiddenFor(s => s.SubscribeId)
-                        </div>
-                        <button type="button" onclick="confirmDialog()" class="btn btn-success text-right">Change Plan</button>
+                        </dd>
+                    </dl>
+                    @*<div class="row pr-3 pt-3 mt-5 pb-3 text-right" style="background-color:#F2F2F2">
+                            <div class="col-sm-4 text-right  font-weight-bold">
+                                @Html.DisplayName("Change Plan")
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(s => s.PlanId, new SelectList(Model.PlanList, "PlanId", "PlanId", Model.PlanId), new { @class = "form-control w-100" })
+                                @Html.HiddenFor(s => s.Id)
+                                @Html.HiddenFor(s => s.PlanId)
+                                @Html.HiddenFor(s => s.SubscribeId)
+                            </div>
+                            <button type="button" onclick="confirmDialog()" class="btn btn-success text-right">Change Plan</button>
+                        </div>*@
+                    <div class="text-right">
+                        <button type="button" onclick="confirmDialog()" class="cm-button-default mt40 mr20 text-right">Change Plan</button>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn  btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>Cancel</button>
-                    </div>
-                </div>
             </form>
         </div>
     </div>

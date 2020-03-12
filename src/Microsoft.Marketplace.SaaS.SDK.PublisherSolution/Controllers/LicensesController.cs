@@ -51,6 +51,8 @@
         /// <returns>return All subscription</returns>
         public IActionResult Index()
         {
+            SubscriptionLicensesModel subscriptionLicenses = new SubscriptionLicensesModel();
+            subscriptionLicenses.SubscriptionList = new SelectList(this.subscriptionRepository.Get().Where(s => s.SubscriptionStatus == Convert.ToString(SubscriptionStatusEnum.Subscribed)), "Id", "Name");
             List<SubscriptionLicensesViewModel> subscriptionlist = new List<SubscriptionLicensesViewModel>();
             var getsubscriptionList = this.subscriptionLicensesRepository.GetLicensesForSubscriptions(Convert.ToString(SubscriptionStatusEnum.Subscribed));
             foreach (var item in getsubscriptionList)
@@ -65,8 +67,9 @@
                 subscription.SubScriptionID = item.SubscriptionId ?? 0;
                 subscriptionlist.Add(subscription);
             }
-
-            return this.View(subscriptionlist);
+            subscriptionLicenses.Licenses = subscriptionlist;
+            return this.View(subscriptionLicenses);
+            //return this.View(subscriptionlist);
         }
 
         /// <summary>

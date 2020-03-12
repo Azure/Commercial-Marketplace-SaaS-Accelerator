@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SaasKit Demo</title>
+    <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/css/site.css" />
 
     <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -13,16 +13,16 @@
     <link href="~/lib/Datatable/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="~/lib/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/css/font-awesome/css/font-awesome.css" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/custom-EZDI.css" />
+    <link rel="stylesheet" href="~/css/custom.css" />
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
     <link href="~/lib/bootstrap/4.4.1/css/offcanvas.css" rel="stylesheet" />
 </head>
 <body>
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark cm-top-nav-bar">
-        @*<a class="navbar-brand mr-auto mr-lg-0" href="@Url.Action("Index", "Home")">
-                @await Component.InvokeAsync("Logo")
-            </a>*@
-        <a class="navbar-brand mr-auto mr-lg-0" asp-area="" asp-controller="Home" asp-action="Index">SaasKit Demo</a>
+        <a class="navbar-brand mr-auto mr-lg-0" href="@Url.Action("Index", "Home")">
+            <img class="cm-logo pull-left" src="https://kblnuser.azurewebsites.net/logo.png" />
+        </a>
+        @*<a class="navbar-brand mr-auto mr-lg-0" asp-area="" asp-controller="Home" asp-action="Index">SaasKit Demo</a>*@
 
         <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
             <div class="navbar-nav mr-auto">
@@ -48,7 +48,7 @@
             <a class="nav-link active">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a class="nav-link active" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     @if (TempData["ShowWelcomeScreen"] != null && Convert.ToString(TempData["ShowWelcomeScreen"]) == "True")
                     {
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
@@ -104,8 +104,8 @@
         </main>
     </div>
 
-    <footer style="position:absolute !important" class="border-top bg-white fixed-bottom text-center text-muted">
-        <div class="container">
+    <footer class="cm-footer">
+        <div class="container text-center">
             &copy; 2020 - SaasKit - Demo
         </div>
     </footer>

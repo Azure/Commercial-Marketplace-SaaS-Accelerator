@@ -1,5 +1,5 @@
 ﻿body {
-    font-family: 'Lato', 'sans-serif' !important;
+    font-family: 'Segoe UI', 'sans-serif' !important;
     color: black !important;
     font-size: 16px !important;
     height: 100%;
@@ -12,7 +12,7 @@
 }
 
 .cm-top-nav-bar {
-    background-color: #2168A6 !important;
+    background-color: #004578 !important;
     margin-bottom: 0px;
     border: 0px;
     border-radius: 0;
@@ -58,12 +58,11 @@
 }
 
 .cm-logo {
-    -webkit-filter: brightness(0) invert(1);
-    filter: brightness(0) invert(1);
     border-style: none;
     width: auto;
     padding: 8px;
     max-width: 100%;
+    width:20%;
 }
 
 .cm-panel-default {
@@ -73,13 +72,14 @@
 }
 
 .cm-section-heading {
-    font-family: 'Lato', 'sans-serif' !important;
+    font-family: 'Segoe UI', 'sans-serif' !important;
     font-size: 25px;
     background-color: #fff;
     border-bottom: 4px solid #2180a6;
     text-transform: uppercase;
     margin-bottom: 20px;
     line-height: 40px;
+    color: black;
 }
 
 .p10 {
@@ -106,6 +106,10 @@
     margin-top:100px;
 }
 
+.mt200 {
+    margin-top: 200px;
+}
+
 .mt20 {
     margin-top: 20px;
 }
@@ -116,7 +120,7 @@
 
 .cm-button-default {
     color: #fff;
-    background-color: #2168A6;
+    background-color: #004578;
     border-color: #2e6da4;
     display: inline-block;
     font-weight: 400;
@@ -129,7 +133,7 @@
     background-image: none;
     border: 1px solid transparent;
     padding: 12px 20px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
     line-height: 1.42857143;
     border-radius: 4px;
@@ -147,19 +151,79 @@
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;
-        color: #2168A6;
+        color: #004578;
     }
 
 .cm-button-success {
+    color: #fff;
+    background-color: #256525;
+    border-color: #2e6da4;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin-top: 25px;
+    margin-bottom: 20px;
 }
 
     .cm-button-success:hover {
+        background-color: #EAE7E7;
+        border-radius: 5px;
+        padding: 12px 20px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #004578;
     }
 
 .cm-button-danger {
+    color: #fff;
+    background-color: #EA2333;
+    border-color: #2e6da4;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin-top: 25px;
+    margin-bottom: 20px;
 }
 
     .cm-button-danger:hover {
+        background-color: #EAE7E7;
+        border-radius: 5px;
+        padding: 12px 20px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #004578;
     }
 
 .cm-table {
@@ -203,7 +267,7 @@
 
     .cm-link-button:hover {
         cursor: pointer;
-        color: #2168A6 !important;
+        color: #004578 !important;
     }
 
 /*.cm-footer {
@@ -235,6 +299,6 @@ a.cm-dropdown-option {
 
     a.cm-dropdown-option:hover {
         background: transparent !important;
-        color: #2168A6 !important;
+        color: #004578 !important;
         cursor: pointer;
     }

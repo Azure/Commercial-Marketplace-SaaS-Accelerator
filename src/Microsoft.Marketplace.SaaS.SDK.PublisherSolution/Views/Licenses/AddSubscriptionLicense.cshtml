@@ -1,25 +1,15 @@
-﻿@model SubscriptionLicensesViewModel
+﻿@model SubscriptionLicensesModel
 
 <form asp-action="AddLicenseDetail" method="post">
     <div class="row">
-        <div class="col-6">
-            @Html.LabelFor(s => s.SubScriptionID, "Select Subscription", new { @class = "font-weight-bold" })
+        <div class="col-4">
+            @Html.DropDownListFor(s => s.SubScriptionID, Model.SubscriptionList, "-- Select Subscription --", new { @class = "form-control cm-margin", required = "required" })
         </div>
-        <div class="col-6">
-            @Html.DropDownListFor(s => s.SubScriptionID, Model.SubscriptionList, "-- Select Subscription --", new { @class = "form-control", required = "required" })
+        <div class="col-4">
+            @Html.TextBoxFor(s => s.LicenseKey, null, new { @class = "form-control cm-margin", @placeholder = "License Key", required = "required", maxlength = "255" })
         </div>
-    </div>
-    <div class="row pt-1">
-        <div class="col-6">
-            @Html.LabelFor(s => s.LicenseKey, "License Key", new { @class = "font-weight-bold" })
-        </div>
-        <div class="col-6">
-            @Html.TextBoxFor(s => s.LicenseKey, null, new { @class = "form-control", @placeholder = "License Key", required = "required", maxlength = "255" })
-        </div>
-    </div>
-    <div class="row text-left pt-1">
-        <div class="col-md-3 offset-md-6">
-            <button type="submit" class="btn btn-success">Save</button>
+        <div class="col-4">
+            <button type="submit" class="cm-button-default mt0">Add License</button>
         </div>
     </div>
 </form>

@@ -1,14 +1,22 @@
 ﻿@model List<Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SubscriptionAuditLogs>
 
-<div class="modal-dialog modal-lg">
+<div class="modal-dialog modal-lg mt200">
     <div class="modal-content">
-        <div class="modal-header bg-primary">
-            <h4 class="text-white ">Activity Log</h4>
-            <button type="button" class="close text-right text-white" data-dismiss="modal">&times;</button>
+        <div class="modal-header header-bg">
+            <h4><span class="cm-section-heading"> Activity Log</span></h4>
+            <button type="button" class="close text-right" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
-            <table class="table-bordered table-responsive">
-                <thead>
+            <div class="card card-header mb0 pb0">
+                <dl class="row">
+                    <dt class="col-2 text-right"><b>Plan</b></dt>
+                    <dd class="col-3 text-left">@Model.First().Subscription.AmpplanId</dd>
+                    <dt class="col-3 text-right"><b>Subscription</b></dt>
+                    <dd class="col-4 text-left">@Model.First().Subscription.Name</dd>
+                </dl>
+            </div>
+            <table class="table-bordered table-responsive cm-table">
+                <thead class="cm-table-head">
                     <tr>
                         <th width="20%">Activity Log Time</th>
                         <th width="20%">Subscription Name</th>
@@ -33,9 +41,9 @@
                     }
                 </tbody>
             </table>
-            <div class="modal-footer">
+            @*<div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>Cancel</button>
-            </div>
+            </div>*@
         </div>
     </div>
 </div>

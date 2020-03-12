@@ -14,16 +14,16 @@
             </div>
         }
         <form method="post">
-            <div class="card">
-                <div class="card-header text-left">
-                    Subscriptions
+            <div>
+                <div class="text-left">
+                    <span class="cm-section-heading">Subscriptions</span>
                 </div>
                 <div class="card-body">
                     <div>
                         @if (Model.Subscriptions.Count() > 0)
                         {
-                            <table id="table" class="table table-striped table-bordered dt-responsive" width="100%" cellspacing="0">
-                                <thead>
+                            <table id="table" class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                                <thead class="cm-table-head">
                                     <tr>
                                         <th>Name</th>
                                         <th>Plan</th>
@@ -43,18 +43,23 @@
                                             </td>
                                             <td class="text-left">@subscription.PlanId</td>
                                             <td class="text-left">@subscription.SaasSubscriptionStatus</td>
-                                            <td class="text-left text-left">
-                                                @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
-                                                {
-                                                    <button type="button" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode" class="btn btn-primary">Change Plan</button>
-                                                    <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate" class="btn btn-danger">Unsubscribe</button>
-                                                    <a class="btn btn-primary" target="_blank" href="@Model.SaaSAppUrl" title="Click here to go to SaaS App">SaasApp</a>
-                                                }
-                                                @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
-                                                {
-                                                    <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate" class="btn btn-success ml-3 mr-3">Activate</button>
-                                                }
-                                                <button type="button" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@Model.Subscriptions[i].Id')" class="btn btn-primary">Activity Log</button>
+                                            <td class="text-left  cm-ellipsis">
+                                                <div class="nav-item dropdown">
+                                                    <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdown01">
+                                                        @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                                                        {
+                                                            <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
+                                                            <a class="dropdown-item cm-dropdown-option" target="_blank" href="@Model.SaaSAppUrl" title="Click here to go to SaaS App">SaasApp</a>
+                                                        }
+                                                        @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                                                        {
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
+                                                        }
+                                                        <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@Model.Subscriptions[i].Id')">Activity Log</a>
+                                                    </div>
+                                                </div>
                                             </td>
                                         </tr>
                                     }
@@ -72,11 +77,11 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        $('#table').dataTable({
-            "bSort": false
-        });
-    });
+    //$(document).ready(function () {
+    //    $('#table').dataTable({
+    //        "bSort": false
+    //    });
+    //});
     function ViewSubscriptionDetail(subscriptionId) {
         $.ajax({
             type: "Get",
