@@ -140,7 +140,7 @@ In this section, we will go over the steps to download the latest sources from t
 
     - **Resource** - Set this to *62d94f6c-d599-489b-a797-3e10e42fbe22*
 
-    - **FulFillmentAPIBaseURL** - https://marketplaceapi.microsoft.com/api/
+    - **FulFillmentAPIBaseURL** - https://marketplaceapi.microsoft.com/api
 
     - **SignedOutRedirectUri** - Set the path to the page the user should be redirected to after signing out from the application
 
@@ -148,7 +148,7 @@ In this section, we will go over the steps to download the latest sources from t
 
     - **FulfillmentApiVersion** - Use 2018-09-15 for mock API and 2018-08-31 for the production version of the fulfilment APIs
 
-    - **AdAuthenticationEndpoint** - https://login.microsoftonline.com/
+    - **AdAuthenticationEndpoint** - https://login.microsoftonline.com
     
     - **SaaSAppUrl** - URL to the SaaS Metering service ( for this example. It should be the link to the SaaS application, in general)
     
@@ -170,12 +170,12 @@ In this section, we will go over the steps to download the latest sources from t
     "ClientId": "<Azure-AD-Application-ID>",
     "ClientSecret": "******",
     "Resource": "62d94f6c-d599-489b-a797-3e10e42fbe22",
-    "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/",
+    "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/api",
     "SignedOutRedirectUri": "https://saaskitdemoapp.azurewebsites.net/Home/Index",
     "TenantId": "<TenantID-of-AD-Application>",
     "FulFillmentAPIVersion": "2018-09-15",
-    "AdAuthenticationEndPoint": "https://login.microsoftonline.com/",
-    "SaaSAppUrl" : "https://saasdemoapp.azurewebsites.net/"
+    "AdAuthenticationEndPoint": "https://login.microsoftonline.com",
+    "SaaSAppUrl" : "https://saasdemoapp.azurewebsites.net"
   },
   "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>",
   "AllowedHosts": "*"

@@ -17,7 +17,7 @@
         public static async Task<AuthenticationResult> GetAccessToken(SaaSApiClientConfiguration settings)
         {
             var credential = new ClientCredential(settings.ClientId, settings.ClientSecret);
-            var authContext = new AuthenticationContext($"{settings.AdAuthenticationEndPoint}{settings.TenantId}", false);
+            var authContext = new AuthenticationContext($"{settings.AdAuthenticationEndPoint}/{settings.TenantId}", false);
             var result = await authContext.AcquireTokenAsync(settings.Resource, credential).ConfigureAwait(false);
             return result;
         }
