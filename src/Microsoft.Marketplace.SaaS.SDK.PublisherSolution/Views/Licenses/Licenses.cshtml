@@ -42,11 +42,11 @@
 
                                     @if (item.Status)
                                     {
-                                        <a class="btn patner-btn-proceed cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID')">Revoke</a>
+                                        <a class="btn patner-btn-proceed cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID','revoke')">Revoke</a>
                                     }
                                     else
                                     {
-                                        <a class="btn patner-btn-danger cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID')">Activate</a>
+                                        <a class="btn patner-btn-danger cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID','activate')">Activate</a>
                                     }
                                 </div>
                             </div>
@@ -63,20 +63,33 @@
 <script>
 
     //Update Subscription Status
-    function fnUpdateSubscriptionStatus(Id, subscriptionId) {
-        var parm = { id: Id, subscriptionId: subscriptionId };
-        $.ajax({
-            type: "GET",
-            url: "/Licenses/UpdateActiveSubscription",
-            data: parm,
-            success: function (result) {
-                if (result != 0) {
-                    alert(result);
-                } else {
-                    window.location.reload();
+    function fnUpdateSubscriptionStatus(Id, subscriptionId, key) {
+        swal({
+            title: "This would " + key + " the license subscription",
+            text: "Are you sure you want to go ahead and " + key + " ?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+
+        })
+            .then((willChange) => {
+                debugger;
+                if (willChange) {
+                    var parm = { id: Id, subscriptionId: subscriptionId };
+                    $.ajax({
+                        type: "GET",
+                        url: "/Licenses/UpdateActiveSubscription",
+                        data: parm,
+                        success: function (result) {
+                            if (result != 0) {
+                                alert(result);
+                            } else {
+                                window.location.reload();
+                            }
+                        }
+                    });
                 }
-            }
-        });
+            });
     }
 
     function fnAddSubscriptionLicense() {

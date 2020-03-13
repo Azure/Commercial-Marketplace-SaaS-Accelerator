@@ -35,8 +35,8 @@
                                         <label id="Copy-@i">@item.LicenseKey</label>
                                     </td>
                                     <td>
-                                        <span class="badge badge-info text-white">
-                                            <button class="btnclipbord" type="button" data-clipboard-action="copy" data-clipboard-target="#Copy-@i"><i class="fa fa-clone" aria-hidden="true"></i></button>
+                                        <span class="badge text-white">
+                                            <button class="btnclipbord" onclick="confirmDialog()" type="button" data-clipboard-action="copy" data-clipboard-target="#Copy-@i"><i class="fa fa-clone" aria-hidden="true"></i></button>
                                         </span>
                                     </td>
                                 </tr>
@@ -58,4 +58,12 @@
     //    });
     //});
     new ClipboardJS('.btnclipbord');
+    function confirmDialog() {
+         swal({
+            title: "Copied",
+            text: "Text copied to clipboard!",
+            icon: "success",
+            timer: 1000
+        })
+    }
 </script>

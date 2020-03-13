@@ -117,10 +117,23 @@
     }
 
     function confirmDialog() {
-        var isConfirm = confirm('Are you sure you want to change the plan?');
-        debugger
-        if (isConfirm) {
-            $("#frmSubscriptionDetail").submit();
-        }
+        //var isConfirm = confirm('Are you sure you want to change the plan?');
+        //debugger
+        //if (isConfirm) {
+        //    $("#frmSubscriptionDetail").submit();
+        //}
+        swal({
+            title: "Are you sure?",
+            text: "you want to change the plan!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willChange) => {
+                debugger;
+                if (willChange) {
+                    $("#frmSubscriptionDetail").submit();
+                }
+            });
     }
 </script>
