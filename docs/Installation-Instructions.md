@@ -49,7 +49,7 @@ Ensure the following prerequisites are met before getting started:
 - We recommend using an Integrated Development Environment (IDE):  [Visual Studio Code](https://code.visualstudio.com/),  [Visual Studio 2019](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16#), etc...
 - The SDK has been implemented using [.NET Core 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 - The Customer provisioning and Publisher web sample applications have been implemented using [ASP.NET Core Runtime 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
-- For Persistence we are using [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/en-us/ef/). However, feel free to use any data repository you are comfortable with. The Database Schema is located in the Microsoft.Marketplace.SaaS.SDK.PublisherSolution's database folder. 
+- For Persistence we are using [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/en-us/ef/). However, feel free to use any data repository you are comfortable with. The Database Schema is located in the **deployment/Database** folder. 
 
 Besides, it is assumed that you have access to the following resources:
 - [Azure subscription](https://ms.portal.azure.com/) - to host the SDK components and sample web applications.
@@ -118,8 +118,8 @@ In this section, we will go over the steps to download the latest sources from t
 
 ![Solution Structure](./images/SolutionStructure.PNG)
 
-- Right-click on the project named **Microsoft.Marketplace.SaaS.SDK.Client** and click **Set as StartUp Project**.
-- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaaS.SDK.Client** and update the values as follows:
+- Right-click on the project named **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
+- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** and update the values as follows:
 
     - **GrantType** - Leave this as *client_credentials*
 
@@ -199,7 +199,7 @@ In this section, we will go over the steps to download the latest sources from t
 
 ### Deploy the application to Azure
 
-- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **Microsoft.Marketplace.SaasKit.Client** Project and click **Publish ...**
+- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
 
 ![AllServices](./images/VisualStartPublish.png).
 
@@ -210,7 +210,7 @@ In this section, we will go over the steps to download the latest sources from t
 
 - Navigate to the  **URL (Instance Name)** to validate the deployment
 
-> Note: The steps to set up the SaaS service locally are identical to the steps to set up the marketplace provisioning service.
+> Note: The steps to set up the Publisher solution - **Microsoft.Marketplace.SaaS.SDK.PublisherSolution** locally are identical to the steps to set up the marketplace provisioning service.
 
 ### Purchase the offer
  
