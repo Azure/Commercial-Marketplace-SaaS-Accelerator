@@ -49,7 +49,7 @@ Ensure the following prerequisites are met before getting started:
 - We recommend using an Integrated Development Environment (IDE):  [Visual Studio Code](https://code.visualstudio.com/),  [Visual Studio 2019](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16#), etc...
 - The SDK has been implemented using [.NET Core 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 - The Customer provisioning and Publisher web sample applications have been implemented using [ASP.NET Core Runtime 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
-- For Persistence we are using [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/en-us/ef/). However, feel free to use any data repository you are comfortable with. The Database Schema is located in the Microsoft.Marketplace.SaaS.SDK.PublisherSolution's database folder. 
+- For Persistence we are using [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/en-us/ef/). However, feel free to use any data repository you are comfortable with. The Database Schema is located in the **deployment/Database** folder. 
 
 Besides, it is assumed that you have access to the following resources:
 - [Azure subscription](https://ms.portal.azure.com/) - to host the SDK components and sample web applications.
@@ -118,8 +118,8 @@ In this section, we will go over the steps to download the latest sources from t
 
 ![Solution Structure](./images/SolutionStructure.PNG)
 
-- Right-click on the project named **Microsoft.Marketplace.SaaS.SDK.Client** and click **Set as StartUp Project**.
-- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaaS.SDK.Client** and update the values as follows:
+- Right-click on the project named **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
+- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** and update the values as follows:
 
     - **GrantType** - Leave this as *client_credentials*
 
@@ -140,7 +140,7 @@ In this section, we will go over the steps to download the latest sources from t
 
     - **Resource** - Set this to *62d94f6c-d599-489b-a797-3e10e42fbe22*
 
-    - **FulFillmentAPIBaseURL** - https://marketplaceapi.microsoft.com/api/
+    - **FulFillmentAPIBaseURL** - https://marketplaceapi.microsoft.com/api
 
     - **SignedOutRedirectUri** - Set the path to the page the user should be redirected to after signing out from the application
 
@@ -148,7 +148,7 @@ In this section, we will go over the steps to download the latest sources from t
 
     - **FulfillmentApiVersion** - Use 2018-09-15 for mock API and 2018-08-31 for the production version of the fulfilment APIs
 
-    - **AdAuthenticationEndpoint** - https://login.microsoftonline.com/
+    - **AdAuthenticationEndpoint** - https://login.microsoftonline.com
     
     - **SaaSAppUrl** - URL to the SaaS Metering service ( for this example. It should be the link to the SaaS application, in general)
     
@@ -170,12 +170,12 @@ In this section, we will go over the steps to download the latest sources from t
     "ClientId": "<Azure-AD-Application-ID>",
     "ClientSecret": "******",
     "Resource": "62d94f6c-d599-489b-a797-3e10e42fbe22",
-    "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/",
+    "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/api",
     "SignedOutRedirectUri": "https://saaskitdemoapp.azurewebsites.net/Home/Index",
     "TenantId": "<TenantID-of-AD-Application>",
     "FulFillmentAPIVersion": "2018-09-15",
-    "AdAuthenticationEndPoint": "https://login.microsoftonline.com/",
-    "SaaSAppUrl" : "https://saasdemoapp.azurewebsites.net/"
+    "AdAuthenticationEndPoint": "https://login.microsoftonline.com",
+    "SaaSAppUrl" : "https://saasdemoapp.azurewebsites.net"
   },
   "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>",
   "AllowedHosts": "*"
@@ -190,13 +190,16 @@ In this section, we will go over the steps to download the latest sources from t
    ![Deploy database](./images/Deploy-Database.png) 
    - Click **Purchase** after agreeing to the terms and conditions by checking the box to start the deployment of the database by name **AMPSaaSDB**
    - Update the connection string property in **appSettings.json** with the details related to SQL Server name, database and the credentials to connect to the database.
-- If you want to set up the database locally, you could create and initialize the database by the running the SQL scripts available under **Microsoft.Marketplace.SaasKit.Client\Database** folder.Make sure that you are in the master database as the script creates a database by name - **AMP-DB**
+- If you want to set up the database locally, you could create and initialize the database by the running the SQL scripts available under **deployment/Database/AMP-DB.sql** folder.
+  - Create a database named **AMPSaaSDB**
+  - Switch to the database - **AMPSaaSDB**
+  - Run the script - **AMP-DB.sql** to initalize the database
 - Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
 *Note: Make sure that the home page url is listed in the **replyURLs** in the AD application for the authentication against Azure AD to work properly.*
 
 ### Deploy the application to Azure
 
-- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **Microsoft.Marketplace.SaasKit.Client** Project and click **Publish ...**
+- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
 
 ![AllServices](./images/VisualStartPublish.png).
 
@@ -207,7 +210,7 @@ In this section, we will go over the steps to download the latest sources from t
 
 - Navigate to the  **URL (Instance Name)** to validate the deployment
 
-> Note: The steps to set up the SaaS service locally are identical to the steps to set up the marketplace provisioning service.
+> Note: The steps to set up the Publisher solution - **Microsoft.Marketplace.SaaS.SDK.PublisherSolution** locally are identical to the steps to set up the marketplace provisioning service.
 
 ### Purchase the offer
  
