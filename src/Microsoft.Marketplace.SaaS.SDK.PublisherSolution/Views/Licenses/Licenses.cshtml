@@ -42,11 +42,11 @@
 
                                     @if (item.Status)
                                     {
-                                        <a class="btn patner-btn-proceed cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID','revoke')">Revoke</a>
+                                        <a class="btn patner-btn-proceed cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID','Revoke')">Revoke</a>
                                     }
                                     else
                                     {
-                                        <a class="btn patner-btn-danger cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID','activate')">Activate</a>
+                                        <a class="btn patner-btn-danger cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID','Activate')">Activate</a>
                                     }
                                 </div>
                             </div>
@@ -65,8 +65,8 @@
     //Update Subscription Status
     function fnUpdateSubscriptionStatus(Id, subscriptionId, key) {
         swal({
-            title: "This would " + key + " the license subscription",
-            text: "Are you sure you want to go ahead and " + key + " ?",
+            title: key + " License",
+            text: "Are you sure you want to "+ key +" the license?",
             icon: "warning",
             buttons: true,
             dangerMode: true,

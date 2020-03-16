@@ -122,9 +122,10 @@
         //if (isConfirm) {
         //    $("#frmSubscriptionDetail").submit();
         //}
+
+        var newPlanName = $('#PlanId').val();
         swal({
-            title: "Are you sure?",
-            text: "you want to change the plan!",
+            text: "Are you sure you want to switch to " + newPlanName + " plan?",
             icon: "warning",
             buttons: true,
             dangerMode: true,
