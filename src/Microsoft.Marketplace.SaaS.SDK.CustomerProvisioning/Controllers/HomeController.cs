@@ -7,10 +7,12 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Client.Helpers;
     using Microsoft.Marketplace.SaasKit.Client.Models;
     using Microsoft.Marketplace.SaasKit.Client.Services;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Models;
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -71,6 +73,11 @@
         /// </summary>
         private UserService userService;
 
+        private readonly IApplicationConfigRepository applicationConfigRepository;
+
+        private readonly IEmailTemplateRepository emailTemplateRepository;
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
         /// </summary>
@@ -80,7 +87,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo)
+        public HomeController(IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -91,6 +98,8 @@
             this.userService = new UserService(this.userRepository);
             this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository);
             this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
+            this.applicationConfigRepository = applicationConfigRepository;
+            this.emailTemplateRepository = emailTemplateRepository;
         }
 
         #region View Action Methods
@@ -271,6 +280,7 @@
             bool isSuccess = false;
             if (subscriptionId != default)
             {
+                SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
                 var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
 
@@ -281,6 +291,13 @@
                         var response = this.apiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                         this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
                         isSuccess = true;
+                        subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                        subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
+
+                        //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                        var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
+                        subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
+                        EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
                     }
                     catch (FulfillmentException fex)
                     {
@@ -295,6 +312,13 @@
                         var response = this.apiClient.DeleteSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                         this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Unsubscribed, false);
                         isSuccess = true;
+                        subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                        subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
+
+                        //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                        var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
+                        subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
+                        EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
                     }
                     catch (FulfillmentException fex)
                     {

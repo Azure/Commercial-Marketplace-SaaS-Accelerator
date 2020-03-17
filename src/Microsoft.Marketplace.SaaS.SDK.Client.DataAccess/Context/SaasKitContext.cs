@@ -16,7 +16,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         {
         }
 
+        public virtual DbSet<ApplicationConfiguration> ApplicationConfiguration { get; set; }
         public virtual DbSet<ApplicationLog> ApplicationLog { get; set; }
+        public virtual DbSet<EmailTemplate> EmailTemplate { get; set; }
         public virtual DbSet<KnownUsers> KnownUsers { get; set; }
         public virtual DbSet<MeteredAuditLogs> MeteredAuditLogs { get; set; }
         public virtual DbSet<MeteredDimensions> MeteredDimensions { get; set; }
@@ -32,18 +34,62 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=INFIHYD-WS002\\MSSQLSERVER17;Initial Catalog=AMPSaaSDB;Persist Security Info=True;User ID=sa;Password=Sa1;");
+                optionsBuilder.UseSqlServer("Server=localhost;Initial Catalog=AMPSaaSDB;Persist Security Info=True;User ID=sa;Password=Sa1;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ApplicationConfiguration>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Description).HasMaxLength(255);
+
+                entity.Property(e => e.Name).HasMaxLength(50);
+            });
+
             modelBuilder.Entity<ApplicationLog>(entity =>
             {
                 entity.Property(e => e.ActionTime).HasColumnType("datetime");
 
                 entity.Property(e => e.LogDetail)
                     .HasMaxLength(4000)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<EmailTemplate>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Bcc)
+                    .HasColumnName("BCC")
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Cc)
+                    .HasColumnName("CC")
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.InsertDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Status)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Subject)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TemplateBody).IsUnicode(false);
+
+                entity.Property(e => e.ToRecipients)
+                    .HasMaxLength(1000)
                     .IsUnicode(false);
             });
 
@@ -57,7 +103,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .WithMany(p => p.KnownUsers)
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__KnownUser__RoleI__534D60F1");
+                    .HasConstraintName("FK__KnownUser__RoleI__71D1E811");
             });
 
             modelBuilder.Entity<MeteredAuditLogs>(entity =>
@@ -81,7 +127,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.MeteredAuditLogs)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__MeteredAu__Subsc__45F365D3");
+                    .HasConstraintName("FK__MeteredAu__Subsc__5812160E");
             });
 
             modelBuilder.Entity<MeteredDimensions>(entity =>
@@ -99,7 +145,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Plan)
                     .WithMany(p => p.MeteredDimensions)
                     .HasForeignKey(d => d.PlanId)
-                    .HasConstraintName("FK__MeteredDi__PlanI__46E78A0C");
+                    .HasConstraintName("FK__MeteredDi__PlanI__59FA5E80");
             });
 
             modelBuilder.Entity<Plans>(entity =>
@@ -143,7 +189,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.SubscriptionAuditLogs)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__Subscript__Subsc__47DBAE45");
+                    .HasConstraintName("FK__Subscript__Subsc__5BE2A6F2");
             });
 
             modelBuilder.Entity<SubscriptionLicenses>(entity =>
@@ -159,7 +205,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.SubscriptionLicenses)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__Subscript__Subsc__48CFD27E");
+                    .HasConstraintName("FK__Subscript__Subsc__5DCAEF64");
             });
 
             modelBuilder.Entity<Subscriptions>(entity =>
@@ -188,7 +234,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Subscriptions)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Subscript__UserI__49C3F6B7");
+                    .HasConstraintName("FK__Subscript__UserI__73BA3083");
             });
 
             modelBuilder.Entity<Users>(entity =>

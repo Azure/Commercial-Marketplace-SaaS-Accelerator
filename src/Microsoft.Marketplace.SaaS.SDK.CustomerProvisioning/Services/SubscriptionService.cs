@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Marketplace.SaasKit.Models;
+using Microsoft.Marketplace.SaasKit.Client.Models;
 
 namespace Microsoft.Marketplace.SaasKit.Client.Services
 {
@@ -119,14 +120,14 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="includeUnsubscribed">if set to <c>true</c> [include unsubscribed].</param>
         /// <returns></returns>
-        public List<SubscriptionResult> GetPartnerSubscription(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
+        public List<SubscriptionResultExtension> GetPartnerSubscription(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
         {
-            List<SubscriptionResult> allSubscriptions = new List<SaasKitModels.SubscriptionResult>();
+            List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
             var allSubscriptionsForEmail = SubscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
 
             foreach (var subscription in allSubscriptionsForEmail)
             {
-                SubscriptionResult subscritpionDetail = PrepareSubscriptionResponse(subscription);
+                SubscriptionResultExtension subscritpionDetail = PrepareSubscriptionResponse(subscription);
                 if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
                     allSubscriptions.Add(subscritpionDetail);
             }
@@ -138,28 +139,32 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns></returns>
-        private SubscriptionResult PrepareSubscriptionResponse(Subscriptions subscription)
+        private SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
         {
-            SubscriptionResult subscritpionDetail = new SubscriptionResult();
-            subscritpionDetail.Id = subscription.AmpsubscriptionId;
-            subscritpionDetail.SubscribeId = subscription.Id;
-            subscritpionDetail.PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId;
-            subscritpionDetail.Name = subscription.Name;
-            subscritpionDetail.SaasSubscriptionStatus = GetSubscriptionStatus(subscription.SubscriptionStatus);
-            subscritpionDetail.IsActiveSubscription = subscription.IsActive ?? false;
+            SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
+            {
+                Id = subscription.AmpsubscriptionId,
+                SubscribeId = subscription.Id,
+                PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId,
+                Name = subscription.Name,
+                SaasSubscriptionStatus = GetSubscriptionStatus(subscription.SubscriptionStatus),
+                IsActiveSubscription = subscription.IsActive ?? false,
+                CustomerEmailAddress = subscription.User?.EmailAddress,
+                CustomerName = subscription.User?.FullName
+            };
             return subscritpionDetail;
         }
 
-        public SubscriptionStatusEnum GetSubscriptionStatus(string subscriptionStatus)
+        public SubscriptionStatusEnumExtension GetSubscriptionStatus(string subscriptionStatus)
         {
             if (!string.IsNullOrEmpty(subscriptionStatus))
             {
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.NotStarted)) return SubscriptionStatusEnum.NotStarted;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.PendingFulfillmentStart)) return SubscriptionStatusEnum.PendingFulfillmentStart;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Subscribed)) return SubscriptionStatusEnum.Subscribed;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Unsubscribed)) return SubscriptionStatusEnum.Unsubscribed;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.NotStarted)) return SubscriptionStatusEnumExtension.NotStarted;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingFulfillmentStart)) return SubscriptionStatusEnumExtension.PendingFulfillmentStart;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.Subscribed)) return SubscriptionStatusEnumExtension.Subscribed;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.Unsubscribed)) return SubscriptionStatusEnumExtension.Unsubscribed;
             }
-            return SubscriptionStatusEnum.NotStarted;
+            return SubscriptionStatusEnumExtension.NotStarted;
         }
 
         /// <summary>

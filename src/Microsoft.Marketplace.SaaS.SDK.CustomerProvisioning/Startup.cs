@@ -99,6 +99,8 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddScoped<IWebhookProcessor, WebhookProcessor>();
             services.AddScoped<IWebhookHandler, WebHookHandler>();
             services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
+            services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
+            services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
