@@ -1,14 +1,17 @@
+---------------------------------------------------------
+-----------PY (18-03-2020)-------------------------------
+---------------------------------------------------------
 SET IDENTITY_INSERT [dbo].[ApplicationConfiguration] ON 
 GO
-INSERT [dbo].[ApplicationConfiguration] ([Name], [Value], [Description]) VALUES ( N'SMTPFromEmail', N'prasad.yalla@uniquode.in', N'SMTP Email')
+INSERT [dbo].[ApplicationConfiguration] ([Name], [Value], [Description]) VALUES ( N'SMTPFromEmail', N'', N'SMTP Email')
 GO
-INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'SMTPPassword', N'Precious@003', N'SMTP Password')
+INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'SMTPPassword', N'', N'SMTP Password')
 GO
-INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'SMTPHost', N' smtp.office365.com', N'SMTP Host')
+INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'SMTPHost', N'', N'SMTP Host')
 GO
-INSERT [dbo].[ApplicationConfiguration] ([Name], [Value], [Description]) VALUES ( N'SMTPPort', N'587', N'SMTP Port')
+INSERT [dbo].[ApplicationConfiguration] ([Name], [Value], [Description]) VALUES ( N'SMTPPort', N'', N'SMTP Port')
 GO
-INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'SMTPUserName', N'prasad.yalla@uniquode.in', N'SMTP User Name')
+INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'SMTPUserName', N'', N'SMTP User Name')
 GO
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'SMTPSslEnabled', N'TRUE', N'SMTP Ssl Enabled')
 GO
@@ -18,7 +21,7 @@ SET IDENTITY_INSERT [dbo].[ApplicationConfiguration] OFF
 GO
 SET IDENTITY_INSERT [dbo].[EmailTemplate] ON 
 GO
-INSERT [dbo].[EmailTemplate] ([Status], [Description], [InsertDate], [TemplateBody], [Subject], [ToRecipients], [CC], [BCC], [IsActive]) VALUES ( N'Subscribed', N'Subscribed Email', CAST(N'2020-03-17T19:35:07.420' AS DateTime), N'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">    
+INSERT [dbo].[EmailTemplate] ([Status], [Description], [InsertDate], [TemplateBody], [Subject], [ToRecipients], [CC], [BCC], [IsActive]) VALUES ( N'Subscribed', N'Subscribed Email', GETDATE(), N'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">    
 	<html xmlns="http://www.w3.org/1999/xhtml">
 	   <head>
 		  <!--<note>Use this Template for Pending Activation email </note>-->              
@@ -101,9 +104,9 @@ INSERT [dbo].[EmailTemplate] ([Status], [Description], [InsertDate], [TemplateBo
 			 <!-- // END TEMPLATE -->                
 		  </center>
 	   </body>
-	</html>', N'Subscription Activation', N'prasad.yalla@spektrasystems.com', NULL, NULL, 0)
+	</html>', N'Subscription Activation', N'', NULL, NULL, 0)
 GO
-INSERT [dbo].[EmailTemplate] ( [Status], [Description], [InsertDate], [TemplateBody], [Subject], [ToRecipients], [CC], [BCC], [IsActive]) VALUES ( N'UnSubscribed', N'UnSubscribe Email', CAST(N'2020-03-17T19:35:07.470' AS DateTime), N'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">    
+INSERT [dbo].[EmailTemplate] ( [Status], [Description], [InsertDate], [TemplateBody], [Subject], [ToRecipients], [CC], [BCC], [IsActive]) VALUES ( N'UnSubscribed', N'UnSubscribe Email', GETDATE(), N'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">    
 	<html xmlns="http://www.w3.org/1999/xhtml">
 	   <head>
 		  <!--<note>Use this Template for Pending Activation email </note>-->              
@@ -186,7 +189,7 @@ INSERT [dbo].[EmailTemplate] ( [Status], [Description], [InsertDate], [TemplateB
 			 <!-- // END TEMPLATE -->                
 		  </center>
 	   </body>
-	</html>', N'UnSubscription', N'prasad.yalla@spektrasystems.com', NULL, NULL, 0)
+	</html>', N'UnSubscription', N'', NULL, NULL, 0)
 GO
 SET IDENTITY_INSERT [dbo].[EmailTemplate] OFF
 GO
