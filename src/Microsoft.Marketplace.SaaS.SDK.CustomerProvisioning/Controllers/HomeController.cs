@@ -377,6 +377,7 @@
                     //var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                     //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
+                    subscriptionDetail = subscriptionData;
                     subscriptionDetail.ShowWelcomeScreen = false;
                     subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.PendingFulfillmentStart;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
@@ -411,6 +412,7 @@
                     //var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                     //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
+                    subscriptionDetail = subscriptionData;
                     subscriptionDetail.ShowWelcomeScreen = false;
                     subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
