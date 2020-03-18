@@ -7,12 +7,13 @@ using NVelocity.App;
 using NVelocity;
 using System.IO;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+using Microsoft.Marketplace.SaasKit.Models;
 
 namespace Microsoft.Marketplace.SaasKit.Client.Services
 {
     public class TemplateService
     {
-        public static string ProcessTemplate(SubscriptionResultExtension Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository)
+        public static string ProcessTemplate(SubscriptionResult Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository)
         {
             string body = emailTemplateRepository.GetTemplateBody(Subscription.SaasSubscriptionStatus.ToString());
             string applicationName = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationName");

@@ -11,7 +11,7 @@
         /// <value>
         /// The subscriptions.
         /// </value>
-        public List<SubscriptionResultExtension> Subscriptions { get; set; } = new List<SubscriptionResultExtension>();
+        public List<SubscriptionResult> Subscriptions { get; set; } = new List<SubscriptionResult>();
 
         /// <summary>
         /// Gets or sets the error message.

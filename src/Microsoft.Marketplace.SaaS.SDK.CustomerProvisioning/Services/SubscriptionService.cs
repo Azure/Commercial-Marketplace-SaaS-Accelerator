@@ -120,14 +120,14 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="includeUnsubscribed">if set to <c>true</c> [include unsubscribed].</param>
         /// <returns></returns>
-        public List<SubscriptionResultExtension> GetPartnerSubscription(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
+        public List<SubscriptionResult> GetPartnerSubscription(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
         {
-            List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
+            List<SubscriptionResult> allSubscriptions = new List<SubscriptionResult>();
             var allSubscriptionsForEmail = SubscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
 
             foreach (var subscription in allSubscriptionsForEmail)
             {
-                SubscriptionResultExtension subscritpionDetail = PrepareSubscriptionResponse(subscription);
+                SubscriptionResult subscritpionDetail = PrepareSubscriptionResponse(subscription);
                 if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
                     allSubscriptions.Add(subscritpionDetail);
             }
@@ -139,9 +139,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns></returns>
-        private SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
+        private SubscriptionResult PrepareSubscriptionResponse(Subscriptions subscription)
         {
-            SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
+            SubscriptionResult subscritpionDetail = new SubscriptionResult
             {
                 Id = subscription.AmpsubscriptionId,
                 SubscribeId = subscription.Id,
@@ -155,16 +155,16 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             return subscritpionDetail;
         }
 
-        public SubscriptionStatusEnumExtension GetSubscriptionStatus(string subscriptionStatus)
+        public SubscriptionStatusEnum GetSubscriptionStatus(string subscriptionStatus)
         {
             if (!string.IsNullOrEmpty(subscriptionStatus))
             {
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.NotStarted)) return SubscriptionStatusEnumExtension.NotStarted;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingFulfillmentStart)) return SubscriptionStatusEnumExtension.PendingFulfillmentStart;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.Subscribed)) return SubscriptionStatusEnumExtension.Subscribed;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.Unsubscribed)) return SubscriptionStatusEnumExtension.Unsubscribed;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.NotStarted)) return SubscriptionStatusEnum.NotStarted;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.PendingFulfillmentStart)) return SubscriptionStatusEnum.PendingFulfillmentStart;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Subscribed)) return SubscriptionStatusEnum.Subscribed;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Unsubscribed)) return SubscriptionStatusEnum.Unsubscribed;
             }
-            return SubscriptionStatusEnumExtension.NotStarted;
+            return SubscriptionStatusEnum.NotStarted;
         }
 
         /// <summary>

@@ -280,7 +280,7 @@
             bool isSuccess = false;
             if (subscriptionId != default)
             {
-                SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+                SubscriptionResult subscriptionDetail = new SubscriptionResult();
                 var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
 
@@ -295,9 +295,13 @@
                         subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
                         //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                        var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
-                        subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
-                        EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
+                        //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
+                        //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
+                        bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
+                        if (checkIsActive)
+                        {
+                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
+                        }
                     }
                     catch (FulfillmentException fex)
                     {
@@ -312,13 +316,17 @@
                         var response = this.apiClient.DeleteSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                         this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Unsubscribed, false);
                         isSuccess = true;
-                        subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                        subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId,true).FirstOrDefault();
                         subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
                         //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                        var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
-                        subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
-                        EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
+                        //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
+                        //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
+                        bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
+                        if (checkIsActive)
+                        {
+                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
+                        }
                     }
                     catch (FulfillmentException fex)
                     {
@@ -346,6 +354,74 @@
             }
 
             return this.RedirectToAction(nameof(this.Subscriptions));
+        }
+
+        public IActionResult ActivateSubscription(Guid subscriptionId, string planId, string operation)
+        {
+            try
+            {
+                SubscriptionResult subscriptionDetail = new SubscriptionResult();
+
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
+                    var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                    this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
+
+
+                    this.TempData["ShowWelcomeScreen"] = false;
+                    var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                    var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
+                    var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+
+                    //var serializedParent = JsonConvert.SerializeObject(subscriptionData);
+                    //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
+                    //subscriptionDetail = (SubscriptionResult)subscriptionData;
+                    subscriptionDetail.ShowWelcomeScreen = false;
+                    subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.PendingFulfillmentStart;
+                    subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
+                    subscriptionDetail.CustomerName = this.CurrentUserName;
+                }
+                return this.View("Index", subscriptionDetail);
+            }
+            catch (Exception ex)
+            {
+                return View("Error");
+            }
+        }
+
+        public IActionResult DeActivateSubscription(Guid subscriptionId, string planId, string operation)
+        {
+            try
+            {
+                SubscriptionResult subscriptionDetail = new SubscriptionResult();
+
+                if (User.Identity.IsAuthenticated)
+                {
+                    var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
+                    var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                    this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
+
+
+                    this.TempData["ShowWelcomeScreen"] = false;
+                    var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                    var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
+                    var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+
+                    //var serializedParent = JsonConvert.SerializeObject(subscriptionData);
+                    //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
+                    //subscriptionDetail = (SubscriptionResult)subscriptionData;
+                    subscriptionDetail.ShowWelcomeScreen = false;
+                    subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
+                    subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
+                    subscriptionDetail.CustomerName = this.CurrentUserName;
+                }
+                return this.View("Index", subscriptionDetail);
+            }
+            catch (Exception ex)
+            {
+                return View("Error");
+            }
         }
 
         /// <summary>

@@ -21,6 +21,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             return Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault().Subject;
         }
 
+        public bool? GetIsActive (string status)
+        {
+            return Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault().IsActive;
+        }
+
         public string GetTemplateBody(string status)
         {
             return Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault().TemplateBody;
