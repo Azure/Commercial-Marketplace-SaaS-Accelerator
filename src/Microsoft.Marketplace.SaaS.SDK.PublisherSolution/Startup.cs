@@ -67,7 +67,7 @@ namespace Microsoft.Marketplace.Saas.Web
             ///OPEN ID Authentication
    .AddOpenIdConnect(options =>
    {
-       options.Authority = $"{config.AdAuthenticationEndPoint}common";
+       options.Authority = $"{config.AdAuthenticationEndPoint}/common";
        options.ClientId = config.ClientId;
        options.ResponseType = OpenIdConnectResponseType.IdToken;
        options.CallbackPath = "/Home/Index";
