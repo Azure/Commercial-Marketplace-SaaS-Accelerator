@@ -298,7 +298,7 @@
                         //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
                         //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                         bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
-                        if (checkIsActive)
+                        if (applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerStatusEnum.IsActiveEmailEnabled.ToString()) =="True")
                         {
                             EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
                         }
@@ -323,7 +323,7 @@
                         //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
                         //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                         bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
-                        if (checkIsActive)
+                        if (applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerStatusEnum.IsUnsubscribeEmailEnabled.ToString()) == "True")
                         {
                             EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
                         }

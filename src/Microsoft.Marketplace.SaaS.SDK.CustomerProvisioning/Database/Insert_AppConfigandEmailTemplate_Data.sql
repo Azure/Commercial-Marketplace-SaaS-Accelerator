@@ -17,6 +17,10 @@ INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES
 GO
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'ApplicationName', N'Contoso', N'Application Name')
 GO
+INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsActiveEmailEnabled', N'TRUE', N'Active Email Enabled')
+GO
+INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsUnsubscribeEmailEnabled', N'TRUE', N'Unsubscribe Email Enabled')
+GO
 SET IDENTITY_INSERT [dbo].[ApplicationConfiguration] OFF
 GO
 SET IDENTITY_INSERT [dbo].[EmailTemplate] ON 
