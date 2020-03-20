@@ -23,51 +23,52 @@
                     <div>
                         @if (Model.Subscriptions.Count() > 0)
                         {
-                        <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20" width="100%">
-                            <thead class="cm-table-head">
-                                <tr>
-                                    <th>User Name</th>
-                                    <th>User Email</th>
-                                    <th>Subscription Name</th>
-                                    <th>Plan</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (var i = 0; i < Model.Subscriptions.Count; i++)
-                                {
-                                    var subscription = Model.Subscriptions[i];
+                            <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20" width="100%">
+                                <thead class="cm-table-head">
                                     <tr>
-                                        <td class="text-left">
-                                            @subscription.CustomerName
-                                        </td>
-                                        <td class="text-left">
-                                            @subscription.CustomerEmailAddress
-                                        </td>
-                                        <td class="text-left">
-                                            @Html.HiddenFor(s => s.Subscriptions[i].Id)
-                                            @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
-                                            @subscription.Name
-                                        </td>
-                                        <td class="text-left">@subscription.PlanId</td>
-                                        <td class="text-left">@subscription.SaasSubscriptionStatus</td>
-                                        <td class="text-left cm-ellipsis">
-                                            <div class="nav-item dropdown">
-                                                <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
-                                                <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                    @if (subscription.IsMeteringSupported && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
-                                                    {
-                                                        <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId" class="btn btn-primary">Manage Usage</a>
-                                                    }
-                                                </div>
-                                            </div>
-
-                                        </td>
+                                        <th>User Name</th>
+                                        <th>User Email</th>
+                                        <th>Subscription Name</th>
+                                        <th>Plan</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @for (var i = 0; i < Model.Subscriptions.Count; i++)
+                                    {
+                                        var subscription = Model.Subscriptions[i];
+                                        <tr>
+                                            <td class="text-left">
+                                                @subscription.CustomerName
+                                            </td>
+                                            <td class="text-left">
+                                                @subscription.CustomerEmailAddress
+                                            </td>
+                                            <td class="text-left">
+                                                @Html.HiddenFor(s => s.Subscriptions[i].Id)
+                                                @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
+                                                @subscription.Name
+                                            </td>
+                                            <td class="text-left">@subscription.PlanId</td>
+                                            <td class="text-left">@subscription.SaasSubscriptionStatus</td>
+                                            <td class="text-left cm-ellipsis">
+                                                <div class="nav-item dropdown">
+                                                    <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdown01">
+                                                        @if (subscription.IsMeteringSupported && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                                                        {
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId" class="btn btn-primary">Manage Usage</a>
+                                                        }
+                                                        <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
+                                                    </div>
+                                                </div>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
                         }
                     </div>
                 </div>
@@ -78,3 +79,21 @@
         </form>
     </div>
 </div>
+<script>
+    function ViewSubscriptionlogdetailsById(subscriptionId) {
+        $.ajax({
+            type: "Get",
+            url: "SubscriptionLogDetail",
+            data: { subscriptionId: subscriptionId },
+            contentType: "application/json; charset=utf-8",
+            datatype: "json",
+            success: function (data) {
+                $('#myModal').html(data);
+                $('#myModal').modal();
+            },
+            error: function () {
+                alert("Content load failed.");
+            }
+        });
+    }
+</script>

@@ -36,6 +36,11 @@
         private readonly ISubscriptionsRepository subscriptionRepo;
 
         /// <summary>
+        /// The subscription logs repository
+        /// </summary>
+        private readonly ISubscriptionLogRepository subscriptionLogRepository;
+
+        /// <summary>
         /// The plan repository
         /// </summary>
         private readonly IPlansRepository planRepository;
@@ -73,10 +78,11 @@
         /// <param name="SubscriptionUsageLogsRepository">The subscription usage logs repository.</param>
         public HomeController(IUsersRepository UsersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository SubscriptionRepo,
                                 IPlansRepository PlanRepository, ISubscriptionUsageLogsRepository SubscriptionUsageLogsRepository,
-                                    IMeteredDimensionsRepository DimensionsRepository)
+                                    IMeteredDimensionsRepository DimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo)
         {
             this.apiClient = apiClient;
             subscriptionRepo = SubscriptionRepo;
+            this.subscriptionLogRepository = subscriptionLogsRepo;
             planRepository = PlanRepository;
             subscriptionUsageLogsRepository = SubscriptionUsageLogsRepository;
             dimensionsRepository = DimensionsRepository;
@@ -127,6 +133,26 @@
             }
             return this.View(subscriptionDetail);
         }
+
+        /// <summary>
+        /// Subscriptions the log detail.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns> Subscription log detail</returns>
+        public IActionResult SubscriptionLogDetail(Guid subscriptionId)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                List<SubscriptionAuditLogs> subscriptionAudit = new List<SubscriptionAuditLogs>();
+                subscriptionAudit = this.subscriptionLogRepository.GetSubscriptionBySubscriptionId(subscriptionId).ToList();
+                return this.View(subscriptionAudit);
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
 
         /// <summary>
         /// Records the usage.
