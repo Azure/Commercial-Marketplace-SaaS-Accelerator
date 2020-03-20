@@ -56,7 +56,19 @@ namespace Microsoft.Marketplace.Saas.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            var config = Configuration.GetSection("AppSetting").Get<SaaSApiClientConfiguration>();
+            var config = new SaaSApiClientConfiguration()
+            {
+                AdAuthenticationEndPoint = this.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
+                ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
+                ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
+                FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
+                FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
+                GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
+                Resource = this.Configuration["SaaSApiConfiguration:Resource"],
+                SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
+                SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
+                TenantId = this.Configuration["SaaSApiConfiguration:TenantId"]
+            };
 
             services.AddAuthentication(options =>
             {
@@ -79,10 +91,10 @@ namespace Microsoft.Marketplace.Saas.Web
 
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new Logger()));
             services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new Logger()));
-            services.Configure<SaaSApiClientConfiguration>(Configuration.GetSection("AppSetting"));
+            services.AddSingleton<SaaSApiClientConfiguration>(config);
 
             services.AddDbContext<SaasKitContext>(options =>
-               options.UseSqlServer(Configuration.GetSection("DefaultConnection").Value));
+               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             InitializeRepositoryServices(services);
 
