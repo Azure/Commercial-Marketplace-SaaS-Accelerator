@@ -116,6 +116,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IPlansRepository, PlansRepository>();
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<ISubscriptionLogRepository, SubscriptionLogRepository>();
+            services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
             services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
             services.AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>();
             services.AddScoped<IMeteredDimensionsRepository, MeteredDimensionsRepository>();
