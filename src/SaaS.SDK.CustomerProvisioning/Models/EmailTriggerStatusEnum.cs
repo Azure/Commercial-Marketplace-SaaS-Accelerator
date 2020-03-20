@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Models
+﻿namespace Microsoft.Marketplace.SaasKit.Client.Models
 {
     /// <summary>
     /// Sets Subscription Operation Status

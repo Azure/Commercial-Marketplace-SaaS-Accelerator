@@ -35,17 +35,19 @@
         /// </summary>
         private SubscriptionLicensesService subscriptionLicensesService;
 
+        private readonly IApplicationConfigRepository applicationConfigRepository;
         /// <summary>
         /// Initializes a new instance of the <see cref="LicensesController" /> class.
         /// </summary>
         /// <param name="subscriptionLicensesRepository">The subscription licenses repository.</param>
         /// <param name="subscriptionsRepository">The subscriptions repository.</param>
         /// <param name="usersRepository">The users repository.</param>
-        public LicensesController(ISubscriptionLicensesRepository subscriptionLicensesRepository,ISubscriptionsRepository subscriptionsRepository,IUsersRepository usersRepository)
+        public LicensesController(ISubscriptionLicensesRepository subscriptionLicensesRepository,ISubscriptionsRepository subscriptionsRepository,IUsersRepository usersRepository,IApplicationConfigRepository applicationConfigRepository)
         {
             this.subscriptionLicensesRepository = subscriptionLicensesRepository;
             this.subscriptionsRepository = subscriptionsRepository;
             this.usersRepository = usersRepository;
+            this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLicensesService = new SubscriptionLicensesService(this.subscriptionLicensesRepository,this.subscriptionsRepository);
         }
 
@@ -57,6 +59,10 @@
         /// </returns>
         public IActionResult Index()
         {
+            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             List<SubscriptionLicensesViewModel> getAllSubScriptionData = new List<SubscriptionLicensesViewModel>();
             this.TempData["ShowWelcomeScreen"] = "True";
             var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);

@@ -34,17 +34,20 @@
         /// </summary>
         private readonly IUsersRepository usersRepository;
 
+        private readonly IApplicationConfigRepository applicationConfigRepository;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LicensesController"/> class.
         /// </summary>
         /// <param name="subscriptionLicenses">The subscription licenses.</param>
         /// <param name="subscriptionRepository">The subscription repository.</param>
         /// <param name="usersRepository">The users repository.</param>
-        public LicensesController(ISubscriptionLicensesRepository subscriptionLicenses, ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository)
+        public LicensesController(ISubscriptionLicensesRepository subscriptionLicenses, ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository)
         {
             this.subscriptionLicensesRepository = subscriptionLicenses;
             this.subscriptionRepository = subscriptionRepository;
             this.usersRepository = usersRepository;
+            this.applicationConfigRepository = applicationConfigRepository;
         }
 
         /// <summary>
@@ -53,6 +56,10 @@
         /// <returns>return All subscription</returns>
         public IActionResult Index()
         {
+            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             SubscriptionLicensesModel subscriptionLicenses = new SubscriptionLicensesModel();
             subscriptionLicenses.SubscriptionList = new SelectList(this.subscriptionRepository.Get().Where(s => s.SubscriptionStatus == Convert.ToString(SubscriptionStatusEnum.Subscribed)), "Id", "Name");
             List<SubscriptionLicensesViewModel> subscriptionlist = new List<SubscriptionLicensesViewModel>();
@@ -81,6 +88,10 @@
         /// <returns>return Active Subscription</returns>
         public JsonResult UpdateActiveSubscription(int id, int subscriptionId)
         {
+            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             var subscriptionDetails = this.subscriptionLicensesRepository.GetLicensesForSubscriptions(Convert.ToString(SubscriptionStatusEnum.Subscribed))
                 .Where(s => s.SubscriptionId == subscriptionId).ToList();
 
@@ -117,6 +128,10 @@
         [HttpPost]
         public IActionResult AddLicenseDetail(SubscriptionLicensesViewModel subscriptionLicenses)
         {
+            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             if (subscriptionLicenses != null)
             {
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);

@@ -183,7 +183,7 @@
                     return this.View(subscriptionDetail);
                 }
             }
-           
+
 
 
             return this.View(subscriptionDetail);
@@ -197,6 +197,10 @@
         {
             if (User.Identity.IsAuthenticated)
             {
+                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 this.TempData["ShowWelcomeScreen"] = "True";
                 SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
                 subscriptionDetail.Subscriptions = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, default, true).ToList();
@@ -227,6 +231,10 @@
         {
             if (User.Identity.IsAuthenticated)
             {
+                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                 subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
@@ -283,6 +291,10 @@
         [HttpPost]
         public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation)
         {
+            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             bool isSuccess = false;
             if (subscriptionId != default)
             {
@@ -366,6 +378,10 @@
         {
             try
             {
+                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 SubscriptionResult subscriptionDetail = new SubscriptionResult();
 
                 if (User.Identity.IsAuthenticated)
@@ -401,6 +417,10 @@
         {
             try
             {
+                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 SubscriptionResult subscriptionDetail = new SubscriptionResult();
 
                 if (User.Identity.IsAuthenticated)
@@ -442,7 +462,10 @@
         {
             var subscriptionId = new Guid();
             var planId = string.Empty;
-
+            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             if (subscriptionDetail != null)
             {
                 subscriptionId = subscriptionDetail.Id;

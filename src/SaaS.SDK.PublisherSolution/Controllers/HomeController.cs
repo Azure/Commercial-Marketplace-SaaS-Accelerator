@@ -112,6 +112,10 @@
         /// <returns></returns>
         public IActionResult Subscriptions()
         {
+            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
             if (User.Identity.IsAuthenticated)
             {
@@ -148,6 +152,10 @@
         /// <returns> Subscription log detail</returns>
         public IActionResult SubscriptionLogDetail(Guid subscriptionId)
         {
+            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             if (User.Identity.IsAuthenticated)
             {
                 List<SubscriptionAuditLogs> subscriptionAudit = new List<SubscriptionAuditLogs>();
@@ -168,6 +176,10 @@
         /// <returns></returns>
         public IActionResult RecordUsage(int subscriptionId)
         {
+            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             if (User.Identity.IsAuthenticated)
             {
                 var subscriptionDetail = subscriptionRepo.Get(subscriptionId);
@@ -195,6 +207,10 @@
         {
             try
             {
+                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 if (subscriptionData != null && subscriptionData.SubscriptionDetail != null)
                 {
                     var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
