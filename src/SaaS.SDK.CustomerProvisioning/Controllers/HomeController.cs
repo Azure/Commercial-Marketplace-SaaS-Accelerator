@@ -118,6 +118,10 @@
 
             if (User.Identity.IsAuthenticated)
             {
+                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                 this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
@@ -179,6 +183,8 @@
                     return this.View(subscriptionDetail);
                 }
             }
+           
+
 
             return this.View(subscriptionDetail);
         }
@@ -298,7 +304,7 @@
                         //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
                         //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                         bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
-                        if (applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerStatusEnum.IsActiveEmailEnabled.ToString()) =="True")
+                        if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerStatusEnum.IsEmailEnabledForSubscriptionActivation.ToString())) == true)
                         {
                             EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
                         }
@@ -316,14 +322,14 @@
                         var response = this.apiClient.DeleteSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                         this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Unsubscribed, false);
                         isSuccess = true;
-                        subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId,true).FirstOrDefault();
+                        subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
                         subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
                         //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                         //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
                         //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                         bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
-                        if (applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerStatusEnum.IsUnsubscribeEmailEnabled.ToString()) == "True")
+                        if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerStatusEnum.IsEmailEnabledForUnsubscription.ToString())) == true)
                         {
                             EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
                         }

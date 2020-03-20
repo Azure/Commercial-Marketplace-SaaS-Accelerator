@@ -3,17 +3,14 @@
     /// <summary>
     /// Sets Subscription Operation Status
     /// </summary>
-    public enum EmailTriggerStatusEnum
+    public enum MainMenuStatusEnum
     {
         /// <summary>
         /// Is Active Enable
         /// </summary>
-        IsEmailEnabledForSubscriptionActivation,
+        IsLicenseManagementEnabled,
 
-        /// <summary>
-        ///Is Unsubscribe Email  Enable
-        /// </summary>
-        IsEmailEnabledForUnsubscription
+       
 
     }
 }
