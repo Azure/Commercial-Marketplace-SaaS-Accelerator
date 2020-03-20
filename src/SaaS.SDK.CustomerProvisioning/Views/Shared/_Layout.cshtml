@@ -43,7 +43,6 @@
             </div>
         </div>
     </nav>
-
     <div class="nav-scroller bg-white shadow-sm cm-menu-bar">
         <nav class="container pb-3 nav nav-underline">
             <a class="nav-link active">
@@ -53,7 +52,10 @@
                     @if (TempData["ShowWelcomeScreen"] != null && Convert.ToString(TempData["ShowWelcomeScreen"]) == "True")
                     {
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
-                        <a class="nav-link" asp-area="" asp-controller="Licenses" asp-action="Index">Licenses</a>
+                        if (Convert.ToBoolean(TempData["ShowLicensesMenu"]))
+                        {
+                            <a class="nav-link" asp-area="" asp-controller="Licenses" asp-action="Index">Licenses</a>
+                        }
                     }
                 }
             </a>

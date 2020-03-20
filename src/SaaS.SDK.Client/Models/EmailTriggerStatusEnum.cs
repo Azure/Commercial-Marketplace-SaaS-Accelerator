@@ -8,12 +8,12 @@
         /// <summary>
         /// Is Active Enable
         /// </summary>
-        IsActiveEmailEnabled,
+        IsEmailEnabledForSubscriptionActivation,
 
         /// <summary>
         ///Is Unsubscribe Email  Enable
         /// </summary>
-        IsUnsubscribeEmailEnabled
-      
+        IsEmailEnabledForUnsubscription
+
     }
 }

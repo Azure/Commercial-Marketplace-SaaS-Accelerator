@@ -66,6 +66,8 @@
         /// </summary>
         private readonly IMeteredBillingApiClient apiClient;
 
+        private readonly IApplicationConfigRepository applicationConfigRepository;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
@@ -78,7 +80,7 @@
         /// <param name="SubscriptionUsageLogsRepository">The subscription usage logs repository.</param>
         public HomeController(IUsersRepository UsersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository SubscriptionRepo,
                                 IPlansRepository PlanRepository, ISubscriptionUsageLogsRepository SubscriptionUsageLogsRepository,
-                                    IMeteredDimensionsRepository DimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo)
+                                    IMeteredDimensionsRepository DimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository)
         {
             this.apiClient = apiClient;
             subscriptionRepo = SubscriptionRepo;
@@ -87,6 +89,7 @@
             subscriptionUsageLogsRepository = SubscriptionUsageLogsRepository;
             dimensionsRepository = DimensionsRepository;
             _logger = logger;
+            this.applicationConfigRepository = applicationConfigRepository;
             usersRepository = UsersRepository;
         }
 
@@ -96,6 +99,10 @@
         /// <returns></returns>
         public IActionResult Index()
         {
+            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             return View();
         }
 

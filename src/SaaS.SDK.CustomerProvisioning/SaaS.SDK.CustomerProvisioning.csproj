@@ -6,7 +6,7 @@
     <RootNamespace>Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning</RootNamespace>
     <Company>Microsoft</Company>
     <Authors>Microsoft.Marketplace</Authors>
-    <Product>Microsoft.Marketplace.SaaS.SDK</Product>
+    <Product>SaaS.SDK</Product>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,8 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Marketplace.SaaS.SDK.Client.DataAccess\Microsoft.Marketplace.SaaS.SDK.Client.DataAccess.csproj" />
-    <ProjectReference Include="..\Microsoft.Marketplace.SaaS.SDK.Client\Microsoft.Marketplace.SaaS.SDK.Client.csproj" />
+    <ProjectReference Include="..\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj" />
+    <ProjectReference Include="..\SaaS.SDK.Client\SaaS.SDK.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>
