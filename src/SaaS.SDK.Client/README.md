@@ -10,7 +10,7 @@ This is the **core** library for the transactable SaaS SDK. It provides the impl
 
 ### Source Code
 
-The Project is located in the **Microsoft.Marketplace.SaaS.SDK.Client** folder. The project is composed of the following sections: 
+The Project is located in the **SaaS.SDK.Client** folder. The project is composed of the following sections: 
 
 | Section Name | Description |
 | --- | --- |  

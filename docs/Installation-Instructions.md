@@ -114,12 +114,12 @@ For the purpose of the sample, a new marketplace offer is created and is made av
 In this section, we will go over the steps to download the latest sources from the repository, build the application ready for deployment to Azure.
 
 - Clone or download the latest source code from [here](https://dev.azure.com/AMP-SDKs/AMP%20SaaS%20SDK)
-- Open the solution **Microsoft.Marketplace.SaaS.SDK.sln** in Visual Studio 2019
+- Open the solution **SaaS.SDK.sln** in Visual Studio 2019
 
 ![Solution Structure](./images/SolutionStructure.PNG)
 
-- Right-click on the project named **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
-- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** and update the values as follows:
+- Right-click on the project named **SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
+- Open the file **appsettings.json** under the project **SaaS.SDK.CustomerProvisioning** and update the values as follows:
 
     - **GrantType** - Leave this as *client_credentials*
 
@@ -165,25 +165,36 @@ In this section, we will go over the steps to download the latest sources from t
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
-  "AppSetting": {
+   // Comment the sections - SaaSApiConfiguration and Connection strings when deploying to Azure
+  "SaaSApiConfiguration": {
     "GrantType": "client_credentials",
     "ClientId": "<Azure-AD-Application-ID>",
     "ClientSecret": "******",
     "Resource": "62d94f6c-d599-489b-a797-3e10e42fbe22",
     "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/api",
-    "SignedOutRedirectUri": "https://saaskitdemoapp.azurewebsites.net/Home/Index",
+    "SignedOutRedirectUri": "<provisioning_or_publisher_web_app_base_path>/Home/Index",
     "TenantId": "<TenantID-of-AD-Application>",
     "FulFillmentAPIVersion": "2018-09-15",
     "AdAuthenticationEndPoint": "https://login.microsoftonline.com",
-    "SaaSAppUrl" : "https://saasdemoapp.azurewebsites.net"
+    "SaaSAppUrl" : "<Link-to-SaaS-Application>"
   },
-  "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>",
+  "connectionStrings" : {
+    "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>"
+    },
   "AllowedHosts": "*"
 }
 
 ```
+**Note**: When defining the keys in Azure App Service -> Configuration -> App Settings, refer to the below example for correctness:
+
+|Name| Value|
+|--|--|
+|SaaSApiConfiguration__GrantType| client_credentials|_
+
+> **Tip** __(double underscore) should be used to define the config items that appear as nested keys in appSettings.json
+
 - Deploy SQL database to Azure as follows:
-  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy.md" target="_blank">
+  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy-v1.json" target="_blank">
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/> 
 </a> to start the deployment of SQL database
    - Fill out the details on the template deployment form as shown here
@@ -199,9 +210,9 @@ In this section, we will go over the steps to download the latest sources from t
 
 ### Deploy the application to Azure
 
-- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
+- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
 
-![AllServices](./images/VisualStartPublish.png).
+![AllServices](./images/VSPublish-Publisher.png).
 
 - Click **Import Profile ...** to browse and select the publish profile that was downloaded earlier
 - Click **Publish** to deploy the web application to Azure App Service
@@ -210,7 +221,7 @@ In this section, we will go over the steps to download the latest sources from t
 
 - Navigate to the  **URL (Instance Name)** to validate the deployment
 
-> Note: The steps to set up the Publisher solution - **Microsoft.Marketplace.SaaS.SDK.PublisherSolution** locally are identical to the steps to set up the marketplace provisioning service.
+> Note: The steps to set up the Publisher solution - **SaaS.SDK.PublisherSolution** locally are identical to the steps to set up the marketplace provisioning service.
 
 ### Purchase the offer
  
