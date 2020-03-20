@@ -5,7 +5,7 @@
     <IsPackable>false</IsPackable>
     <Authors>Microsoft.Marketplace</Authors>
     <Company>Microsoft</Company>
-    <Product>Microsoft.Marketplace.SaaS.SDK</Product>
+    <Product>SaaS.SDK</Product>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Marketplace.SaaS.SDK.Client\Microsoft.Marketplace.SaaS.SDK.Client.csproj" />
+    <ProjectReference Include="..\SaaS.SDK.Client\SaaS.SDK.Client.csproj" />
   </ItemGroup>
 
   <ItemGroup>

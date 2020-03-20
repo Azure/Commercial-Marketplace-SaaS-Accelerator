@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Microsoft.Marketplace</Authors>
     <Company>Microsoft</Company>
-    <Product>Microsoft.Marketplace.SaaS.SDK</Product>
+    <Product>SaaS.SDK</Product>
   </PropertyGroup>
 
   <ItemGroup>
