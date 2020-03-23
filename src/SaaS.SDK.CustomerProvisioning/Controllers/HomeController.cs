@@ -371,7 +371,19 @@
                 }
             }
 
-            return this.RedirectToAction(nameof(this.Subscriptions));
+            return this.RedirectToAction(nameof(this.ActivatedMessage));
+        }
+
+        public IActionResult ActivatedMessage()
+        {
+            try
+            {
+                return this.View();
+            }
+            catch (Exception ex)
+            {
+                return View("Error");
+            }
         }
 
         public IActionResult ActivateSubscription(Guid subscriptionId, string planId, string operation)
