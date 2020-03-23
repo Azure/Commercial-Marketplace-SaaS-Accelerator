@@ -1,0 +1,105 @@
+﻿@using Microsoft.Marketplace.SaasKit.Models
+
+@model Microsoft.Marketplace.SaasKit.Models.SubscriptionResult
+@{
+    ViewData["Title"] = "Home";
+}
+@if (!Model.ShowWelcomeScreen)
+{
+    <div class="container">
+        <form method="post">
+
+            <div class="text-white mt20">
+                <span class="cm-section-heading">Subscription Details</span>
+            </div>
+            @if (Model != null && !string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger">
+                    <strong>Error!</strong> Some Error Occurred During Operation!
+                </div>
+            }
+            else
+            {
+                <div class="cm-panel-default mt20">
+                    <dl class="row text-left">
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Customer Email")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.CustomerEmailAddress)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Customer Name ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.CustomerName)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("ID ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Id)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Name ")
+                        </dt>
+                        <dd class="col-sm-9 p-2">
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Status ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.SaasSubscriptionStatus)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Plan ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.PlanId)
+                        </dd>
+                    </dl>
+                </div>
+                <div class="text-right">
+                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                    {
+                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
+                        <button type="submit" asp-action="Subscriptions" class="cm-button-default text-right">Go to Subscription List</button>
+                    }
+                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                    {
+                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default text-right">Activate</button>
+                    }
+                </div>
+            }
+        </form>
+    </div>
+}
+else
+{
+    <div class="pt-5">
+        <div class="card p-3 ">
+            <div class="text-center">
+                <h1 class="display-4">Welcome</h1>
+            </div>
+            <div class="text-left">
+                <p> Get started with integrating your <b> Software-as-a-service </b> application with the <b>SaaS Fulfilment APIs (v2.0)</b>  .</p>
+                <p><a href="https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2" target="_blank">Click here </a><span>for details on the Fulfilment API.</span> </p>
+            </div>
+            <div>
+                <b>To purchase this SAAS offering:</b>
+                <ul>
+                    <li>Log on to <a href="https://portal.azure.com" target="_blank">Azure</a> </li>
+                    <li>Search for resources of type <b> Software-as-a-service </b></li>
+                    <li>Search for <b>Cloud SaaS Kit</b></li>
+                    <li>Click <b> Create</b> to initiate the deployment of the SaaS resource</li>
+                    <li>Click <b>Configure Account </b> after the resource is created</li>
+                </ul>
+            </div>
+            <div>
+                <p>If you already had activated subscriptions, click Subscriptions to see a list of your existing subscriptions.</p>
+                <p>You could switch plans on existing subscriptions or cancel one of your subscriptions using this portal.</p>
+            </div>
+        </div>
+    </div>
+}

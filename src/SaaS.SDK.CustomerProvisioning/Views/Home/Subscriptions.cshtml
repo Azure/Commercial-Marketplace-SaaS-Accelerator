@@ -1,0 +1,153 @@
+﻿@using Microsoft.Marketplace.SaasKit.Models;
+@model SubscriptionViewModel
+@{
+    ViewData["Title"] = "Subscriptions";
+}
+
+<div class="text-center">
+    <div class="container">
+        <br />
+        @if (!Model.IsSuccess && !string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                <strong>Error!</strong> @Model.ErrorMessage
+            </div>
+        }
+        <form method="post">
+            <div>
+                <div class="card-body">
+                    <div>
+                        <div class="text-left">
+                            <span class="cm-section-heading">Subscriptions</span>
+                        </div>
+                        @if (Model.Subscriptions.Count() > 0)
+                        {
+                            <table id="table" class="table table-bordered dt-responsive cm-table mt20" width="100%" cellspacing="0">
+                                <thead class="cm-table-head">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Plan</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (var i = 0; i < Model.Subscriptions.Count; i++)
+                                    {
+                                        var subscription = Model.Subscriptions[i];
+                                        <tr>
+                                            <td class="text-left">
+                                                @Html.HiddenFor(s => s.Subscriptions[i].Id)
+                                                @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
+                                                @subscription.Name
+                                            </td>
+                                            <td class="text-left">@subscription.PlanId</td>
+
+                                            <td class="text-left">@subscription.SaasSubscriptionStatus</td>
+                                            <td class="text-left  cm-ellipsis">
+                                                <div class="nav-item dropdown">
+                                                    <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdown01">
+                                                        @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                                                        {
+                                                            <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="DeActivateSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
+                                                            <a class="dropdown-item cm-dropdown-option" target="_blank" href="@Model.SaaSAppUrl" title="Click here to go to SaaS App">SaasApp</a>
+                                                        }
+                                                        @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                                                        {
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="ActivateSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
+                                                        }
+                                                        <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@Model.Subscriptions[i].Id')">Activity Log</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+
+                        else
+                        {
+                            <div class="cm-panel-default mt40">
+                                <div class="p-3 mr420">
+                                    <p>
+                                        You do not have subscriptions yet.Please purchase the offer from <a href="https://portal.azure.com/" target="_blank">Azure</a>
+                                    </p>
+                                </div>
+                            </div>
+                           
+                        }
+                    </div>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    //$(document).ready(function () {
+    //    $('#table').dataTable({
+    //        "bSort": false
+    //    });
+    //});
+    function ViewSubscriptionDetail(subscriptionId) {
+        $.ajax({
+            type: "Get",
+            url: "SubscriptionDetail",
+            data: { subscriptionId: subscriptionId },
+            contentType: "application/json; charset=utf-8",
+            datatype: "json",
+            success: function (data) {
+                $('#myModal').html(data);
+                $('#myModal').modal();
+
+            },
+            error: function () {
+                alert("Content load failed.");
+            }
+        });
+    }
+    function ViewSubscriptionlogdetailsById(subscriptionId) {
+        $.ajax({
+            type: "Get",
+            url: "SubscriptionLogDetail",
+            data: { subscriptionId: subscriptionId },
+            contentType: "application/json; charset=utf-8",
+            datatype: "json",
+            success: function (data) {
+                $('#myModal').html(data);
+                $('#myModal').modal();
+            },
+            error: function () {
+                alert("Content load failed.");
+            }
+        });
+    }
+
+    function confirmDialog() {
+        //var isConfirm = confirm('Are you sure you want to change the plan?');
+        //debugger
+        //if (isConfirm) {
+        //    $("#frmSubscriptionDetail").submit();
+        //}
+
+        var newPlanName = $('#PlanId').val();
+        swal({
+            text: "Are you sure you want to switch to " + newPlanName + " plan?",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willChange) => {
+                debugger;
+                if (willChange) {
+                    $("#frmSubscriptionDetail").submit();
+                }
+            });
+    }
+</script>

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <link href="~/lib/Datatable/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/Datatable/css/responsive.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/Datatable/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/font-awesome/css/font-awesome.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/custom.css" />
+    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+    <link href="~/lib/bootstrap/4.4.1/css/offcanvas.css" rel="stylesheet" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark cm-top-nav-bar">
+        <a class="navbar-brand mr-auto mr-lg-0" href="@Url.Action("Index", "Home")">
+            <img class="cm-logo pull-left" src="~/contoso-sales.png" />
+            @*<img class="cm-logo pull-left" src="https://kblnuser.azurewebsites.net/logo.png" />*@
+        </a>
+        @*<a class="navbar-brand mr-auto mr-lg-0" asp-area="" asp-controller="Home" asp-action="Index">SaasKit Demo</a>*@
+
+        <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+            <div class="navbar-nav mr-auto">
+
+            </div>
+
+            <div class="form-inline my-2 my-lg-0">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <span class="cm-username text-white">@User.Identity.Name&nbsp;</span>
+                    <a class="text-white cm-logout" asp-controller="Account" asp-action="SignOut">&nbsp;<i class="fa fa-sign-out fa-2x"></i></a>
+                }
+                else
+                {
+                    <a class="text-white" asp-controller="Account" asp-action="SignIn">Sign in</a>
+                }
+            </div>
+        </div>
+    </nav>
+    <div class="nav-scroller bg-white shadow-sm cm-menu-bar">
+        <nav class="container pb-3 nav nav-underline">
+            <a class="nav-link active">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    @if (TempData["ShowWelcomeScreen"] != null && Convert.ToString(TempData["ShowWelcomeScreen"]) == "True")
+                    {
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
+                        if (Convert.ToBoolean(TempData["ShowLicensesMenu"]))
+                        {
+                            <a class="nav-link" asp-area="" asp-controller="Licenses" asp-action="Index">Licenses</a>
+                        }
+                    }
+                }
+            </a>
+        </nav>
+    </div>
+
+    @*<div class="container-fluid">
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="col-md-3 pull-left">
+                    <a class="" asp-area="" asp-controller="Home" asp-action="Index">SaasKit Demo</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+                <div class="col-md-6">
+                    <div class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-left">
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                                @if (TempData["ShowWelcomeScreen"] != null && Convert.ToString(TempData["ShowWelcomeScreen"]) == "True")
+                                {
+                                    <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a></li>
+                                    <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Licenses" asp-action="Index">Licenses</a></li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-3 pull-right text-right">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <span>Welcome <b>@User.Identity.Name</b> </span>
+
+                        <span>&nbsp; &nbsp;&nbsp;</span> <a class="btn-danger btn" asp-controller="Account" asp-action="SignOut">Sign out</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="SignIn">Sign in</a>
+                    }
+                </div>
+            </nav>
+        </div>*@
+    <div class="container pb-3">
+        <partial name="_CookieConsentPartial" />
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="cm-footer">
+        <div class="container text-center">
+            &copy; 2020 - SaasKit - Demo
+        </div>
+    </footer>
+
+    @*<environment include="Development">
+            <script src="~/lib/jquery/dist/jquery.js"></script>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+        </environment>
+        <environment exclude="Development">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+                    asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                    asp-fallback-test="window.jQuery"
+                    crossorigin="anonymous"
+                    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
+            </script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"
+                    asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
+                    asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                    crossorigin="anonymous"
+                    integrity="sha256-E/V4cWE4qvAeO5MOhjtGtqDzPndRO1LBk8lJ/PR7CA4=">
+            </script>
+        </environment>*@
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/4.4.1/js/offcanvas.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
