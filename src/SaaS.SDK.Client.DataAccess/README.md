@@ -23,7 +23,7 @@ Entities that are persisted in the Database
 [Click here](Transactable-SaaS-SDK-Sample-Database.md) for more details on the sample database. 
 ### Source Code 
 
-The Project is located in the **Microsoft.Marketplace.SaaS.SDK.Client.DataAccess** folder. The project is composed of the following sections: 
+The Project is located in the **SaaS.SDK.Client.DataAccess** folder. The project is composed of the following sections: 
 
 | Section Name | Description |
 | --- | --- |  

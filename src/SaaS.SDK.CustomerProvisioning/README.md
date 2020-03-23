@@ -11,11 +11,11 @@ The application also has a viewer over the licenses assigned by the publisher ag
 
 ### Source Code
 
-The Project is located in the **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** folder. The project is composed of the following sections: 
+The Project is located in the **SaaS.SDK.CustomerProvisioning** folder. The project is composed of the following sections: 
 
 | Section Name | Description |
 | --- | --- |  
-| Dependencies | Microsoft AspNet Core OpenID Authentication, EntityFramework and Logging extensions, Microsoft.Marketplace.SaaS.SDK.Client  |
+| Dependencies | Microsoft AspNet Core OpenID Authentication, EntityFramework and Logging extensions, SaaS.SDK.Client  |
 | Controllers | ASP.Net Core MVC controllers that are responsible to provide data  / views and handle the data posted back by the user | 
 | Database | Scripts to set up and initialize the database |
 | Models | POCO classes for transferring data between the client and the endpoints | 
