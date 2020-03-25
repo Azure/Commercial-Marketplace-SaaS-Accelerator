@@ -115,7 +115,7 @@ In this section, we will go over the steps to download the latest sources from t
 - Clone or download the latest source code from [here](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK)
 - Open the solution **SaaS.SDK.sln** in Visual Studio 2019
 
-![Solution Structure](./images/SolutionStructure.png)
+![Solution Structure](./images/solution-structure.png)
 
 - Right-click on the project named **SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
 - Open the file **appsettings.json** under the project **SaaS.SDK.CustomerProvisioning** and update the values as follows:
@@ -243,7 +243,7 @@ In this section, we will go over the steps to download the latest sources from t
 
 - Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
 
-![AllServices](./images/VSPublish-Publisher.png).
+![AllServices](./images/project-publish-menu.png)
 
 - Click **Import Profile ...** to browse and select the publish profile that was downloaded earlier
 - Click **Publish** to deploy the web application to Azure App Service
