@@ -115,7 +115,7 @@ In this section, we will go over the steps to download the latest sources from t
 - Clone or download the latest source code from [here](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK)
 - Open the solution **SaaS.SDK.sln** in Visual Studio 2019
 
-![Solution Structure](./images/solution-structure.png)
+![Solution Structure](./images/solution-structure-vs.png)
 
 - Right-click on the project named **SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
 - Open the file **appsettings.json** under the project **SaaS.SDK.CustomerProvisioning** and update the values as follows:
