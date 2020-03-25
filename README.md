@@ -15,7 +15,7 @@ The SDK provides the components required for the implementations of the billing 
 
 ### Documentation 
 
-The documentation **(doc)** directory contains: 
+The documentation **(docs)** directory contains: 
 
 - **[Installation instructions](./docs/Installation-Instructions.md)** to help understand, implmenet and deploy the SDK  components.  
 - **Review of the SaaS Offer BluePrints** the SDK provides extended functionality. In addition, to the implementation . Like using the SaaS offer a way to transact [Virtual Machines](https://docs.microsoft.com/en-us/azure/marketplace/cloud-partner-portal/virtual-machine/cpp-virtual-machine-offer)  and [Azure Application](https://docs.microsoft.com/en-us/azure/marketplace/cloud-partner-portal/azure-applications/cpp-azure-app-offer) offers with the use of software licenses (Scheduled for v.1.1 of this SDK) and for implementing Hybrid SaaS applications (scheduled for v1.2 of this SDK)
