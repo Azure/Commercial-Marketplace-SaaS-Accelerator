@@ -243,7 +243,7 @@ In this section, we will go over the steps to download the latest sources from t
 
 - Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
 
-![AllServices](./images/project-publish-menu.png)
+![AllServices](./images/project-publish-menu.PNG)
 
 - Click **Import Profile ...** to browse and select the publish profile that was downloaded earlier
 - Click **Publish** to deploy the web application to Azure App Service
