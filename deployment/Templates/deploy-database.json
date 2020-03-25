@@ -1,0 +1,100 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dbServerName": {
+      "type": "string"
+    },
+    "administratorLogin": {
+      "type": "string"
+    },
+    "administratorLoginPassword": {
+      "type": "securestring"
+    }
+  },
+  "variables": {
+    "collation": "SQL_Latin1_General_CP1_CI_AS",
+    "location": "[resourceGroup().location]",
+    "sqlDBName": "AMPSaaSDB"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2015-05-01-preview",
+      "name": "[parameters('dbServerName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "administratorLogin": "[parameters('administratorLogin')]",
+        "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+        "version": "12.0"
+      },
+      "resources": [
+        {
+          "type": "firewallrules",
+          "name": "AllowAllAzureIps",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-05-01-preview",
+          "dependsOn": [
+            "[parameters('dbServerName')]"
+          ],
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "255.255.255.255"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases",
+      "apiVersion": "2017-03-01-preview",
+      "name": "[concat(string(parameters('dbServerName')), '/', string(variables('sqlDBName')))]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('dbServerName'))]"
+      ],
+      "sku": {
+        "name": "S0",
+        "tier": "Standard"
+      },
+      "kind": "v12.0,user",
+      "properties": {
+        "collation": "SQL_Latin1_General_CP1_CI_AS",
+        "maxSizeBytes": 268435456000,
+        "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+        "zoneRedundant": false
+      },
+      "resources": [
+        {
+          "name": "Import",
+          "type": "extensions",
+          "apiVersion": "2014-04-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers/databases', parameters('dbServerName'), variables('sqlDBName'))]"
+          ],
+          "properties": {
+            "storageKeyType": "SharedAccessKey",
+            "storageKey": "?",
+            "storageUri": "https://msampbuilddbresources.blob.core.windows.net/msampcontainer/AMP-DB.bacpac",
+            "administratorLogin": "[parameters('administratorLogin')]",
+            "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+            "operationMode": "Import"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "SQL DB Server Name": {
+      "type": "string",
+      "value": "[concat(parameters('dbServerName'), '.database.windows.net')]"
+    },
+    "SQLDB Admin Login": {
+      "type": "string",
+      "value": "[parameters('administratorLogin')]"
+    },
+    "SQLDB Admin Password": {
+      "type": "string",
+      "value": "[parameters('administratorLoginPassword')]"
+    }
+  }
+}
