@@ -1,5 +1,6 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
@@ -90,6 +91,13 @@
         {
             return Context.Plans.Where(s => s.PlanId == planId).FirstOrDefault();
         }
+
+        public IEnumerable<Plans> GetPlansByUser()
+        {
+            var getAllPlans = this.Context.Plans;
+            return getAllPlans;
+        }
+
 
         /// <summary>
         /// Removes the specified plan details.

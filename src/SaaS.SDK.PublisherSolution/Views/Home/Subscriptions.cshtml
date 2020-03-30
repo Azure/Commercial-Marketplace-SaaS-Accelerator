@@ -58,7 +58,7 @@
                                                     <div class="dropdown-menu" aria-labelledby="dropdown01">
                                                         @if (subscription.IsMeteringSupported && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
                                                         {
-                                                            <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId" class="btn btn-primary">Manage Usage</a>
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId">Manage Usage</a>
                                                         }
                                                         <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
                                                     </div>

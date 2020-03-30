@@ -22,6 +22,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<KnownUsers> KnownUsers { get; set; }
         public virtual DbSet<MeteredAuditLogs> MeteredAuditLogs { get; set; }
         public virtual DbSet<MeteredDimensions> MeteredDimensions { get; set; }
+        public virtual DbSet<Offers> Offers { get; set; }
         public virtual DbSet<Plans> Plans { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
@@ -148,6 +149,19 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasConstraintName("FK__MeteredDi__PlanI__59FA5E80");
             });
 
+            modelBuilder.Entity<Offers>(entity =>
+            {
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.OfferId)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OfferName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Plans>(entity =>
             {
                 entity.Property(e => e.Description)
@@ -157,6 +171,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.Property(e => e.DisplayName)
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.Property(e => e.OfferId).HasColumnName("OfferID");
 
                 entity.Property(e => e.PlanId)
                     .HasMaxLength(100)

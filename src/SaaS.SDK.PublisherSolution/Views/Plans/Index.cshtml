@@ -1,0 +1,74 @@
+﻿@using Microsoft.Marketplace.SaasKit.Models;
+@model List<PlansModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<div class="container">
+    <div class="">
+        <div class="card-body">
+            <div class="text-left">
+                <span class="cm-section-heading">Plans</span>
+            </div>
+            @if (Model != null && Model.Count() > 0)
+            {
+                <div class="table-responsive mt20">
+                    <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                        <thead class="cm-table-head">
+                            <tr>
+                                <th>Plan Name</th>
+                                <th>Description</th>
+                                <th>Offer ID</th>
+                                <th>Deploy to customer subscription</th>
+                                <th>Action</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ var i = 0;}
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="text-left">
+                                        @item.DisplayName
+                                    </td>
+                                    <td class="text-left">
+                                        @item.Description
+                                    </td>
+                                    <td class="text-left">
+                                        @item.offerID
+                                    </td>
+                                    <td class="text-left">@item.DeployToCustomerSubscription</td>
+                                    <td class="text-left cm-ellipsis">
+                                        <div class="nav-item dropdown">
+                                            <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                            <div class="dropdown-menu" aria-labelledby="dropdown01">
+                                                <a class="dropdown-item cm-dropdown-option" data-target="#myModal">Edit</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                i++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+
+                <div class="cm-panel-default mt40">
+                    <div class="p-3 mr420">
+                        <p>
+                            You do not have any Plans!
+                        </p>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+
+
