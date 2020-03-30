@@ -55,6 +55,12 @@
                     {
                         <a class="nav-link" asp-area="" asp-controller="Licenses" asp-action="Index">Licenses</a>
                     }
+                    <a class="nav-link" asp-area="" asp-controller="Plans" asp-action="Index">Plans</a>
+                    <a class="nav-link" asp-area="" asp-controller="Offers" asp-action="Index">Offers</a>
+
+                    @*if (Convert.ToBoolean(TempData["ShowPlansMenu"]))
+            {
+            }*@
                     @*<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="RecordUsage">Record Usage</a></li>*@
                 }
             </a>
