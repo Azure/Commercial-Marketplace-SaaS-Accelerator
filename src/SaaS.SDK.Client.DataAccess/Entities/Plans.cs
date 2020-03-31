@@ -17,6 +17,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public bool? IsmeteringSupported { get; set; }
         public int? OfferId { get; set; }
         public bool? DeployToCustomerSubscription { get; set; }
+
         public virtual ICollection<MeteredDimensions> MeteredDimensions { get; set; }
     }
 }

@@ -5,6 +5,7 @@
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Client.Helpers;
@@ -49,6 +50,11 @@
         private readonly IPlansRepository planRepository;
 
         /// <summary>
+        /// The plan repository
+        /// </summary>
+        private readonly IOffersRepository offersRepository;
+
+        /// <summary>
         /// The user repository
         /// </summary>
         private readonly IUsersRepository userRepository;
@@ -87,7 +93,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository)
+        public HomeController(IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -100,6 +106,7 @@
             this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
             this.applicationConfigRepository = applicationConfigRepository;
             this.emailTemplateRepository = emailTemplateRepository;
+            this.offersRepository = offersRepository;
         }
 
         #region View Action Methods
@@ -137,7 +144,23 @@
                     if (newSubscription != null && newSubscription.SubscriptionId != default)
                     {
                         var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                        this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail);
+                       
+                        Offers offers = new Offers()
+                        {
+                            OfferId = newSubscription.OfferId,
+                            OfferName = newSubscription.OfferId,
+                            UserId = currentUserId,
+                            CreateDate = DateTime.Now
+                        };
+
+                        int newOfferId = this.offersRepository.Add(offers);
+
+                        List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
+                        var serializedPlans = JsonConvert.SerializeObject(subscriptionPlanDetail);
+                        planList = JsonConvert.DeserializeObject<List<PlanDetailResultExtension>>(serializedPlans);
+                        planList.ForEach(x => x.OfferId = newOfferId);
+
+                        this.subscriptionService.AddPlanDetailsForSubscription(planList);
 
                         // GetSubscriptionBy SubscriptionId
                         var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();

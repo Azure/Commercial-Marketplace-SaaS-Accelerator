@@ -19,7 +19,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         public List<OffersModel> GetOffers()
         {
             List<OffersModel> offersList = new List<OffersModel>();
-            var allOfferData = this.offersRepository.GetOffers();
+            var allOfferData = this.offersRepository.Get();
             foreach (var item in allOfferData)
             {
                 OffersModel Offers = new OffersModel();

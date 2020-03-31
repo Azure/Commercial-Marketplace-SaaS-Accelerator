@@ -18,24 +18,31 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
         public virtual DbSet<ApplicationConfiguration> ApplicationConfiguration { get; set; }
         public virtual DbSet<ApplicationLog> ApplicationLog { get; set; }
+        public virtual DbSet<ARMTemplates> Armtemplates { get; set; }
         public virtual DbSet<EmailTemplate> EmailTemplate { get; set; }
+        public virtual DbSet<Events> Events { get; set; }
         public virtual DbSet<KnownUsers> KnownUsers { get; set; }
         public virtual DbSet<MeteredAuditLogs> MeteredAuditLogs { get; set; }
         public virtual DbSet<MeteredDimensions> MeteredDimensions { get; set; }
+        public virtual DbSet<OfferAttributes> OfferAttributes { get; set; }
         public virtual DbSet<Offers> Offers { get; set; }
+        public virtual DbSet<PlanAttributeMapping> PlanAttributeMapping { get; set; }
+        public virtual DbSet<PlanEventsMapping> PlanEventsMapping { get; set; }
         public virtual DbSet<Plans> Plans { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
+        public virtual DbSet<SubscriptionAttributeValues> SubscriptionAttributeValues { get; set; }
         public virtual DbSet<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
         public virtual DbSet<SubscriptionLicenses> SubscriptionLicenses { get; set; }
         public virtual DbSet<Subscriptions> Subscriptions { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<ValueTypes> ValueTypes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=localhost;Initial Catalog=AMPSaaSDB;Persist Security Info=True;User ID=sa;Password=Sa1;");
+                optionsBuilder.UseSqlServer("Server=INFIHYD-WS002\\MSSQLSERVER17;Initial Catalog=AMP-SaasKit;Persist Security Info=True;User ID=sa;Password=Sa1;");
             }
         }
 
@@ -56,6 +63,27 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
                 entity.Property(e => e.LogDetail)
                     .HasMaxLength(4000)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ARMTemplates>(entity =>
+            {
+                entity.HasKey(e => e.ArmtempalteId)
+                    .HasName("PK__ARMTempl__4BD4D2F9F35A98CD");
+
+                entity.ToTable("ARMTemplates");
+
+                entity.Property(e => e.ArmtempalteId).HasColumnName("ARMTempalteID");
+
+                entity.Property(e => e.ArmtempalteName)
+                    .HasColumnName("ARMTempalteName")
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.TemplateLocation)
+                    .HasMaxLength(225)
                     .IsUnicode(false);
             });
 
@@ -94,6 +122,15 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<Events>(entity =>
+            {
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EventsName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<KnownUsers>(entity =>
             {
                 entity.Property(e => e.UserEmail)
@@ -104,7 +141,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .WithMany(p => p.KnownUsers)
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__KnownUser__RoleI__71D1E811");
+                    .HasConstraintName("FK__KnownUser__RoleI__4D94879B");
             });
 
             modelBuilder.Entity<MeteredAuditLogs>(entity =>
@@ -128,7 +165,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.MeteredAuditLogs)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__MeteredAu__Subsc__5812160E");
+                    .HasConstraintName("FK__MeteredAu__Subsc__4E88ABD4");
             });
 
             modelBuilder.Entity<MeteredDimensions>(entity =>
@@ -146,7 +183,34 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Plan)
                     .WithMany(p => p.MeteredDimensions)
                     .HasForeignKey(d => d.PlanId)
-                    .HasConstraintName("FK__MeteredDi__PlanI__59FA5E80");
+                    .HasConstraintName("FK__MeteredDi__PlanI__4F7CD00D");
+            });
+
+            modelBuilder.Entity<OfferAttributes>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DisplayName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OfferId).HasColumnName("OfferID");
+
+                entity.Property(e => e.ParameterId)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Type)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ValuesList).IsUnicode(false);
             });
 
             modelBuilder.Entity<Offers>(entity =>
@@ -158,6 +222,31 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsUnicode(false);
 
                 entity.Property(e => e.OfferName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PlanAttributeMapping>(entity =>
+            {
+                entity.HasKey(e => e.PlanAttributeId)
+                    .HasName("PK__PlanAttr__8B476A988C86FEA1");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.OfferAttributeId).HasColumnName("OfferAttributeID");
+            });
+
+            modelBuilder.Entity<PlanEventsMapping>(entity =>
+            {
+                entity.Property(e => e.ArmtemplateId).HasColumnName("ARMTemplateId");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.FailureStateEmails)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SuccessStateEmails)
                     .HasMaxLength(225)
                     .IsUnicode(false);
             });
@@ -186,6 +275,21 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<SubscriptionAttributeValues>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.OfferId).HasColumnName("OfferID");
+
+                entity.Property(e => e.PlanId).HasColumnName("PlanID");
+
+                entity.Property(e => e.Value)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<SubscriptionAuditLogs>(entity =>
             {
                 entity.Property(e => e.Attribute)
@@ -205,7 +309,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.SubscriptionAuditLogs)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__Subscript__Subsc__5BE2A6F2");
+                    .HasConstraintName("FK__Subscript__Subsc__5070F446");
             });
 
             modelBuilder.Entity<SubscriptionLicenses>(entity =>
@@ -221,7 +325,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.SubscriptionLicenses)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__Subscript__Subsc__5DCAEF64");
+                    .HasConstraintName("FK__Subscript__Subsc__5165187F");
             });
 
             modelBuilder.Entity<Subscriptions>(entity =>
@@ -250,7 +354,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Subscriptions)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Subscript__UserI__73BA3083");
+                    .HasConstraintName("FK__Subscript__UserI__52593CB8");
             });
 
             modelBuilder.Entity<Users>(entity =>
@@ -265,6 +369,18 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
                 entity.Property(e => e.FullName)
                     .HasMaxLength(200)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ValueTypes>(entity =>
+            {
+                entity.HasKey(e => e.ValueTypeId)
+                    .HasName("PK__ValueTyp__A51E9C5A265D4175");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ValueType)
+                    .HasMaxLength(225)
                     .IsUnicode(false);
             });
 

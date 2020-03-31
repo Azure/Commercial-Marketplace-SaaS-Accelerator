@@ -113,6 +113,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
             services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
             services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
+            services.AddScoped<IOffersRepository, OffersRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

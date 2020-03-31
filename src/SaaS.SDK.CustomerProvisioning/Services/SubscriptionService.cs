@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Marketplace.SaasKit.Models;
 using Microsoft.Marketplace.SaasKit.Client.Models;
+using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
 
 namespace Microsoft.Marketplace.SaasKit.Client.Services
 {
@@ -184,7 +185,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// Adds the plan details for subscription.
         /// </summary>
         /// <param name="allPlanDetail">All plan detail.</param>
-        public void AddPlanDetailsForSubscription(List<SaasKitModels.PlanDetailResult> allPlanDetail)
+        public void AddPlanDetailsForSubscription(List<PlanDetailResultExtension> allPlanDetail)
         {
             foreach (var planDetail in allPlanDetail)
             {
@@ -193,6 +194,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                     PlanId = planDetail.PlanId,
                     DisplayName = planDetail.PlanId,
                     Description = planDetail.DisplayName,
+                    OfferId = planDetail.OfferId
                 });
             }
         }
