@@ -193,7 +193,7 @@ In this section, we will go over the steps to download the latest sources from t
 > **Tip** __(double underscore) should be used to define the config items that appear as nested keys in appSettings.json
 
 - Deploy SQL database to Azure as follows:
-  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri///%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy-v1.json" target="_blank">
+  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy-v1.json" target="_blank">
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/> 
 </a> to start the deployment of SQL database
    - Fill out the details on the template deployment form as shown here
@@ -408,6 +408,35 @@ The following interface in the **Saas metering service** allows the user to manu
 > In this example, suppose the SaaS service is offering a notification service that helps its customers send out emails / text. Email and Text are modeled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
 
 ![Report usage](./images/post-usage-event.png)
+
+>Note:
+
+ > *  The option - Manage Usage is available against active subscriptions against a plan that supports metering. You are required to manually update the Plan record in the database to indicate that it supports metering. Besides, the meters for the plan should be initialized in the **MeteredDimensions** table
+ 
+**Update Plan to indicate support for metering**
+
+Use the following script as an example / template to update the records in **Plans**
+
+```sql
+UPDATE Plans SET IsmeteringSupported = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
+```
+
+The Plan ID is available in the **Plan overview** tab of the offer as shown here:
+
+![Plan ID](./images/plan-id-for-metering.png)
+
+**Initialize meters for plan**
+
+Use the following script as an example / template to initialize meters in **MeteredDimensions** table
+
+```sql
+INSERT INTO MeteredDimensions ( Dimension, PlanId, Description, CreatedDate)
+SELECT '<dimension-as-in-partner-center', '<id-of-the-plan>', '<description>', GETDATE()
+```
+
+The **Dimension** in the above example should be the attribute of a meter in the plan as shown in the below image:
+![Meter dimension](./images/meter-dimension.png)
+
 
 > The SaaS metering service calls the below API to emit usage events
 ```csharp
