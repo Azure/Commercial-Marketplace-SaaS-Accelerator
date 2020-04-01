@@ -1,4 +1,4 @@
- # Azure Marketplace Fulfillment and metering SDK with sample client application
+ # Transactable SaaS Offer Fulfillment v2 and Metering SDK Instructions
 
   * [Overview](#overview)
   * [Prerequisites](#prerequisites)
@@ -21,31 +21,39 @@
 
 ## Overview
 
-Azure Marketplace Fulfillment SDK is aimed at helping ISVs integrate their Software as a-Service (SaaS) applications with Azure marketplate via the fulfillment APIs. Primarily, the repository offers two components - the fulfillment SDK (.NET class library) and a sample web application (correlates to the provisioning application) (ASP.NET Core 3.1) that uses the SDK to invoke fulfillment APIs in order to manage the subscriptions against the SaaS offer in Azure.
+The SDK provides the components required for the implementations of the billing (fulfillment v2 and metered) APIs, and additional components that showcase how to build a customer provisioning interface, logging, and administration of the customer's subscriptions. These are the core projects in the SDK:  
 
-The sample and the SDK in this repository cover the components that comprise the highlighted area in the below picture
+- **Transactable SaaS Client Library** implements the fulfillment v2 and metered APIs and the Web-hook that handles messages from the Marketplace's E-commerce engine.
+- **Customer provisioning sample web application** showcases how to register, provision, and activate the customer subscription. Implemented using ASP.Net Core 3.1, it uses the SaaS Client library and Data Access Library to to invoke and persists interactions with the fulfillment APIs. In addition, it provides interfaces for a customer to manage their subscriptions and plans. 
+- **Publisher sample web application** showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. 
+- **Client Data Access library** demonstrates how to persist the Plans, Subscriptions, and transactions with the fulfillment and Metered APIs.
 
-Azure Marketplace Metering SDK enables SaaS applications publish usage data to Azure so that customers are charged  according to non-standard units. 
-The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
+The sample and the SDK in this repository cover the components that comprise the highlighted area in this architecture diagram:
+
 
 ![Usecase](./images/UseCaseSaaSAPIs.png)
 
-More details on the fulfillment APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-a-subscription) 
 
-More details on the metering APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis).
+### Features 
 
-Steps to create a SaaS offer are available [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer)
+- The Azure Marketplace Metering SDK enables SaaS applications publish usage data to Azure so that customers are charged  according to non-standard units. 
+- The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
+- More details on the fulfillment APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-a-subscription) 
+- More details on the metering APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis).
+- Steps to create a SaaS offer are available [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer)
 
 ## Prerequisites
 
 Ensure the following prerequisites are met before getting started:
 
-- [Visual Studio 2019](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16#)
-- [.NET Core 3.1 SDK or higher](https://download.visualstudio.microsoft.com/download/pr/639f7cfa-84f8-48e8-b6c9-82634314e28f/8eb04e1b5f34df0c840c1bffa363c101/dotnet-sdk-3.1.100-win-x64.exe)
+- We recommend using an Integrated Development Environment (IDE):  [Visual Studio Code](https://code.visualstudio.com/),  [Visual Studio 2019](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16#), etc...
+- The SDK has been implemented using [.NET Core 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+- The Customer provisioning and Publisher web sample applications have been implemented using [ASP.NET Core Runtime 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+- For Persistence we are using [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/en-us/ef/). However, feel free to use any data repository you are comfortable with. The Database Schema is located in the **deployment/Database** folder. 
 
 Besides, it is assumed that you have access to the following resources:
-- Azure subscription - to host the AMP SDK sample client application.
-- Partner Center - to create and publish a marketplace offer.
+- [Azure subscription](https://ms.portal.azure.com/) - to host the SDK components and sample web applications.
+- [Partner Center](https://partner.microsoft.com/en-US/) - to create and publish a marketplace offer.
 
 ## Set up web application resources in Azure
 
@@ -110,19 +118,29 @@ In this section, we will go over the steps to download the latest sources from t
 
 ![Solution Structure](./images/SolutionStructure.PNG)
 
-- Right-click on the project named **Microsoft.Marketplace.SaaS.SDK.Client** and click **Set as StartUp Project**.
-- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaaS.SDK.Client** and update the values as follows:
+- Right-click on the project named **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
+- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** and update the values as follows:
 
     - **GrantType** - Leave this as *client_credentials*
 
     - **ClientId** - Azure Active Directory Application ID (as provided in the marketplace offer in Partner Center). Steps to create an Azure AD application for SaaS app can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration)
     *Note:* Ensure that you have set the reply URL to the web application for the authentication to work properly
+    > - Log on to [Azure](https://portal.azure.com)
+    > - Click **Azure Active Directory** in the left menu
+    > - Click **App Registrations** in the menu on the left
+    > - Locate the AD application and click to go to details
+    > - Click on the hyperlink next to **Redirect URIs**
+    ![Redirect URIs](./images/ad-app-redirect-uris.png)
+    > - Make sure that you set https://localhost:44363/Home/Index as the redirect uri for the authentication to work when you run the app locally
+    ![Redirect URI](./images/ad-app-redirect-uris-home-index.png)
+    > - Scroll down and check the box that reads **ID tokens** in the **Implicit grant** section
+    ![ID Token](./images/id-token.png)
 
     - **ClientSecret** - Secret from he Azure Active Directory Application
 
     - **Resource** - Set this to *62d94f6c-d599-489b-a797-3e10e42fbe22*
 
-    - **FulFillmentAPIBaseURL** - https://marketplaceapi.microsoft.com/api/
+    - **FulFillmentAPIBaseURL** - https://marketplaceapi.microsoft.com/api
 
     - **SignedOutRedirectUri** - Set the path to the page the user should be redirected to after signing out from the application
 
@@ -130,7 +148,7 @@ In this section, we will go over the steps to download the latest sources from t
 
     - **FulfillmentApiVersion** - Use 2018-09-15 for mock API and 2018-08-31 for the production version of the fulfilment APIs
 
-    - **AdAuthenticationEndpoint** - https://login.microsoftonline.com/
+    - **AdAuthenticationEndpoint** - https://login.microsoftonline.com
     
     - **SaaSAppUrl** - URL to the SaaS Metering service ( for this example. It should be the link to the SaaS application, in general)
     
@@ -152,12 +170,12 @@ In this section, we will go over the steps to download the latest sources from t
     "ClientId": "<Azure-AD-Application-ID>",
     "ClientSecret": "******",
     "Resource": "62d94f6c-d599-489b-a797-3e10e42fbe22",
-    "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/",
+    "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/api",
     "SignedOutRedirectUri": "https://saaskitdemoapp.azurewebsites.net/Home/Index",
     "TenantId": "<TenantID-of-AD-Application>",
     "FulFillmentAPIVersion": "2018-09-15",
-    "AdAuthenticationEndPoint": "https://login.microsoftonline.com/",
-    "SaaSAppUrl" : "https://saasdemoapp.azurewebsites.net/"
+    "AdAuthenticationEndPoint": "https://login.microsoftonline.com",
+    "SaaSAppUrl" : "https://saasdemoapp.azurewebsites.net"
   },
   "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>",
   "AllowedHosts": "*"
@@ -172,13 +190,16 @@ In this section, we will go over the steps to download the latest sources from t
    ![Deploy database](./images/Deploy-Database.png) 
    - Click **Purchase** after agreeing to the terms and conditions by checking the box to start the deployment of the database by name **AMPSaaSDB**
    - Update the connection string property in **appSettings.json** with the details related to SQL Server name, database and the credentials to connect to the database.
-- If you want to set up the database locally, you could create and initialize the database by the running the SQL scripts available under **Microsoft.Marketplace.SaasKit.Client\Database** folder.Make sure that you are in the master database as the script creates a database by name - **AMP-DB**
+- If you want to set up the database locally, you could create and initialize the database by the running the SQL scripts available under **deployment/Database/AMP-DB.sql** folder.
+  - Create a database named **AMPSaaSDB**
+  - Switch to the database - **AMPSaaSDB**
+  - Run the script - **AMP-DB.sql** to initalize the database
 - Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
 *Note: Make sure that the home page url is listed in the **replyURLs** in the AD application for the authentication against Azure AD to work properly.*
 
 ### Deploy the application to Azure
 
-- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **Microsoft.Marketplace.SaasKit.Client** Project and click **Publish ...**
+- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
 
 ![AllServices](./images/VisualStartPublish.png).
 
@@ -189,7 +210,7 @@ In this section, we will go over the steps to download the latest sources from t
 
 - Navigate to the  **URL (Instance Name)** to validate the deployment
 
-> Note: The steps to set up the SaaS service locally are identical to the steps to set up the marketplace provisioning service.
+> Note: The steps to set up the Publisher solution - **Microsoft.Marketplace.SaaS.SDK.PublisherSolution** locally are identical to the steps to set up the marketplace provisioning service.
 
 ### Purchase the offer
  

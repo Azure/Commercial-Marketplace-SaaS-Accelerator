@@ -20,7 +20,7 @@ namespace Microsoft.Marketplace.SaasKit.Helpers
         {
             var resourceId = Convert.ToString(resourceGuid);
             string operationId = string.Empty;
-            string subscriptionBaseURL = "saas/subscriptions/";
+            string subscriptionBaseURL = "/saas/subscriptions/";
             if (operationGuid != null && operationGuid != (Guid)default)
             {
                 operationId = Convert.ToString(operationGuid);
@@ -39,7 +39,7 @@ namespace Microsoft.Marketplace.SaasKit.Helpers
                 case SaaSResourceActionEnum.ALL_SUBSCRIPTIONS:
                     return $"{clientConfiguration.FulFillmentAPIBaseURL}?api-version={clientConfiguration.FulFillmentAPIVersion}";
                 case SaaSResourceActionEnum.SUBSCRIPTION_USAGEEVENT:
-                    return $"{clientConfiguration.FulFillmentAPIBaseURL}usageEvent?api-version={clientConfiguration.FulFillmentAPIVersion}";
+                    return $"{clientConfiguration.FulFillmentAPIBaseURL}/usageEvent?api-version={clientConfiguration.FulFillmentAPIVersion}";
                 default:
                     return $"{clientConfiguration.FulFillmentAPIBaseURL}{subscriptionBaseURL}{resourceId}?api-version={clientConfiguration.FulFillmentAPIVersion}";
             }
