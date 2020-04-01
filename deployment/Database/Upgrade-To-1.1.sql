@@ -114,9 +114,9 @@ INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES
 GO
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'ApplicationName', N'Contoso', N'Application Name')
 GO
-INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsEmailEnabledForSubscriptionActivation', N'True', N'Active Email Enabled')
+INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsEmailEnabledForSubscriptionActivation', N'False', N'Active Email Enabled')
 GO
-INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsEmailEnabledForUnsubscription', N'True', N'Unsubscribe Email Enabled')
+INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsEmailEnabledForUnsubscription', N'False', N'Unsubscribe Email Enabled')
 GO
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsLicenseManagementEnabled', N'True', N'To Enable or Disable Licenses Menu') 
 GO

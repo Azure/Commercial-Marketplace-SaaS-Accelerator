@@ -1,19 +1,23 @@
  # Transactable SaaS Offer Fulfillment v2 and Metering SDK Instructions
 
   * [Overview](#overview)
+    + [Features](#features)
   * [Prerequisites](#prerequisites)
   * [Set up web application resources in Azure](#set-up-web-application-resources-in-azure)
   * [Marketplace Provisioning Service](#marketplace-provisioning-service)
     + [Create marketplace offer](#create-marketplace-offer)
     + [Set up the sample client application locally](#set-up-the-sample-client-application-locally)
     + [Deploy the application to Azure](#deploy-the-application-to-azure)
+      - [Using an ARM template and Azure CLI](#using-an-arm-template-and-azure-cli)
+      - [Manual deployment using VS 2019](#manual-deployment-using-vs-2019)
+    + [Landing page and Webhook settings in the Marketplace Offer](#landing-page-and-webhook-settings-in-the-marketplace-offer)
     + [Purchase the offer](#purchase-the-offer)
     + [Activate](#activate)
     + [Change plan](#change-plan)
     + [Unsubscribe](#unsubscribe)
     + [View activity log](#view-activity-log)
     + [Go to SaaS application](#go-to-saas-application)
-  * [SaaS metering service](#saas-metering-service) 
+  * [SaaS metering service](#saas-metering-service)
     + [Emit usage events](#emit-usage-events)
   * [License Manager](#license-manager)
     + [Publisher: Manage Licenses](#publisher--manage-licenses)
@@ -204,7 +208,11 @@ In this section, we will go over the steps to download the latest sources from t
 - If you want to set up the database locally, you could create and initialize the database by the running the SQL scripts available under **deployment/Database/AMP-DB.sql** folder.
   - Create a database named **AMPSaaSDB**
   - Switch to the database - **AMPSaaSDB**
-  - Run the script - **AMP-DB.sql** to initalize the database
+  - Run the script - **Master-DB.sql** to initalize the database
+  - Run the script - **Upgrade-To-1.1.sql** to update your existing database to 1.1
+  - Add entries into KnownUsers table to allow login to **Publisher Portal**   
+  > Note: If you already had created a database using an earlier version of the SDK, you just need to run the **Upgrade-To-1.1.sql** 
+      
 - Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
 *Note: Make sure that the home page url is listed in the **replyURLs** in the AD application for the authentication against Azure AD to work properly.*
 

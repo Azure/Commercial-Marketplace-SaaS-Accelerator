@@ -32,8 +32,8 @@ Application configuration is initialized with the following keys that the publis
 | Key | Description|
 | --- | -- |
 | ApplicationName | Name of the application |
-| IsEmailEnabledForSubscriptionActivation | Flag that defines if an email has to be sent out when a subscription is activated |
-| IsEmailEnabledForUnsubscription | Flag that defines if an email has to be sent out when a subscription is deleted |
+| IsEmailEnabledForSubscriptionActivation | Flag that defines if an email has to be sent out when a subscription is activated (Default: False, Allowed values : True / False)|
+| IsEmailEnabledForUnsubscription | Flag that defines if an email has to be sent out when a subscription is deleted (Default: False, Allowed values : True / False)|
 | IsLicenseManagementEnabled | Flag that defines if license management feature should be enabled in Provisioning and the Publisher web applications |
 | SMTPFromEmail | From email address for the emails |
 | SMTPHost | SMTP server name |
