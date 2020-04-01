@@ -15,6 +15,7 @@ The following picture illustrates the entities and the relationships among them:
 | --- | --- |  
 | ApplicationConfiguration | Holds application level configuration like SMTP details and feature flags |
 | ApplicationLog  | Activity in the application is tracked via a custom logger implementation |
+| DatabaseVersionHistory | Tracks the changes to the database by versions |
 | KnownUsers | Users that can log on to the Publisher web application. Publisher should initialize this table to allow users to access the Publisher web application |
 | MeteredAuditLogs | The request and response against metering API is stored here. Helps troubleshoot issuses when posting usage data to Azure |
 | MeteredDimensions  | Stores the meters related to plans |
@@ -24,6 +25,7 @@ The following picture illustrates the entities and the relationships among them:
 | SubscriptionAuditLogs  | Activity against a subscription due to actions like activation, change plan and unsubscribe are tracked here|
 | SubscriptionLicenses | Licenses assigned to subscriptions are stored here |
 | Users | Holds the users auto-registered via the Provisioning service |
+
 
 ### Application Configuration
 
