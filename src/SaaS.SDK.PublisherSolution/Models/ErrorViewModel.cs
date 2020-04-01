@@ -22,5 +22,8 @@ namespace Microsoft.Marketplace.Saas.Web.Models
         ///   <c>true</c> if [show request identifier]; otherwise, <c>false</c>.
         /// </value>
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+        public bool IsKnownUser { get; set; }
+
     }
 }
