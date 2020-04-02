@@ -52,21 +52,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         {
             if (templateDetails != null && !string.IsNullOrEmpty(templateDetails.ArmtempalteName))
             {
-                var existingTemplate = Context.Armtemplates.Where(s => s.ArmtempalteName == templateDetails.ArmtempalteName).FirstOrDefault();
-                if (existingTemplate != null)
-                {
-                    existingTemplate.ArmtempalteName = templateDetails.ArmtempalteName;
-                    existingTemplate.TemplateLocation = templateDetails.TemplateLocation;
-                    Context.Armtemplates.Update(existingTemplate);
-                    Context.SaveChanges();
-                    return existingTemplate.ArmtempalteId;
-                }
-                else
-                {
-                    Context.Armtemplates.Add(templateDetails);
-                    Context.SaveChanges();
-                    return templateDetails.ArmtempalteId;
-                }
+                Context.Armtemplates.Add(templateDetails);
+                Context.SaveChanges();
+                return templateDetails.ArmtempalteId;
             }
             return 0;
         }
