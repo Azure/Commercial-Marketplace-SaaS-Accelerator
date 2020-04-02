@@ -23,6 +23,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             foreach (var item in allOfferData)
             {
                 OffersModel Offers = new OffersModel();
+                Offers.Id = item.Id;
                 Offers.offerID = item.OfferId;
                 Offers.offerName = item.OfferName;
                 Offers.CreateDate = item.CreateDate;
@@ -30,6 +31,18 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 offersList.Add(Offers);
             }
             return offersList;
+        }
+
+        public OffersViewModel GetOfferOnId(int Id)
+        {
+            var offer = this.offersRepository.GetOfferDetailById(Id);
+            OffersViewModel offerModel = new OffersViewModel()
+            {
+                Id = offer.Id,
+                OfferID = offer.OfferId,
+                OfferName = offer.OfferName,
+            };
+            return offerModel;
         }
 
     }

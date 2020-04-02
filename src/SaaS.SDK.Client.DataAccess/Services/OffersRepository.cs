@@ -85,6 +85,15 @@
             return getAllOffers;
         }
 
+        /// <summary>
+        /// Gets the plan detail by plan identifier.
+        /// </summary>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns></returns>
+        public Offers GetOfferDetailById(int Id)
+        {
+            return Context.Offers.Where(s => s.Id == Id).FirstOrDefault();
+        }
 
         /// <summary>
         /// Removes the specified plan details.

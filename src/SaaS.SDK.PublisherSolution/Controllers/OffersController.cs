@@ -22,7 +22,7 @@
 
         private OffersService offersService;
 
-        public OffersController (IOffersRepository offersRepository, IApplicationConfigRepository applicationConfigRepository, IUsersRepository usersRepository)
+        public OffersController(IOffersRepository offersRepository, IApplicationConfigRepository applicationConfigRepository, IUsersRepository usersRepository)
         {
             this.offersRepository = offersRepository;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -45,5 +45,42 @@
             }
             return this.View(getAllOffersData);
         }
+
+
+        /// <summary>
+        /// Indexes this instance.
+        /// </summary>
+        /// <returns>return All subscription</returns>
+        public IActionResult OfferDetails(int OfferId)
+        {
+            OffersViewModel OffersData = new OffersViewModel();
+            this.TempData["ShowWelcomeScreen"] = "True";
+            var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+            //if (currentUserDetail != null)
+            //{
+            OffersData = this.offersService.GetOfferOnId(OfferId);
+            //}
+            return this.PartialView(OffersData);
+        }
+
+        /// <summary>
+        /// Indexes this instance.
+        /// </summary>
+        /// <returns>return All subscription</returns>
+        [HttpPost]
+        public IActionResult OfferDetails(OffersViewModel OffersData)
+        {
+            //this.TempData["ShowWelcomeScreen"] = "True";
+            //var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+            ////if (currentUserDetail != null)
+            ////{
+            //OffersData = this.offersService.GetOfferOnId(OfferId);
+            ////}
+            //return this.View(OffersData);
+            return null;
+        }
+
+
+
     }
 }

@@ -7,6 +7,7 @@ namespace Microsoft.Marketplace.Saas.Web.Models
 {
     public class OffersModel
     {
+        public int Id { get; set; }
         public string offerID { get; set; }
 
         public string offerName { get; set; }

@@ -1,0 +1,100 @@
+﻿@using Microsoft.Marketplace.SaasKit.Models;
+@model OffersViewModel
+
+<div class="text-center">
+    <form method="post" id="frmOfferattributes" action="Offers/OfferDetails">
+        <div class="container">
+            <div class="card card-header mb0 pb0">
+                <input type='hidden' id='Id' name='Id' value="@Model.OfferID" />
+                <input type='hidden' id='Id' name='Id' value="@Model.OfferName" />
+                <input type='hidden' id='Id' name='Id' value="@Model.Id" />
+                <dl class="row">
+
+                    <dt class="col-2 text-right"><b>Offer Id</b></dt>
+                    <dd class="col-3 text-left">@Model.OfferID</dd>
+                    <dt class="col-3 text-right"><b>Offer name</b></dt>
+                    <dd class="col-4 text-left">@Model.OfferName</dd>
+                </dl>
+            </div>
+            <table class="table table-bordered dt-responsive cm-table" id="tblcontainer" display="none">
+                <tr>
+                    <th>  ParameterId         </th>
+                    <th>  DisplayName         </th>
+                    <th>  Description         </th>
+                    <th>  ValueTypeId         </th>
+                    <th>  FromList            </th>
+                    <th>  ValuesList          </th>
+                    <th>  Max                 </th>
+                    <th>  Min                 </th>
+                    <th>  OfferID             </th>
+                    <th>  Type                </th>
+                    <th>  DisplaySequence     </th>
+                    <th>  Isactive            </th>
+                    <th>  Remove            </th>
+
+                </tr>
+                @if (Model.OfferAttributes != null && Model.OfferAttributes.Count() > 0)
+                {
+
+
+                }
+            </table>
+            <div>
+                <input class="cm-button-default mt0" type="button" id="btnAdd" value="Add New Item" />
+            </div>
+            <div>
+                <p>
+                    <input class="cm-button-default mt0" type="submit" value="Create" />
+                </p>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#tblcontainer').hide();
+        var fieldLength = $("#tblcontainer input.iHidden").length;
+        //if (fieldLength != undefined || fieldLength != 0) {
+        //    //$('#tblcontainer').show();
+        //}
+    })
+    $(function () {
+        $("#btnAdd").click(function (e) {
+            debugger;
+            $('#tblcontainer').show();
+            var itemIndex = $("#tblcontainer input.iHidden").length;
+            e.preventDefault();
+            var newItem = $("<tr id='tr_OfferAttributes_" + itemIndex + "__Id'=><td><input id='OfferAttributes_" + itemIndex + "__Id' type='hidden' value='" + itemIndex + "' class='iHidden' name='OfferAttributes[" + itemIndex + "].Id' /><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ParameterId' name='OfferAttributes[" + itemIndex + "].ParameterId' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__DisplayName' name='OfferAttributes[" + itemIndex + "].DisplayName' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Description' name='OfferAttributes[" + itemIndex + "].Description' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ValueTypeId' name='OfferAttributes[" + itemIndex + "].ValueTypeId' /></td><td><input type='checkbox' value='true' id='OfferAttributes_" + itemIndex + "__FromList' name='OfferAttributes[" + itemIndex + "].FromList' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ValuesList' name='OfferAttributes[" + itemIndex + "].ValuesList' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Max' name='OfferAttributes[" + itemIndex + "].Max' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Min' name='OfferAttributes[" + itemIndex + "].Min' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__OfferID' name='OfferAttributes[" + itemIndex + "].OfferID' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Type' name='OfferAttributes[" + itemIndex + "].Type' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__DisplaySequence' name='OfferAttributes[" + itemIndex + "].DisplaySequence' /></td><td><input type='checkbox' value='true' id='OfferAttributes_" + itemIndex + "__Isactive' name='OfferAttributes[" + itemIndex + "].Isactive' /></td> <td><input id='btnRemoveBook' class='cm-button-default mt0' type='button' value='Remove' onclick='removeRow(" + itemIndex + ");' /></td><input type='hidden' value='' id='OfferAttributes_" + itemIndex + "__IsRemove' name='OfferAttributes[" + itemIndex + "].IsRemove' /></tr>");
+            $("#tblcontainer").append(newItem);
+        });
+    });
+    function removeRow(id) {
+        debugger;
+        var controlToBeRemoved = "#tr_OfferAttributes_" + id + "__Id";
+        $("#OfferAttributes_" + id + "__IsRemove").val(true);
+        $(controlToBeRemoved).hide();
+    }
+
+
+
+    //var frm = $('#frmOfferattributes');
+    //frm.submit(function (e) {
+
+    //    e.preventDefault();
+
+    //    $.ajax({
+    //        type: 'Post',
+    //        url: 'Offers/OfferDetails',
+    //        data: frm.serialize(),
+    //        success: function (data) {
+    //            console.log('Submission was successful.');
+    //            console.log(data);
+    //        },
+    //        error: function (data) {
+    //            console.log('An error occurred.');
+    //            console.log(data);
+    //        },
+    //    });
+    //});
+
+</script>

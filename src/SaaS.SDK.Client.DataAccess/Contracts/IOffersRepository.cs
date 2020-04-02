@@ -11,5 +11,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         Offers GetOfferDetailByOfferId(string offerId);
 
         IEnumerable<Offers> GetOffersByUser(int userId);
+
+        Offers GetOfferDetailById(int Id);
     }
 }
