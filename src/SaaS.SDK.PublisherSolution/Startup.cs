@@ -123,6 +123,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
             services.AddScoped<IKnownUsersRepository, KnownUsersRepository>();
             services.AddScoped<IOffersRepository, OffersRepository>();
+            services.AddScoped<IArmTemplateRepository, ArmTemplateRepository>();
             services.AddScoped<KnownUser>();
         }
 
