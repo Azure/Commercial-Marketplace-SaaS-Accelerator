@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SaaS.SDK.Client.DataAccess.DataModel
+namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
 {
     public class BulkUploadUsageStagingResult
     {
