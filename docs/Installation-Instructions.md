@@ -1,19 +1,23 @@
  # Transactable SaaS Offer Fulfillment v2 and Metering SDK Instructions
 
   * [Overview](#overview)
+    + [Features](#features)
   * [Prerequisites](#prerequisites)
   * [Set up web application resources in Azure](#set-up-web-application-resources-in-azure)
   * [Marketplace Provisioning Service](#marketplace-provisioning-service)
     + [Create marketplace offer](#create-marketplace-offer)
     + [Set up the sample client application locally](#set-up-the-sample-client-application-locally)
     + [Deploy the application to Azure](#deploy-the-application-to-azure)
+      - [Using an ARM template and Azure CLI](#using-an-arm-template-and-azure-cli)
+      - [Manual deployment using VS 2019](#manual-deployment-using-vs-2019)
+    + [Landing page and Webhook settings in the Marketplace Offer](#landing-page-and-webhook-settings-in-the-marketplace-offer)
     + [Purchase the offer](#purchase-the-offer)
     + [Activate](#activate)
     + [Change plan](#change-plan)
     + [Unsubscribe](#unsubscribe)
     + [View activity log](#view-activity-log)
     + [Go to SaaS application](#go-to-saas-application)
-  * [SaaS metering service](#saas-metering-service) 
+  * [SaaS metering service](#saas-metering-service)
     + [Emit usage events](#emit-usage-events)
   * [License Manager](#license-manager)
     + [Publisher: Manage Licenses](#publisher--manage-licenses)
@@ -193,7 +197,7 @@ In this section, we will go over the steps to download the latest sources from t
 > **Tip** __(double underscore) should be used to define the config items that appear as nested keys in appSettings.json
 
 - Deploy SQL database to Azure as follows:
-  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri///%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy-v1.json" target="_blank">
+  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy-v1.json" target="_blank">
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/> 
 </a> to start the deployment of SQL database
    - Fill out the details on the template deployment form as shown here
@@ -204,7 +208,11 @@ In this section, we will go over the steps to download the latest sources from t
 - If you want to set up the database locally, you could create and initialize the database by the running the SQL scripts available under **deployment/Database/AMP-DB.sql** folder.
   - Create a database named **AMPSaaSDB**
   - Switch to the database - **AMPSaaSDB**
-  - Run the script - **AMP-DB.sql** to initalize the database
+  - Run the script - **Master-DB.sql** to initalize the database
+  - Run the script - **Upgrade-To-1.1.sql** to update your existing database to 1.1
+  - Add entries into KnownUsers table to allow login to **Publisher Portal**   
+  > Note: If you already had created a database using an earlier version of the SDK, you just need to run the **Upgrade-To-1.1.sql** 
+      
 - Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
 *Note: Make sure that the home page url is listed in the **replyURLs** in the AD application for the authentication against Azure AD to work properly.*
 
@@ -408,6 +416,35 @@ The following interface in the **Saas metering service** allows the user to manu
 > In this example, suppose the SaaS service is offering a notification service that helps its customers send out emails / text. Email and Text are modeled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
 
 ![Report usage](./images/post-usage-event.png)
+
+>Note:
+
+ > *  The option - Manage Usage is available against active subscriptions against a plan that supports metering. You are required to manually update the Plan record in the database to indicate that it supports metering. Besides, the meters for the plan should be initialized in the **MeteredDimensions** table
+ 
+**Update Plan to indicate support for metering**
+
+Use the following script as an example / template to update the records in **Plans**
+
+```sql
+UPDATE Plans SET IsmeteringSupported = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
+```
+
+The Plan ID is available in the **Plan overview** tab of the offer as shown here:
+
+![Plan ID](./images/plan-id-for-metering.png)
+
+**Initialize meters for plan**
+
+Use the following script as an example / template to initialize meters in **MeteredDimensions** table
+
+```sql
+INSERT INTO MeteredDimensions ( Dimension, PlanId, Description, CreatedDate)
+SELECT '<dimension-as-in-partner-center', '<id-of-the-plan>', '<description>', GETDATE()
+```
+
+The **Dimension** in the above example should be the attribute of a meter in the plan as shown in the below image:
+![Meter dimension](./images/meter-dimension.png)
+
 
 > The SaaS metering service calls the below API to emit usage events
 ```csharp
