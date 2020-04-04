@@ -144,6 +144,32 @@
         }
 
         /// <summary>
+        /// Changes the quantity for subscription.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="subscriptionQuantity">The subscription quantity identifier.</param>
+        /// <returns>
+        /// Change Quantity For Subscription
+        /// </returns>
+        /// <exception cref="FulfillmentException">Invalid subscription ID</exception>
+        public async Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, string subscriptionQuantity)
+        {
+            this.Logger?.Info($"Inside ChangeQuantityForSubscriptionAsync() of FulfillmentApiClient, trying to Change Quantity By {subscriptionId} with New Quantity {subscriptionQuantity}");
+            if (subscriptionId != default)
+            {
+                var restClient = new FulfillmentApiRestClient<SubscriptionUpdateResult>(this.ClientConfiguration, this.Logger);
+                var payload = new Dictionary<string, object>();
+                payload.Add("quantity", subscriptionQuantity);
+                var url = UrlHelper.GetSaaSApiUrl(this.ClientConfiguration, subscriptionId, null);
+                var subscriptionUpdateResult = await restClient.DoRequest(url, HttpMethods.PATCH, payload).ConfigureAwait(false);
+
+                return subscriptionUpdateResult;
+            }
+
+            throw new FulfillmentException("Invalid subscription ID", SaasApiErrorCode.BadRequest);
+        }
+
+        /// <summary>
         /// Gets the operation status result.
         /// </summary>
         /// <param name="subscriptionId">The subscription</param>

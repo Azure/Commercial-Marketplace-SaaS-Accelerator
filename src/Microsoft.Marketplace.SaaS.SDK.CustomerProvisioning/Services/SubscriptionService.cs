@@ -54,6 +54,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             {
                 Id = 0,
                 AmpplanId = subscriptionDetail.PlanId,
+                AmpQuantity = subscriptionDetail.Quantity,
                 AmpsubscriptionId = subscriptionDetail.Id,
                 CreateBy = CurrentUserId,
                 CreateDate = DateTime.Now,
@@ -144,6 +145,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             subscritpionDetail.Id = subscription.AmpsubscriptionId;
             subscritpionDetail.SubscribeId = subscription.Id;
             subscritpionDetail.PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId;
+            subscritpionDetail.Quantity = string.IsNullOrEmpty(subscription.AmpQuantity) ? string.Empty : subscription.AmpQuantity;
             subscritpionDetail.Name = subscription.Name;
             subscritpionDetail.SaasSubscriptionStatus = GetSubscriptionStatus(subscription.SubscriptionStatus);
             subscritpionDetail.IsActiveSubscription = subscription.IsActive ?? false;
@@ -172,6 +174,19 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         {
             if (subscriptionId != default && !string.IsNullOrEmpty(planId))
                 SubscriptionRepository.UpdatePlanForSubscription(subscriptionId, planId);
+            return false;
+        }
+
+        /// <summary>
+        /// Updates the subscription quantity.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="quantity">The quantity identifier.</param>
+        /// <returns></returns>
+        public bool UpdateSubscriptionQuantity(Guid subscriptionId, string quantity)
+        {
+            if (subscriptionId != default && !string.IsNullOrEmpty(quantity))
+                SubscriptionRepository.UpdateQuantityForSubscription(subscriptionId, quantity);
             return false;
         }
 

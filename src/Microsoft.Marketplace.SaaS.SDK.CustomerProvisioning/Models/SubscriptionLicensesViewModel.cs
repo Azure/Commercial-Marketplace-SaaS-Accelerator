@@ -35,6 +35,14 @@
         public string PlanName { get; set; }
 
         /// <summary>
+        /// Gets or sets the Quantity.
+        /// </summary>
+        /// <value>
+        /// The number of users.
+        /// </value>
+        public string Quantity { get; set; }
+
+        /// <summary>
         /// Gets or sets the license key.
         /// </summary>
         /// <value>

@@ -63,6 +63,14 @@
         Task<SubscriptionUpdateResult> ChangePlanForSubscriptionAsync(Guid subscriptionId, string subscriptionPlanID);
 
         /// <summary>
+        /// Changes the plan for subscription.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="subscriptionQuantity">The subscription plan identifier.</param>
+        /// <returns>Change Plan For Subscription</returns>
+        Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, string subscriptionQuantity);
+
+        /// <summary>
         /// Gets the operation status result.
         /// </summary>
         /// <param name="operationLocation">The operation location.</param>

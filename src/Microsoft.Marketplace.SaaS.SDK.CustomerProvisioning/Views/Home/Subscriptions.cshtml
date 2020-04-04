@@ -27,6 +27,7 @@
                                     <tr>
                                         <th>Name</th>
                                         <th>Plan</th>
+                                        <th>Quantity</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -35,28 +36,42 @@
                                     @for (var i = 0; i < Model.Subscriptions.Count; i++)
                                     {
                                         var subscription = Model.Subscriptions[i];
-                                        <tr>
-                                            <td class="text-left">
-                                                @Html.HiddenFor(s => s.Subscriptions[i].Id)
-                                                @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
-                                                @subscription.Name
-                                            </td>
-                                            <td class="text-left">@subscription.PlanId</td>
-                                            <td class="text-left">@subscription.SaasSubscriptionStatus</td>
-                                            <td class="text-left text-left">
-                                                @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                                    <tr>
+                                        <td class="text-left">
+                                            @Html.HiddenFor(s => s.Subscriptions[i].Id)
+                                            @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
+                                            @subscription.Name
+                                        </td>
+                                        <td class="text-left">@subscription.PlanId</td>
+                                        <td class="text-left">
+                                            @if (@subscription.IsPerUserPlan)
+                                            {
+                                                @subscription.Quantity
+                                            }
+                                            else
+                                            {
+                                            <span>N/A</span>
+                                            }   
+                                        </td>
+                                        <td class="text-left">@subscription.SaasSubscriptionStatus</td>
+                                        <td class="text-left text-left">
+                                            @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                                            {
+                                                <button type="button" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode" class="btn btn-primary">Change Plan</button>
+                                                @if (subscription.IsPerUserPlan)
                                                 {
-                                                    <button type="button" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode" class="btn btn-primary">Change Plan</button>
-                                                    <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate" class="btn btn-danger">Unsubscribe</button>
-                                                    <a class="btn btn-primary" target="_blank" href="@Model.SaaSAppUrl" title="Click here to go to SaaS App">SaasApp</a>
+                                                    <button type="button" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode" class="btn btn-primary">Change Quantity</button>
                                                 }
-                                                @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
-                                                {
-                                                    <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate" class="btn btn-success ml-3 mr-3">Activate</button>
-                                                }
-                                                <button type="button" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@Model.Subscriptions[i].Id')" class="btn btn-primary">Activity Log</button>
-                                            </td>
-                                        </tr>
+                                                <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate" class="btn btn-danger">Unsubscribe</button>
+                                                <a class="btn btn-primary" target="_blank" href="@Model.SaaSAppUrl" title="Click here to go to SaaS App">SaasApp</a>
+                                            }
+                                            @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                                            {
+                                                <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate" class="btn btn-success ml-3 mr-3">Activate</button>
+                                            }
+                                            <button type="button" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@Model.Subscriptions[i].Id')" class="btn btn-primary">Activity Log</button>
+                                        </td>
+                                    </tr>
                                     }
                                 </tbody>
                             </table>
@@ -81,6 +96,23 @@
         $.ajax({
             type: "Get",
             url: "SubscriptionDetail",
+            data: { subscriptionId: subscriptionId },
+            contentType: "application/json; charset=utf-8",
+            datatype: "json",
+            success: function (data) {
+                $('#myModal').html(data);
+                $('#myModal').modal();
+
+            },
+            error: function () {
+                alert("Content load failed.");
+            }
+        });
+    }
+    function ViewSubscriptionQuantityDetail(subscriptionId) {
+        $.ajax({
+            type: "Get",
+            url: "SubscriptionQuantityDetail",
             data: { subscriptionId: subscriptionId },
             contentType: "application/json; charset=utf-8",
             datatype: "json",

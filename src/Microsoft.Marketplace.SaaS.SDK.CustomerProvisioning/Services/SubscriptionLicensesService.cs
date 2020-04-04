@@ -50,6 +50,7 @@
                 subscription.AmpsubscriptionId = Convert.ToString(item.Subscription.AmpsubscriptionId);
                 subscription.SubscriptionName = item.Subscription.Name;
                 subscription.PlanName = item.Subscription.AmpplanId;
+                subscription.Quantity = item.Subscription.AmpQuantity;
                 subscription.LicenseKey = item.LicenseKey;
                 subscriptionLicensesList.Add(subscription);
             }
