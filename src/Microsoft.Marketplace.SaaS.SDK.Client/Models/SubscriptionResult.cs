@@ -115,7 +115,7 @@
         /// <value>
         /// The quantity.
         /// </value>
-        public string Quantity { get; set; }
+        public int? Quantity { get; set; }
 
         /// <summary>
         /// Gets or sets the resource location.
@@ -245,9 +245,7 @@
         {
             get
             {
-                int NoOfUsers;
-                var QuantityParsable = Int32.TryParse(this.Quantity, out NoOfUsers);
-                return QuantityParsable && NoOfUsers > 0;
+                return this.Quantity !=null && this.Quantity > 0;
             }
         }
     }

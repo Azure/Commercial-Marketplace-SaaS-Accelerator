@@ -102,7 +102,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="quantity">The Quantity.</param>
-        public void UpdateQuantityForSubscription(Guid subscriptionId, string quantity)
+        public void UpdateQuantityForSubscription(Guid subscriptionId, int? quantity)
         {
             try
             {

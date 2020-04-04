@@ -416,20 +416,13 @@
         [HttpPost]
         public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
         {
-            var subscriptionId = new Guid();
-            var quantity = string.Empty;
-            int quantityValidation;
-
-            if (subscriptionDetail != null)
-            {
-                subscriptionId = subscriptionDetail.Id;
-                quantity = subscriptionDetail.Quantity;
-            }
-
-            if (subscriptionId != default && !string.IsNullOrEmpty(quantity) && int.TryParse(subscriptionDetail.Quantity, out quantityValidation) && quantityValidation > 0) 
+            if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity !=null && subscriptionDetail.Quantity > 0) 
             {
                 try
                 {
+                    var subscriptionId = subscriptionDetail.Id;
+                    var quantity = subscriptionDetail.Quantity;
+                    
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
 
                     var jsonResult = await this.apiClient.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
@@ -455,8 +448,8 @@
                             {
                                 Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
                                 SubscriptionId = oldValue.SubscribeId,
-                                NewValue = quantity,
-                                OldValue = oldValue.Quantity,
+                                NewValue = quantity.ToString(),
+                                OldValue = oldValue.Quantity.ToString(),
                                 CreateBy = currentUserId,
                                 CreateDate = DateTime.Now
                             };

@@ -17,7 +17,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public Guid AmpsubscriptionId { get; set; }
         public string SubscriptionStatus { get; set; }
         public string AmpplanId { get; set; }
-        public string AmpQuantity { get; set; }
+        public int? AmpQuantity { get; set; }
         public bool? IsActive { get; set; }
         public int? CreateBy { get; set; }
         public DateTime? CreateDate { get; set; }
@@ -30,9 +30,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         {
             get
             {
-                int NoOfUsers;
-                var QuantityParsable =  Int32.TryParse(this.AmpQuantity,out NoOfUsers);
-                return QuantityParsable && NoOfUsers > 0; 
+                return this.AmpQuantity != null && this.AmpQuantity > 0; 
             }
         }
 

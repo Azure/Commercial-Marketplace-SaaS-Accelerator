@@ -152,7 +152,7 @@
         /// Change Quantity For Subscription
         /// </returns>
         /// <exception cref="FulfillmentException">Invalid subscription ID</exception>
-        public async Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, string subscriptionQuantity)
+        public async Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, int? subscriptionQuantity)
         {
             this.Logger?.Info($"Inside ChangeQuantityForSubscriptionAsync() of FulfillmentApiClient, trying to Change Quantity By {subscriptionId} with New Quantity {subscriptionQuantity}");
             if (subscriptionId != default)
