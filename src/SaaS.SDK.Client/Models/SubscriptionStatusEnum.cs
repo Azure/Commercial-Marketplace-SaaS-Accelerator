@@ -23,6 +23,8 @@
         /// <summary>
         /// The not started
         /// </summary>
-        NotStarted
+        NotStarted,
+
+        PendingActivation
     }
 }

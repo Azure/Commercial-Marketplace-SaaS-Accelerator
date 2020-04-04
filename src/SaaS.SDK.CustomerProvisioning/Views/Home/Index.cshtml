@@ -61,7 +61,7 @@
                     </dl>
                 </div>
                 <div class="text-right">
-                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed )
                     {
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
                         <button type="submit" asp-action="Subscriptions" class="cm-button-default text-right">Go to Subscription List</button>

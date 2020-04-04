@@ -306,11 +306,20 @@
                 {
                     try
                     {
-                        var response = this.apiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
-                        this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
+                        if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("SkipActivation")))
+                        {
+                            this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.PendingActivation, true);
+                            subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.PendingActivation;
+                        }
+                        else
+                        {
+                            var response = this.apiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
+                        }
                         isSuccess = true;
                         subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                         subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
+
 
                         //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                         //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
@@ -333,6 +342,7 @@
                     {
                         var response = this.apiClient.DeleteSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                         this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Unsubscribed, false);
+                        subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Unsubscribed;
                         isSuccess = true;
                         subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
                         subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();

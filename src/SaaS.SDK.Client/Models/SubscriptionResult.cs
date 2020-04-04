@@ -237,5 +237,6 @@
         /// <value>
         ///   <c>true</c> if this instance is metering supported; otherwise, <c>false</c>.</value>
         public bool IsMeteringSupported { get; set; }
+
     }
 }

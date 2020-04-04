@@ -56,7 +56,7 @@
                                                         }
                                                         @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                                                         {
-                                                            <a class="dropdown-item cm-dropdown-option" asp-action="ActivateSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="ActivateSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId"><i class="fa fa-check"></i>&nbsp;Activate</a>
                                                         }
                                                         <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@Model.Subscriptions[i].Id')">Activity Log</a>
                                                     </div>

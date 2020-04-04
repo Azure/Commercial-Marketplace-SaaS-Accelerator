@@ -140,6 +140,18 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             }
         }
 
+        public Subscriptions GetSubscriptionsBySubscriptionId(Guid subscriptionId, bool isIncludeDeactvated = false)
+        {
+            if (subscriptionId != default)
+            {
+                if (!isIncludeDeactvated)
+                    return Context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId && s.IsActive == true).FirstOrDefault();
+                else
+                    return Context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+            }
+            return new Subscriptions();
+        }
+
         /// <summary>
         /// Gets the subscriptions by ScheduleId
         /// </summary>

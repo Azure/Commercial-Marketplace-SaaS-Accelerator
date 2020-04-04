@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Marketplace.SaasKit.Models;
-using Microsoft.Marketplace.SaasKit.Client.Models;
 
 namespace Microsoft.Marketplace.SaasKit.Client.Services
 {

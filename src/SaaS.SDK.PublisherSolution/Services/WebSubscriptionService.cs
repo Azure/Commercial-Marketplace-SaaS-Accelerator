@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Marketplace.SaasKit.Models;
-using Microsoft.Marketplace.SaasKit.Client.Models;
+using Microsoft.Marketplace.Saas.Web.Models;
 
-namespace Microsoft.Marketplace.SaasKit.Client.Services
+namespace Microsoft.Marketplace.Saas.Web.Services
 {
-    public class SubscriptionService
+    public class WebSubscriptionService
     {
         /// <summary>
         /// The subscription repository
@@ -32,12 +32,12 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         public int CurrentUserId;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubscriptionService" /> class.
+        /// Initializes a new instance of the <see cref="WebSubscriptionService" /> class.
         /// </summary>
         /// <param name="subscriptionRepo">The subscription repository.</param>
         /// <param name="planRepository">The plan repository.</param>
         /// <param name="currentUserId">The current user identifier.</param>
-        public SubscriptionService(ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, int currentUserId = 0)
+        public WebSubscriptionService(ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, int currentUserId = 0)
         {
             SubscriptionRepository = subscriptionRepo;
             PlanRepository = planRepository;
@@ -86,7 +86,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// <returns></returns>
         public SubscriptionResult GetSubscriptionsForSubscriptionId(Guid subscriptionId, bool includeUnsubscribed = false)
         {
-            var subscriptionDetail = SubscriptionRepository.GetSubscriptionsByScheduleId(subscriptionId);
+            var subscriptionDetail = SubscriptionRepository.GetSubscriptionsBySubscriptionId(subscriptionId);
             if (subscriptionDetail != null)
             {
                 SubscriptionResult subscritpionDetail = PrepareSubscriptionResponse(subscriptionDetail);
@@ -131,6 +131,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
                     allSubscriptions.Add(subscritpionDetail);
             }
+
             return allSubscriptions;
         }
 
@@ -164,7 +165,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Subscribed)) return SubscriptionStatusEnum.Subscribed;
                 if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Unsubscribed)) return SubscriptionStatusEnum.Unsubscribed;
                 if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.PendingActivation)) return SubscriptionStatusEnum.PendingActivation;
-
             }
             return SubscriptionStatusEnum.NotStarted;
         }

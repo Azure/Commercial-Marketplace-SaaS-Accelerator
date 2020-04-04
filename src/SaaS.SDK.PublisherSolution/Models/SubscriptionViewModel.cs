@@ -31,5 +31,7 @@
         ///   <c>true</c> if this instance is success; otherwise, <c>false</c>.
         /// </value>
         public bool IsSuccess { get; set; }
+
+        public bool SkipActivation { get; set; }
     }
 }

@@ -36,5 +36,7 @@
         /// The saas application URL.
         /// </value>
         public string SaaSAppUrl { get; set; }
+
+        public bool SkipActivation { get; set; }
     }
 }
