@@ -325,7 +325,11 @@
                         //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
                         //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                         bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
-                        if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerStatusEnum.IsEmailEnabledForSubscriptionActivation.ToString())) == true)
+                        if (subscriptionDetail.SaasSubscriptionStatus== SubscriptionStatusEnum.Subscribed && Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerConfigurationConstants.ISEMAILENABLEDFORSUBSCRIPTIONACTIVATION)) == true)
+                        {
+                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
+                        }
+                        else if (subscriptionDetail.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingActivation && Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerConfigurationConstants.ISEMAILENABLEDFORPENDINGACTIVATION)) == true)
                         {
                             EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
                         }
@@ -351,7 +355,7 @@
                         //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
                         //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                         bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
-                        if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerStatusEnum.IsEmailEnabledForUnsubscription.ToString())) == true)
+                        if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerConfigurationConstants.ISEMAILENABLEDFORUNSUBSCRIPTION)) == true)
                         {
                             EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
                         }

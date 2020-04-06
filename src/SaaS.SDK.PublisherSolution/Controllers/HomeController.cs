@@ -380,7 +380,7 @@
                     subscriptionDetail.PlanList = this.webSubscriptionService.GetAllSubscriptionPlans();
                     var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                     bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
-                    if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerStatusEnum.IsEmailEnabledForSubscriptionActivation.ToString())) == true)
+                    if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerConfigurationConstants.ISEMAILENABLEDFORSUBSCRIPTIONACTIVATION)) == true)
                     {
                         EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
                     }
@@ -396,7 +396,7 @@
                         subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Unsubscribed;
                         isSuccess = true;
                         bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
-                        if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerStatusEnum.IsEmailEnabledForSubscriptionActivation.ToString())) == true)
+                        if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerConfigurationConstants.ISEMAILENABLEDFORUNSUBSCRIPTION)) == true)
                         {
                             EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository);
                         }
