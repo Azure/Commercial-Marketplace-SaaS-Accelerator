@@ -28,19 +28,21 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 Offers.offerName = item.OfferName;
                 Offers.CreateDate = item.CreateDate;
                 Offers.UserID = item.UserId;
+                Offers.offerGuId = item.OfferGuid;
                 offersList.Add(Offers);
             }
             return offersList;
         }
 
-        public OffersViewModel GetOfferOnId(int Id)
+        public OffersViewModel GetOfferOnId(Guid offerGuId)
         {
-            var offer = this.offersRepository.GetOfferDetailById(Id);
+            var offer = this.offersRepository.GetOfferDetailByOfferId(offerGuId);
             OffersViewModel offerModel = new OffersViewModel()
             {
                 Id = offer.Id,
                 OfferID = offer.OfferId,
                 OfferName = offer.OfferName,
+                OfferGuid = offer.OfferGuid
             };
             return offerModel;
         }

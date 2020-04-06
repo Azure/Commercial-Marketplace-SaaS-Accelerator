@@ -6,9 +6,11 @@ using System.Text;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
-    public interface IOffersRepository : IDisposable, IBaseRepository<Offers>
+    public interface IOffersRepository : IDisposable //, IBaseRepository<Offers>
     {
-        Offers GetOfferDetailByOfferId(string offerId);
+        Guid? Add(Offers Offers);
+        IEnumerable<Offers> Get();
+        Offers GetOfferDetailByOfferId(Guid offerGuId);
 
         IEnumerable<Offers> GetOffersByUser(int userId);
 

@@ -38,7 +38,7 @@
                                             <div class="nav-item dropdown">
                                                 <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                 <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                    <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@item.Id')">Edit</a>
+                                                    <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@item.offerGuId')">Edit</a>
                                                 </div>
                                             </div>
                                         </td>
@@ -66,11 +66,11 @@
     </div>
 </div>
 <script>
-    function ViewSubscriptionlogdetailsById(offerId) {
+    function ViewSubscriptionlogdetailsById(offerGuId) {
         $.ajax({
             type: "Get",
             url: "Offers/OfferDetails",
-            data: { offerId: offerId },
+            data: { offerGuId: offerGuId },
             contentType: "application/json; charset=utf-8",
             datatype: "json",
             success: function (data) {

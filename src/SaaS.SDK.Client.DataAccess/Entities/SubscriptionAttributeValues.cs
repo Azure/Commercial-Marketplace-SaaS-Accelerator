@@ -9,9 +9,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public int? PlanAttributeId { get; set; }
         public string Value { get; set; }
         public Guid? SubscriptionId { get; set; }
-        public int? PlanId { get; set; }
-        public int? OfferId { get; set; }
         public DateTime? CreateDate { get; set; }
         public int? UserId { get; set; }
+        public Guid? PlanId { get; set; }
+        public Guid? OfferId { get; set; }
     }
 }

@@ -6,8 +6,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
     public partial class PlanEventsMapping
     {
         public int Id { get; set; }
-        public int? PlanId { get; set; }
-        public int? ArmtemplateId { get; set; }
+        public Guid? PlanId { get; set; }
+        public Guid? ArmtemplateId { get; set; }
         public int? EventId { get; set; }
         public bool? Isactive { get; set; }
         public string SuccessStateEmails { get; set; }

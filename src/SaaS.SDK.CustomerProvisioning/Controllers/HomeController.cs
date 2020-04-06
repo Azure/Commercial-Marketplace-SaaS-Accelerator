@@ -144,21 +144,26 @@
                     if (newSubscription != null && newSubscription.SubscriptionId != default)
                     {
                         var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                       
+
                         Offers offers = new Offers()
                         {
                             OfferId = newSubscription.OfferId,
                             OfferName = newSubscription.OfferId,
                             UserId = currentUserId,
-                            CreateDate = DateTime.Now
+                            CreateDate = DateTime.Now,
+                            OfferGuid = new Guid()
                         };
 
-                        int newOfferId = this.offersRepository.Add(offers);
+                        Guid? newOfferId = this.offersRepository.Add(offers);
 
                         List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
                         var serializedPlans = JsonConvert.SerializeObject(subscriptionPlanDetail);
                         planList = JsonConvert.DeserializeObject<List<PlanDetailResultExtension>>(serializedPlans);
-                        planList.ForEach(x => x.OfferId = newOfferId);
+                        planList.ForEach(x =>
+                        {
+                            x.OfferId = newOfferId;
+                            x.PlanGUID = new Guid();
+                        });
 
                         this.subscriptionService.AddPlanDetailsForSubscription(planList);
 
@@ -197,7 +202,10 @@
             {
                 if (!string.IsNullOrEmpty(token))
                 {
-                    return this.Challenge(new AuthenticationProperties { RedirectUri = "/?token=" + token }, OpenIdConnectDefaults.AuthenticationScheme);
+                    return this.Challenge(new AuthenticationProperties
+                    {
+                        RedirectUri = "/?token=" + token
+                    }, OpenIdConnectDefaults.AuthenticationScheme);
                 }
                 else
                 {

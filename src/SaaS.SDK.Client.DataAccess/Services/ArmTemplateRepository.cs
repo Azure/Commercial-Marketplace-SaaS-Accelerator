@@ -27,7 +27,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// Gets this instance.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ARMTemplates> Get()
+        public IEnumerable<Armtemplates> Get()
         {
             return Context.Armtemplates;
         }
@@ -37,9 +37,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
-        public ARMTemplates Get(int id)
+        public Armtemplates Get(Guid ArmtempalteId)
         {
-            return Context.Armtemplates.Where(s => s.ArmtempalteId == id).FirstOrDefault();
+            return Context.Armtemplates.Where(s => s.ArmtempalteId == ArmtempalteId).FirstOrDefault();
         }
 
 
@@ -48,7 +48,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         /// <param name="offerDetails">The Offers details.</param>
         /// <returns></returns>
-        public int Add(ARMTemplates templateDetails)
+        public Guid? Add(Armtemplates templateDetails)
         {
             if (templateDetails != null && !string.IsNullOrEmpty(templateDetails.ArmtempalteName))
             {
@@ -56,14 +56,14 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                 Context.SaveChanges();
                 return templateDetails.ArmtempalteId;
             }
-            return 0;
+            return null;
         }
 
         /// <summary>
         /// Removes the specified plan details.
         /// </summary>
         /// <param name="offerDetails">The offer details.</param>
-        public void Remove(ARMTemplates templateDetails)
+        public void Remove(Armtemplates templateDetails)
         {
             var existingTemplate = Context.Armtemplates.Where(s => s.ArmtempalteId == templateDetails.ArmtempalteId).FirstOrDefault();
             if (existingTemplate != null)

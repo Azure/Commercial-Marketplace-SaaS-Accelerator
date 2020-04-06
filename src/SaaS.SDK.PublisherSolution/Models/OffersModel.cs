@@ -15,5 +15,7 @@ namespace Microsoft.Marketplace.Saas.Web.Models
         public DateTime? CreateDate { get; set; }
 
         public int? UserID { get; set; }
+
+        public Guid? offerGuId { get; set; }
     }
 }

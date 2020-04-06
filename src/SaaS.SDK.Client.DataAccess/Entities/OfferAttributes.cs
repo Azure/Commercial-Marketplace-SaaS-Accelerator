@@ -14,11 +14,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public string ValuesList { get; set; }
         public int? Max { get; set; }
         public int? Min { get; set; }
-        public int? OfferId { get; set; }
         public string Type { get; set; }
         public int? DisplaySequence { get; set; }
         public bool? Isactive { get; set; }
         public DateTime? CreateDate { get; set; }
         public int? UserId { get; set; }
+        public Guid? OfferId { get; set; }
     }
 }

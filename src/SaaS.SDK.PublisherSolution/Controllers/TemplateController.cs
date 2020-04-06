@@ -79,7 +79,7 @@
             var filePath = string.Empty;
             var fileContantType = string.Empty;
             var formFile = uploadfile.FirstOrDefault();
-            var referenceid = Guid.NewGuid();
+            var ArmtempalteId = Guid.NewGuid();
             if (formFile.Length > 0)
             {
                 filename = formFile.FileName;
@@ -94,14 +94,15 @@
                     {
 
                         await formFile.CopyToAsync(stream);
-                        string fileuploadPath = BlobFileUploadHelper.UploadFile(formFile, filename, fileContantType, referenceid, applicationConfigRepository);
-                        ARMTemplates armTemplate = new ARMTemplates()
+                        string fileuploadPath = BlobFileUploadHelper.UploadFile(formFile, filename, fileContantType, ArmtempalteId, applicationConfigRepository);
+                        Armtemplates armTemplate = new Armtemplates()
                         {
                             ArmtempalteName = filename,
                             TemplateLocation = filePath,
                             Isactive = true,
                             CreateDate = DateTime.Now,
-                            UserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress)
+                            UserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress),
+                            ArmtempalteId = ArmtempalteId
                         };
                         this.armTemplateRepository.Add(armTemplate);
                     }

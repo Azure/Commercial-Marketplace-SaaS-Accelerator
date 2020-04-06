@@ -194,7 +194,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                     PlanId = planDetail.PlanId,
                     DisplayName = planDetail.PlanId,
                     Description = planDetail.DisplayName,
-                    OfferId = planDetail.OfferId
+                    OfferId = planDetail.OfferId,
+                    PlanGuid = planDetail.PlanGUID
                 });
             }
         }

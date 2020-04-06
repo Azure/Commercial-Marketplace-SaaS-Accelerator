@@ -18,7 +18,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
         public virtual DbSet<ApplicationConfiguration> ApplicationConfiguration { get; set; }
         public virtual DbSet<ApplicationLog> ApplicationLog { get; set; }
-        public virtual DbSet<ARMTemplates> Armtemplates { get; set; }
+        public virtual DbSet<Armtemplates> Armtemplates { get; set; }
         public virtual DbSet<EmailTemplate> EmailTemplate { get; set; }
         public virtual DbSet<Events> Events { get; set; }
         public virtual DbSet<KnownUsers> KnownUsers { get; set; }
@@ -66,12 +66,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<ARMTemplates>(entity =>
+            modelBuilder.Entity<Armtemplates>(entity =>
             {
-                entity.HasKey(e => e.ArmtempalteId)
-                    .HasName("PK__ARMTempl__4BD4D2F9F35A98CD");
-
                 entity.ToTable("ARMTemplates");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.ArmtempalteId).HasColumnName("ARMTempalteID");
 
@@ -200,8 +199,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasMaxLength(225)
                     .IsUnicode(false);
 
-                entity.Property(e => e.OfferId).HasColumnName("OfferID");
-
                 entity.Property(e => e.ParameterId)
                     .HasMaxLength(225)
                     .IsUnicode(false);
@@ -217,6 +214,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             {
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
+                entity.Property(e => e.OfferGuid).HasColumnName("OfferGUId");
+
                 entity.Property(e => e.OfferId)
                     .HasMaxLength(225)
                     .IsUnicode(false);
@@ -229,7 +228,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeMapping>(entity =>
             {
                 entity.HasKey(e => e.PlanAttributeId)
-                    .HasName("PK__PlanAttr__8B476A988C86FEA1");
+                    .HasName("PK__PlanAttr__8B476A98E637FD24");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -262,6 +261,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsUnicode(false);
 
                 entity.Property(e => e.OfferId).HasColumnName("OfferID");
+
+                entity.Property(e => e.PlanGuid).HasColumnName("PlanGUID");
 
                 entity.Property(e => e.PlanId)
                     .HasMaxLength(100)

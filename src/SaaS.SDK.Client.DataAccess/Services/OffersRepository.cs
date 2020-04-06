@@ -46,9 +46,9 @@
         /// </summary>
         /// <param name="offerDetails">The Offers details.</param>
         /// <returns></returns>
-        public int Add(Offers offerDetails)
+        public Guid? Add(Offers offerDetails)
         {
-            if (offerDetails != null && !string.IsNullOrEmpty(offerDetails.OfferId))
+            if (offerDetails != null)
             {
                 var existingOffer = Context.Offers.Where(s => s.OfferId == offerDetails.OfferId).FirstOrDefault();
                 if (existingOffer != null)
@@ -57,16 +57,16 @@
                     existingOffer.OfferName = offerDetails.OfferName;
                     Context.Offers.Update(existingOffer);
                     Context.SaveChanges();
-                    return existingOffer.Id;
+                    return existingOffer.OfferGuid;
                 }
                 else
                 {
                     Context.Offers.Add(offerDetails);
                     Context.SaveChanges();
-                    return offerDetails.Id;
+                    return offerDetails.OfferGuid;
                 }
             }
-            return 0;
+            return null;
         }
 
         /// <summary>
@@ -74,9 +74,9 @@
         /// </summary>
         /// <param name="planId">The plan identifier.</param>
         /// <returns></returns>
-        public Offers GetOfferDetailByOfferId(string offerId)
+        public Offers GetOfferDetailByOfferId(Guid offerGuId)
         {
-            return Context.Offers.Where(s => s.OfferId == offerId).FirstOrDefault();
+            return Context.Offers.Where(s => s.OfferGuid == offerGuId).FirstOrDefault();
         }
 
         public IEnumerable<Offers> GetOffersByUser(int userId)

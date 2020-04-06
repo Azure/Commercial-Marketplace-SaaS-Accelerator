@@ -14,7 +14,7 @@ namespace Microsoft.Marketplace.Saas.Web.Models
 
         public bool? IsmeteringSupported { get; set; }
 
-        public int? offerID { get; set; }
+        public Guid? offerID { get; set; }
 
         public bool? DeployToCustomerSubscription { get; set; }
 
