@@ -119,7 +119,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="includeUnsubscribed">if set to <c>true</c> [include unsubscribed].</param>
         /// <returns></returns>
-        public List<SubscriptionResult> GetPartnerSubscription(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
+        public List<SubscriptionResult> GetPartnerSubscriptions(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
         {
             List<SubscriptionResult> allSubscriptions = new List<SubscriptionResult>();
             var allSubscriptionsForEmail = SubscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();

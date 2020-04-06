@@ -341,7 +341,7 @@
                     this.TempData["ShowWelcomeScreen"] = false;
                     var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                     var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
-                    var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                    var oldValue = this.subscriptionService.GetPartnerSubscriptions(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
 
                     var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                     subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
