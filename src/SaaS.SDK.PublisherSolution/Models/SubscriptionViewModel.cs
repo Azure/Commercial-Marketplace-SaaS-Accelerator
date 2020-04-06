@@ -32,6 +32,6 @@
         /// </value>
         public bool IsSuccess { get; set; }
 
-        public bool SkipActivation { get; set; }
+        public bool IsAutomaticProvisioningSupported { get; set; }
     }
 }

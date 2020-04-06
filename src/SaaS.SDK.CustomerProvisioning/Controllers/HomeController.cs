@@ -306,7 +306,7 @@
                 {
                     try
                     {
-                        if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("SkipActivation")))
+                        if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported")))
                         {
                             this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.PendingActivation, true);
                             subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.PendingActivation;

@@ -162,7 +162,7 @@
                 foreach (var subscription in allSubscriptionDetails)
                 {
                     SubscriptionResult subscritpionDetail = PrepareSubscriptionResponse(subscription, allPlans);
-                    subscriptionDetail.SkipActivation = Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("SkipActivation"));
+                    subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported"));
                     if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
                         allSubscriptions.Add(subscritpionDetail);
                 }
@@ -308,7 +308,7 @@
                 this.TempData["ShowWelcomeScreen"] = false;
                 var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                 var subscribeId = this.webSubscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
-                var oldValue = this.webSubscriptionService.GetSubscriptionsForSubscriptionId(subscriptionId);
+                var oldValue = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
 
                 var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                 subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
@@ -343,8 +343,8 @@
                     var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
                     var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
 
-                    //var serializedParent = JsonConvert.SerializeObject(subscriptionData);
-                    //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
+                    var serializedParent = JsonConvert.SerializeObject(subscriptionData);
+                    subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
                     subscriptionDetail = subscriptionData;
                     subscriptionDetail.ShowWelcomeScreen = false;
@@ -366,7 +366,7 @@
             if (subscriptionId != default)
             {
                 SubscriptionResult subscriptionDetail = new SubscriptionResult();
-                var oldValue = this.webSubscriptionService.GetSubscriptionsForSubscriptionId(subscriptionId);
+                var oldValue = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
                 var currentUserId = userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
 
                 if (operation == "Activate")
@@ -376,7 +376,7 @@
                     this.webSubscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
 
                     isSuccess = true;
-                    subscriptionDetail = this.webSubscriptionService.GetSubscriptionsForSubscriptionId(subscriptionId);
+                    subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
                     subscriptionDetail.PlanList = this.webSubscriptionService.GetAllSubscriptionPlans();
                     var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                     bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
@@ -392,6 +392,7 @@
                     {
                         var response = this.fulfillApiClient.DeleteSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                         this.webSubscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Unsubscribed, false);
+                        subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId,true);
                         subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Unsubscribed;
                         isSuccess = true;
                         bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
@@ -407,7 +408,7 @@
                     }
                 }
 
-                var newValue = this.webSubscriptionService.GetSubscriptionsForSubscriptionId(subscriptionId, true);
+                var newValue = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId, true);
                 if (isSuccess)
                 {
                     if (oldValue != null && newValue != null)
@@ -489,7 +490,7 @@
                 {
                     this.TempData["ShowLicensesMenu"] = true;
                 }
-                var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                var subscriptionDetail = this.subscriptionService.GetSubscriptionsForSubscriptionId(subscriptionId);
                 subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
                 return this.View(subscriptionDetail);
@@ -514,7 +515,6 @@
                 if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Subscribed)) return SubscriptionStatusEnum.Subscribed;
                 if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Unsubscribed)) return SubscriptionStatusEnum.Unsubscribed;
                 if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.PendingActivation)) return SubscriptionStatusEnum.PendingActivation;
-
             }
             return SubscriptionStatusEnum.NotStarted;
         }

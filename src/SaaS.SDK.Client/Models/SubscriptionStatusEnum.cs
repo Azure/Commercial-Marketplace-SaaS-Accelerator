@@ -25,6 +25,9 @@
         /// </summary>
         NotStarted,
 
+        /// <summary>
+        /// Pending Activation
+        /// </summary>
         PendingActivation
     }
 }
