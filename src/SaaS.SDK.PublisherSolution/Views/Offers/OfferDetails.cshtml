@@ -41,41 +41,45 @@
 
                         </tr>
                     </theader>
+                    <tbody id="ReplacingTable">
+                        @for (int i = 0; i < Model.OfferAttributes.Count(); i++)
+                        {
 
-                    @for (int i = 0; i < Model.OfferAttributes.Count(); i++)
-                    {
-                        <tbody id="ReplacingTable">
 
                             <tr id="tr_OfferAttributes_@i">
                                 <td>
-                                    <input id="OfferAttributes[@i].Id" type="hidden" value="@i" class="iHidden" name="OfferAttributes[@i].Id" />
-                                    <input id="OfferAttributes[@i].AttributeID" type="hidden" class="iHidden" name="OfferAttributes[@i].AttributeID"   value="@Model.OfferAttributes[i].AttributeID" />
+                                    <input id="OfferAttributes_Id_@i" type="hidden" value="@i" class="iHidden" name="OfferAttributes[@i].Id" />
+                                    <input id="OfferAttributes_AttributeID_@i" type="hidden" class="iHidden" name="OfferAttributes[@i].AttributeID" value="@Model.OfferAttributes[i].AttributeID" />
 
-                                    <input type="text" style="width:70px;" id="OfferAttributes[@i].ParameterId" name="OfferAttributes[@i].ParameterId" value="@Model.OfferAttributes[i].ParameterId" />
+                                    <input type="text" style="width:70px;" id="OfferAttributes_ParameterId_@i" name="OfferAttributes[@i].ParameterId" value="@Model.OfferAttributes[i].ParameterId" />
                                 </td>
-                                <td><input type="text" style="width:70px;" id="OfferAttributes[@i].DisplayName" name="OfferAttributes[@i].DisplayName" value="@Model.OfferAttributes[i].DisplayName" /></td>
-                                <td><input type="text" style="width:70px;" id="OfferAttributes[@i].Description" name="OfferAttributes[@i].Description" value="@Model.OfferAttributes[i].Description" /></td>
+                                <td><input type="text" style="width:70px;" id="OfferAttributes_DisplayName_@i" name="OfferAttributes[@i].DisplayName" value="@Model.OfferAttributes[i].DisplayName" /></td>
+                                <td><input type="text" style="width:70px;" id="OfferAttributes_Description_@i" name="OfferAttributes[@i].Description" value="@Model.OfferAttributes[i].Description" /></td>
                                 <td>
                                     @*<input type="text" style="width:70px;" id="OfferAttributes_i__ValueTypeId" name="OfferAttributes[@i].ValueTypeId" />*@
                                     @*@Html.DropDownList("OfferAttributes[@i].ValueTypeId", ViewBag.ValueTypes as SelectList, new { @id = "OfferAttributes[@i].ValueTypeId", @value = @Model.OfferAttributes[i].ValueTypeId })*@
-                                    @Html.DropDownListFor(model => model.OfferAttributes[i].ValueTypeId, ViewBag.ValueTypes as IEnumerable<SelectListItem>, new { name = "OfferAttributes[@i].ValueTypeId", id = "OfferAttributes[@i].ValueTypeId" })
+                                    @Html.DropDownListFor(model => model.OfferAttributes[i].ValueTypeId, ViewBag.ValueTypes as IEnumerable<SelectListItem>, new { name = "OfferAttributes[@i].ValueTypeId", id = "OfferAttributes_ValueTypeId_@i" })
                                 </td>
-                                <td><input type="checkbox" id="OfferAttributes[@i].FromList" name="OfferAttributes[@i].FromList" value="@Model.OfferAttributes[i].FromList" /></td>
-                                <td><input type="text" style="width:70px;" id="OfferAttributes[@i].ValuesList" name="OfferAttributes[@i].ValuesList" value="@Model.OfferAttributes[i].ValuesList" /></td>
-                                <td><input type="text" style="width:70px;" id="OfferAttributes[@i].Max" name="OfferAttributes[@i].Max" value="@Model.OfferAttributes[i].Max" /></td>
-                                <td><input type="text" style="width:70px;" id="OfferAttributes[@i].Min" name="OfferAttributes[@i].Min" value="@Model.OfferAttributes[i].Min" /></td>
+                                <td><input type="checkbox" id="OfferAttributes_FromList_@i" name="OfferAttributes[@i].FromList" value="@Model.OfferAttributes[i].FromList" checked="@Model.OfferAttributes[i].FromList" /></td>
+                                <td><input type="text" style="width:70px;" id="OfferAttributes_ValuesList_@i" name="OfferAttributes[@i].ValuesList" value="@Model.OfferAttributes[i].ValuesList" /></td>
+                                <td><input type="text" style="width:70px;" id="OfferAttributes_Max_@i" name="OfferAttributes[@i].Max" value="@Model.OfferAttributes[i].Max" /></td>
+                                <td><input type="text" style="width:70px;" id="OfferAttributes_Min_@i" name="OfferAttributes[@i].Min" value="@Model.OfferAttributes[i].Min" /></td>
                                 @*<td><input type="text" style="width:70px;" id="OfferAttributes_i__OfferID" name="OfferAttributes[@i].OfferID" /></td>*@
-                                <td><input type="text" style="width:70px;" id="OfferAttributes[@i].Type" name="OfferAttributes[@i].Type" value="@Model.OfferAttributes[i].Type" /></td>
-                                <td><input type="text" style="width:70px;" id="OfferAttributes[@i].DisplaySequence" name="OfferAttributes[@i].DisplaySequence" value="@Model.OfferAttributes[i].DisplaySequence" /></td>
-                                <td><input type="checkbox" id="OfferAttributes[@i].Isactive" name="OfferAttributes[@i].Isactive" value="@Model.OfferAttributes[i].Isactive" /></td>
+                                <td><input type="text" style="width:70px;" id="OfferAttributes_Type_@i" name="OfferAttributes[@i].Type" value="@Model.OfferAttributes[i].Type" /></td>
+                                <td><input type="text" style="width:70px;" id="OfferAttributes_DisplaySequence_@i" name="OfferAttributes[@i].DisplaySequence" value="@Model.OfferAttributes[i].DisplaySequence" /></td>
+                                <td>
+                                    @*<input type="checkbox" id="OfferAttributes_Isactive_@i" name="OfferAttributes[@i].Isactive" value="@Model.OfferAttributes[i].Isactive" checked="@Model.OfferAttributes[i].Isactive" />*@
+                                    @Html.CheckBoxFor(model => model.OfferAttributes[i].Isactive, new { name = "OfferAttributes[@i].Isactive", id = "OfferAttributes_Isactive_@i" })
+                                </td>
                                 <td>
                                     <input id="btnRemoveBook" class="cm-button-default mt0" type="button" value="Remove" onclick="removeRow(@i);" />
                                     <input type="hidden" value="" id="OfferAttributes_IsRemove_@i" name="OfferAttributes[@i].IsRemove" />
                                 </td>
                             </tr>
 
-                        </tbody>
-                    }
+
+                        }
+                    </tbody>
                 </table>
             }
 
@@ -105,25 +109,31 @@
                 </table>
             }
             <table id="OldReusableTable" style="display:none;">
-                <tbody id="ReusableTable">
+                <tbody id="HiddenReusableTable">
                     <tr id='tr_OfferAttributes_itemIndex'>
                         <td>
-                            <input id='OfferAttributes[itemIndex].Id' type='hidden' value='itemIndex' class='iHidden' name='OfferAttributes[itemIndex].Id' /><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].ParameterId' name='OfferAttributes[itemIndex].ParameterId' />
+                            <input id='OfferAttributes_Id_itemIndex' type='hidden' value='itemIndex' class='iHidden' name='OfferAttributes[itemIndex].Id' />
+                            <input id="OfferAttributes_AttributeID_itemIndex" type="hidden" class="iHidden" name='OfferAttributes[itemIndex].AttributeID' />
+                            <input type='text' style='width:70px;' id='OfferAttributes_ParameterId_itemIndex' name='OfferAttributes[itemIndex].ParameterId' />
                         </td>
-                        <td><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].DisplayName' name='OfferAttributes[itemIndex].DisplayName' /></td>
-                        <td><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].Description' name='OfferAttributes[itemIndex].Description' /></td>
+                        <td><input type='text' style='width:70px;' id='OfferAttributes_DisplayName_itemIndex' name='OfferAttributes[itemIndex].DisplayName' /></td>
+                        <td><input type='text' style='width:70px;' id='OfferAttributes_Description_itemIndex' name='OfferAttributes[itemIndex].Description' /></td>
                         <td>
                             @*<input type='text' style='width:70px;' id='OfferAttributes[itemIndex].ValueTypeId' name='OfferAttributes[itemIndex].ValueTypeId' />*@
-                            @Html.DropDownList("OfferAttributes[itemIndex].ValueTypeId", ViewBag.ValueTypes as SelectList, new { @id = "OfferAttributes[itemIndex].ValueTypeId" })
+                            @Html.DropDownList("OfferAttributes[itemIndex].ValueTypeId", ViewBag.ValueTypes as SelectList, new { @id = "OfferAttributes_ValueTypeId_itemIndex" })
                         </td>
-                        <td><input type='checkbox' value='true' id='OfferAttributes[itemIndex].FromList' name='OfferAttributes[itemIndex].FromList' /></td>
-                        <td><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].ValuesList' name='OfferAttributes[itemIndex].ValuesList' /></td>
-                        <td><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].Max' name='OfferAttributes[itemIndex].Max' /></td>
-                        <td><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].Min' name='OfferAttributes[itemIndex].Min' /></td>
+                        <td><input type='checkbox' value='true' id='OfferAttributes_FromList_itemIndex' name='OfferAttributes[itemIndex].FromList' /></td>
+                        <td><input type='text' style='width:70px;' id='OfferAttributes_ValuesList_itemIndex' name='OfferAttributes[itemIndex].ValuesList' /></td>
+                        <td><input type='text' style='width:70px;' id='OfferAttributes_Max_itemIndex' name='OfferAttributes[itemIndex].Max' /></td>
+                        <td><input type='text' style='width:70px;' id='OfferAttributes_Min_itemIndex' name='OfferAttributes[itemIndex].Min' /></td>
                         @*<td><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].OfferID' name='OfferAttributes[itemIndex].OfferID' /></td>*@
-                        <td><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].Type' name='OfferAttributes[itemIndex].Type' /></td>
-                        <td><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].DisplaySequence' name='OfferAttributes[itemIndex].DisplaySequence' /></td>
-                        <td><input type='checkbox' value='true' id='OfferAttributes[itemIndex].Isactive' name='OfferAttributes[itemIndex].Isactive' /></td>
+                        <td><input type='text' style='width:70px;' id='OfferAttributes_Type_itemIndex' name='OfferAttributes[itemIndex].Type' /></td>
+                        <td><input type='text' style='width:70px;' id='OfferAttributes_DisplaySequence_itemIndex' name='OfferAttributes[itemIndex].DisplaySequence' /></td>
+                        <td>
+                            @*<input type='checkbox' value='true' id='OfferAttributes_Isactive_itemIndex' name='OfferAttributes[itemIndex].Isactive' />*@
+                            @Html.CheckBox("OfferAttributes[itemIndex].Isactive", new { @id = "OfferAttributes_Isactive_itemIndex" })
+                        </td>
+
                         <td>
                             <input id='btnRemoveBook' class='cm-button-default mt0' type='button' value='Remove' onclick='removeRow(itemIndex);' />
                             <input type='hidden' value='' id='OfferAttributes_IsRemove_itemIndex' name='OfferAttributes[itemIndex].IsRemove' />
@@ -145,7 +155,8 @@
 <script>
     $(document).ready(function () {
         $('#tblcontainer').hide();
-        var fieldLength = $("#tblcontainer input.iHidden").length;
+        //var fieldLength = $("#tblcontainer ReplacingTable input.iHidden").length;
+        var fieldLength = $("#tblcontainer > #ReplacingTable > tr").length;
         if (fieldLength != undefined || fieldLength != 0) {
             $('#tblcontainer').show();
         }
@@ -154,9 +165,10 @@
         $("#btnAdd").click(function (e) {
             debugger;
             $('#tblcontainer').show();
-            var itemIndex = $("#tblcontainer input.iHidden").length;
+            //var itemIndex = $("#tblcontainer input.iHidden").length;
+            var itemIndex = $("#tblcontainer > #ReplacingTable > tr").length;
             e.preventDefault();
-            var newItem = $("#ReusableTable").html();
+            var newItem = $("#HiddenReusableTable").html();
             var findstrinig = 'itemIndex';
             var regx = new RegExp(findstrinig, 'g');
             newItem = newItem.replace(regx, itemIndex);

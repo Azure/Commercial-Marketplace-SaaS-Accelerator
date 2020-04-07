@@ -14,14 +14,14 @@ namespace Microsoft.Marketplace.Saas.Web.Models
         public string Description { get; set; }
         public int? ValueTypeId { get; set; }
         //public List<ValueTypes> ValueType { get; set; }
-        public bool? FromList { get; set; }
+        public bool FromList { get; set; }
         public string ValuesList { get; set; }
         public int? Max { get; set; }
         public int? Min { get; set; }
         public Guid? OfferId { get; set; }
         public string Type { get; set; }
         public int? DisplaySequence { get; set; }
-        public bool? Isactive { get; set; }
+        public bool Isactive { get; set; }
         public bool IsRemove { get; set; }
         public int UserId { get; set; }
         public DateTime CreateDate { get; set; }
