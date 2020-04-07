@@ -30,6 +30,7 @@
                                         <th>User Email</th>
                                         <th>Subscription Name</th>
                                         <th>Plan</th>
+                                        <th>Quantity</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -38,27 +39,37 @@
                                     @for (var i = 0; i < Model.Subscriptions.Count; i++)
                                     {
                                         var subscription = Model.Subscriptions[i];
-                                        <tr>
-                                            <td class="text-left">
-                                                @subscription.CustomerName
-                                            </td>
-                                            <td class="text-left">
-                                                @subscription.CustomerEmailAddress
-                                            </td>
-                                            <td class="text-left">
-                                                @Html.HiddenFor(s => s.Subscriptions[i].Id)
-                                                @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
-                                                @subscription.Name
-                                            </td>
-                                            <td class="text-left">@subscription.PlanId</td>
-                                            <td class="text-left">@subscription.SaasSubscriptionStatus</td>
-                                            <td class="text-left text-left">
-                                                @if (subscription.IsMeteringSupported && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
-                                                {
-                                                    <button type="submit" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId" class="btn btn-primary">Manage Usage</button>
-                                                }
-                                            </td>
-                                        </tr>
+                                    <tr>
+                                        <td class="text-left">
+                                            @subscription.CustomerName
+                                        </td>
+                                        <td class="text-left">
+                                            @subscription.CustomerEmailAddress
+                                        </td>
+                                        <td class="text-left">
+                                            @Html.HiddenFor(s => s.Subscriptions[i].Id)
+                                            @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
+                                            @subscription.Name
+                                        </td>
+                                        <td class="text-left">@subscription.PlanId</td>
+                                        <td class="text-left">
+                                            @if (@subscription.IsPerUserPlan)
+                                            {
+                                                @subscription.Quantity
+                                            }
+                                            else
+                                            {
+                                                <span>N/A</span>
+                                            }
+                                        </td>
+                                        <td class="text-left">@subscription.SaasSubscriptionStatus</td>
+                                        <td class="text-left text-left">
+                                            @if (subscription.IsMeteringSupported && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                                            {
+                                                <button type="submit" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId" class="btn btn-primary">Manage Usage</button>
+                                            }
+                                        </td>
+                                    </tr>
                                     }
                                 </tbody>
                             </table>
