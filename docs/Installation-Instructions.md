@@ -204,12 +204,12 @@ In this section, we will go over the steps to download the latest sources from t
    ![Deploy database](./images/Deploy-Database.png) 
    - Click **Purchase** after agreeing to the terms and conditions by checking the box to start the deployment of the database by name **AMPSaaSDB**
    - Update the connection string property in **appSettings.json** with the details related to SQL Server name, database and the credentials to connect to the database.
-   - >**Note:** The application holds the configuration, feature flags and email templates in tables named **ApplicationConfiguration** and **EmailTemplate** tables. It is recommended that these tables are initialized and the values are validated by running the relevant SQL in **AMP-DB.sql**
-- If you want to set up the database locally, you could create and initialize the database by the running the SQL scripts available under **deployment/Database/AMP-DB.sql** folder.
+   - >**Note:** The application holds the configuration, feature flags and email templates in tables named **ApplicationConfiguration** and **EmailTemplate** tables. It is recommended that these tables are initialized and the values are validated by running the relevant SQL in **AMP-DB-1.1.sql**
+- If you want to set up the database locally, you could create and initialize the database by following the steps given below:
   - Create a database named **AMPSaaSDB**
   - Switch to the database - **AMPSaaSDB**
-  - Run the script - **Master-DB.sql** to initalize the database
-  - Run the script - **Upgrade-To-1.1.sql** to update your existing database to 1.1
+  - Run the script - **AMP-DB-1.0.sql** to initalize the database
+  - Run the script - **AMP-DB-1.1.sql** to update your existing database to 1.1
   - Add entries into KnownUsers table to allow login to **Publisher Portal**   
   > Note: If you already had created a database using an earlier version of the SDK, you just need to run the **Upgrade-To-1.1.sql** 
       
