@@ -1,3 +1,64 @@
+/*Use the database you have created earlied from Master. example: [AMP-DB]*/
+
+
+
+/****** Object:  Table [dbo].[MeteredAuditLogs]    Script Date: 3/12/2020 1:28:58 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MeteredAuditLogs](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[SubscriptionId] [int] NULL,
+	[RequestJson] [varchar](500) NULL,
+	[ResponseJson] [varchar](500) NULL,
+	[StatusCode] [varchar](100) NULL,
+	[CreatedDate] [datetime] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[SubscriptionUsageDate] [datetime] NULL,
+ CONSTRAINT [PK_MeteredAuditLogs] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[MeteredDimensions]    Script Date: 3/12/2020 1:28:58 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MeteredDimensions](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Dimension] [varchar](150) NULL,
+	[PlanId] [int] NULL,
+	[CreatedDate] [datetime] NULL,
+	[Description] [varchar](250) NULL,
+ CONSTRAINT [PK_MeteredDimensions] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+GO
+/****** Object:  Table [dbo].[SubscriptionLicenses]    Script Date: 3/12/2020 1:28:58 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[SubscriptionLicenses](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[LicenseKey] [varchar](255) NULL,
+	[IsActive] [bit] NULL,
+	[SubscriptionID] [int] NULL,
+	[CreatedDate] [datetime] NULL,
+	[CreatedBy] [int] NULL,
+ CONSTRAINT [PK_SubscriptionLicenses] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
 
 
 --/* upgrade-to-1.1  Script*/
@@ -74,7 +135,7 @@ GO
 ALTER TABLE [dbo].[KnownUsers]  WITH CHECK ADD FOREIGN KEY([RoleId])
 REFERENCES [dbo].[Roles] ([Id])
 GO
-ALTER TABLE Subscriptions ALTER COLUMN  [AMPSubscriptionId]  ADD ROWGUIDCOL 
+--ALTER TABLE Subscriptions ALTER COLUMN  [AMPSubscriptionId]  ADD ROWGUIDCOL 
 
 GO
 /*Insert scripts*/
@@ -90,6 +151,30 @@ BEGIN
 END
 -- END
 GO
+
+ALTER TABLE Plans Add [IsmeteringSupported] [bit] NULL
+
+GO
+
+ALTER TABLE  SubscriptionAuditLogs Alter column [NewValue] [varchar](max) NULL
+
+--ALTER TABLE [dbo].[Subscriptions] ADD  CONSTRAINT [DF_Subscriptions_AMPSubscriptionId]  DEFAULT (newid()) FOR [AMPSubscriptionId]
+GO
+ALTER TABLE [dbo].[MeteredAuditLogs]  WITH CHECK ADD FOREIGN KEY([SubscriptionId]) REFERENCES [dbo].[Subscriptions] ([Id])
+GO
+ALTER TABLE [dbo].[MeteredDimensions]  WITH CHECK ADD FOREIGN KEY([PlanId]) REFERENCES [dbo].[Plans] ([Id])
+GO
+--ALTER TABLE [dbo].[MeteredDimensions]  WITH CHECK ADD FOREIGN KEY([PlanId]) REFERENCES [dbo].[Plans] ([Id])
+GO
+ALTER TABLE [dbo].[SubscriptionAuditLogs]  WITH CHECK ADD FOREIGN KEY([SubscriptionID]) REFERENCES [dbo].[Subscriptions] ([Id])
+GO
+-- ALTER TABLE [dbo].[SubscriptionAuditLogs]  WITH CHECK ADD FOREIGN KEY([SubscriptionID]) REFERENCES [dbo].[Subscriptions] ([Id])
+GO
+ALTER TABLE [dbo].[SubscriptionLicenses]  WITH CHECK ADD FOREIGN KEY([SubscriptionID]) REFERENCES [dbo].[Subscriptions] ([Id])
+GO
+--ALTER TABLE [dbo].[Subscriptions]  WITH CHECK ADD FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId])
+GO
+
 
 
 /*Script to initialize KNOWNUSERS*/
@@ -114,9 +199,9 @@ INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES
 GO
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'ApplicationName', N'Contoso', N'Application Name')
 GO
-INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsEmailEnabledForSubscriptionActivation', N'False', N'Active Email Enabled')
+INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsEmailEnabledForSubscriptionActivation', N'True', N'Active Email Enabled')
 GO
-INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsEmailEnabledForUnsubscription', N'False', N'Unsubscribe Email Enabled')
+INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsEmailEnabledForUnsubscription', N'True', N'Unsubscribe Email Enabled')
 GO
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsLicenseManagementEnabled', N'True', N'To Enable or Disable Licenses Menu') 
 GO
