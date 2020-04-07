@@ -282,8 +282,8 @@ GO
 GO
 IF EXISTS(SELECT 1 FROM SYS.TABLES WHERE NAME ='Plans')
 	BEGIN
-		ALTER TABLE Plans ADD PlanGUID UNIQUEIDENTIFIER
-		ALTER TABLE Plans ADD OfferID UNIQUEIDENTIFIER
+		ALTER TABLE Plans ADD PlanGUID UNIQUEIDENTIFIER NOT NULL
+		ALTER TABLE Plans ADD OfferID UNIQUEIDENTIFIER NOT NULL
 		ALTER TABLE Plans ADD DeployToCustomerSubscription BIT
 	END
 
@@ -292,3 +292,15 @@ GO
 --Update Plans set OfferID=(select OfferGUId from Offers)
 UPDATE PLANS SET PlanGUID = NEWID() where PlanGUID is null;
 GO
+
+
+alter table [PlanAttributeMapping] alter column PlanId uniqueidentifier not null
+alter table PlanEventsMapping alter column PlanId uniqueidentifier not null
+alter table [OfferAttributes] alter column OfferId uniqueidentifier not null
+alter table Offers alter column OfferGUId uniqueidentifier not null
+--alter table Plans alter column OfferID  uniqueidentifier not null
+--alter table Plans alter column PlanGUID  uniqueidentifier not null
+ 
+
+
+ GO
