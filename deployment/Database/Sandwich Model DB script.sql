@@ -294,6 +294,19 @@ UPDATE PLANS SET PlanGUID = NEWID() where PlanGUID is null;
 GO
 
 
+
+CREATE TABLE PlanAttributeOutput
+(
+PlanAttributeId Int Primary Key, 
+PlanId Uniqueidentifier,
+OfferAttributeId Int,
+DisplayName Varchar(225),
+IsEnabled bit
+)
+
+
+GO
+
 alter table [PlanAttributeMapping] alter column PlanId uniqueidentifier not null
 alter table PlanEventsMapping alter column PlanId uniqueidentifier not null
 alter table [OfferAttributes] alter column OfferId uniqueidentifier not null
