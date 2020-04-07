@@ -76,6 +76,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 plan.PlanAttributes.Add(planAttributesmodel);
             }
 
+            plan.PlanEvents = new List<PlanEventsModel>();
 
             return plan;
         }

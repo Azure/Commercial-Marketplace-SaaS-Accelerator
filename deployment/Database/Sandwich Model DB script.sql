@@ -193,8 +193,8 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PlanAttributeMapping](
 	[PlanAttributeId] [int] IDENTITY(1,1) NOT NULL,
-	[PlanId] [uniqueidentifier] NULL,
-	[OfferAttributeID] [int] NULL,
+	[PlanId] [uniqueidentifier] not NULL,
+	[OfferAttributeID] [int]  not NULL,
 	[IsEnabled] bit  not NULL,
 	[CreateDate] [datetime] NULL,
 	[UserId] [int] NULL,
@@ -298,12 +298,103 @@ GO
 CREATE TABLE PlanAttributeOutput
 (
 PlanAttributeId Int Primary Key, 
-PlanId Uniqueidentifier,
-OfferAttributeId Int,
-DisplayName Varchar(225),
-IsEnabled bit
+PlanId Uniqueidentifier NOt NULL,
+OfferAttributeId Int NOT NULL,
+DisplayName Varchar(225) NOT NULL,
+IsEnabled bit NOT NULL
 )
 
+
+
+go
+/* 
+Exec spGetOfferParameters 'B8F4D276-15EB-4EB6-89D4-E600FF1098EF'
+*/
+ALTER Procedure spGetOfferParameters
+(
+@PlanId Uniqueidentifier
+)
+AS
+BEGIN
+ 
+
+Declare @OfferId Uniqueidentifier 
+Set @OfferId=(Select OfferId from Plans where PlanGuId =@PlanId )
+
+
+SELECT  
+isnull(PA.PlanAttributeId,OA.ID) PlanAttributeId
+,PA.OfferAttributeID 
+,PA.PlanId
+,OA.DisplayName
+,OA.DisplaySequence
+,isnull(PA.IsEnabled,0) IsEnabled
+from [dbo].[OfferAttributes] OA
+left  join 
+[dbo].[PlanAttributeMapping]  PA
+on OA.ID= PA.OfferAttributeID and OA.OfferId=@OfferId
+and  PA.PlanId=@PlanId
+where  
+OA.Isactive=1 
+
+END
+
+
+
+
+
+go
+/* 
+Exec spGetPlanEvents 'B8F4D276-15EB-4EB6-89D4-E600FF1098EF'
+*/
+ALTER Procedure spGetPlanEvents
+(
+@PlanId Uniqueidentifier
+)
+AS
+BEGIN
+ 
+Declare @OfferId Uniqueidentifier 
+--Set @OfferId=(Select OfferId from Plans where PlanGuId =@PlanId )
+--isnull(PlanAttributeId,ID),ParameterId,DisplayName,DisplaySequence,isnull(IsEnabled,0)
+
+SELECT  
+ ISNULL(OEM.Id,E.EventsId)  Id
+,OEM.PlanId
+--,OEM.ARMTemplateId
+,OEM.EventId 
+,ISNULL(OEM.Isactive,0)Isactive
+,ISNULL(OEM.SuccessStateEmails,'')SuccessStateEmails
+,ISNULL(OEM.FailureStateEmails,'')FailureStateEmails
+,E.EventsName
+from Events  E
+left  join 
+PlanEventsMapping  OEM
+on
+E.EventsId= OEM.EventId and  OEM.PlanId= @PlanId
+where  
+E.Isactive=1 
+
+END
+Go
+
+CREATE TABLE PlanEvents
+(
+ID int Primary Key,
+PlanId Uniqueidentifier Not Null,
+Isactive bit Not NUll,
+SuccessStateEmails Varchar(max),
+FailureStateEmails Varchar(max), 
+EventId Int Not NUll,
+EventsName Varchar(225) Not NUll,
+)
+
+
+--Insert into Events
+--Select 'Activate' , 1, Getdate() UNION ALL
+--Select 'Unsubscribe' , 1, Getdate()
+
+----update Events set EventsName='Unsubscribe' where EventsId=2
 
 GO
 
@@ -317,6 +408,7 @@ alter table Offers alter column OfferGUId uniqueidentifier not null
  alter table [OfferAttributes] alter column  [FromList] [bit]  Not NULL
  alter table [OfferAttributes] alter column  [Isactive] [bit] Not NULL
  alter table  [PlanAttributeMapping] alter column  [IsEnabled] bit  not NULL
+ alter table  [PlanAttributeMapping] alter column  [OfferAttributeID] int  not NULL
  alter table   PlanEventsMapping  alter column  [PlanId] [uniqueidentifier] not NULL
 alter table   PlanEventsMapping  alter column 	[ARMTemplateId] [uniqueidentifier] not NULL
 alter table   PlanEventsMapping	 alter column [EventId] [int] not NULL

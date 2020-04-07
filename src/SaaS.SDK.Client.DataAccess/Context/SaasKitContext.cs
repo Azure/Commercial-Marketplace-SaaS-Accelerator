@@ -27,6 +27,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<OfferAttributes> OfferAttributes { get; set; }
         public virtual DbSet<Offers> Offers { get; set; }
         public virtual DbSet<PlanAttributeMapping> PlanAttributeMapping { get; set; }
+        public virtual DbSet<PlanAttributeOutput> PlanAttributeOutput { get; set; }
         public virtual DbSet<PlanEventsMapping> PlanEventsMapping { get; set; }
         public virtual DbSet<Plans> Plans { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
@@ -233,6 +234,18 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.OfferAttributeId).HasColumnName("OfferAttributeID");
+            });
+
+            modelBuilder.Entity<PlanAttributeOutput>(entity =>
+            {
+                entity.HasKey(e => e.PlanAttributeId)
+                    .HasName("PK__PlanAttr__8B476A986B0FD926");
+
+                entity.Property(e => e.PlanAttributeId).ValueGeneratedNever();
+
+                entity.Property(e => e.DisplayName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<PlanEventsMapping>(entity =>

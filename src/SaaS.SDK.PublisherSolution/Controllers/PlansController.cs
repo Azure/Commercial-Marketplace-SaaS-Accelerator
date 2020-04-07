@@ -99,5 +99,21 @@
             return this.PartialView(plans);
         }
 
+
+        /// <summary>
+        /// Indexes this instance.
+        /// </summary>
+        /// <returns>return All subscription</returns>
+        [HttpPost]
+        public IActionResult PlanDetails(PlansModel plans)
+        {
+            ////OffersViewModel OffersData = new OffersViewModel();
+            //PlansModel plans = new PlansModel();
+            //this.TempData["ShowWelcomeScreen"] = "True";
+            //var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+            //plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
+            return this.PartialView(plans);
+        }
+
     }
 }

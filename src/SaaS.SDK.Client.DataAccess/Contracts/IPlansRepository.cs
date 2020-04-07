@@ -14,7 +14,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 
         List<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid OfferId);
 
-        IEnumerable<PlanEventsMapping> GetPlanEventsByPlanGuId(Guid planGuId, Guid OfferId);
+        IEnumerable<PlanEventsModel> GetPlanEventsByPlanGuId(Guid planGuId, Guid OfferId);
         IEnumerable<Plans> GetPlansByUser();
     }
 }

@@ -115,47 +115,104 @@
         //    return Context.PlanAttributeMapping.Where(s => s.PlanId == planGuId);
         //}
 
+        //public List<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid offerId)
+        //{
+
+
+        //    var offerAttributes = from OfferAttr in Context.OfferAttributes //.Where(s => s.PlanId == planGuId)
+        //                          join planAttr in Context.PlanAttributeMapping on OfferAttr.Id equals planAttr.OfferAttributeId into attr
+        //                          from planAttribute in attr.DefaultIfEmpty()//.Where(s => s.Isactive == true && s.OfferId == offerId)
+        //                          select new
+        //                          {
+        //                              PlanAttributeId = planAttribute.PlanAttributeId,
+        //                              PlanId = planAttribute.PlanId,
+        //                              OfferAttributeId = planAttribute.OfferAttributeId,
+        //                              IsEnabled = planAttribute.IsEnabled,
+        //                              DisplayName = OfferAttr.DisplayName
+        //                          };
+        //    var OfferAttributelist = offerAttributes.ToList();
+
+        //    List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
+
+        //    if (offerAttributes != null && offerAttributes.Count() > 0)
+        //    {
+        //        foreach (var offerAttribute in offerAttributes)
+        //        {
+        //            PlanAttributesModel planAttributes = new PlanAttributesModel();
+        //            planAttributes.PlanAttributeId = offerAttribute.PlanAttributeId;
+        //            planAttributes.PlanId = offerAttribute.PlanId;
+        //            planAttributes.OfferAttributeId = offerAttribute.OfferAttributeId;
+        //            planAttributes.IsEnabled = offerAttribute.IsEnabled;
+        //            planAttributes.DisplayName = offerAttribute.DisplayName;
+        //            attributesList.Add(planAttributes);
+        //        }
+        //    }
+
+        //    //Context.PlanAttributeMapping.Where(s => s.PlanId == planGuId);
+        //    return attributesList;
+        //}
+
         public List<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid offerId)
         {
 
 
-            var offerAttributes = from OfferAttr in Context.OfferAttributes //.Where(s => s.PlanId == planGuId)
-                                  join planAttr in Context.PlanAttributeMapping on OfferAttr.Id equals planAttr.OfferAttributeId into attr
-                                  from planAttribute in attr.DefaultIfEmpty()//.Where(s => s.Isactive == true && s.OfferId == offerId)
-                                  select new
-                                  {
-                                      PlanAttributeId = planAttribute.PlanAttributeId,
-                                      PlanId = planAttribute.PlanId,
-                                      OfferAttributeId = planAttribute.OfferAttributeId,
-                                      IsEnabled = planAttribute.IsEnabled,
-                                      DisplayName = OfferAttr.DisplayName
-                                  };
-            var OfferAttributelist = offerAttributes.ToList();
-
-            List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
-
-            if (offerAttributes != null && offerAttributes.Count() > 0)
+            try
             {
-                foreach (var offerAttribute in offerAttributes)
-                {
-                    PlanAttributesModel planAttributes = new PlanAttributesModel();
-                    planAttributes.PlanAttributeId = offerAttribute.PlanAttributeId;
-                    planAttributes.PlanId = offerAttribute.PlanId;
-                    planAttributes.OfferAttributeId = offerAttribute.OfferAttributeId;
-                    planAttributes.IsEnabled = offerAttribute.IsEnabled;
-                    planAttributes.DisplayName = offerAttribute.DisplayName;
-                    attributesList.Add(planAttributes);
-                }
-            }
+                var offerAttributes = Context.PlanAttributeOutput.FromSqlRaw("dbo.spGetOfferParameters {0}", planGuId);
 
-            //Context.PlanAttributeMapping.Where(s => s.PlanId == planGuId);
-            return attributesList;
+                List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
+
+                if (offerAttributes != null && offerAttributes.Count() > 0)
+                {
+                    foreach (var offerAttribute in offerAttributes)
+                    {
+                        PlanAttributesModel planAttributes = new PlanAttributesModel();
+                        planAttributes.PlanAttributeId = offerAttribute.PlanAttributeId;
+                        planAttributes.PlanId = offerAttribute.PlanId;
+                        planAttributes.OfferAttributeId = offerAttribute.OfferAttributeId;
+                        planAttributes.IsEnabled = offerAttribute.IsEnabled;
+                        planAttributes.DisplayName = offerAttribute.DisplayName;
+                        attributesList.Add(planAttributes);
+                    }
+                }
+
+
+            }
+            catch (Exception)
+            { }
+            return new List<PlanAttributesModel>();
         }
 
-
-        public IEnumerable<PlanEventsMapping> GetPlanEventsByPlanGuId(Guid planGuId, Guid offerId)
+        public IEnumerable<PlanEventsModel> GetPlanEventsByPlanGuId(Guid planGuId, Guid offerId)
         {
-            return Context.PlanEventsMapping.Where(s => s.PlanId == planGuId);
+            //return Context.PlanEventsMapping.Where(s => s.PlanId == planGuId);
+
+
+            try
+            {
+                var offerAttributes = Context.PlanAttributeOutput.FromSqlRaw("dbo.spGetPlanEvents {0}", planGuId);
+
+                List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
+
+                if (offerAttributes != null && offerAttributes.Count() > 0)
+                {
+                    foreach (var offerAttribute in offerAttributes)
+                    {
+                        PlanAttributesModel planAttributes = new PlanAttributesModel();
+                        planAttributes.PlanAttributeId = offerAttribute.PlanAttributeId;
+                        planAttributes.PlanId = offerAttribute.PlanId;
+                        planAttributes.OfferAttributeId = offerAttribute.OfferAttributeId;
+                        planAttributes.IsEnabled = offerAttribute.IsEnabled;
+                        planAttributes.DisplayName = offerAttribute.DisplayName;
+                        attributesList.Add(planAttributes);
+                    }
+                }
+
+
+            }
+            catch (Exception)
+            { }
+            return new List<PlanEventsModel>();
         }
 
         /// <summary>

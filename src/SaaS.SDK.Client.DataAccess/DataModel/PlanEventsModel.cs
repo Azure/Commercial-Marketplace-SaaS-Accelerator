@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
+namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
 {
-    public partial class PlanEventsMapping
+   public class PlanEventsModel
     {
         public int Id { get; set; }
         public Guid PlanId { get; set; }
-        public Guid ArmtemplateId { get; set; }
         public int EventId { get; set; }
-        public bool Isactive { get; set; }
+        public string EventsName { get; set; }
         public string SuccessStateEmails { get; set; }
         public string FailureStateEmails { get; set; }
-        public DateTime? CreateDate { get; set; }
-        public int? UserId { get; set; }
+        public bool Isactive { get; set; }
     }
 }
