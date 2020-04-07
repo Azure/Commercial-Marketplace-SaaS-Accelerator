@@ -161,7 +161,7 @@ CREATE TABLE [dbo].[OfferAttributes](
 	[Isactive] [bit] Not NULL,
 	[CreateDate] [datetime] NULL,
 	[UserId] [int] NULL,
-	[OfferId] [uniqueidentifier] NULL,
+	[OfferId] [uniqueidentifier] not NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -195,7 +195,7 @@ CREATE TABLE [dbo].[PlanAttributeMapping](
 	[PlanAttributeId] [int] IDENTITY(1,1) NOT NULL,
 	[PlanId] [uniqueidentifier] NULL,
 	[OfferAttributeID] [int] NULL,
-	[IsEnabled] [int] NULL,
+	[IsEnabled] bit  not NULL,
 	[CreateDate] [datetime] NULL,
 	[UserId] [int] NULL,
 PRIMARY KEY CLUSTERED 
@@ -223,9 +223,9 @@ GO
 
 CREATE TABLE [dbo].[PlanEventsMapping](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[PlanId] [uniqueidentifier] NULL,
-	[ARMTemplateId] [uniqueidentifier] NULL,
-	[EventId] [int] NULL,
+	[PlanId] [uniqueidentifier] not NULL,
+	[ARMTemplateId] [uniqueidentifier] not NULL,
+	[EventId] [int] not NULL,
 	[Isactive] [bit] Not NULL,
 	[SuccessStateEmails] [varchar](225) NULL,
 	[FailureStateEmails] [varchar](225) NULL,
@@ -249,13 +249,13 @@ SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[SubscriptionAttributeValues](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
-	[PlanAttributeId] [int] NULL,
+	[PlanAttributeId] [int] NOT NULL,
 	[Value] [varchar](225) NULL,
-	[SubscriptionId] [uniqueidentifier] NULL,
+	[SubscriptionId] [uniqueidentifier] NOT NULL,
 	[CreateDate] [datetime] NULL,
 	[UserId] [int] NULL,
-	[PlanID] [uniqueidentifier] NULL,
-	[OfferID] [uniqueidentifier] NULL,
+	[PlanID] [uniqueidentifier] NOT  NULL,
+	[OfferID] [uniqueidentifier]  NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -313,7 +313,18 @@ alter table [OfferAttributes] alter column OfferId uniqueidentifier not null
 alter table Offers alter column OfferGUId uniqueidentifier not null
 --alter table Plans alter column OfferID  uniqueidentifier not null
 --alter table Plans alter column PlanGUID  uniqueidentifier not null
- 
+ alter table [OfferAttributes] alter column  [OfferId] [uniqueidentifier] not NULL
+ alter table [OfferAttributes] alter column  [FromList] [bit]  Not NULL
+ alter table [OfferAttributes] alter column  [Isactive] [bit] Not NULL
+ alter table  [PlanAttributeMapping] alter column  [IsEnabled] bit  not NULL
+ alter table   PlanEventsMapping  alter column  [PlanId] [uniqueidentifier] not NULL
+alter table   PlanEventsMapping  alter column 	[ARMTemplateId] [uniqueidentifier] not NULL
+alter table   PlanEventsMapping	 alter column [EventId] [int] not NULL
+alter table   PlanEventsMapping	 alter column  [Isactive] [bit] Not NULL
 
+alter table  SubscriptionAttributeValues alter column	[PlanAttributeId] [int] NOT NULL
+alter table  SubscriptionAttributeValues alter column	[SubscriptionId] [uniqueidentifier] NOT NULL
+alter table  SubscriptionAttributeValues alter column	[PlanID] [uniqueidentifier] NOT  NULL
+alter table  SubscriptionAttributeValues alter column	[OfferID] [uniqueidentifier]  NOT NULL
 
  GO
