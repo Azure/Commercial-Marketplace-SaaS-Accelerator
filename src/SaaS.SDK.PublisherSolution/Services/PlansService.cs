@@ -78,6 +78,20 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
 
             plan.PlanEvents = new List<PlanEventsModel>();
 
+            foreach (var events in planEvents)
+            {
+                PlanEventsModel planEventsModel = new PlanEventsModel()
+                {
+                    Id = events.Id,
+                    PlanId = events.PlanId,
+                    Isactive = events.Isactive,
+                    SuccessStateEmails = events.SuccessStateEmails,
+                    FailureStateEmails = events.FailureStateEmails,
+                    EventName = events.EventsName,
+                    EventId = events.EventId,
+                };
+                plan.PlanEvents.Add(planEventsModel);
+            }
             return plan;
         }
 

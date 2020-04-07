@@ -304,7 +304,9 @@ DisplayName Varchar(225) NOT NULL,
 IsEnabled bit NOT NULL
 )
 
-
+--truncate table PlanAttributeOutput
+--Insert into PlanAttributeOutput
+--Exec spGetOfferParameters 'B8F4D276-15EB-4EB6-89D4-E600FF1098EF'
 
 go
 /* 
@@ -317,17 +319,15 @@ ALTER Procedure spGetOfferParameters
 AS
 BEGIN
  
-
 Declare @OfferId Uniqueidentifier 
 Set @OfferId=(Select OfferId from Plans where PlanGuId =@PlanId )
-
-
 SELECT  
-isnull(PA.PlanAttributeId,OA.ID) PlanAttributeId
-,PA.OfferAttributeID 
-,PA.PlanId
+isnull(PA.PlanAttributeId,0) PlanAttributeId
+,ISNULL(PA.PlanId,@PlanId) PlanId 
+,ISNULL(PA.OfferAttributeID ,OA.ID)  OfferAttributeID
+
 ,OA.DisplayName
-,OA.DisplaySequence
+--,OA.DisplaySequence
 ,isnull(PA.IsEnabled,0) IsEnabled
 from [dbo].[OfferAttributes] OA
 left  join 
@@ -344,6 +344,9 @@ END
 
 
 go
+
+
+
 /* 
 Exec spGetPlanEvents 'B8F4D276-15EB-4EB6-89D4-E600FF1098EF'
 */
@@ -359,13 +362,15 @@ Declare @OfferId Uniqueidentifier
 --isnull(PlanAttributeId,ID),ParameterId,DisplayName,DisplaySequence,isnull(IsEnabled,0)
 
 SELECT  
- ISNULL(OEM.Id,E.EventsId)  Id
-,OEM.PlanId
+ ISNULL(OEM.Id,0)  Id
+,ISNULL(OEM.PlanId,@PlanId) PlanId
 --,OEM.ARMTemplateId
-,OEM.EventId 
-,ISNULL(OEM.Isactive,0)Isactive
+,ISNULL(OEM.Isactive,0) Isactive
+
 ,ISNULL(OEM.SuccessStateEmails,'')SuccessStateEmails
 ,ISNULL(OEM.FailureStateEmails,'')FailureStateEmails
+,E.EventsId as EventId
+
 ,E.EventsName
 from Events  E
 left  join 
@@ -378,7 +383,7 @@ E.Isactive=1
 END
 Go
 
-CREATE TABLE PlanEvents
+CREATE TABLE PlanEventsOutPut
 (
 ID int Primary Key,
 PlanId Uniqueidentifier Not Null,
@@ -389,6 +394,8 @@ EventId Int Not NUll,
 EventsName Varchar(225) Not NUll,
 )
 
+--Insert into PlanEventsOutPut
+--Exec spGetPlanEvents 'B8F4D276-15EB-4EB6-89D4-E600FF1098EF'
 
 --Insert into Events
 --Select 'Activate' , 1, Getdate() UNION ALL

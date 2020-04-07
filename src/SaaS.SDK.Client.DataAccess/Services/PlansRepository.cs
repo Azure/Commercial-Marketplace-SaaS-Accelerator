@@ -158,7 +158,8 @@
 
             try
             {
-                var offerAttributes = Context.PlanAttributeOutput.FromSqlRaw("dbo.spGetOfferParameters {0}", planGuId);
+                var offerAttributescCall = Context.PlanAttributeOutput.FromSqlRaw("dbo.spGetOfferParameters {0}", planGuId);
+                var offerAttributes = offerAttributescCall.ToList();
 
                 List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
 
@@ -175,11 +176,12 @@
                         attributesList.Add(planAttributes);
                     }
                 }
-
-
+                return attributesList;
             }
-            catch (Exception)
-            { }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+            }
             return new List<PlanAttributesModel>();
         }
 
@@ -190,28 +192,32 @@
 
             try
             {
-                var offerAttributes = Context.PlanAttributeOutput.FromSqlRaw("dbo.spGetPlanEvents {0}", planGuId);
+                
+                var allEvents = Context.PlanEventsOutPut.FromSqlRaw("dbo.spGetPlanEvents {0}", planGuId).ToList();
 
-                List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
+                List<PlanEventsModel> eventsList = new List<PlanEventsModel>();
 
-                if (offerAttributes != null && offerAttributes.Count() > 0)
+                if (allEvents != null && allEvents.Count() > 0)
                 {
-                    foreach (var offerAttribute in offerAttributes)
+                    foreach (var events in allEvents)
                     {
-                        PlanAttributesModel planAttributes = new PlanAttributesModel();
-                        planAttributes.PlanAttributeId = offerAttribute.PlanAttributeId;
-                        planAttributes.PlanId = offerAttribute.PlanId;
-                        planAttributes.OfferAttributeId = offerAttribute.OfferAttributeId;
-                        planAttributes.IsEnabled = offerAttribute.IsEnabled;
-                        planAttributes.DisplayName = offerAttribute.DisplayName;
-                        attributesList.Add(planAttributes);
+                        PlanEventsModel planEvent = new PlanEventsModel();
+                        planEvent.Id = events.Id;
+                        planEvent.PlanId = events.PlanId;
+                        planEvent.Isactive = events.Isactive;
+                        planEvent.SuccessStateEmails = events.SuccessStateEmails;
+                        planEvent.FailureStateEmails = events.FailureStateEmails;
+                        planEvent.EventsName = events.EventsName;
+                        planEvent.EventId = events.EventId;
+                        eventsList.Add(planEvent);
                     }
                 }
-
-
+                return eventsList;
             }
-            catch (Exception)
-            { }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+            }
             return new List<PlanEventsModel>();
         }
 

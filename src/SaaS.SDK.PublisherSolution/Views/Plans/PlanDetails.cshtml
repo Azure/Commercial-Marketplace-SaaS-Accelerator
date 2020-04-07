@@ -3,9 +3,21 @@
 @model PlansModel
 
 <div class="text-center">
-    <form method="post" id="frmOfferattributes" action="Offers/OfferDetails">
+    <div>
+        <div>
+            <div class="nav-scroller bg-white shadow-sm ">
+                <nav class="container pb-3 nav nav-underline">
+                    <a class="nav-link active">
+                        <a class="nav-link" id="Attributes" onclick="toggleActions('Attributes','Events')">Attributes</a>
+                        <a class="nav-link" id="Events" onclick="toggleActions('Events','Attributes')">Events</a>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <form method="post" id="frmPlanEvents" asp-action="PlanDetails" asp-controller="Plans">
         <div class="container">
-            <div class="card card-header mb0 pb0">
+            <div class="card card-header">
                 <input type='hidden' id='offerID' name='offerID' value="@Model.offerID" />
                 <input type='hidden' id='PlanGUID' name='PlanGUID' value="@Model.PlanGUID" />
                 <input type='hidden' id='Id' name='Id' value="@Model.Id" />
@@ -16,39 +28,83 @@
                     <dd class="col-4 text-left">@Model.DisplayName</dd>
                 </dl>
             </div>
-
-            @if (Model.PlanAttributes != null && Model.PlanAttributes.Count() > 0)
-            {
-                <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
-                    <theader>
-                        <tr>
-                            <th>  DisplayName         </th>
-                            <th>  Enable            </th>
-                        </tr>
-                    </theader>
-
-                    @for (int i = 0; i < Model.PlanAttributes.Count(); i++)
-                    {
-                        <tbody id="ReplacingTable">
-
-                            <tr id="tr_PlanAttributes_@i">
-                                <td>
-                                    <input id="PlanAttributes[@i].PlanAttributeId" type="hidden" value="@i" class="iHidden" name="PlanAttributes[@i].PlanAttributeId" />
-                                    @*<input type="text" style="width:70px;" id="PlanAttributes[@i].DisplayName" name="PlanAttributes[@i].DisplayName" value="@Model.PlanAttributes[i].DisplayName" />*@
-                                    @Model.PlanAttributes[i].DisplayName
-                                </td>
-                                @*<td><input type="text" style="width:70px;" id="PlanAttributes[@i].DisplayName" name="PlanAttributes[@i].DisplayName" value="@Model.PlanAttributes[i].DisplayName" /></td>*@
-                                <td><input type="checkbox" id="PlanAttributes[@i].IsEnabled" name="OfferAttributes[@i].IsEnabled" value="@Model.PlanAttributes[i].IsEnabled" /></td>
-                                @*<td>
-                                        <input id="btnRemoveBook" class="cm-button-default mt0" type="button" value="Remove" onclick="removeRow(@i);" />
-                                        <input type="hidden" value="" id="OfferAttributes_IsRemove_@i" name="OfferAttributes[@i].IsRemove" />
-                                    </td>*@
+            <div id="PlanAttributes">
+                @if (Model.PlanAttributes != null && Model.PlanAttributes.Count() > 0)
+                {
+                    <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
+                        <theader>
+                            <tr>
+                                <th>DisplayName</th>
+                                <th>Enable</th>
                             </tr>
+                        </theader>
 
-                        </tbody>
-                    }
-                </table>
-            }
+                        @for (int i = 0; i < Model.PlanAttributes.Count(); i++)
+                        {
+                            <tbody id="ReplacingTable">
+
+                                <tr id="tr_PlanAttributes_@i">
+                                    <td>
+                                        <input id="PlanAttributes[@i].PlanAttributeId" type="hidden" value="@Model.PlanAttributes[i].PlanAttributeId" class="iHidden" name="PlanAttributes[@i].PlanAttributeId" />
+                                        <input id="PlanAttributes[@i].OfferAttributeId" type="hidden" value="@Model.PlanAttributes[i].OfferAttributeId" class="iHidden" name="PlanAttributes[@i].OfferAttributeId" />
+                                        <input id="PlanAttributes[@i].PlanId" type="hidden" value="@i" class="iHidden" name="@Model.PlanAttributes[i].PlanId" />
+                                        @Model.PlanAttributes[i].DisplayName
+                                    </td>
+                                    <td>
+                                        @*<input type="checkbox" id="PlanAttributes[@i].IsEnabled" name="OfferAttributes[@i].IsEnabled" value="@Model.PlanAttributes[i].IsEnabled" />*@
+                                        @Html.CheckBoxFor(model => model.PlanAttributes[i].IsEnabled, new { name = "PlanAttributes[@i].IsEnabled", id = "PlanAttributes_IsEnabled_@i" })
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        }
+                    </table>
+                }
+
+            </div>
+            <div id="PlanEvents" style="display:none">
+                @if (Model.PlanEvents != null && Model.PlanEvents.Count() > 0)
+                {
+                    <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
+                        <theader>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Active</th>
+                                <th>
+                                    Success Event Emails
+                                </th>
+                                <th>
+                                    Failure Event Emails
+                                </th>
+                            </tr>
+                        </theader>
+
+                        @for (int i = 0; i < Model.PlanEvents.Count(); i++)
+                        {
+                            <tbody id="ReplacingTable">
+
+                                <tr id="tr_PlanEvents_@i">
+                                    <td>
+                                        <input id="PlanEvents_Id_@i" type="hidden" value="@Model.PlanEvents[i].Id" class="iHidden" name="PlanEvents[@i].Id" />
+                                        <input id="PlanEvents_PlanId_@i" type="hidden" value="@Model.PlanEvents[i].PlanId" class="iHidden" name="PlanEvents[@i].PlanId" />
+                                        <input id="PlanEvents_EventId_@i" type="hidden" value="@Model.PlanEvents[i].EventId" class="iHidden" name="PlanEvents[@i].EventId" />
+                                        @*<input type="text" style="width:70px;" id="PlanAttributes[@i].DisplayName" name="PlanAttributes[@i].DisplayName" value="@Model.PlanAttributes[i].DisplayName" />*@
+                                        @Model.PlanEvents[i].EventName
+                                    </td>
+                                    <td>
+                                        @Html.CheckBoxFor(model => model.PlanEvents[i].Isactive, new { name = "PlanEvents[@i].Isactive", id = "PlanEvents_Isactive_@i" })
+                                        @*<input type="checkbox" id="PlanEvents_IsEnabled_@i" name="PlanEvents[@i].IsEnabled" value="@Model.PlanEvents[i].IsEnabled" />*@
+                                    </td>
+                                    <td><input type="text" style="width:200px;" id="PlanEvents[@i].SuccessStateEmails" name="PlanEvents[@i].SuccessStateEmails" value="@Model.PlanEvents[i].SuccessStateEmails" /></td>
+                                    <td><input type="text" style="width:200px;" id="PlanEvents[@i].FailureStateEmails" name="PlanEvents[@i].FailureStateEmails" value="@Model.PlanEvents[i].FailureStateEmails" /></td>
+                                </tr>
+
+                            </tbody>
+                        }
+                    </table>
+                }
+
+            </div>
             <div>
                 <p>
                     <input class="cm-button-default mt0" type="submit" value="Create" />
@@ -59,53 +115,12 @@
 </div>
 <script>
     $(document).ready(function () {
-        //$('#tblcontainer').hide();
-        //var fieldLength = $("#tblcontainer input.iHidden").length;
-        //if (fieldLength != undefined || fieldLength != 0) {
-        //    $('#tblcontainer').show();
-        //}
+        $('#PlanAttributes').show();
+        $('#PlanEvents').hide();
     })
-    $(function () {
-        //    $("#btnAdd").click(function (e) {
-        //        debugger;
-        //        $('#tblcontainer').show();
-        //        var itemIndex = $("#tblcontainer input.iHidden").length;
-        //        e.preventDefault();
-        //        var newItem = $("#ReusableTable").html();
-        //        var findstrinig = 'itemIndex';
-        //        var regx = new RegExp(findstrinig, 'g');
-        //        newItem = newItem.replace(regx, itemIndex);
-        //        //$("<tr id='tr_OfferAttributes_" + itemIndex + "__Id'><td><input id='OfferAttributes_" + itemIndex + "__Id' type='hidden' value='" + itemIndex + "' class='iHidden' name='OfferAttributes[" + itemIndex + "].Id' /><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ParameterId' name='OfferAttributes[" + itemIndex + "].ParameterId' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__DisplayName' name='OfferAttributes[" + itemIndex + "].DisplayName' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Description' name='OfferAttributes[" + itemIndex + "].Description' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ValueTypeId' name='OfferAttributes[" + itemIndex + "].ValueTypeId' /></td><td><input type='checkbox' value='true' id='OfferAttributes_" + itemIndex + "__FromList' name='OfferAttributes[" + itemIndex + "].FromList' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ValuesList' name='OfferAttributes[" + itemIndex + "].ValuesList' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Max' name='OfferAttributes[" + itemIndex + "].Max' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Min' name='OfferAttributes[" + itemIndex + "].Min' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__OfferID' name='OfferAttributes[" + itemIndex + "].OfferID' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Type' name='OfferAttributes[" + itemIndex + "].Type' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__DisplaySequence' name='OfferAttributes[" + itemIndex + "].DisplaySequence' /></td><td><input type='checkbox' value='true' id='OfferAttributes_" + itemIndex + "__Isactive' name='OfferAttributes[" + itemIndex + "].Isactive' /></td> <td><input id='btnRemoveBook' class='cm-button-default mt0' type='button' value='Remove' onclick='removeRow(" + itemIndex + ");' /></td><input type='hidden' value='' id='OfferAttributes_" + itemIndex + "__IsRemove' name='OfferAttributes[" + itemIndex + "].IsRemove' /></tr>");
-        //        $("#ReplacingTable").append(newItem);
-        //    });
-        //});
-        //function removeRow(id) {
-        //    debugger;
-        //    var controlToBeRemoved = "#tr_OfferAttributes_" + id;
-        //    $("#OfferAttributes_IsRemove_" + id).val(true);
-        //    $(controlToBeRemoved).hide();
+    function toggleActions(current, next) {
+        $('#Plan' + current).show();
+        $('#Plan' + next).hide();
     }
-
-
-
-                    //var frm = $('#frmOfferattributes');
-                    //frm.submit(function (e) {
-
-                    //    e.preventDefault();
-
-                    //    $.ajax({
-                    //        type: 'Post',
-                    //        url: 'Offers/OfferDetails',
-                    //        data: frm.serialize(),
-                    //        success: function (data) {
-                    //            console.log('Submission was successful.');
-                    //            console.log(data);
-                    //        },
-                    //        error: function (data) {
-                    //            console.log('An error occurred.');
-                    //            console.log(data);
-                    //        },
-                    //    });
-                    //});
 
 </script>

@@ -3,7 +3,8 @@
 @model OffersViewModel
 
 <div class="text-center">
-    <form method="post" id="frmOfferattributes" action="Offers/OfferDetails">
+    <form method="post" id="frmOfferattributes" asp-action="OfferDetails" asp-controller="Offers">
+        @*action="Offers/OfferDetails"*@
         <div class="container">
 
             <div class="card card-header mb0 pb0">
@@ -60,7 +61,10 @@
                                     @*@Html.DropDownList("OfferAttributes[@i].ValueTypeId", ViewBag.ValueTypes as SelectList, new { @id = "OfferAttributes[@i].ValueTypeId", @value = @Model.OfferAttributes[i].ValueTypeId })*@
                                     @Html.DropDownListFor(model => model.OfferAttributes[i].ValueTypeId, ViewBag.ValueTypes as IEnumerable<SelectListItem>, new { name = "OfferAttributes[@i].ValueTypeId", id = "OfferAttributes_ValueTypeId_@i" })
                                 </td>
-                                <td><input type="checkbox" id="OfferAttributes_FromList_@i" name="OfferAttributes[@i].FromList" value="@Model.OfferAttributes[i].FromList" checked="@Model.OfferAttributes[i].FromList" /></td>
+                                <td>
+                                    @*<input type="checkbox" id="OfferAttributes_FromList_@i" name="OfferAttributes[@i].FromList" value="@Model.OfferAttributes[i].FromList" checked="@Model.OfferAttributes[i].FromList" />*@
+                                    @Html.CheckBoxFor(model => model.OfferAttributes[i].FromList, new { name = "OfferAttributes[@i].FromList", id = "OfferAttributes_FromList_@i" })
+                                </td>
                                 <td><input type="text" style="width:70px;" id="OfferAttributes_ValuesList_@i" name="OfferAttributes[@i].ValuesList" value="@Model.OfferAttributes[i].ValuesList" /></td>
                                 <td><input type="text" style="width:70px;" id="OfferAttributes_Max_@i" name="OfferAttributes[@i].Max" value="@Model.OfferAttributes[i].Max" /></td>
                                 <td><input type="text" style="width:70px;" id="OfferAttributes_Min_@i" name="OfferAttributes[@i].Min" value="@Model.OfferAttributes[i].Min" /></td>
@@ -122,7 +126,10 @@
                             @*<input type='text' style='width:70px;' id='OfferAttributes[itemIndex].ValueTypeId' name='OfferAttributes[itemIndex].ValueTypeId' />*@
                             @Html.DropDownList("OfferAttributes[itemIndex].ValueTypeId", ViewBag.ValueTypes as SelectList, new { @id = "OfferAttributes_ValueTypeId_itemIndex" })
                         </td>
-                        <td><input type='checkbox' value='true' id='OfferAttributes_FromList_itemIndex' name='OfferAttributes[itemIndex].FromList' /></td>
+                        <td>
+                            @*<input type='checkbox' value='true' id='OfferAttributes_FromList_itemIndex' name='OfferAttributes[itemIndex].FromList' />*@
+                            @Html.CheckBox("OfferAttributes[itemIndex].FromList", new { @id = "OfferAttributes_FromList_itemIndex" })
+                        </td>
                         <td><input type='text' style='width:70px;' id='OfferAttributes_ValuesList_itemIndex' name='OfferAttributes[itemIndex].ValuesList' /></td>
                         <td><input type='text' style='width:70px;' id='OfferAttributes_Max_itemIndex' name='OfferAttributes[itemIndex].Max' /></td>
                         <td><input type='text' style='width:70px;' id='OfferAttributes_Min_itemIndex' name='OfferAttributes[itemIndex].Min' /></td>
@@ -182,27 +189,4 @@
         $("#OfferAttributes_IsRemove_" + id).val(true);
         $(controlToBeRemoved).hide();
     }
-
-
-
-                    //var frm = $('#frmOfferattributes');
-                    //frm.submit(function (e) {
-
-                    //    e.preventDefault();
-
-                    //    $.ajax({
-                    //        type: 'Post',
-                    //        url: 'Offers/OfferDetails',
-                    //        data: frm.serialize(),
-                    //        success: function (data) {
-                    //            console.log('Submission was successful.');
-                    //            console.log(data);
-                    //        },
-                    //        error: function (data) {
-                    //            console.log('An error occurred.');
-                    //            console.log(data);
-                    //        },
-                    //    });
-                    //});
-
 </script>

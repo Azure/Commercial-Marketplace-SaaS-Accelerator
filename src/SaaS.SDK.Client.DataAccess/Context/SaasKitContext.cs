@@ -29,6 +29,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<PlanAttributeMapping> PlanAttributeMapping { get; set; }
         public virtual DbSet<PlanAttributeOutput> PlanAttributeOutput { get; set; }
         public virtual DbSet<PlanEventsMapping> PlanEventsMapping { get; set; }
+        public virtual DbSet<PlanEventsOutPut> PlanEventsOutPut { get; set; }
         public virtual DbSet<Plans> Plans { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<SubscriptionAttributeValues> SubscriptionAttributeValues { get; set; }
@@ -239,11 +240,12 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeOutput>(entity =>
             {
                 entity.HasKey(e => e.PlanAttributeId)
-                    .HasName("PK__PlanAttr__8B476A986B0FD926");
+                    .HasName("PK__PlanAttr__8B476A98B8058E05");
 
                 entity.Property(e => e.PlanAttributeId).ValueGeneratedNever();
 
                 entity.Property(e => e.DisplayName)
+                    .IsRequired()
                     .HasMaxLength(225)
                     .IsUnicode(false);
             });
@@ -261,6 +263,22 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.Property(e => e.SuccessStateEmails)
                     .HasMaxLength(225)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PlanEventsOutPut>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.EventsName)
+                    .IsRequired()
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FailureStateEmails).IsUnicode(false);
+
+                entity.Property(e => e.SuccessStateEmails).IsUnicode(false);
             });
 
             modelBuilder.Entity<Plans>(entity =>
