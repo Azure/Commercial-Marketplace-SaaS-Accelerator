@@ -8,7 +8,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models
 {
     public class PlanDetailResultExtension : PlanDetailResult
     {
-        public Guid? OfferId { get; set; }
-        public Guid? PlanGUID { get; set; }
+        public Guid OfferId { get; set; }
+        public Guid PlanGUID { get; set; }
     }
 }

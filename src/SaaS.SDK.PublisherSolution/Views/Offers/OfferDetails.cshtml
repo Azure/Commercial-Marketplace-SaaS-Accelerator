@@ -49,6 +49,8 @@
                             <tr id="tr_OfferAttributes_@i">
                                 <td>
                                     <input id="OfferAttributes[@i].Id" type="hidden" value="@i" class="iHidden" name="OfferAttributes[@i].Id" />
+                                    <input id="OfferAttributes[@i].AttributeID" type="hidden" class="iHidden" name="OfferAttributes[@i].AttributeID"   value="@Model.OfferAttributes[i].AttributeID" />
+
                                     <input type="text" style="width:70px;" id="OfferAttributes[@i].ParameterId" name="OfferAttributes[@i].ParameterId" value="@Model.OfferAttributes[i].ParameterId" />
                                 </td>
                                 <td><input type="text" style="width:70px;" id="OfferAttributes[@i].DisplayName" name="OfferAttributes[@i].DisplayName" value="@Model.OfferAttributes[i].DisplayName" /></td>

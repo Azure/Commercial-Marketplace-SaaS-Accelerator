@@ -8,7 +8,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
     public interface IOffersRepository : IDisposable //, IBaseRepository<Offers>
     {
-        Guid? Add(Offers Offers);
+        Guid Add(Offers Offers);
         IEnumerable<Offers> Get();
         Offers GetOfferDetailByOfferId(Guid offerGuId);
 

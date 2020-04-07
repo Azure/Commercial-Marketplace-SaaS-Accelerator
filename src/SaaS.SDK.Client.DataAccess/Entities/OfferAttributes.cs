@@ -19,6 +19,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public bool? Isactive { get; set; }
         public DateTime? CreateDate { get; set; }
         public int? UserId { get; set; }
-        public Guid? OfferId { get; set; }
+        public Guid OfferId { get; set; }
     }
 }

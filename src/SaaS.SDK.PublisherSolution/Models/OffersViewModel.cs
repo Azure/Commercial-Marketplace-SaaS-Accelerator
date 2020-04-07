@@ -12,7 +12,7 @@ namespace Microsoft.Marketplace.Saas.Web.Models
         public string OfferID { get; set; }
         public string OfferName { get; set; }
 
-        public Guid? OfferGuid { get; set; }
+        public Guid OfferGuid { get; set; }
 
         public List<OfferAttributesModel> OfferAttributes { get; set; }
     }

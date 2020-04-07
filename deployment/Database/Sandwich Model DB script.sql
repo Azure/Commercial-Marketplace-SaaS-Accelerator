@@ -289,6 +289,6 @@ IF EXISTS(SELECT 1 FROM SYS.TABLES WHERE NAME ='Plans')
 
 
 GO
-
+--Update Plans set OfferID=(select OfferGUId from Offers)
 UPDATE PLANS SET PlanGUID = NEWID() where PlanGUID is null;
 GO

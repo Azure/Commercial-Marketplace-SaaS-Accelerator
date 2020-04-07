@@ -114,7 +114,7 @@
             if (OffersData != null && OffersData.OfferAttributes != null)
             {
                 // query
-                var validItems = OffersData.OfferAttributes.Where(i => i.IsRemove == false && i.AttributeID != 0);
+                var validItems = OffersData.OfferAttributes.Where(i => i.IsRemove == false);
 
                 foreach (var offerAttribute in validItems)
                 {
@@ -142,7 +142,16 @@
                     this.offersAttributeRepository.Add(newOfferAttribute);
                 }
 
-                var valueTypes = valueTypesRepository.GetValueTypes().ToList();
+                var deleteItems = OffersData.OfferAttributes.Where(i => i.IsRemove == true && i.AttributeID != 0);
+
+                if(deleteItems != null && deleteItems.Count() > 0)
+                {
+                    this.offersAttributeRepository.Remove(deleteItems);
+                    /* Delete the Fields from existing Plans and subscriptios*/
+
+                }
+
+                    var valueTypes = valueTypesRepository.GetValueTypes().ToList();
                 ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
                 this.TempData["ShowWelcomeScreen"] = "True";
             }

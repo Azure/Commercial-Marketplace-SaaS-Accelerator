@@ -1,13 +1,13 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+
     public class OfferAttributesRepository : IOfferAttributesRepository
     {
         private readonly SaasKitContext Context;
@@ -62,6 +62,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 
             return null;
         }
+
         public IEnumerable<OfferAttributes> Get()
         {
             return Context.OfferAttributes;
@@ -77,6 +78,24 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         {
             return Context.OfferAttributes.Where(s => s.Id == Id).FirstOrDefault();
         }
+
+        /// <summary>
+        /// Removes the specified plan details.
+        /// </summary>
+        /// <param name="offerDetails">The offer details.</param>
+        public void Remove(List<OfferAttributes> offerAttributes)
+        {
+            foreach (var offerAttribute in offerAttributes)
+            {
+                var existingOffersAttribute = Context.OfferAttributes.Where(s => s.Id == offerAttribute.Id).FirstOrDefault();
+                if (existingOffersAttribute != null)
+                {
+                    Context.OfferAttributes.Remove(existingOffersAttribute);
+                    Context.SaveChanges();
+                }
+            }
+        }
+
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>

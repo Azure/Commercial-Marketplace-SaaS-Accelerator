@@ -11,6 +11,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
     {
         public IOffersRepository offersRepository;
 
+
         public OffersService(IOffersRepository offersRepository)
         {
             this.offersRepository = offersRepository;
@@ -46,6 +47,19 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             };
             return offerModel;
         }
+
+        //public OfferAttributesModel GetOfferattributesOnId(Guid offerGuId)
+        //{
+        //    var offer = this..GetOfferDetailByOfferId(offerGuId);
+        //    OfferAttributesModel offerModel = new OfferAttributesModel()
+        //    {
+        //        Id = offer.Id,
+        //        OfferID = offer.OfferId,
+        //        OfferName = offer.OfferName,
+        //        OfferGuid = offer.OfferGuid
+        //    };
+        //    return offerModel;
+        //}
 
     }
 }

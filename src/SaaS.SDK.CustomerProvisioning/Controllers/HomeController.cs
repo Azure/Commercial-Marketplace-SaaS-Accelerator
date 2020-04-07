@@ -154,7 +154,7 @@
                             OfferGuid = new Guid()
                         };
 
-                        Guid? newOfferId = this.offersRepository.Add(offers);
+                        Guid newOfferId = this.offersRepository.Add(offers);
 
                         List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
                         var serializedPlans = JsonConvert.SerializeObject(subscriptionPlanDetail);

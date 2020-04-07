@@ -10,6 +10,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public string OfferName { get; set; }
         public DateTime? CreateDate { get; set; }
         public int? UserId { get; set; }
-        public Guid? OfferGuid { get; set; }
+        public Guid OfferGuid { get; set; }
     }
 }

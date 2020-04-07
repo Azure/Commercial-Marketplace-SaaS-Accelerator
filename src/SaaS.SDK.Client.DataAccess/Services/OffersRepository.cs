@@ -46,7 +46,7 @@
         /// </summary>
         /// <param name="offerDetails">The Offers details.</param>
         /// <returns></returns>
-        public Guid? Add(Offers offerDetails)
+        public Guid Add(Offers offerDetails)
         {
             if (offerDetails != null)
             {
@@ -66,7 +66,7 @@
                     return offerDetails.OfferGuid;
                 }
             }
-            return null;
+            return offerDetails.OfferGuid;
         }
 
         /// <summary>

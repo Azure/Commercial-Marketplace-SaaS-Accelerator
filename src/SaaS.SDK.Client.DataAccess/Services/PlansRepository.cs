@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using System;
     using System.Collections.Generic;
@@ -98,6 +99,64 @@
             return getAllPlans;
         }
 
+        /// <summary>
+        /// Gets the plan detail by plan identifier.
+        /// </summary>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns></returns>
+        public Plans GetPlanDetailByPlanGuId(Guid planGuId)
+        {
+            return Context.Plans.Where(s => s.PlanGuid == planGuId).FirstOrDefault();
+        }
+
+
+        //public IEnumerable<PlanAttributeMapping> GetPlanAttributesByPlanGuId(Guid planGuId)
+        //{
+        //    return Context.PlanAttributeMapping.Where(s => s.PlanId == planGuId);
+        //}
+
+        public List<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid offerId)
+        {
+
+
+            var offerAttributes = from OfferAttr in Context.OfferAttributes //.Where(s => s.PlanId == planGuId)
+                                  join planAttr in Context.PlanAttributeMapping on OfferAttr.Id equals planAttr.OfferAttributeId into attr
+                                  from planAttribute in attr.DefaultIfEmpty()//.Where(s => s.Isactive == true && s.OfferId == offerId)
+                                  select new
+                                  {
+                                      PlanAttributeId = planAttribute.PlanAttributeId,
+                                      PlanId = planAttribute.PlanId,
+                                      OfferAttributeId = planAttribute.OfferAttributeId,
+                                      IsEnabled = planAttribute.IsEnabled,
+                                      DisplayName = OfferAttr.DisplayName
+                                  };
+            var OfferAttributelist = offerAttributes.ToList();
+
+            List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
+
+            if (offerAttributes != null && offerAttributes.Count() > 0)
+            {
+                foreach (var offerAttribute in offerAttributes)
+                {
+                    PlanAttributesModel planAttributes = new PlanAttributesModel();
+                    planAttributes.PlanAttributeId = offerAttribute.PlanAttributeId;
+                    planAttributes.PlanId = offerAttribute.PlanId;
+                    planAttributes.OfferAttributeId = offerAttribute.OfferAttributeId;
+                    planAttributes.IsEnabled = offerAttribute.IsEnabled;
+                    planAttributes.DisplayName = offerAttribute.DisplayName;
+                    attributesList.Add(planAttributes);
+                }
+            }
+
+            //Context.PlanAttributeMapping.Where(s => s.PlanId == planGuId);
+            return attributesList;
+        }
+
+
+        public IEnumerable<PlanEventsMapping> GetPlanEventsByPlanGuId(Guid planGuId, Guid offerId)
+        {
+            return Context.PlanEventsMapping.Where(s => s.PlanId == planGuId);
+        }
 
         /// <summary>
         /// Removes the specified plan details.
