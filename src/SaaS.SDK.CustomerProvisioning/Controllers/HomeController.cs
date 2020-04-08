@@ -122,6 +122,7 @@
         {
             this.log.Info("Initializing Index Page");
             SubscriptionResult subscriptionDetail = new SaasKitModels.SubscriptionResult();
+            SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
 
             if (User.Identity.IsAuthenticated)
             {
@@ -166,7 +167,7 @@
                         });
 
                         this.subscriptionService.AddPlanDetailsForSubscription(planList);
-
+                        Guid PlanGuid = planList.Where(s => s.PlanId == newSubscription.PlanId).Select(s => s.PlanGUID).FirstOrDefault();
                         // GetSubscriptionBy SubscriptionId
                         var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                         var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
@@ -185,17 +186,23 @@
                             this.subscriptionLogRepository.Add(auditLog);
                         }
 
+
                         subscriptionDetail = subscriptionData;
-                        subscriptionDetail.ShowWelcomeScreen = false;
+                        subscriptionExtension.ShowWelcomeScreen = false;
                         subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                         subscriptionDetail.CustomerName = this.CurrentUserName;
+
+
+                        var serializedSubscription = JsonConvert.SerializeObject(subscriptionDetail);
+                        subscriptionExtension = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedSubscription);
+                        subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, PlanGuid);
                     }
                 }
                 else
                 {
                     this.TempData["ShowWelcomeScreen"] = "True";
-                    subscriptionDetail.ShowWelcomeScreen = true;
-                    return this.View(subscriptionDetail);
+                    subscriptionExtension.ShowWelcomeScreen = true;
+                    return this.View(subscriptionExtension);
                 }
             }
             else
@@ -210,14 +217,14 @@
                 else
                 {
                     this.TempData["ShowWelcomeScreen"] = "True";
-                    subscriptionDetail.ShowWelcomeScreen = true;
-                    return this.View(subscriptionDetail);
+                    subscriptionExtension.ShowWelcomeScreen = true;
+                    return this.View(subscriptionExtension);
                 }
             }
 
 
 
-            return this.View(subscriptionDetail);
+            return this.View(subscriptionExtension);
         }
 
         /// <summary>

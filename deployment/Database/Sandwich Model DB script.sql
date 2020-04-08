@@ -396,6 +396,77 @@ EventId Int Not NUll,
 EventsName Varchar(225) Not NUll,
 )
 
+
+
+
+go
+
+
+CREATE TABLE SubscriptionParametersOutput
+(
+RowNumber  Int Primary key
+,Id Int Not Null	
+,PlanAttributeId	 Int Not Null	
+,OfferAttributeID	 Int Not Null	
+,DisplayName		 Varchar(225) Not Null	
+,Type				  Varchar(225) Not Null	
+,ValueType			  Varchar(225) Not Null	
+,DisplaySequence	 Int Not Null	
+,IsEnabled			 bit Not Null	
+,Value				  Varchar(MAx) Not Null	
+,SubscriptionId		 uniqueidentifier Not Null	
+,OfferId		 uniqueidentifier Not Null	
+,PlanId				 uniqueidentifier Not Null	
+)
+
+
+/* 
+Exec spGetSubscriptionParameters 'BE13605F-C088-4CC0-8A81-32A81257BAC5','BE13605F-C088-4CC0-8A81-32A81257BAC5'
+*/
+ALTER  Procedure spGetSubscriptionParameters
+(
+@SubscriptionId Uniqueidentifier,
+@PlanId Uniqueidentifier
+)
+AS
+BEGIN
+ 
+Declare @OfferId Uniqueidentifier 
+Set @OfferId=(Select OfferId from Plans where PlanGuId =@PlanId )
+SELECT  
+  Cast( ROW_NUMBER() OVER ( ORDER BY OA.ID) as Int)RowNumber
+,isnull(SAV.ID,0) ID
+,isnull(SAV.PlanAttributeId,PA.PlanAttributeId) PlanAttributeId
+,ISNULL(SAV.PlanId,@PlanId) PlanId 
+,ISNULL(PA.OfferAttributeID ,OA.ID)  OfferAttributeID
+,ISNULL(OA.DisplayName,'')DisplayName
+,ISNULL(OA.Type,'')Type
+,ISNULL(VT.ValueType,'') ValueType
+,ISnull(OA.DisplaySequence,0)DisplaySequence
+,isnull(PA.IsEnabled,0) IsEnabled
+,ISNULL(Value,'')Value
+,ISNULL(SubscriptionId,@SubscriptionId) SubscriptionId
+,ISNULL(SAV.OfferID,OA.OfferId) OfferID
+from 
+[dbo].[OfferAttributes] OA
+Left Join 
+SubscriptionAttributeValues SAV
+on SAV.PlanAttributeId= OA.ParameterId
+and SAV.SubscriptionId=@SubscriptionId
+Inner  join 
+[dbo].[PlanAttributeMapping]  PA
+on OA.ID= PA.OfferAttributeID and OA.OfferId=@OfferId
+and  PA.PlanId=@PlanId
+inner join ValueTypes VT
+ON OA.ValueTypeId=VT.ValueTypeId
+
+where  
+OA.Isactive=1 
+and PA.IsEnabled=1
+END
+
+
+
 --Insert into PlanEventsOutPut
 --Exec spGetPlanEvents 'B8F4D276-15EB-4EB6-89D4-E600FF1098EF'
 

@@ -1,6 +1,8 @@
 ﻿@using Microsoft.Marketplace.SaasKit.Models
+@using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models
 
-@model Microsoft.Marketplace.SaasKit.Models.SubscriptionResult
+@*@model Microsoft.Marketplace.SaasKit.Models.SubscriptionResult*@
+@model Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models.SubscriptionResultExtension
 @{
     ViewData["Title"] = "Home";
 }
@@ -58,6 +60,26 @@
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.PlanId)
                         </dd>
+
+                        @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
+                        {
+
+                            for (int i = 0; i < Model.SubscriptionParameters.Count(); i++)
+                            {
+                                <dt class="col-sm-3 p-2 p10">
+                                    @Html.DisplayName(Model.SubscriptionParameters[i].DisplayName)
+                                    @Html.HiddenFor(model => model.SubscriptionParameters[i].Id)
+                                    @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanAttributeId)
+                                    @Html.HiddenFor(model => model.SubscriptionParameters[i].ValueType)
+                                </dt>
+                                <dd class="col-sm-9 p-2 p10">
+                                    @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value)
+                                </dd>
+
+                            }
+
+                        }
+
                     </dl>
                 </div>
                 <div class="text-right">

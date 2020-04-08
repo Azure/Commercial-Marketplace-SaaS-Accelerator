@@ -159,6 +159,23 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         }
 
         /// <summary>
+        /// Gets the subscriptions by ScheduleId
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="isIncludeDeactvated">if set to <c>true</c> [is include deactvated].</param>
+        /// <returns></returns>
+        public List<SubscriptionParametersOutput> GetSubscriptionsParametersById(Guid subscriptionId, Guid planId)
+        {
+            if (subscriptionId != default)
+            {
+                var subscriptionParameters = Context.SubscriptionParametersOutput.FromSqlRaw("dbo.spGetSubscriptionParameters {0},{1}", subscriptionId, planId).ToList();
+                return subscriptionParameters.ToList();
+            }
+            return new List<SubscriptionParametersOutput>();
+        }
+
+
+        /// <summary>
         /// Removes the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>

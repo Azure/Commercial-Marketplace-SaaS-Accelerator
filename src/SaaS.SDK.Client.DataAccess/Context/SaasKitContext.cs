@@ -35,6 +35,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<SubscriptionAttributeValues> SubscriptionAttributeValues { get; set; }
         public virtual DbSet<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
         public virtual DbSet<SubscriptionLicenses> SubscriptionLicenses { get; set; }
+        public virtual DbSet<SubscriptionParametersOutput> SubscriptionParametersOutput { get; set; }
         public virtual DbSet<Subscriptions> Subscriptions { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<ValueTypes> ValueTypes { get; set; }
@@ -361,6 +362,35 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .WithMany(p => p.SubscriptionLicenses)
                     .HasForeignKey(d => d.SubscriptionId)
                     .HasConstraintName("FK__Subscript__Subsc__5165187F");
+            });
+
+            modelBuilder.Entity<SubscriptionParametersOutput>(entity =>
+            {
+                entity.HasKey(e => e.RowNumber)
+                    .HasName("PK__Subscrip__AAAC09D85FE3D815");
+
+                entity.Property(e => e.RowNumber).ValueGeneratedNever();
+
+                entity.Property(e => e.DisplayName)
+                    .IsRequired()
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OfferAttributeId).HasColumnName("OfferAttributeID");
+
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Value)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ValueType)
+                    .IsRequired()
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Subscriptions>(entity =>

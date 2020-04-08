@@ -42,5 +42,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="planId">The plan identifier.</param>
         void UpdatePlanForSubscription(Guid subscriptionId, string planId);
+
+        List<SubscriptionParametersOutput> GetSubscriptionsParametersById(Guid subscriptionId, Guid planId);
     }
 }

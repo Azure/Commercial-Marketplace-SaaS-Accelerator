@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.Marketplace.SaasKit.Models;
 using Microsoft.Marketplace.SaasKit.Client.Models;
 using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
+using Newtonsoft.Json;
 
 namespace Microsoft.Marketplace.SaasKit.Client.Services
 {
@@ -216,5 +217,23 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                         DisplayName = plan.DisplayName,
                     }).ToList();
         }
+
+        /// <summary>
+        /// Get the plan details for subscription.
+        /// </summary>
+        /// <returns></returns>
+        public List<SubscriptionParametersModel> GetSubscriptionsParametersById(Guid subscriptionId, Guid planId)
+        {
+            List<SubscriptionParametersModel> subscriptionParametersList = new List<SubscriptionParametersModel>();
+
+            var subscriptionParameters = SubscriptionRepository.GetSubscriptionsParametersById(subscriptionId, planId);
+
+
+            var serializedSubscription = JsonConvert.SerializeObject(subscriptionParameters);
+            subscriptionParametersList = JsonConvert.DeserializeObject<List<SubscriptionParametersModel>>(serializedSubscription);
+
+            return subscriptionParametersList;
+        }
+
     }
 }
