@@ -5,6 +5,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
 {
     public partial class PlanEventsOutPut
     {
+        public int RowNumber { get; set; }
         public int Id { get; set; }
         public Guid PlanId { get; set; }
         public bool Isactive { get; set; }

@@ -47,12 +47,12 @@
                                     <td>
                                         <input id="PlanAttributes[@i].PlanAttributeId" type="hidden" value="@Model.PlanAttributes[i].PlanAttributeId" class="iHidden" name="PlanAttributes[@i].PlanAttributeId" />
                                         <input id="PlanAttributes[@i].OfferAttributeId" type="hidden" value="@Model.PlanAttributes[i].OfferAttributeId" class="iHidden" name="PlanAttributes[@i].OfferAttributeId" />
-                                        <input id="PlanAttributes[@i].PlanId" type="hidden" value="@i" class="iHidden" name="@Model.PlanAttributes[i].PlanId" />
+                                        <input id="PlanAttributes[@i].PlanId" type="hidden" value="@Model.PlanAttributes[i].PlanId" class="iHidden" name="PlanAttributes[@i].PlanId" />
                                         @Model.PlanAttributes[i].DisplayName
                                     </td>
                                     <td>
                                         @*<input type="checkbox" id="PlanAttributes[@i].IsEnabled" name="OfferAttributes[@i].IsEnabled" value="@Model.PlanAttributes[i].IsEnabled" />*@
-                                        @Html.CheckBoxFor(model => model.PlanAttributes[i].IsEnabled, new { name = "PlanAttributes[@i].IsEnabled", id = "PlanAttributes_IsEnabled_@i" })
+                                        @Html.CheckBoxFor(model => model.PlanAttributes[i].IsEnabled, new { name = "PlanAttributes[@i].IsEnabled", id = string.Format("PlanAttributes_IsEnabled_{0}", @i) })
                                     </td>
                                 </tr>
 
@@ -60,7 +60,11 @@
                         }
                     </table>
                 }
-
+                <div>
+                    <p>
+                        <input class="cm-button-default mt0" type="submit" value="Save Parameters" />
+                    </p>
+                </div>
             </div>
             <div id="PlanEvents" style="display:none">
                 @if (Model.PlanEvents != null && Model.PlanEvents.Count() > 0)
@@ -92,24 +96,24 @@
                                         @Model.PlanEvents[i].EventName
                                     </td>
                                     <td>
-                                        @Html.CheckBoxFor(model => model.PlanEvents[i].Isactive, new { name = "PlanEvents[@i].Isactive", id = "PlanEvents_Isactive_@i" })
+                                        @Html.CheckBoxFor(model => model.PlanEvents[i].Isactive, new { name = "PlanEvents[@i].Isactive", id = string.Format("PlanEvents_Isactive_{0}", @i) })
                                         @*<input type="checkbox" id="PlanEvents_IsEnabled_@i" name="PlanEvents[@i].IsEnabled" value="@Model.PlanEvents[i].IsEnabled" />*@
                                     </td>
-                                    <td><input type="text" style="width:200px;" id="PlanEvents[@i].SuccessStateEmails" name="PlanEvents[@i].SuccessStateEmails" value="@Model.PlanEvents[i].SuccessStateEmails" /></td>
-                                    <td><input type="text" style="width:200px;" id="PlanEvents[@i].FailureStateEmails" name="PlanEvents[@i].FailureStateEmails" value="@Model.PlanEvents[i].FailureStateEmails" /></td>
+                                    <td><input type="text" style="width:200px;" id="PlanEvents_SuccessStateEmails_@i" name="PlanEvents[@i].SuccessStateEmails" value="@Model.PlanEvents[i].SuccessStateEmails" /></td>
+                                    <td><input type="text" style="width:200px;" id="PlanEvents_FailureStateEmails_@i" name="PlanEvents[@i].FailureStateEmails" value="@Model.PlanEvents[i].FailureStateEmails" /></td>
                                 </tr>
 
                             </tbody>
                         }
                     </table>
                 }
+                <div>
+                    <p>
+                        <input class="cm-button-default mt0" type="submit" value="Save Events" />
+                    </p>
+                </div>
+            </div>
 
-            </div>
-            <div>
-                <p>
-                    <input class="cm-button-default mt0" type="submit" value="Create" />
-                </p>
-            </div>
         </div>
     </form>
 </div>

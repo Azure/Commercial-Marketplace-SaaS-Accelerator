@@ -239,10 +239,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
             modelBuilder.Entity<PlanAttributeOutput>(entity =>
             {
-                entity.HasKey(e => e.PlanAttributeId)
-                    .HasName("PK__PlanAttr__8B476A98B8058E05");
+                entity.HasKey(e => e.RowNumber)
+                    .HasName("PK__PlanAttr__AAAC09D8DEB6181B");
 
-                entity.Property(e => e.PlanAttributeId).ValueGeneratedNever();
+                entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
                 entity.Property(e => e.DisplayName)
                     .IsRequired()
@@ -267,9 +267,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
             modelBuilder.Entity<PlanEventsOutPut>(entity =>
             {
-                entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    .ValueGeneratedNever();
+                entity.HasKey(e => e.RowNumber)
+                    .HasName("PK__PlanEven__AAAC09D896A74892");
+
+                entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
                 entity.Property(e => e.EventsName)
                     .IsRequired()
@@ -277,6 +278,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsUnicode(false);
 
                 entity.Property(e => e.FailureStateEmails).IsUnicode(false);
+
+                entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.SuccessStateEmails).IsUnicode(false);
             });

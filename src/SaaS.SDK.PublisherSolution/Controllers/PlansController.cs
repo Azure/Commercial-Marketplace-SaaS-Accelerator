@@ -110,17 +110,23 @@
             try
             {
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-                if (plans != null && plans.PlanAttributes != null && plans.PlanEvents != null)
+                if (plans != null)
                 {
-                    foreach (var attributes in plans.PlanAttributes)
+                    if (plans.PlanAttributes != null)
                     {
-                        attributes.UserId = currentUserDetail.UserId;
-                        this.plansService.SavePlanAttributes(attributes);
+                        foreach (var attributes in plans.PlanAttributes)
+                        {
+                            attributes.UserId = currentUserDetail.UserId;
+                            this.plansService.SavePlanAttributes(attributes);
+                        }
                     }
-                    foreach (var events in plans.PlanEvents)
+                    if (plans.PlanEvents != null)
                     {
-                        events.UserId = currentUserDetail.UserId;
-                        this.plansService.SavePlanEvents(events);
+                        foreach (var events in plans.PlanEvents)
+                        {
+                            events.UserId = currentUserDetail.UserId;
+                            this.plansService.SavePlanEvents(events);
+                        }
                     }
                 }
             }
@@ -128,7 +134,8 @@
             {
 
             }
-            return this.PartialView(plans);
+            //return this.PartialView(plans);
+            return RedirectToAction(nameof(Index));
         }
 
     }

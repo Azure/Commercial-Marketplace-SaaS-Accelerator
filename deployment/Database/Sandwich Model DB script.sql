@@ -298,7 +298,7 @@ GO
 CREATE TABLE PlanAttributeOutput
 (
 RowNumber Int Primary Key, 
-PlanAttributeId Int,
+PlanAttributeId Int NOt NULL,
 PlanId Uniqueidentifier NOt NULL,
 OfferAttributeId Int NOT NULL,
 DisplayName Varchar(225) NOT NULL,
@@ -323,7 +323,7 @@ BEGIN
 Declare @OfferId Uniqueidentifier 
 Set @OfferId=(Select OfferId from Plans where PlanGuId =@PlanId )
 SELECT  
-   ROW_NUMBER() OVER ( ORDER BY OA.ID) RowNumber
+  Cast( ROW_NUMBER() OVER ( ORDER BY OA.ID) as Int)RowNumber
 ,isnull(PA.PlanAttributeId,0) PlanAttributeId
 ,ISNULL(PA.PlanId,@PlanId) PlanId 
 ,ISNULL(PA.OfferAttributeID ,OA.ID)  OfferAttributeID
@@ -362,7 +362,7 @@ Declare @OfferId Uniqueidentifier
 --isnull(PlanAttributeId,ID),ParameterId,DisplayName,DisplaySequence,isnull(IsEnabled,0)
 
 SELECT  
- ROW_NUMBER() OVER ( ORDER BY E.EventsId) RowNumber
+ Cast(ROW_NUMBER() OVER ( ORDER BY E.EventsId)  as Int) RowNumber
  ,ISNULL(OEM.Id,0)  Id
 ,ISNULL(OEM.PlanId,@PlanId) PlanId
 --,OEM.ARMTemplateId
@@ -387,7 +387,7 @@ Go
 CREATE TABLE PlanEventsOutPut
 (
 RowNumber Int Primary Key,
-ID int,
+ID int Not Null,
 PlanId Uniqueidentifier Not Null,
 Isactive bit Not NUll,
 SuccessStateEmails Varchar(max),

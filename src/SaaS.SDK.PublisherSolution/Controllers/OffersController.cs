@@ -54,7 +54,6 @@
             return this.View(getAllOffersData);
         }
 
-
         /// <summary>
         /// Indexes this instance.
         /// </summary>

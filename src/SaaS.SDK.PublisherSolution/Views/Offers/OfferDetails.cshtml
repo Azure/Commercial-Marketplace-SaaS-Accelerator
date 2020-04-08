@@ -138,8 +138,10 @@
 </div>
 <script>
     $(document).ready(function () {
+         //$('#frmOfferattributes').ajaxForm( { beforeSubmit: validate } ); 
         //$('#tblcontainer').hide();
         //var fieldLength = $("#tblcontainer ReplacingTable input.iHidden").length;
+
         var fieldLength = $("#tbodyinitialload > tr").length;
         if (fieldLength != undefined || fieldLength != 0) {
             //$('#tblcontainer').show();
@@ -147,19 +149,21 @@
             $('#tblbody').append(initialhtml);
         }
 
-        $("select").each(function () {
-            var id = this.id;
-            dropdownChange(id);
-        });
+        if ($("#tblbody select").length > 0) {
+            $("select").each(function () {
+                var id = this.id;
+                dropdownChange(id);
+            });
+        }
 
-        $("select").change(function (event) {
-            var id = event.target.id;
-            dropdownChange(id);
-        });
     })
+    $(document).on('change', "select", function () {
+        alert(this.value);
+        var id = event.target.id;
+        dropdownChange(id);
+    });
     $(function () {
         $("#btnAdd").click(function (e) {
-            debugger;
             //$('#tblcontainer').show();
             //var itemIndex = $("#tblcontainer input.iHidden").length;
             var itemIndex = $("#tblbody > tr").length;
@@ -173,7 +177,6 @@
         });
     });
     function removeRow(id) {
-        debugger;
         var controlToBeRemoved = "#tr_OfferAttributes_" + id;
         $("#OfferAttributes_IsRemove_" + id).val(true);
         $(controlToBeRemoved).hide();
@@ -197,5 +200,9 @@
         }
 
     }
+    //function validate(formData, jqForm, options) {
+    //    alert(formData);
+    //    return false;
+    //}
 
 </script>
