@@ -175,6 +175,10 @@ GO
 --ALTER TABLE [dbo].[Subscriptions]  WITH CHECK ADD FOREIGN KEY([UserId]) REFERENCES [dbo].[Users] ([UserId])
 GO
 
+/*Add the AMP per seat column to the subscription table*/
+GO
+ALTER TABLE [dbo].[Subscriptions]
+    ADD [AMPQuantity] INT NULL;
 
 
 /*Script to initialize KNOWNUSERS*/
