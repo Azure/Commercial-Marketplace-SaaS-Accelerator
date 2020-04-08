@@ -12,9 +12,13 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 
         Plans GetPlanDetailByPlanGuId(Guid planGuId);
 
-        List<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid OfferId);
+        IEnumerable<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid OfferId);
 
         IEnumerable<PlanEventsModel> GetPlanEventsByPlanGuId(Guid planGuId, Guid OfferId);
         IEnumerable<Plans> GetPlansByUser();
+
+        int? AddPlanAttributes(PlanAttributeMapping attributes);
+        int? AddPlanEvents(PlanEventsMapping events);
+
     }
 }

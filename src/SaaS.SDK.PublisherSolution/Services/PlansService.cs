@@ -1,5 +1,6 @@
 ﻿using Microsoft.Marketplace.Saas.Web.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,7 +96,43 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             return plan;
         }
 
+        public int? SavePlanAttributes(PlanAttributesModel planAttributes)
+        {
+            if (planAttributes != null)
+            {
+                PlanAttributeMapping attribute = new PlanAttributeMapping();
+                attribute.OfferAttributeId = planAttributes.OfferAttributeId;
+                attribute.IsEnabled = planAttributes.IsEnabled;
+                attribute.PlanId = planAttributes.PlanId;
+                attribute.UserId = planAttributes.UserId;
+                attribute.PlanAttributeId = planAttributes.PlanAttributeId;
+                attribute.CreateDate = DateTime.Now;
 
+                var planEventsId = this.plansRepository.AddPlanAttributes(attribute);
+                return planEventsId;
+            }
+            return null;
+        }
+
+
+        public int? SavePlanEvents(PlanEventsModel planEvents)
+        {
+            if (planEvents != null)
+            {
+                PlanEventsMapping events = new PlanEventsMapping();
+                events.Id = planEvents.Id;
+                events.Isactive = planEvents.Isactive;
+                events.PlanId = planEvents.PlanId;
+                events.SuccessStateEmails = planEvents.SuccessStateEmails;
+                events.FailureStateEmails = planEvents.FailureStateEmails;
+                events.EventId = planEvents.EventId;
+                events.UserId = planEvents.UserId;
+                events.CreateDate = DateTime.Now;
+                var planEventsId = this.plansRepository.AddPlanEvents(events);
+                return planEventsId;
+            }
+            return null;
+        }
 
     }
 }

@@ -297,7 +297,8 @@ GO
 
 CREATE TABLE PlanAttributeOutput
 (
-PlanAttributeId Int Primary Key, 
+RowNumber Int Primary Key, 
+PlanAttributeId Int,
 PlanId Uniqueidentifier NOt NULL,
 OfferAttributeId Int NOT NULL,
 DisplayName Varchar(225) NOT NULL,
@@ -322,7 +323,8 @@ BEGIN
 Declare @OfferId Uniqueidentifier 
 Set @OfferId=(Select OfferId from Plans where PlanGuId =@PlanId )
 SELECT  
-isnull(PA.PlanAttributeId,0) PlanAttributeId
+   ROW_NUMBER() OVER ( ORDER BY OA.ID) RowNumber
+,isnull(PA.PlanAttributeId,0) PlanAttributeId
 ,ISNULL(PA.PlanId,@PlanId) PlanId 
 ,ISNULL(PA.OfferAttributeID ,OA.ID)  OfferAttributeID
 
@@ -345,8 +347,6 @@ END
 
 go
 
-
-
 /* 
 Exec spGetPlanEvents 'B8F4D276-15EB-4EB6-89D4-E600FF1098EF'
 */
@@ -362,7 +362,8 @@ Declare @OfferId Uniqueidentifier
 --isnull(PlanAttributeId,ID),ParameterId,DisplayName,DisplaySequence,isnull(IsEnabled,0)
 
 SELECT  
- ISNULL(OEM.Id,0)  Id
+ ROW_NUMBER() OVER ( ORDER BY E.EventsId) RowNumber
+ ,ISNULL(OEM.Id,0)  Id
 ,ISNULL(OEM.PlanId,@PlanId) PlanId
 --,OEM.ARMTemplateId
 ,ISNULL(OEM.Isactive,0) Isactive
@@ -385,7 +386,8 @@ Go
 
 CREATE TABLE PlanEventsOutPut
 (
-ID int Primary Key,
+RowNumber Int Primary Key,
+ID int,
 PlanId Uniqueidentifier Not Null,
 Isactive bit Not NUll,
 SuccessStateEmails Varchar(max),

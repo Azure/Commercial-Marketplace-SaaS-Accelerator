@@ -107,11 +107,27 @@
         [HttpPost]
         public IActionResult PlanDetails(PlansModel plans)
         {
-            ////OffersViewModel OffersData = new OffersViewModel();
-            //PlansModel plans = new PlansModel();
-            //this.TempData["ShowWelcomeScreen"] = "True";
-            //var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-            //plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
+            try
+            {
+                var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                if (plans != null && plans.PlanAttributes != null && plans.PlanEvents != null)
+                {
+                    foreach (var attributes in plans.PlanAttributes)
+                    {
+                        attributes.UserId = currentUserDetail.UserId;
+                        this.plansService.SavePlanAttributes(attributes);
+                    }
+                    foreach (var events in plans.PlanEvents)
+                    {
+                        events.UserId = currentUserDetail.UserId;
+                        this.plansService.SavePlanEvents(events);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
             return this.PartialView(plans);
         }
 

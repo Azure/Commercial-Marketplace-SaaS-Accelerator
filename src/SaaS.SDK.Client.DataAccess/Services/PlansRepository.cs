@@ -110,52 +110,8 @@
         }
 
 
-        //public IEnumerable<PlanAttributeMapping> GetPlanAttributesByPlanGuId(Guid planGuId)
-        //{
-        //    return Context.PlanAttributeMapping.Where(s => s.PlanId == planGuId);
-        //}
-
-        //public List<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid offerId)
-        //{
-
-
-        //    var offerAttributes = from OfferAttr in Context.OfferAttributes //.Where(s => s.PlanId == planGuId)
-        //                          join planAttr in Context.PlanAttributeMapping on OfferAttr.Id equals planAttr.OfferAttributeId into attr
-        //                          from planAttribute in attr.DefaultIfEmpty()//.Where(s => s.Isactive == true && s.OfferId == offerId)
-        //                          select new
-        //                          {
-        //                              PlanAttributeId = planAttribute.PlanAttributeId,
-        //                              PlanId = planAttribute.PlanId,
-        //                              OfferAttributeId = planAttribute.OfferAttributeId,
-        //                              IsEnabled = planAttribute.IsEnabled,
-        //                              DisplayName = OfferAttr.DisplayName
-        //                          };
-        //    var OfferAttributelist = offerAttributes.ToList();
-
-        //    List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
-
-        //    if (offerAttributes != null && offerAttributes.Count() > 0)
-        //    {
-        //        foreach (var offerAttribute in offerAttributes)
-        //        {
-        //            PlanAttributesModel planAttributes = new PlanAttributesModel();
-        //            planAttributes.PlanAttributeId = offerAttribute.PlanAttributeId;
-        //            planAttributes.PlanId = offerAttribute.PlanId;
-        //            planAttributes.OfferAttributeId = offerAttribute.OfferAttributeId;
-        //            planAttributes.IsEnabled = offerAttribute.IsEnabled;
-        //            planAttributes.DisplayName = offerAttribute.DisplayName;
-        //            attributesList.Add(planAttributes);
-        //        }
-        //    }
-
-        //    //Context.PlanAttributeMapping.Where(s => s.PlanId == planGuId);
-        //    return attributesList;
-        //}
-
-        public List<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid offerId)
+        public IEnumerable<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid offerId)
         {
-
-
             try
             {
                 var offerAttributescCall = Context.PlanAttributeOutput.FromSqlRaw("dbo.spGetOfferParameters {0}", planGuId);
@@ -192,7 +148,7 @@
 
             try
             {
-                
+
                 var allEvents = Context.PlanEventsOutPut.FromSqlRaw("dbo.spGetPlanEvents {0}", planGuId).ToList();
 
                 List<PlanEventsModel> eventsList = new List<PlanEventsModel>();
@@ -220,6 +176,70 @@
             }
             return new List<PlanEventsModel>();
         }
+
+
+        public int? AddPlanAttributes(PlanAttributeMapping planAttributes)
+        {
+            if (planAttributes != null)
+            {
+                var existingPlanAttribute = Context.PlanAttributeMapping.Where(s => s.PlanAttributeId ==
+                planAttributes.PlanAttributeId).FirstOrDefault();
+                if (existingPlanAttribute != null)
+                {
+                    existingPlanAttribute.OfferAttributeId = planAttributes.OfferAttributeId;
+                    existingPlanAttribute.IsEnabled = planAttributes.IsEnabled;
+                    existingPlanAttribute.PlanId = planAttributes.PlanId;
+                    existingPlanAttribute.UserId = planAttributes.UserId;
+                    existingPlanAttribute.PlanAttributeId = planAttributes.PlanAttributeId;
+                    existingPlanAttribute.CreateDate = DateTime.Now;
+
+                    Context.PlanAttributeMapping.Update(existingPlanAttribute);
+                    Context.SaveChanges();
+                    return existingPlanAttribute.PlanAttributeId;
+                }
+                else
+                {
+                    Context.PlanAttributeMapping.Add(planAttributes);
+                    Context.SaveChanges();
+                    return planAttributes.PlanAttributeId;
+                }
+            }
+
+            return null;
+        }
+
+        public int? AddPlanEvents(PlanEventsMapping planEvents)
+        {
+            if (planEvents != null)
+            {
+                var existingPlanEvents = Context.PlanEventsMapping.Where(s => s.Id ==
+                planEvents.Id).FirstOrDefault();
+                if (existingPlanEvents != null)
+                {
+                    existingPlanEvents.Id = planEvents.Id;
+                    existingPlanEvents.Isactive = planEvents.Isactive;
+                    existingPlanEvents.PlanId = planEvents.PlanId;
+                    existingPlanEvents.SuccessStateEmails = planEvents.SuccessStateEmails;
+                    existingPlanEvents.FailureStateEmails = planEvents.FailureStateEmails;
+                    existingPlanEvents.EventId = planEvents.EventId;
+                    existingPlanEvents.UserId = planEvents.UserId;
+                    existingPlanEvents.CreateDate = DateTime.Now;
+
+                    Context.PlanEventsMapping.Update(existingPlanEvents);
+                    Context.SaveChanges();
+                    return existingPlanEvents.Id;
+                }
+                else
+                {
+                    Context.PlanEventsMapping.Add(planEvents);
+                    Context.SaveChanges();
+                    return planEvents.Id;
+                }
+            }
+
+            return null;
+        }
+
 
         /// <summary>
         /// Removes the specified plan details.

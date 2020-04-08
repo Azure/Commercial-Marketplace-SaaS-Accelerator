@@ -20,7 +20,7 @@
 
 .cm-menu-bar {
     background-color: #F9F9F9 !important;
-    margin-top:-142px;
+    margin-top: -142px;
 }
 
 .cm-signin {
@@ -62,7 +62,7 @@
     width: auto;
     padding: 8px;
     max-width: 100%;
-    width:30%;
+    width: 30%;
 }
 
 .cm-panel-default {
@@ -102,8 +102,8 @@
     margin-right: 250px;
 }
 
-.mt100{
-    margin-top:100px;
+.mt100 {
+    margin-top: 100px;
 }
 
 .mt200 {
@@ -339,7 +339,15 @@ a.cm-dropdown-option {
         cursor: pointer;
     }
 
+.mrtop {
+    margin-top: 25px !important;
+}
 
-.mr420{
-    margin-right:420px;
+.maxwidth {
+    width: 1300px !important;
+}
+
+
+.mr420 {
+    margin-right: !important;
 }

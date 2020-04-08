@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
 {
-   public class PlanEventsModel
+    public class PlanEventsModel
     {
         public int Id { get; set; }
         public Guid PlanId { get; set; }
@@ -13,5 +13,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
         public string SuccessStateEmails { get; set; }
         public string FailureStateEmails { get; set; }
         public bool Isactive { get; set; }
+
+        public int UserId { get; set; }
     }
 }

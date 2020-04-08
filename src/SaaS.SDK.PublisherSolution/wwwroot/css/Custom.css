@@ -342,6 +342,15 @@ a.cm-dropdown-option {
         cursor: pointer;
     }
 
+.mrtop {
+    margin-top: 25px !important;
+}
+
+.maxwidth {
+    width: 1300px !important;
+}
+
+
 .mr420 {
-    margin-right: 420px;
+    margin-right: !important;
 }

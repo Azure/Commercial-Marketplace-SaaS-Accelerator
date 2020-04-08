@@ -153,7 +153,12 @@
                 ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
                 this.TempData["ShowWelcomeScreen"] = "True";
             }
-            return View(OffersData); ;
+            ModelState.Clear();
+            //return RedirectToAction(nameof(OfferDetails), new { @offerGuId = offerGuId });
+            return RedirectToAction(nameof(Index));
+
+
+            //return View(OffersData); 
         }
 
 

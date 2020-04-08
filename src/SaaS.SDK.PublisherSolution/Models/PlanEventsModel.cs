@@ -15,5 +15,6 @@ namespace Microsoft.Marketplace.Saas.Web.Models
         public bool Isactive { get; set; }
         public string SuccessStateEmails { get; set; }
         public string FailureStateEmails { get; set; }
+        public int UserId { get; set; }
     }
 }
