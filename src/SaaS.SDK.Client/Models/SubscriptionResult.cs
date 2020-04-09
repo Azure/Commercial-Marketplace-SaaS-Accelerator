@@ -115,7 +115,7 @@
         /// <value>
         /// The quantity.
         /// </value>
-        public string Quantity { get; set; }
+        public int? Quantity { get; set; }
 
         /// <summary>
         /// Gets or sets the resource location.
@@ -237,5 +237,16 @@
         /// <value>
         ///   <c>true</c> if this instance is metering supported; otherwise, <c>false</c>.</value>
         public bool IsMeteringSupported { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether this instance is on per user plan.</summary>
+        /// <value>
+        ///   <c>true</c> if this subscription is on per user plan; otherwise, <c>false</c>.</value>
+        public bool IsPerUserPlan 
+        {
+            get
+            {
+                return this.Quantity !=null && this.Quantity > 0;
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@
     public enum SubscriptionLogAttributes
     {
         Plan = 1,
-        Status = 2
+        Status = 2,
+        Quantity = 3
     }
 }
