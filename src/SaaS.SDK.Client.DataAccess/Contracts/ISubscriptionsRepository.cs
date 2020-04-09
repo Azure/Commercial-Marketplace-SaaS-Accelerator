@@ -44,5 +44,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         void UpdatePlanForSubscription(Guid subscriptionId, string planId);
 
         List<SubscriptionParametersOutput> GetSubscriptionsParametersById(Guid subscriptionId, Guid planId);
+        void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput);
     }
 }

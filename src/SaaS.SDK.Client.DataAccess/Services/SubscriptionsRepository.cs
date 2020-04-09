@@ -198,8 +198,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                     newAttributeValue.PlanAttributeId = subscriptionParametersOutput.PlanAttributeId;
                     newAttributeValue.Value = subscriptionParametersOutput.Value;
                     newAttributeValue.SubscriptionId = subscriptionParametersOutput.OfferId;
-                    newAttributeValue.CreateDate = subscriptionParametersOutput.CreateDate;
-                    newAttributeValue.UserId = subscriptionParametersOutput.UserId;
+                    //newAttributeValue.CreateDate = subscriptionParametersOutput.CreateDate;
+                    //newAttributeValue.UserId = subscriptionParametersOutput.UserId;
                     newAttributeValue.PlanId = subscriptionParametersOutput.PlanId;
                     Context.SubscriptionAttributeValues.Add(newAttributeValue);
                     Context.SaveChanges();

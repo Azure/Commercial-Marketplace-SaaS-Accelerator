@@ -347,7 +347,7 @@
                         var response = this.apiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                         this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
                         isSuccess = true;
-                        this.subscriptionService.AddSubscriptionParameters(model.SubscriptionParameters);
+                        this.subscriptionService.AddSubscriptionParameters(model.SubscriptionParameters,currentUserId);
                         subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                         subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
