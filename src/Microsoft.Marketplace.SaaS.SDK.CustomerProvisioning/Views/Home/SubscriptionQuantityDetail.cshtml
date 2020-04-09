@@ -1,0 +1,63 @@
+﻿@model Microsoft.Marketplace.SaasKit.Models.SubscriptionResult
+
+<div>
+    <div class="modal-dialog modal-lg" data-backdrop="static" style="padding-left:12%!important;padding-right:12%!important;">
+        <div class="modal-content">
+            <div class="modal-header bg-primary">
+                <h4 class="text-white text-center">Change Quantity</h4>
+                <button type="button" class="close text-right text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <form asp-action="ChangeSubscriptionQuantity" id="frmSubscriptionDetail" method="post">
+                <div class="modal-body">
+                    <div class="row text-left">
+                        <div class="col-sm-4 text-right font-weight-bold">
+                            @Html.DisplayNameFor(model => model.Id)
+                        </div>
+                        <div class="col-sm-8">
+                            @Html.DisplayFor(model => model.Id)
+                        </div>
+                        <div class="col-sm-4 text-right font-weight-bold">
+                            @Html.DisplayNameFor(model => model.Name)
+                        </div>
+                        <div class="col-sm-8">
+                            @Html.DisplayFor(model => model.Name)
+                        </div>
+                        <div class="col-sm-4 text-right font-weight-bold">
+                            @Html.DisplayNameFor(model => model.SaasSubscriptionStatus)
+                        </div>
+                        <div class="col-sm-8">
+                            @Html.DisplayFor(model => model.SaasSubscriptionStatus)
+                        </div>
+                        <div class="col-sm-4 text-right font-weight-bold">
+                            @Html.DisplayName("Current Plan")
+                        </div>
+                        <div class="col-sm-8 text-capitalize">
+                            @Html.DisplayFor(model => model.PlanId)
+                        </div>
+                        <div class="col-sm-4 text-right font-weight-bold">
+                            @Html.DisplayName("Current Quantity")
+                        </div>
+                        <div class="col-sm-8 text-capitalize">
+                            @Html.DisplayFor(model => model.Quantity)
+                        </div>
+                    </div>
+                    <div class="row pr-3 pt-3 mt-5 pb-3" style="background-color:#F2F2F2">
+                        <div class="col-sm-4 text-right  font-weight-bold">
+                            @Html.DisplayName("Change Quantity")
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(s => s.Quantity, new { style = "width:100px" })
+                            @Html.HiddenFor(s => s.Id)
+                            @Html.HiddenFor(s => s.PlanId)
+                            @Html.HiddenFor(s => s.SubscribeId)
+                        </div>
+                        <button type="button" onclick="confirmDialog()" class="btn btn-success text-right">Change Quantity</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn  btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

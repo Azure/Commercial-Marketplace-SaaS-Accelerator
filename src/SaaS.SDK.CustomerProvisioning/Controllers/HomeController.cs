@@ -247,6 +247,26 @@
         }
 
         /// <summary>
+        /// Get Subscription Details for selected Subscription
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>
+        /// The <see cref="IActionResult" />
+        /// </returns>
+        public IActionResult SubscriptionQuantityDetail(Guid subscriptionId)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                return this.View(subscriptionDetail);
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        /// <summary>
         /// Subscriptions the log detail.
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
@@ -545,6 +565,63 @@
             return this.RedirectToAction(nameof(this.Subscriptions));
         }
 
+        /// <summary>
+        /// Changes the quantity plan.
+        /// </summary>
+        /// <param name="subscriptionDetail">The subscription detail.</param>
+        /// <returns>Changes subscription quantity</returns>
+        [HttpPost]
+        public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
+        {
+            if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity !=null && subscriptionDetail.Quantity > 0) 
+            {
+                try
+                {
+                    var subscriptionId = subscriptionDetail.Id;
+                    var quantity = subscriptionDetail.Quantity;
+                    
+                    var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+
+                    var jsonResult = await this.apiClient.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
+
+                    var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
+                    if (jsonResult != null && jsonResult.OperationId != default)
+                    {
+                        while (OperationStatusEnum.InProgress.Equals(changeQuantityOperationStatus) || OperationStatusEnum.NotStarted.Equals(changeQuantityOperationStatus))
+                        {
+                            var changeQuantityOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                            changeQuantityOperationStatus = changeQuantityOperationResult.Status;
+                            this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId);
+                        }
+
+                        var oldValue = this.subscriptionService.GetSubscriptionsForSubscriptionId(subscriptionId);
+
+                        this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
+                        this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.");
+
+                        if (oldValue != null)
+                        {
+                            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                            {
+                                Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
+                                SubscriptionId = oldValue.SubscribeId,
+                                NewValue = quantity.ToString(),
+                                OldValue = oldValue.Quantity.ToString(),
+                                CreateBy = currentUserId,
+                                CreateDate = DateTime.Now
+                            };
+                            this.subscriptionLogRepository.Add(auditLog);
+                        }
+                    }
+                }
+                catch (FulfillmentException fex)
+                {
+                    this.TempData["ErrorMsg"] = fex.Message;
+                }
+            }
+
+            return this.RedirectToAction(nameof(this.Subscriptions));
+        }
         #endregion
     }
 }

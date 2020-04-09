@@ -464,6 +464,7 @@
             subscritpionDetail.Id = subscription.AmpsubscriptionId;
             subscritpionDetail.SubscribeId = subscription.Id;
             subscritpionDetail.PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId;
+            subscritpionDetail.Quantity = subscription.AmpQuantity;
             subscritpionDetail.Name = subscription.Name;
             subscritpionDetail.SaasSubscriptionStatus = GetSubscriptionStatus(subscription.SubscriptionStatus);
             subscritpionDetail.IsActiveSubscription = subscription.IsActive ?? false;
