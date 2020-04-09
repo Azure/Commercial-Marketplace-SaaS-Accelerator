@@ -20,5 +20,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models
         public Guid SubscriptionId { get; set; }
         public Guid OfferId { get; set; }
         public Guid PlanId { get; set; }
+        public int? UserId { get; set; }
+        public int? CreateDate { get; set; }
     }
 }

@@ -176,6 +176,40 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 
 
         /// <summary>
+        /// Updates the plan for subscription.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="planId">The plan identifier.</param>
+        public void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput)
+        {
+            try
+            {
+                var existingSubscriptionparameter = Context.SubscriptionAttributeValues.Where(s => s.Id == subscriptionParametersOutput.Id).FirstOrDefault();
+                if (existingSubscriptionparameter != null)
+                {
+                    existingSubscriptionparameter.OfferId = subscriptionParametersOutput.OfferId;
+                    Context.SubscriptionAttributeValues.Update(existingSubscriptionparameter);
+                    Context.SaveChanges();
+                }
+                else
+                {
+                    SubscriptionAttributeValues newAttributeValue = new SubscriptionAttributeValues();
+                    newAttributeValue.OfferId = subscriptionParametersOutput.OfferId;
+                    newAttributeValue.PlanAttributeId = subscriptionParametersOutput.PlanAttributeId;
+                    newAttributeValue.Value = subscriptionParametersOutput.Value;
+                    newAttributeValue.SubscriptionId = subscriptionParametersOutput.OfferId;
+                    newAttributeValue.CreateDate = subscriptionParametersOutput.CreateDate;
+                    newAttributeValue.UserId = subscriptionParametersOutput.UserId;
+                    newAttributeValue.PlanId = subscriptionParametersOutput.PlanId;
+                    Context.SubscriptionAttributeValues.Add(newAttributeValue);
+                    Context.SaveChanges();
+                }
+            }
+            catch (Exception) { }
+        }
+
+
+        /// <summary>
         /// Removes the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>

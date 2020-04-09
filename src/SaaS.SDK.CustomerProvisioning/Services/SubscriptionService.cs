@@ -235,5 +235,25 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             return subscriptionParametersList;
         }
 
+        /// <summary>
+        /// Adds the plan details for subscription.
+        /// </summary>
+        /// <param name="allPlanDetail">All plan detail.</param>
+        public void AddSubscriptionParameters(List<SubscriptionParametersModel> subscriptionParameters)
+        {
+            foreach (var parameters in subscriptionParameters)
+            {
+                SubscriptionRepository.AddParameters(new SubscriptionParametersOutput
+                {
+                    PlanId = planDetail.PlanId,
+                    DisplayName = planDetail.PlanId,
+                    Description = planDetail.DisplayName,
+                    OfferId = planDetail.OfferId,
+                    PlanGuid = planDetail.PlanGUID
+                });
+            }
+        }
+
+
     }
 }

@@ -327,7 +327,7 @@
         /// <param name="operation">The operation.</param>
         /// <returns>Subscriptions operation</returns>
         [HttpPost]
-        public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation)
+        public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation, SubscriptionResultExtension model)
         {
             if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
             {
@@ -347,6 +347,7 @@
                         var response = this.apiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                         this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
                         isSuccess = true;
+                        this.subscriptionService.AddSubscriptionParameters(model.SubscriptionParameters);
                         subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                         subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
