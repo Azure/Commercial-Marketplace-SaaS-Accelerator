@@ -476,14 +476,14 @@ GO
 IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'IsAutomaticProvisioningSupported')
 BEGIN
     INSERT INTO ApplicationConfiguration (Name,Value,Description)
-    SELECT 'IsAutomaticProvisioningSupported','','Skip Activation - Automatic Provisioning Supported'
+    SELECT 'IsAutomaticProvisioningSupported','false','Skip Activation - Automatic Provisioning Supported'
 END
 GO
 
 IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'IsEmailEnabledForPendingActivation')
 BEGIN
     INSERT INTO ApplicationConfiguration (Name,Value,Description)
-    SELECT 'IsEmailEnabledForPendingActivation','','Email Enabled For Pending Activation'
+    SELECT 'IsEmailEnabledForPendingActivation','false','Email Enabled For Pending Activation'
 END
 GO
 
