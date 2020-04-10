@@ -41,6 +41,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
         /// </summary>
         public IConfiguration Configuration { get; }
 
+
         // This method gets called by the runtime. Use this method to add services to the container.
         /// <summary>
         /// The ConfigureServices
@@ -88,7 +89,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
    })
    .AddCookie();
 
-            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new Logger()));            
+            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));            
             services.AddSingleton<SaaSApiClientConfiguration>(config);
 
             services.AddDbContext<SaasKitContext>(options =>

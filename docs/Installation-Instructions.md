@@ -1,6 +1,6 @@
  # Transactable SaaS Offer Fulfillment v2 and Metering SDK Instructions
 
-  * [Overview](#overview)
+   * [Overview](#overview)
     + [Features](#features)
   * [Prerequisites](#prerequisites)
   * [Set up web application resources in Azure](#set-up-web-application-resources-in-azure)
@@ -15,6 +15,7 @@
     + [Activate](#activate)
     + [Change plan](#change-plan)
     + [Unsubscribe](#unsubscribe)
+    + [Change Quantity](#change-quantity)
     + [View activity log](#view-activity-log)
     + [Go to SaaS application](#go-to-saas-application)
   * [SaaS metering service](#saas-metering-service)
@@ -22,6 +23,7 @@
   * [License Manager](#license-manager)
     + [Publisher: Manage Licenses](#publisher--manage-licenses)
     + [Customer: View Licenses](#customer--view-licenses)
+  * [Troubleshooting issues](#troubleshooting-issues)
 
 ## Overview
 
@@ -204,14 +206,14 @@ In this section, we will go over the steps to download the latest sources from t
    ![Deploy database](./images/Deploy-Database.png) 
    - Click **Purchase** after agreeing to the terms and conditions by checking the box to start the deployment of the database by name **AMPSaaSDB**
    - Update the connection string property in **appSettings.json** with the details related to SQL Server name, database and the credentials to connect to the database.
-   - >**Note:** The application holds the configuration, feature flags and email templates in tables named **ApplicationConfiguration** and **EmailTemplate** tables. It is recommended that these tables are initialized and the values are validated by running the relevant SQL in **AMP-DB-1.1.sql**
+   - >**Note:** The application holds the configuration, feature flags and email templates in tables named **ApplicationConfiguration** and **EmailTemplate** tables. It is recommended that these tables are initialized and the values are validated by running the relevant SQL in **AMP-DB-2.0.sql**
 - If you want to set up the database locally, you could create and initialize the database by following the steps given below:
   - Create a database named **AMPSaaSDB**
   - Switch to the database - **AMPSaaSDB**
   - Run the script - **AMP-DB-1.0.sql** to initalize the database
-  - Run the script - **AMP-DB-1.1.sql** to update your existing database to 1.1
+  - Run the script - **AMP-DB-2.0.sql** to update your existing database to 2.0
   - Add entries into KnownUsers table to allow login to **Publisher Portal**   
-  > Note: If you already had created a database using an earlier version of the SDK, you just need to run the **Upgrade-To-1.1.sql** 
+  > Note: If you already had created a database using an earlier version of the SDK, you just need to run the **AMP-DB-2.0.sql** 
       
 - Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
 *Note: Make sure that the home page url is listed in the **replyURLs** in the AD application for the authentication against Azure AD to work properly.*
@@ -368,7 +370,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 > The AMP SDK sample application calls the following AMP SDK API methods in the background.
 
 ```csharp
-// Initiate the change plan process
+// Initiate the delete subscription process
 Task<SubscriptionUpdateResult> DeleteSubscriptionAsync(Guid subscriptionId, string subscriptionPlanID);
 ```
 
@@ -379,6 +381,47 @@ Task<SubscriptionUpdateResult> DeleteSubscriptionAsync(Guid subscriptionId, stri
 Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
 ```
  
+### Change Quantity
+
+- Log on to [AMP SDK sample application]().
+- Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
+- The table on this page enlists all the subscriptions and their status.
+- Click **Change quantity** in the menu as shown in the below picture
+![Change quantity](./images/change-quantity-menu.png)
+
+- Provide the new quantity and click **Change Quantity** to update the quantity on the subscription
+
+![Update quantity](./images/update-quantity-popup.png)
+
+> Note: The update to quantity is applicable if only the subscription is against a Plan that is set to be billed per user
+  
+![Per user pricing](./images/per-user-plan-pricing.png)
+
+> The AMP SDK sample application calls the following AMP SDK API methods in the background.
+
+```csharp
+Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, int? subscriptionQuantity);
+```
+
+> The operation is asynchronous and the call to **change plan** comes back with an operation location that should be queried for status.
+
+```csharp
+// Get the latest status of the subscription due to an operation / action.
+Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
+```
+
+**Update Plan to indicate per user pricing**
+
+Use the following script as an example / template to update the records in **Plans**
+
+```sql
+UPDATE Plans SET IsPerUser = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
+```
+
+The Plan ID is available in the **Plan overview** tab of the offer as shown here:
+
+![Plan ID](./images/plan-id-for-metering.png)
+
 ### View activity log
 
 - Log on to [AMP SDK sample application]().
@@ -480,5 +523,22 @@ The intent here is to illustrate how the assignment can be done via the interfac
 - Use the **Copy** button to copy the license text to clipboard
 
 ![View Licenses](./images/customer-view-licenses.png)
+
+
+## Troubleshooting issues
+
+The Provisioning servie and the Publisher solution are configured to log the activity to console ( when running locally ). The logs are available via **Log Stream** when the applications are running in Azure as app services.
+Logs in Azure can be viewed by following the below steps:
+
+- Log on to https://portal.azure.com
+- Navigate to the app service 
+- Click **App Service logs** and set the parameters as shown here:
+
+![App service logs](./images/azure-application-logging.png)
+
+- Click **Log Stream** in the menu on the left to look at the logs output by the application. You could see the view refreshing every minute with the latest log information due to the activity in the application as you access the application in another browser window.
+- You can download the logs from the FTP URL that is available in the **App Service Logs** interface.
+- The credentials to access the FTP location are available in the **Publish Profile** of the web application.
+
 
  
