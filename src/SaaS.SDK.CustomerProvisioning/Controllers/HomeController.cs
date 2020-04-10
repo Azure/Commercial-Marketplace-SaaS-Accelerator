@@ -114,7 +114,7 @@
         public IActionResult Index(string token = null)
         {
             this.log.Info("Initializing Index Page");
-            SubscriptionResult subscriptionDetail = new SaasKitModels.SubscriptionResult();
+            SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
             if (User.Identity.IsAuthenticated)
             {
@@ -133,16 +133,14 @@
                     this.TempData["ShowWelcomeScreen"] = null;
                     token = token.Replace(' ', '+');
                     var newSubscription = this.apiClient.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
-
                     if (newSubscription != null && newSubscription.SubscriptionId != default)
                     {
                         var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                         this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail);
-
                         // GetSubscriptionBy SubscriptionId
                         var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                        subscriptionData.Quantity = 0;
                         var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
-
                         if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                         {
                             SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
@@ -156,8 +154,8 @@
                             };
                             this.subscriptionLogRepository.Add(auditLog);
                         }
-
-                        subscriptionDetail = subscriptionData;
+                        var serializedParent = JsonConvert.SerializeObject(subscriptionData);
+                        subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
                         subscriptionDetail.ShowWelcomeScreen = false;
                         subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                         subscriptionDetail.CustomerName = this.CurrentUserName;
@@ -183,9 +181,6 @@
                     return this.View(subscriptionDetail);
                 }
             }
-
-
-
             return this.View(subscriptionDetail);
         }
 
@@ -204,6 +199,12 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
                 subscriptionDetail.Subscriptions = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, default, true).ToList();
+                foreach (var subscription in subscriptionDetail.Subscriptions)
+                {
+                    Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscription.PlanId);
+                    subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported"));
+                    subscription.IsPerUserPlan = PlanDetail.IsPerUser.HasValue ? PlanDetail.IsPerUser.Value : false;
+                }
                 subscriptionDetail.SaaSAppUrl = this.apiClient.GetSaaSAppURL();
 
                 if (this.TempData["ErrorMsg"] != null)
@@ -428,7 +429,7 @@
                 {
                     this.TempData["ShowLicensesMenu"] = true;
                 }
-                SubscriptionResult subscriptionDetail = new SubscriptionResult();
+                SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
                 if (User.Identity.IsAuthenticated)
                 {
@@ -442,10 +443,9 @@
                     var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
                     var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
 
-                    //var serializedParent = JsonConvert.SerializeObject(subscriptionData);
-                    //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
+                    var serializedParent = JsonConvert.SerializeObject(subscriptionData);
+                    subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
-                    subscriptionDetail = subscriptionData;
                     subscriptionDetail.ShowWelcomeScreen = false;
                     subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.PendingFulfillmentStart;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
@@ -467,7 +467,7 @@
                 {
                     this.TempData["ShowLicensesMenu"] = true;
                 }
-                SubscriptionResult subscriptionDetail = new SubscriptionResult();
+                SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
                 if (User.Identity.IsAuthenticated)
                 {
@@ -484,7 +484,10 @@
                     //var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                     //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
-                    subscriptionDetail = subscriptionData;
+
+                    var serializedParent = JsonConvert.SerializeObject(subscriptionData);
+                    subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
+
                     subscriptionDetail.ShowWelcomeScreen = false;
                     subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;

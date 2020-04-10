@@ -42,7 +42,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                 {
                     existingSubscriptions.SubscriptionStatus = subscriptionDetails.SubscriptionStatus;
                     existingSubscriptions.AmpplanId = subscriptionDetails.AmpplanId;
-                    existingSubscriptions.AmpQuantity = subscriptionDetails.AmpQuantity;
+                    existingSubscriptions.Ampquantity = subscriptionDetails.Ampquantity;
                     Context.Subscriptions.Update(existingSubscriptions);
                     Context.SaveChanges();
                     return existingSubscriptions.Id;
@@ -102,14 +102,14 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="quantity">The Quantity.</param>
-        public void UpdateQuantityForSubscription(Guid subscriptionId, int? quantity)
+        public void UpdateQuantityForSubscription(Guid subscriptionId, int quantity)
         {
             try
             {
                 var existingSubscription = Context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
                 if (existingSubscription != null)
                 {
-                    existingSubscription.AmpQuantity = quantity;
+                    existingSubscription.Ampquantity = quantity;
                     Context.Subscriptions.Update(existingSubscription);
                 }
                 Context.SaveChanges();
