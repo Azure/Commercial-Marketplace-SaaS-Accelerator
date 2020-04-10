@@ -15,7 +15,7 @@ The SDK provides the components required for the implementations of the billing 
 
 ### Documentation 
 
-The documentation **(doc)** directory contains: 
+The documentation **(docs)** directory contains: 
 
 - **[Installation instructions](./docs/Installation-Instructions.md)** to help understand, implmenet and deploy the SDK  components.  
 - **Review of the SaaS Offer BluePrints** the SDK provides extended functionality. In addition, to the implementation . Like using the SaaS offer a way to transact [Virtual Machines](https://docs.microsoft.com/en-us/azure/marketplace/cloud-partner-portal/virtual-machine/cpp-virtual-machine-offer)  and [Azure Application](https://docs.microsoft.com/en-us/azure/marketplace/cloud-partner-portal/azure-applications/cpp-azure-app-offer) offers with the use of software licenses (Scheduled for v.1.1 of this SDK) and for implementing Hybrid SaaS applications (scheduled for v1.2 of this SDK)
@@ -27,11 +27,11 @@ The source **(src)** directory offers the following components:
 
 | Project | Description | Directory Name |
 | --- | --- | --- |
-|  **Transactable SaaS Client Library** |Implements the fulfillment v2 and metered APIs and the Web-hook that handles messages from the Marketplace's E-commerce engine. |Microsoft.Marketplace.SaaS.SDK.Client|
-| **Customer provisioning sample web application** | Showcases how to provision a customer (ASP.NET Core 3.1) that uses the SDK to invoke fulfillment APIs in order to manage the subscriptions against the SaaS offer in Azure. |Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning|
-| **Publisher sample web application** | Showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. |Microsoft.Marketplace.SaaS.SDK.PublisherSolution|
-| **Client Data Access library** | Enables to persist the Plans, Subscriptions, and transactions with the fulfillment and Metered APIs. |Microsoft.Marketplace.SaaS.SDK.Client.DataAccess |
-| **[Unit Tests project](./docs/Microsoft-Marketplace-SaaS-SDK-UnitTest.md)** | Helps validate and test the SDK's codebase. | Microsoft.Marketplace.SaaS.SDK.UnitTest |
+|  **Transactable SaaS Client Library** |Implements the fulfillment v2 and metered APIs and the Web-hook that handles messages from the Marketplace's E-commerce engine. |SaaS.SDK.Client|
+| **Customer provisioning sample web application** | Showcases how to provision a customer (ASP.NET Core 3.1) that uses the SDK to invoke fulfillment APIs in order to manage the subscriptions against the SaaS offer in Azure. |SaaS.SDK.CustomerProvisioning|
+| **Publisher sample web application** | Showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. |SaaS.SDK.PublisherSolution|
+| **Client Data Access library** | Enables to persist the Plans, Subscriptions, and transactions with the fulfillment and Metered APIs. |SaaS.SDK.Client.DataAccess |
+| **[Unit Tests project](./docs/Microsoft-Marketplace-SaaS-SDK-UnitTest.md)** | Helps validate and test the SDK's codebase. | SaaS.SDK.UnitTest |
 
 
 The web sample applications and the SDK in this repository cover the components that comprise the highlighted area in the below picture

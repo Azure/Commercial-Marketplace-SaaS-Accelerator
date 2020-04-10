@@ -1,0 +1,89 @@
+﻿@model SubscriptionUsageViewModel
+@{
+    ViewData["Title"] = "RecordUsage";
+}
+
+@if (Model.SubscriptionDetail != null && Model.SubscriptionDetail.Id > 0)
+{
+    <div>
+        <div class="container">
+            <div class="card-body ">
+                <br />
+                <div class="form-group row">
+                    <div class="col-md-12">
+                        <div class="text-left">
+                            <span class="cm-section-heading">Manage Subscription Usage</span>
+                        </div>
+                        <form asp-action="ManageSubscriptionUsage" method="post">
+                            <div class="row p10">
+                                <div class="col-md-1 pt-1">
+                                    @Html.HiddenFor(s => s.SubscriptionDetail.Id)
+                                    @Html.HiddenFor(s => s.SubscriptionDetail.AmpsubscriptionId)
+                                    @Html.HiddenFor(s => s.SubscriptionDetail.AmpplanId)
+                                    @Html.LabelFor(s => s.Quantity, new { @class = "font-weight-bold" })
+                                </div>
+                                <div class="col-md-2">
+                                    @Html.TextBoxFor(s => s.Quantity, null, new { @class = "form-control", @placeholder = "Quantity", required = "required" })
+                                </div>
+                                <div class="col-md-1 pt-1">
+                                    @Html.LabelFor(s => s.DimensionsList, "Dimension", new { @class = "font-weight-bold" })
+                                </div>
+                                <div class="col-md-3">
+                                    @Html.DropDownListFor(s => s.SelectedDimension, Model.DimensionsList, "-- Select Dimension --", new { @class = "form-control", required = "required" })
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="cm-button-default mt0">Record Usage</button>
+                                </div>
+                            </div>
+
+
+
+                        </form>
+                    </div>
+                </div>
+                <div class="form-group" style="overflow:auto" height="250px">
+                    @if (Model.MeteredAuditLogs.Count() > 0)
+                    {
+                        <table id="table" class="table table-striped table-bordered dt-responsive" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Subscription Usage Date(UTC)</th>
+                                    <th>Status Code</th>
+                                    <th>Request JSON</th>
+                                    <th>Response JSON</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var i = 0; i < Model.MeteredAuditLogs.Count; i++)
+                                {
+                                    var meteredAuditLog = Model.MeteredAuditLogs[i];
+                                    <tr>
+                                        <td class="text-left">
+                                            @Html.HiddenFor(s => s.MeteredAuditLogs[i].Id)
+                                            @Html.HiddenFor(s => s.MeteredAuditLogs[i].Subscription.Id)
+                                            @meteredAuditLog.SubscriptionUsageDate
+                                        </td>
+                                        <td class="text-left">@meteredAuditLog.StatusCode</td>
+                                        <td class="text-left">@meteredAuditLog.RequestJson</td>
+                                        <td class="text-left">@meteredAuditLog.ResponseJson</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="cm-panel-default mt40">
+                            <div class="p-3 mr420">
+                                <p>
+                                    No licenses assigned yet, start assigning by selecting a subscription and submitting license key.
+                                </p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+}

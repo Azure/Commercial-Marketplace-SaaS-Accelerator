@@ -1,0 +1,15 @@
+﻿@model SubscriptionLicensesModel
+
+<form asp-action="AddLicenseDetail" method="post">
+    <div class="row">
+        <div class="col-4">
+            @Html.DropDownListFor(s => s.SubScriptionID, Model.SubscriptionList, "-- Select Subscription --", new { @class = "form-control cm-margin", required = "required" })
+        </div>
+        <div class="col-4">
+            @Html.TextBoxFor(s => s.LicenseKey, null, new { @class = "form-control cm-margin", @placeholder = "License Key", required = "required", maxlength = "255" })
+        </div>
+        <div class="col-4">
+            <button type="submit" class="cm-button-default mt0">Add License</button>
+        </div>
+    </div>
+</form>

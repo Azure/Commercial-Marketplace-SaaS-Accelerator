@@ -1,23 +1,29 @@
  # Transactable SaaS Offer Fulfillment v2 and Metering SDK Instructions
 
-  * [Overview](#overview)
+   * [Overview](#overview)
+    + [Features](#features)
   * [Prerequisites](#prerequisites)
   * [Set up web application resources in Azure](#set-up-web-application-resources-in-azure)
   * [Marketplace Provisioning Service](#marketplace-provisioning-service)
     + [Create marketplace offer](#create-marketplace-offer)
     + [Set up the sample client application locally](#set-up-the-sample-client-application-locally)
     + [Deploy the application to Azure](#deploy-the-application-to-azure)
+      - [Using an ARM template and Azure CLI](#using-an-arm-template-and-azure-cli)
+      - [Manual deployment using VS 2019](#manual-deployment-using-vs-2019)
+    + [Landing page and Webhook settings in the Marketplace Offer](#landing-page-and-webhook-settings-in-the-marketplace-offer)
     + [Purchase the offer](#purchase-the-offer)
     + [Activate](#activate)
     + [Change plan](#change-plan)
     + [Unsubscribe](#unsubscribe)
+    + [Change Quantity](#change-quantity)
     + [View activity log](#view-activity-log)
     + [Go to SaaS application](#go-to-saas-application)
-  * [SaaS metering service](#saas-metering-service) 
+  * [SaaS metering service](#saas-metering-service)
     + [Emit usage events](#emit-usage-events)
   * [License Manager](#license-manager)
     + [Publisher: Manage Licenses](#publisher--manage-licenses)
     + [Customer: View Licenses](#customer--view-licenses)
+  * [Troubleshooting issues](#troubleshooting-issues)
 
 ## Overview
 
@@ -108,18 +114,17 @@ In this example, the sample client application allows the user to:
 
 For the purpose of the sample, a new marketplace offer is created and is made available in known tenants to test out the AMP SDK with the sample client application. More details on the creation of SaaS offers are available [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer)
 
-
 ### Set up the sample client application locally
 
 In this section, we will go over the steps to download the latest sources from the repository, build the application ready for deployment to Azure.
 
-- Clone or download the latest source code from [here](https://dev.azure.com/AMP-SDKs/AMP%20SaaS%20SDK)
-- Open the solution **Microsoft.Marketplace.SaaS.SDK.sln** in Visual Studio 2019
+- Clone or download the latest source code from [here](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK)
+- Open the solution **SaaS.SDK.sln** in Visual Studio 2019
 
-![Solution Structure](./images/SolutionStructure.PNG)
+![Solution Structure](./images/solution-structure-vs.png)
 
-- Right-click on the project named **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
-- Open the file **appsettings.json** under the project **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** and update the values as follows:
+- Right-click on the project named **SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
+- Open the file **appsettings.json** under the project **SaaS.SDK.CustomerProvisioning** and update the values as follows:
 
     - **GrantType** - Leave this as *client_credentials*
 
@@ -165,43 +170,90 @@ In this section, we will go over the steps to download the latest sources from t
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
-  "AppSetting": {
+   // Comment the sections - SaaSApiConfiguration and Connection strings when deploying to Azure
+  "SaaSApiConfiguration": {
     "GrantType": "client_credentials",
     "ClientId": "<Azure-AD-Application-ID>",
     "ClientSecret": "******",
     "Resource": "62d94f6c-d599-489b-a797-3e10e42fbe22",
     "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/api",
-    "SignedOutRedirectUri": "https://saaskitdemoapp.azurewebsites.net/Home/Index",
+    "SignedOutRedirectUri": "<provisioning_or_publisher_web_app_base_path>/Home/Index",
     "TenantId": "<TenantID-of-AD-Application>",
     "FulFillmentAPIVersion": "2018-09-15",
     "AdAuthenticationEndPoint": "https://login.microsoftonline.com",
-    "SaaSAppUrl" : "https://saasdemoapp.azurewebsites.net"
+    "SaaSAppUrl" : "<Link-to-SaaS-Application>"
   },
-  "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>",
+  "connectionStrings" : {
+    "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>"
+    },
   "AllowedHosts": "*"
 }
 
 ```
+**Note**: When defining the keys in Azure App Service -> Configuration -> App Settings, refer to the below example for correctness:
+
+|Name| Value|
+|--|--|
+|SaaSApiConfiguration__GrantType| client_credentials|_
+
+> **Tip** __(double underscore) should be used to define the config items that appear as nested keys in appSettings.json
+
 - Deploy SQL database to Azure as follows:
-  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy.md" target="_blank">
+  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy-v1.json" target="_blank">
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/> 
 </a> to start the deployment of SQL database
    - Fill out the details on the template deployment form as shown here
    ![Deploy database](./images/Deploy-Database.png) 
    - Click **Purchase** after agreeing to the terms and conditions by checking the box to start the deployment of the database by name **AMPSaaSDB**
    - Update the connection string property in **appSettings.json** with the details related to SQL Server name, database and the credentials to connect to the database.
-- If you want to set up the database locally, you could create and initialize the database by the running the SQL scripts available under **deployment/Database/AMP-DB.sql** folder.
+   - >**Note:** The application holds the configuration, feature flags and email templates in tables named **ApplicationConfiguration** and **EmailTemplate** tables. It is recommended that these tables are initialized and the values are validated by running the relevant SQL in **AMP-DB-2.0.sql**
+- If you want to set up the database locally, you could create and initialize the database by following the steps given below:
   - Create a database named **AMPSaaSDB**
   - Switch to the database - **AMPSaaSDB**
-  - Run the script - **AMP-DB.sql** to initalize the database
+  - Run the script - **AMP-DB-1.0.sql** to initalize the database
+  - Run the script - **AMP-DB-2.0.sql** to update your existing database to 2.0
+  - Add entries into KnownUsers table to allow login to **Publisher Portal**   
+  > Note: If you already had created a database using an earlier version of the SDK, you just need to run the **AMP-DB-2.0.sql** 
+      
 - Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
 *Note: Make sure that the home page url is listed in the **replyURLs** in the AD application for the authentication against Azure AD to work properly.*
 
 ### Deploy the application to Azure
 
-- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
+#### Using an ARM template and Azure CLI
 
-![AllServices](./images/VisualStartPublish.png).
+  - Click [![Deploy to Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Fdeploy-webapp.json) to launch the template that deploys web applications to Azure
+  - After navigating to the Azure portal, fill out the form that appears as below:
+  ![ARM Template to deploy web apps](./images/deploy-webapp-template.png)
+    - **Web App Name Prefix** - The template creates two web applications and the prefix is used to prepend the word before the names of the web applications and the app service plan.
+      -Eg: Web App Name Prefix  = **saasdemo**. App service plan is created with the name - **saasdemoAmpAppSvcPlan**, provisioning service is created as **saasdemo-portal.azurewebsites.net** and publisher application is created as **saasdemo-admin.azurewebsites.net**
+  - Fill out the Tenant ID, AD Application ID and secret, accept the terms and click **Purchase** to start the deployment
+  - Deploy the packages to the web apps using Azure CLI by following these steps after the deployment of web apps is completed
+    - While you are on the Azure Portal, click on Azure CLI button in the top bar
+    ![Launch Azure CLI](./images/azure-cli-button.png)
+    - At the bottom of the window, a pane gets enabled with a request to choose the command shell. Click **Powershell** to proceed
+    ![Azure CLI Powershell](./images/welcome-azure-cli.png)
+    - Click **Create Storage** button for the Azure CLI to create a storage account to store media
+    ![Azure CLI Storage](./images/azure-cli-create-storage.png)
+    - Run the following commands in sequence to download and publish packages to web applications
+    ```powershell
+    azcopy copy https://msampbuilddbresources.blob.core.windows.net/msampcontainer/ProvisioningPortal.zip .
+
+    Publish-AzWebapp -ResourceGroupName saas-demo-rg -Name saasdemo-portal  -ArchivePath ProvisioningPortal.zip
+
+    azcopy copy https://msampbuilddbresources.blob.core.windows.net/msampcontainer/PublisherPortal.zip .
+
+    Publish-AzWebapp -ResourceGroupName saas-demo-rg -Name saasdemo-admin -ArchivePath PublisherPortal.zip
+    ```
+    - Navigate to the web application -> Configuration and add an item to connection strings with the detail to connect to the database. The below screenshot illustrates the place where the setting has to be added.
+    - >Note: DefaultConnection should be added to both the portals 
+    ![Connection string](./images/webapp-connection-string.png)
+
+#### Manual deployment using VS 2019
+
+- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
+
+![AllServices](./images/project-publish-menu.PNG)
 
 - Click **Import Profile ...** to browse and select the publish profile that was downloaded earlier
 - Click **Publish** to deploy the web application to Azure App Service
@@ -210,7 +262,23 @@ In this section, we will go over the steps to download the latest sources from t
 
 - Navigate to the  **URL (Instance Name)** to validate the deployment
 
-> Note: The steps to set up the Publisher solution - **Microsoft.Marketplace.SaaS.SDK.PublisherSolution** locally are identical to the steps to set up the marketplace provisioning service.
+> Note: The steps to set up the Publisher solution - **SaaS.SDK.PublisherSolution** locally are identical to the steps to set up the marketplace provisioning service.
+
+### Landing page and Webhook settings in the Marketplace Offer
+
+Suppose the names of the web applications deployed to Azure are as follows:
+**Provisioning Service** - https://saaskit-portal.azurewebsites.net
+**Publisher Application** - https://saaskit-admin.azurewebsites.net
+
+The **Technical Configuration** section of the Marketplace offer with the values filled using the web app names would look like as shown here
+![Technical Configuration](./images/offer-technical-configuration.png)
+
+|Field | Value |
+|--|--|
+|Landing page URL | Path to the Provisioning Service. Eg: https://saaskit-portal.azurewebsites.net
+|Connection webhook | Path to the web hook API in the Provisioning Service. Eg: https://saaskit-portal.azurewebsites.net/api/AzureWebhook
+|Azure Active Directory Tenant ID | Tenant where the AD application is created and configured to have the redirect URIs as explained above.
+|Azure Active Directory Application ID | ID of the AD application with the redirect URIs configured as explained above
 
 ### Purchase the offer
  
@@ -236,7 +304,7 @@ Assuming that the SaaS offer was published and is available in the known tenants
 ![AMP SDK Sample Offer detail](./images/SaaS-Offer-Detail.png)
 - **Select a software plan** and click **Create**
 - Fill out the form and click **Subscribe**
-![AMP SDK Sample Offer](./images/Subscribe-to-plan.png)
+![AMP SDK Sample Offer](./images/Subscribe-to-Plan.png)
 - A new resource gets created and appears in the listing
 ![SaaS Subscriptions](./images/CloudSaasOfferList.png)
 - Click the text under **Name** to view the details of the resource
@@ -250,7 +318,7 @@ The below diagram illustrates the flow of information between Azure and the Azur
 ![Information flow between Azure and Provisioning application](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-post-provisioning-api-v2-calls.png)
 
 - On the landing page, review the details presented and click **Activate**
-![SaaS Subscriptions](./images/SaasActivatePage.png)
+![SaaS Subscriptions](./images/activate-subscription.png)
 > The AMP SDK sample application calls the following AMP SDK API methods in the background
 
 ```csharp
@@ -265,17 +333,20 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 - Upon successful activation of the subscription, the landing page switches to a view that enlists the subscriptions against the offer. 
 > You can switch to Azure and note that the **Configure Account** button is replaced by **Manage Account** button indicating that the subscription has been materialized.
 
+> **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the application would put the subscription in PendingActivation status and the Fulfillment API to activate the subscription is not called. Publisher has the option to activate the subscription via the action menu in the subscription listing in the Publisher Portal.
+
 ### Change plan
+
 The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 ![Update subscription](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-update-api-v2-calls-from-saas-service-a.png)
 - Log on to [AMP SDK sample application]().
 - Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 - The table on this page enlists all the subscriptions and their status.
-- Click **Change Plan** against any of the active subscriptions.
-![SaaS Subscriptions](./images/SaasKitSubscriptions.png)
+- Click **Change Plan** option in the dropdown menu that appears when the icon under the **Actions** column against any of the active subscriptions is clicked.
+![SaaS Subscriptions](./images/customer-subscriptions.png)
 - A popup appears with a list of plans that you can switch to.
 - Select a desired plan and click **Change Plan**.
-![SaaS Subscriptions](./images/SaaSKitChangePlan.png)
+![SaaS Subscriptions](./images/change-plan.png)
 
 > The AMP SDK sample application calls the following AMP SDK API methods in the background
 
@@ -291,18 +362,20 @@ Task<SubscriptionUpdateResult> ChangePlanForSubscriptionAsync(Guid subscriptionI
 Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
 ```
 
+> **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Change Plan** is disabled for customers. Publisher has the option to change the plan of the subscription via the action menu in the subscription listing in the Publisher Portal.
+
 ### Unsubscribe
 
 - Log on to [AMP SDK sample application]().
 - Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 - The table on this page enlists all the subscriptions and their status.
 - Click **Unsubscribe** against an active subscription.
-![SaaS Subscriptions](./images/SaasKitSubscriptions.png)
+![SaaS Subscriptions](./images/unsubscribe.png)
 - Confirm your action to trigger the deletion of the subscription.
 > The AMP SDK sample application calls the following AMP SDK API methods in the background.
 
 ```csharp
-// Initiate the change plan process
+// Initiate the delete subscription process
 Task<SubscriptionUpdateResult> DeleteSubscriptionAsync(Guid subscriptionId, string subscriptionPlanID);
 ```
 
@@ -312,28 +385,71 @@ Task<SubscriptionUpdateResult> DeleteSubscriptionAsync(Guid subscriptionId, stri
 // Get the latest status of the subscription due to an operation / action.
 Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
 ```
- 
+> **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Unsubscribe** is disabled for customers. Publisher has the option to delete the subscription via the action menu in the subscription listing in the Publisher Portal.
+
+### Change Quantity
+
+- Log on to [AMP SDK sample application]().
+- Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
+- The table on this page enlists all the subscriptions and their status.
+- Click **Change quantity** in the menu as shown in the below picture
+![Change quantity](./images/change-quantity-menu.png)
+
+- Provide the new quantity and click **Change Quantity** to update the quantity on the subscription
+
+![Update quantity](./images/update-quantity-popup.png)
+
+> Note: The update to quantity is applicable if only the subscription is against a Plan that is set to be billed per user
+  
+![Per user pricing](./images/per-user-plan-pricing.png)
+
+> The AMP SDK sample application calls the following AMP SDK API methods in the background.
+
+```csharp
+Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, int? subscriptionQuantity);
+```
+
+> The operation is asynchronous and the call to **change plan** comes back with an operation location that should be queried for status.
+
+```csharp
+// Get the latest status of the subscription due to an operation / action.
+Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
+```
+
+**Update Plan to indicate per user pricing**
+
+Use the following script as an example / template to update the records in **Plans**
+
+```sql
+UPDATE Plans SET IsPerUser = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
+```
+
+The Plan ID is available in the **Plan overview** tab of the offer as shown here:
+
+![Plan ID](./images/plan-id-for-metering.png)
+
 ### View activity log
 
 - Log on to [AMP SDK sample application]().
 - Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 - The table on this page enlists all the subscriptions and their status.
 - Click **Activity Log** to view the log of activity that happened against the subscription.
-![SaaS Subscriptions](./images/SaasKitSubscriptions.png)
+ ![SaaS Subscriptions](./images/activity-log-menu.png)
+ ![SaaS Subscriptions](./images/activity-log-popup.png)
 
 ### Go to SaaS application
 
 - Log on to [AMP SDK sample application]().
 - Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 - The table on this page enlists all the subscriptions and their status.
-- Click **Go to SaaSApp** to navigate to the target SaaS application.
-![SaaS Subscriptions](./images/SaasKitSubscriptions.png)
+- Click **SaaSApp** from options menu under **Actions** to navigate to the target SaaS application.
+![SaaS Subscriptions](./images/saas-app-menu.png)
 
 ## SaaS metering service
 
 The **SaaS metering service** is the web application that helps ISVs to look at the subscriptions against the marketplace offer.
 
-![List of subscriptions](./images/saas-subscriptions-all.png)
+![List of subscriptions](./images/subscriptions-manage-usage.png)
 
 For subscriptions against the plans that support metered billing, a button is enabled to post usage events against the subscription.
 
@@ -349,6 +465,35 @@ The following interface in the **Saas metering service** allows the user to manu
 > In this example, suppose the SaaS service is offering a notification service that helps its customers send out emails / text. Email and Text are modeled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
 
 ![Report usage](./images/post-usage-event.png)
+
+>Note:
+
+ > *  The option - Manage Usage is available against active subscriptions against a plan that supports metering. You are required to manually update the Plan record in the database to indicate that it supports metering. Besides, the meters for the plan should be initialized in the **MeteredDimensions** table
+ 
+**Update Plan to indicate support for metering**
+
+Use the following script as an example / template to update the records in **Plans**
+
+```sql
+UPDATE Plans SET IsmeteringSupported = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
+```
+
+The Plan ID is available in the **Plan overview** tab of the offer as shown here:
+
+![Plan ID](./images/plan-id-for-metering.png)
+
+**Initialize meters for plan**
+
+Use the following script as an example / template to initialize meters in **MeteredDimensions** table
+
+```sql
+INSERT INTO MeteredDimensions ( Dimension, PlanId, Description, CreatedDate)
+SELECT '<dimension-as-in-partner-center', '<id-of-the-plan>', '<description>', GETDATE()
+```
+
+The **Dimension** in the above example should be the attribute of a meter in the plan as shown in the below image:
+![Meter dimension](./images/meter-dimension.png)
+
 
 > The SaaS metering service calls the below API to emit usage events
 ```csharp
@@ -372,10 +517,10 @@ The intent here is to illustrate how the assignment can be done via the interfac
 - Log on to [SaaS Metering Service application]()
 - Click **Licenses** menu at the top to view the list of subscriptions and licenses.
 - There is an option to **Revoke** an active license and **Activate** an already revoked license.
-![View Licenses](./images/publisher-list-licenses.png)
-- Click **Add License** for a popup that allows the user assign a license to a subscription.
-![Add License](./images/publisher-add-license.png)
-- Select a subscription, enter license key detail and hit **Save** to save the details.
+![View Licenses](./images/publisher-add-revoke-license.png)
+- Select a subscription, enter license key detail and hit **Add License** to assign a license.
+![Add License](./images/publisher-add-revoke-license.png)
+
 
 ### Customer: View Licenses
 
@@ -383,6 +528,23 @@ The intent here is to illustrate how the assignment can be done via the interfac
 - Click **Licenses** menu at the top to view the list of subscriptions and licenses.
 - Use the **Copy** button to copy the license text to clipboard
 
-![View Licenses](./images/subscriber-view-licenses.png)
+![View Licenses](./images/customer-view-licenses.png)
+
+
+## Troubleshooting issues
+
+The Provisioning servie and the Publisher solution are configured to log the activity to console ( when running locally ). The logs are available via **Log Stream** when the applications are running in Azure as app services.
+Logs in Azure can be viewed by following the below steps:
+
+- Log on to https://portal.azure.com
+- Navigate to the app service 
+- Click **App Service logs** and set the parameters as shown here:
+
+![App service logs](./images/azure-application-logging.png)
+
+- Click **Log Stream** in the menu on the left to look at the logs output by the application. You could see the view refreshing every minute with the latest log information due to the activity in the application as you access the application in another browser window.
+- You can download the logs from the FTP URL that is available in the **App Service Logs** interface.
+- The credentials to access the FTP location are available in the **Publish Profile** of the web application.
+
 
  

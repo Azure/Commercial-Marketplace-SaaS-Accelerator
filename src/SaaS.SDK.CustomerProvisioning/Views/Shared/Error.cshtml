@@ -1,0 +1,23 @@
+﻿@model Exception
+
+@{
+    ViewBag.Title = "Error";
+}
+<link href="https://fonts.googleapis.com/css?family=Quicksand:700" rel="stylesheet">
+<link href="~/css/Error/font-awesome.min.css" rel="stylesheet" />
+<link href="~/css/Error/style.css" rel="stylesheet" />
+@if (Model != null)
+{
+    <div id="notfound">
+        <div class="notfound">
+            <div class="notfound-bg">
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <h1>oops!</h1>
+            <h2>Error 500 : @Model.Message</h2>
+            <a asp-action="Index" asp-controller="Home" class="cm-button-error">Go To Home Page</a>
+        </div>
+    </div>
+}
