@@ -1,10 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 {
-    using log4net;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Client.Helpers;
@@ -12,7 +12,6 @@
     using Microsoft.Marketplace.SaasKit.Client.Services;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Models;
-    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -53,11 +52,7 @@
         /// </summary>
         private readonly IUsersRepository userRepository;
 
-        /// <summary>
-        /// The log
-        /// </summary>
-        private readonly ILog log = LogManager.GetLogger(typeof(HomeController));
-
+        private readonly ILogger<HomeController> logger;
         /// <summary>
         /// The subscription service
         /// </summary>
@@ -87,7 +82,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -100,6 +95,8 @@
             this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
             this.applicationConfigRepository = applicationConfigRepository;
             this.emailTemplateRepository = emailTemplateRepository;
+
+            this.logger = logger;
         }
 
         #region View Action Methods
@@ -113,7 +110,7 @@
         /// </returns>
         public IActionResult Index(string token = null)
         {
-            this.log.Info("Initializing Index Page");
+            this.logger.LogInformation($"Landing page with token {token}");
             SubscriptionResult subscriptionDetail = new SaasKitModels.SubscriptionResult();
 
             if (User.Identity.IsAuthenticated)
@@ -126,7 +123,7 @@
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                 this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
 
-                this.log.Info("User authenticate successfully");
+                this.logger.LogInformation("User authenticated successfully");
 
                 if (!string.IsNullOrEmpty(token))
                 {

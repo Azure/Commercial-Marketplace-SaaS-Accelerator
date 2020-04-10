@@ -1,21 +1,10 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Hosting;
-using System.Net;
-using System.Net.Mail;
-using System.Threading.Tasks;
+﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.Services;
 using Microsoft.Marketplace.SaasKit.Models;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using log4net;
-using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Net.Mail;
 //using SendGrid;
 //using SendGrid.Helpers.Mail;
-using Newtonsoft.Json;
 namespace Microsoft.Marketplace.SaasKit.Client.Helpers
 {
     public class EmailHelper

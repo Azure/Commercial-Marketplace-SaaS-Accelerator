@@ -356,6 +356,7 @@
             }
             catch (Exception ex)
             {
+                this._logger.LogError(ex, "Error while deactivating subscription");
                 return View("Error");
             }
         }
