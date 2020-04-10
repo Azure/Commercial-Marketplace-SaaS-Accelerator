@@ -1,13 +1,12 @@
 ﻿@model Microsoft.Marketplace.SaasKit.Models.SubscriptionResult
-
 <div>
     <div class="modal-dialog modal-lg mt200" data-backdrop="static">
         <div class="modal-content">
             <div class="modal-header header-bg">
-                <h4><span class="cm-section-heading">Change Plan</span></h4>
+                <h4><span class="cm-section-heading">Change Quantity</span></h4>
                 <button type="button" class="close text-right" data-dismiss="modal">&times;</button>
             </div>
-            <form asp-action="ChangeSubscriptionPlan" id="frmSubscriptionDetail" method="post">
+            <form asp-action="ChangeSubscriptionQuantity" id="frmSubscriptionQuantityDetail" method="post">
                 <div class="modal-body text-center">
                     <dl class="row text-left">
                         <dt class="col-sm-4 pl80">
@@ -34,32 +33,25 @@
                         <dd class="col-sm-8 pl80">
                             @Html.DisplayFor(model => model.PlanId)
                         </dd>
-                        <dt class="col-sm-4  pl80">
-                            @Html.DisplayName("Change Plan")
+                        <dt class="col-sm-4 pl80">
+                            @Html.DisplayName("Current Quantity")
                         </dt>
-                        <dd class="col-sm-8  pl80">
-                            @Html.DropDownListFor(s => s.PlanId, new SelectList(Model.PlanList, "PlanId", "PlanId", Model.PlanId), new { @class = "form-control w-100" })
+                        <dd class="col-sm-8 pl80">
+                            @Html.DisplayFor(model => model.Quantity)
+                        </dd>
+                        <dt class="col-sm-4 pl80">
+                            @Html.DisplayName("New Quantity")
+                        </dt>
+                        <dd class="col-sm-8 pl80">
+                            @Html.TextBoxFor(s => s.Quantity, new { style = "width:100px" })
                             @Html.HiddenFor(s => s.Id)
                             @Html.HiddenFor(s => s.PlanId)
                             @Html.HiddenFor(s => s.SubscribeId)
                         </dd>
                     </dl>
-                    @*<div class="row pr-3 pt-3 mt-5 pb-3 text-right" style="background-color:#F2F2F2">
-                            <div class="col-sm-4 text-right  font-weight-bold">
-                                @Html.DisplayName("Change Plan")
-                            </div>
-                            <div class="col-sm-5">
-                                @Html.DropDownListFor(s => s.PlanId, new SelectList(Model.PlanList, "PlanId", "PlanId", Model.PlanId), new { @class = "form-control w-100" })
-                                @Html.HiddenFor(s => s.Id)
-                                @Html.HiddenFor(s => s.PlanId)
-                                @Html.HiddenFor(s => s.SubscribeId)
-                            </div>
-                            <button type="button" onclick="confirmDialog()" class="btn btn-success text-right">Change Plan</button>
-                        </div>*@
                     <div class="text-right">
-                        <button type="button" onclick="confirmDialog()" class="cm-button-default mt40 mr20 text-right">Change Plan</button>
+                        <button type="button" onclick="confirmQuantityDialog()" class="cm-button-default mt40 mr20 text-right">Change Quantity</button>
                     </div>
-                </div>
             </form>
         </div>
     </div>

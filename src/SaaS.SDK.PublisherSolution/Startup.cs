@@ -89,8 +89,8 @@ namespace Microsoft.Marketplace.Saas.Web
    })
    .AddCookie();
 
-            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new Logger()));
-            services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new Logger()));
+            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
+            services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new MeteringApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
 
             services.AddDbContext<SaasKitContext>(options =>
@@ -122,6 +122,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IMeteredDimensionsRepository, MeteredDimensionsRepository>();
             services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
             services.AddScoped<IKnownUsersRepository, KnownUsersRepository>();
+            services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
             services.AddScoped<KnownUser>();
         }
 

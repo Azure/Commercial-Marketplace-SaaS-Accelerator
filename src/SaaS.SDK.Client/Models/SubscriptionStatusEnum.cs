@@ -23,6 +23,11 @@
         /// <summary>
         /// The not started
         /// </summary>
-        NotStarted
+        NotStarted,
+
+        /// <summary>
+        /// Pending Activation
+        /// </summary>
+        PendingActivation
     }
 }

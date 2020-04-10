@@ -1,10 +1,6 @@
-using System;
-using System.IO;
-using System.Reflection;
-using System.Xml;
-using log4net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Marketplace.SaasKit.Client
 {
@@ -12,25 +8,27 @@ namespace Microsoft.Marketplace.SaasKit.Client
     {
         public static void Main(string[] args)
         {
-            XmlDocument log4netConfig = new XmlDocument();
-            log4netConfig.Load(File.OpenRead("log4net.config"));
-            var repo = LogManager.CreateRepository(Assembly.GetEntryAssembly(), typeof(log4net.Repository.Hierarchy.Hierarchy));
-            log4net.Config.XmlConfigurator.Configure(repo, log4netConfig["log4net"]);
-            try
+            CreateHostBuilder(args).Build().Run();
+            var loggerFactory = LoggerFactory.Create(builder =>
             {
-                CreateHostBuilder(args).Build().Run();
-            }
-            catch (Exception ex)
-            {
+                builder
+                    .AddConsole();
+            });
 
-            }
+            ILogger logger = loggerFactory.CreateLogger<Program>();
+            logger.LogInformation("Povisioning service initialized!!");
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+    Host.CreateDefaultBuilder(args)
+        .ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+            logging.AddConsole();
+        })
+        .ConfigureWebHostDefaults(webBuilder =>
+        {
+            webBuilder.UseStartup<Startup>();
+        });
     }
 }

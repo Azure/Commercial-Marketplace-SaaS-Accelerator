@@ -1,6 +1,7 @@
 ﻿@using Microsoft.Marketplace.SaasKit.Models
+@using Microsoft.Marketplace.SaasKit.Client.Models
 
-@model Microsoft.Marketplace.SaasKit.Models.SubscriptionResult
+@model Microsoft.Marketplace.SaasKit.Client.Models.SubscriptionResultExtension
 @{
     ViewData["Title"] = "Home";
 }
@@ -58,6 +59,15 @@
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.PlanId)
                         </dd>
+                        @if (Model.IsPerUserPlan)
+                        {
+                            <dt class="col-sm-3 p-2 p10">
+                                @Html.DisplayName("Quantity ")
+                            </dt>
+                            <dd class="col-sm-9 p-2 p10">
+                                @Html.DisplayFor(model => model.Quantity)
+                            </dd>
+                        }
                     </dl>
                 </div>
                 <div class="text-right">
