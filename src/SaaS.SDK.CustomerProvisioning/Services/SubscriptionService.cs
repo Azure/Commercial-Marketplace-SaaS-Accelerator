@@ -55,7 +55,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             {
                 Id = 0,
                 AmpplanId = subscriptionDetail.PlanId,
-                AmpQuantity = subscriptionDetail.Quantity,
+                Ampquantity = subscriptionDetail.Quantity,
                 AmpsubscriptionId = subscriptionDetail.Id,
                 CreateBy = CurrentUserId,
                 CreateDate = DateTime.Now,
@@ -121,14 +121,14 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="includeUnsubscribed">if set to <c>true</c> [include unsubscribed].</param>
         /// <returns></returns>
-        public List<SubscriptionResult> GetPartnerSubscription(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
+        public List<SubscriptionResultExtension> GetPartnerSubscription(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
         {
-            List<SubscriptionResult> allSubscriptions = new List<SubscriptionResult>();
+            List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
             var allSubscriptionsForEmail = SubscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
 
             foreach (var subscription in allSubscriptionsForEmail)
             {
-                SubscriptionResult subscritpionDetail = PrepareSubscriptionResponse(subscription);
+                SubscriptionResultExtension subscritpionDetail = PrepareSubscriptionResponse(subscription);
                 if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
                     allSubscriptions.Add(subscritpionDetail);
             }
@@ -140,18 +140,19 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns></returns>
-        private SubscriptionResult PrepareSubscriptionResponse(Subscriptions subscription)
+        private SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
         {
-            SubscriptionResult subscritpionDetail = new SubscriptionResult
+            SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
             {
                 Id = subscription.AmpsubscriptionId,
                 SubscribeId = subscription.Id,
                 PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId,
+                Quantity = subscription.Ampquantity,
                 Name = subscription.Name,
                 SaasSubscriptionStatus = GetSubscriptionStatus(subscription.SubscriptionStatus),
                 IsActiveSubscription = subscription.IsActive ?? false,
                 CustomerEmailAddress = subscription.User?.EmailAddress,
-                CustomerName = subscription.User?.FullName
+                CustomerName = subscription.User?.FullName,
             };
             return subscritpionDetail;
         }
@@ -188,7 +189,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="quantity">The quantity identifier.</param>
         /// <returns></returns>
-        public bool UpdateSubscriptionQuantity(Guid subscriptionId, int? quantity)
+        public bool UpdateSubscriptionQuantity(Guid subscriptionId, int quantity)
         {
             if (subscriptionId != default && quantity != null && quantity>0)
                 SubscriptionRepository.UpdateQuantityForSubscription(subscriptionId, quantity);

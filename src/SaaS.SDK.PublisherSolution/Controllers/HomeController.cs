@@ -167,17 +167,19 @@
                 {
                     this.TempData["ShowWelcomeScreen"] = "True";
 
-                    List<SubscriptionResult> allSubscriptions = new List<SubscriptionResult>();
-                    var allSubscriptionDetails = subscriptionRepo.Get().ToList();
-                    var allPlans = planRepository.Get().ToList();
-                    foreach (var subscription in allSubscriptionDetails)
-                    {
-                        SubscriptionResult subscritpionDetail = PrepareSubscriptionResponse(subscription, allPlans);
-                        subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported"));
-                        if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
-                            allSubscriptions.Add(subscritpionDetail);
-                    }
-                    subscriptionDetail.Subscriptions = allSubscriptions;
+                List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
+                var allSubscriptionDetails = subscriptionRepo.Get().ToList();
+                var allPlans = planRepository.Get().ToList();
+                foreach (var subscription in allSubscriptionDetails)
+                {
+                    SubscriptionResultExtension subscritpionDetail = PrepareSubscriptionResponse(subscription, allPlans);
+                    Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscritpionDetail.PlanId);
+                    subscritpionDetail.IsPerUserPlan = PlanDetail.IsPerUser.HasValue ? PlanDetail.IsPerUser.Value : false;
+                    subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported"));
+                    if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
+                        allSubscriptions.Add(subscritpionDetail);
+                }
+                subscriptionDetail.Subscriptions = allSubscriptions;
 
                     if (this.TempData["ErrorMsg"] != null)
                     {
@@ -372,7 +374,7 @@
                 {
                     this.TempData["ShowLicensesMenu"] = true;
                 }
-                SubscriptionResult subscriptionDetail = new SubscriptionResult();
+                SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
                 if (User.Identity.IsAuthenticated)
                 {
@@ -387,10 +389,8 @@
                     var oldValue = this.subscriptionService.GetPartnerSubscriptions(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
 
                     var serializedParent = JsonConvert.SerializeObject(subscriptionData);
-                    subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
-                    this.logger.LogInformation("serializedParent :{0}", serializedParent);
+                    subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
-                    subscriptionDetail = subscriptionData;
                     subscriptionDetail.ShowWelcomeScreen = false;
                     subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
@@ -419,13 +419,10 @@
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
                     var currentUserId = userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
 
-                    if (operation == "Activate")
-                    {
-                        this.logger.LogInformation("operation == Activate");
-                        this.logger.LogInformation("ActivateSubscriptionAsync: SubscriptionId: {0} : Number of providers : {1}", subscriptionId, NumberofProviders);
-
-                        var response = this.fulfillApiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
-                        this.webSubscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
+                if (operation == "Activate")
+                {
+                    var response = this.fulfillApiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
+                    this.webSubscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
 
                         isSuccess = true;
                         this.logger.LogInformation("GetPartnerSubscription");
@@ -526,13 +523,13 @@
         /// <param name="subscription">The subscription.</param>
         /// <param name="allPlanDetails">All plan details.</param>
         /// <returns></returns>
-        private SubscriptionResult PrepareSubscriptionResponse(Subscriptions subscription, List<Plans> allPlanDetails)
+        private SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription, List<Plans> allPlanDetails)
         {
-            SubscriptionResult subscritpionDetail = new SubscriptionResult();
+            SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension();
             subscritpionDetail.Id = subscription.AmpsubscriptionId;
             subscritpionDetail.SubscribeId = subscription.Id;
             subscritpionDetail.PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId;
-            subscritpionDetail.Quantity = subscription.AmpQuantity;
+            subscritpionDetail.Quantity = subscription.Ampquantity;
             subscritpionDetail.Name = subscription.Name;
             subscritpionDetail.SaasSubscriptionStatus = GetSubscriptionStatus(subscription.SubscriptionStatus);
             subscritpionDetail.IsActiveSubscription = subscription.IsActive ?? false;

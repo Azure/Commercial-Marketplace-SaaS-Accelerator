@@ -48,6 +48,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="quantity">The quantity identifier.</param>
-        void UpdateQuantityForSubscription(Guid subscriptionId, int? quantity);
+        void UpdateQuantityForSubscription(Guid subscriptionId, int quantity);
     }
 }

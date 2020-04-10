@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Marketplace.SaasKit.Models;
 using Microsoft.Marketplace.Saas.Web.Models;
+using Microsoft.Marketplace.SaasKit.Client.Models;
 
 namespace Microsoft.Marketplace.Saas.Web.Services
 {
@@ -140,9 +141,9 @@ namespace Microsoft.Marketplace.Saas.Web.Services
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns></returns>
-        private SubscriptionResult PrepareSubscriptionResponse(Subscriptions subscription)
+        private SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
         {
-            SubscriptionResult subscritpionDetail = new SubscriptionResult
+            SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
             {
                 Id = subscription.AmpsubscriptionId,
                 SubscribeId = subscription.Id,
