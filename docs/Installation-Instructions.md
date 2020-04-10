@@ -304,7 +304,7 @@ Assuming that the SaaS offer was published and is available in the known tenants
 ![AMP SDK Sample Offer detail](./images/SaaS-Offer-Detail.png)
 - **Select a software plan** and click **Create**
 - Fill out the form and click **Subscribe**
-![AMP SDK Sample Offer](./images/Subscribe-to-plan.png)
+![AMP SDK Sample Offer](./images/Subscribe-to-Plan.png)
 - A new resource gets created and appears in the listing
 ![SaaS Subscriptions](./images/CloudSaasOfferList.png)
 - Click the text under **Name** to view the details of the resource
