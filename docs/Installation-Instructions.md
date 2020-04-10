@@ -333,7 +333,10 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 - Upon successful activation of the subscription, the landing page switches to a view that enlists the subscriptions against the offer. 
 > You can switch to Azure and note that the **Configure Account** button is replaced by **Manage Account** button indicating that the subscription has been materialized.
 
+> **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the application would put the subscription in PendingActivation status and the Fulfillment API to activate the subscription is not called. Publisher has the option to activate the subscription via the action menu in the subscription listing in the Publisher Portal.
+
 ### Change plan
+
 The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 ![Update subscription](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-update-api-v2-calls-from-saas-service-a.png)
 - Log on to [AMP SDK sample application]().
@@ -359,6 +362,8 @@ Task<SubscriptionUpdateResult> ChangePlanForSubscriptionAsync(Guid subscriptionI
 Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
 ```
 
+> **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Change Plan** is disabled for customers. Publisher has the option to change the plan of the subscription via the action menu in the subscription listing in the Publisher Portal.
+
 ### Unsubscribe
 
 - Log on to [AMP SDK sample application]().
@@ -380,7 +385,8 @@ Task<SubscriptionUpdateResult> DeleteSubscriptionAsync(Guid subscriptionId, stri
 // Get the latest status of the subscription due to an operation / action.
 Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
 ```
- 
+> **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Unsubscribe** is disabled for customers. Publisher has the option to delete the subscription via the action menu in the subscription listing in the Publisher Portal.
+
 ### Change Quantity
 
 - Log on to [AMP SDK sample application]().
