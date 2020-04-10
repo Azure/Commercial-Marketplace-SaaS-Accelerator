@@ -114,7 +114,7 @@
             try
             {
                 this.logger.LogInformation($"Landing page with token {token}");
-                SubscriptionResult subscriptionDetail = new SaasKitModels.SubscriptionResult();
+                SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
                 if (User.Identity.IsAuthenticated)
                 {
