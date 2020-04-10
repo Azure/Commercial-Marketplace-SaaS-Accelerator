@@ -1,6 +1,6 @@
  # Transactable SaaS Offer Fulfillment v2 and Metering SDK Instructions
 
-  * [Overview](#overview)
+   * [Overview](#overview)
     + [Features](#features)
   * [Prerequisites](#prerequisites)
   * [Set up web application resources in Azure](#set-up-web-application-resources-in-azure)
@@ -15,6 +15,7 @@
     + [Activate](#activate)
     + [Change plan](#change-plan)
     + [Unsubscribe](#unsubscribe)
+    + [Change Quantity](#change-quantity)
     + [View activity log](#view-activity-log)
     + [Go to SaaS application](#go-to-saas-application)
   * [SaaS metering service](#saas-metering-service)
@@ -22,6 +23,7 @@
   * [License Manager](#license-manager)
     + [Publisher: Manage Licenses](#publisher--manage-licenses)
     + [Customer: View Licenses](#customer--view-licenses)
+  * [Troubleshooting issues](#troubleshooting-issues)
 
 ## Overview
 
