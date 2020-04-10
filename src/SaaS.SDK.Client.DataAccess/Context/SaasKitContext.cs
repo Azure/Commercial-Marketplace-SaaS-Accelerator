@@ -371,6 +371,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
                 entity.Property(e => e.DisplayName)
                     .IsRequired()
                     .HasMaxLength(225)

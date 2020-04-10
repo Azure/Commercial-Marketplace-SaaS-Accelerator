@@ -66,7 +66,7 @@
                     return offerDetails.OfferGuid;
                 }
             }
-            return offerDetails.OfferGuid;
+            return default;
         }
 
         /// <summary>

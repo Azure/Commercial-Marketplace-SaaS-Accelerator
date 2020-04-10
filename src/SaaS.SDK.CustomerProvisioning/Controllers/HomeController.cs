@@ -152,7 +152,7 @@
                             OfferName = newSubscription.OfferId,
                             UserId = currentUserId,
                             CreateDate = DateTime.Now,
-                            OfferGuid = new Guid()
+                            OfferGuid = Guid.NewGuid()
                         };
 
                         Guid newOfferId = this.offersRepository.Add(offers);
@@ -163,11 +163,11 @@
                         planList.ForEach(x =>
                         {
                             x.OfferId = newOfferId;
-                            x.PlanGUID = new Guid();
+                            x.PlanGUID = Guid.NewGuid();
                         });
 
                         this.subscriptionService.AddPlanDetailsForSubscription(planList);
-                        Guid PlanGuid = planList.Where(s => s.PlanId == newSubscription.PlanId).Select(s => s.PlanGUID).FirstOrDefault();
+                        var currentPlan = this.planRepository.GetPlanDetailByPlanId(newSubscription.PlanId);
                         // GetSubscriptionBy SubscriptionId
                         var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                         var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
@@ -195,7 +195,7 @@
 
                         var serializedSubscription = JsonConvert.SerializeObject(subscriptionDetail);
                         subscriptionExtension = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedSubscription);
-                        subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, PlanGuid);
+                        subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
                     }
                 }
                 else
@@ -347,7 +347,10 @@
                         var response = this.apiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                         this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
                         isSuccess = true;
-                        this.subscriptionService.AddSubscriptionParameters(model.SubscriptionParameters,currentUserId);
+                        if (model.SubscriptionParameters != null && model.SubscriptionParameters.Count() > 0)
+                        {
+                            this.subscriptionService.AddSubscriptionParameters(model.SubscriptionParameters, currentUserId);
+                        }
                         subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                         subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 

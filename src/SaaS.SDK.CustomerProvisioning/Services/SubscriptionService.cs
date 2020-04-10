@@ -215,6 +215,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                         Id = plan.Id,
                         PlanId = plan.PlanId,
                         DisplayName = plan.DisplayName,
+
                     }).ToList();
         }
 
@@ -248,10 +249,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                     PlanId = parameters.PlanId,
                     DisplayName = parameters.DisplayName,
                     PlanAttributeId = parameters.PlanAttributeId,
+                    SubscriptionId = parameters.SubscriptionId,
                     OfferId = parameters.OfferId,
                     Value = parameters.Value,
-                    //UserId = currentUserId,
-                    //CreateDate = DateTime.Now
+                    UserId = currentUserId,
+                    CreateDate = DateTime.Now
 
 
                 }); ;

@@ -71,10 +71,22 @@
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].Id)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanAttributeId)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].ValueType)
+                                    @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanId)
+                                    @Html.HiddenFor(model => model.SubscriptionParameters[i].OfferId)
+                                    @Html.HiddenFor(model => model.SubscriptionParameters[i].SubscriptionId)
                                 </dt>
-                                <dd class="col-sm-9 p-2 p10">
-                                    @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value)
-                                </dd>
+                                @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                                {
+                                    <dd class="col-sm-9 p-2 p10">
+                                        @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value)
+                                    </dd>
+                                }
+                                else
+                                {
+                                    <dd class="col-sm-9 p-2 p10">
+                                        @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
+                                    </dd>
+                                }
 
                             }
 
@@ -90,8 +102,9 @@
                     }
                     @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                     {
-                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" asp-route-model ="@Model" class="cm-button-default text-right">Activate</button>
+                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default text-right">Activate</button>
                     }
+                    @* <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default text-right">Save</button>*@
                 </div>
             }
         </form>

@@ -161,7 +161,8 @@ CREATE TABLE [dbo].[OfferAttributes](
 	[Isactive] [bit] Not NULL,
 	[CreateDate] [datetime] NULL,
 	[UserId] [int] NULL,
-	[OfferId] [uniqueidentifier] not NULL,
+	[OfferId] [uniqueidentifier] not NULL
+	--,IsDelete bit
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -417,11 +418,15 @@ RowNumber  Int Primary key
 ,SubscriptionId		 uniqueidentifier Not Null	
 ,OfferId		 uniqueidentifier Not Null	
 ,PlanId				 uniqueidentifier Not Null	
+,UserId Int
+,CreateDate DateTime
 )
 
 
+
+
 /* 
-Exec spGetSubscriptionParameters 'BE13605F-C088-4CC0-8A81-32A81257BAC5','BE13605F-C088-4CC0-8A81-32A81257BAC5'
+Exec spGetSubscriptionParameters '53ff9e28-a55b-65e1-ff75-709aec6420fd','a35d4259-f3c9-429b-a871-21c4593fa4bf'
 */
 ALTER  Procedure spGetSubscriptionParameters
 (
@@ -447,16 +452,20 @@ SELECT
 ,ISNULL(Value,'')Value
 ,ISNULL(SubscriptionId,@SubscriptionId) SubscriptionId
 ,ISNULL(SAV.OfferID,OA.OfferId) OfferID
+,SAV.UserId
+,SAV.CreateDate
 from 
 [dbo].[OfferAttributes] OA
-Left Join 
-SubscriptionAttributeValues SAV
-on SAV.PlanAttributeId= OA.ParameterId
-and SAV.SubscriptionId=@SubscriptionId
 Inner  join 
 [dbo].[PlanAttributeMapping]  PA
 on OA.ID= PA.OfferAttributeID and OA.OfferId=@OfferId
+
 and  PA.PlanId=@PlanId
+Left Join 
+SubscriptionAttributeValues SAV
+on SAV.PlanAttributeId= PA.PlanAttributeId
+and SAV.SubscriptionId=@SubscriptionId
+
 inner join ValueTypes VT
 ON OA.ValueTypeId=VT.ValueTypeId
 
@@ -465,7 +474,7 @@ OA.Isactive=1
 and PA.IsEnabled=1
 END
 
-
+--56E5E465-1657-45C0-BE9D-C1F011D0E77D
 
 --Insert into PlanEventsOutPut
 --Exec spGetPlanEvents 'B8F4D276-15EB-4EB6-89D4-E600FF1098EF'
@@ -498,5 +507,7 @@ alter table  SubscriptionAttributeValues alter column	[PlanAttributeId] [int] NO
 alter table  SubscriptionAttributeValues alter column	[SubscriptionId] [uniqueidentifier] NOT NULL
 alter table  SubscriptionAttributeValues alter column	[PlanID] [uniqueidentifier] NOT  NULL
 alter table  SubscriptionAttributeValues alter column	[OfferID] [uniqueidentifier]  NOT NULL
-
+--alter table [dbo].[SubscriptionParametersOutput] add UserId Int
+--alter table [dbo].[SubscriptionParametersOutput] add CreateDate DateTime
+--alter table [OfferAttributes] add IsDelete bit  null
  GO

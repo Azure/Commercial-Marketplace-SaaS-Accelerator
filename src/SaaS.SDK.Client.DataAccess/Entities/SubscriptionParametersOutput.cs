@@ -18,5 +18,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public Guid SubscriptionId { get; set; }
         public Guid OfferId { get; set; }
         public Guid PlanId { get; set; }
+        public int? UserId { get; set; }
+        public DateTime? CreateDate { get; set; }
     }
 }
