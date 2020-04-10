@@ -128,84 +128,92 @@
 
                     this.logger.LogInformation("User authenticated successfully");
 
-                if (!string.IsNullOrEmpty(token))
-                {
-                    this.TempData["ShowWelcomeScreen"] = null;
-                    token = token.Replace(' ', '+');
-                    var newSubscription = this.apiClient.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
-                    if (newSubscription != null && newSubscription.SubscriptionId != default)
+                    if (!string.IsNullOrEmpty(token))
                     {
-                        var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                        this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail);
-                        // GetSubscriptionBy SubscriptionId
-                        var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                        subscriptionData.Quantity = 0;
-                        var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
-                        if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                        this.TempData["ShowWelcomeScreen"] = null;
+                        token = token.Replace(' ', '+');
+                        var newSubscription = this.apiClient.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
+                        if (newSubscription != null && newSubscription.SubscriptionId != default)
                         {
-                            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                            var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail);
+                            // GetSubscriptionBy SubscriptionId
+                            var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            subscriptionData.Quantity = 0;
+                            var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
+                            if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                             {
-                                Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
-                                SubscriptionId = subscribeId,
-                                NewValue = "Pending Activation",
-                                OldValue = "None",
-                                CreateBy = currentUserId,
-                                CreateDate = DateTime.Now
-                            };
-                            this.subscriptionLogRepository.Add(auditLog);
+                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                {
+                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                                    SubscriptionId = subscribeId,
+                                    NewValue = "Pending Activation",
+                                    OldValue = "None",
+                                    CreateBy = currentUserId,
+                                    CreateDate = DateTime.Now
+                                };
+                                this.subscriptionLogRepository.Add(auditLog);
+                            }
+                            var serializedParent = JsonConvert.SerializeObject(subscriptionData);
+                            subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
+                            subscriptionDetail.ShowWelcomeScreen = false;
+                            subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
+                            subscriptionDetail.CustomerName = this.CurrentUserName;
                         }
-                        var serializedParent = JsonConvert.SerializeObject(subscriptionData);
-                        subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
-                        subscriptionDetail.ShowWelcomeScreen = false;
-                        subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
-                        subscriptionDetail.CustomerName = this.CurrentUserName;
+                    }
+                    else
+                    {
+                        this.TempData["ShowWelcomeScreen"] = "True";
+                        subscriptionDetail.ShowWelcomeScreen = true;
+                        return this.View(subscriptionDetail);
                     }
                 }
                 else
                 {
-                    this.TempData["ShowWelcomeScreen"] = "True";
-                    subscriptionDetail.ShowWelcomeScreen = true;
-                    return this.View(subscriptionDetail);
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        return this.Challenge(new AuthenticationProperties { RedirectUri = "/?token=" + token }, OpenIdConnectDefaults.AuthenticationScheme);
+                    }
+                    else
+                    {
+                        this.TempData["ShowWelcomeScreen"] = "True";
+                        subscriptionDetail.ShowWelcomeScreen = true;
+                        return this.View(subscriptionDetail);
+                    }
                 }
+                return this.View(subscriptionDetail);
             }
-            else
+            catch (Exception ex)
             {
-                if (!string.IsNullOrEmpty(token))
-                {
-                    return this.Challenge(new AuthenticationProperties { RedirectUri = "/?token=" + token }, OpenIdConnectDefaults.AuthenticationScheme);
-                }
-                else
-                {
-                    this.TempData["ShowWelcomeScreen"] = "True";
-                    subscriptionDetail.ShowWelcomeScreen = true;
-                    return this.View(subscriptionDetail);
-                }
+                logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return View("Error");
             }
-            return this.View(subscriptionDetail);
         }
-
         /// <summary>
         /// Subscription this instance.
         /// </summary>
         /// <returns> Subscription instance</returns>
         public IActionResult Subscriptions()
         {
-            if (User.Identity.IsAuthenticated)
+            logger.LogInformation("Home Controller / Subscriptions ");
+            try
             {
-                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                if (User.Identity.IsAuthenticated)
                 {
-                    this.TempData["ShowLicensesMenu"] = true;
-                }
-                this.TempData["ShowWelcomeScreen"] = "True";
-                SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
-                subscriptionDetail.Subscriptions = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, default, true).ToList();
-                foreach (var subscription in subscriptionDetail.Subscriptions)
-                {
-                    Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscription.PlanId);
-                    subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported"));
-                    subscription.IsPerUserPlan = PlanDetail.IsPerUser.HasValue ? PlanDetail.IsPerUser.Value : false;
-                }
-                subscriptionDetail.SaaSAppUrl = this.apiClient.GetSaaSAppURL();
+                    if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                    {
+                        this.TempData["ShowLicensesMenu"] = true;
+                    }
+                    this.TempData["ShowWelcomeScreen"] = "True";
+                    SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
+                    subscriptionDetail.Subscriptions = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, default, true).ToList();
+                    foreach (var subscription in subscriptionDetail.Subscriptions)
+                    {
+                        Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscription.PlanId);
+                        subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported"));
+                        subscription.IsPerUserPlan = PlanDetail.IsPerUser.HasValue ? PlanDetail.IsPerUser.Value : false;
+                    }
+                    subscriptionDetail.SaaSAppUrl = this.apiClient.GetSaaSAppURL();
 
                     if (this.TempData["ErrorMsg"] != null)
                     {
