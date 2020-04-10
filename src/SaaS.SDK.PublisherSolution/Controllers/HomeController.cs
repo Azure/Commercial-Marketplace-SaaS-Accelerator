@@ -349,7 +349,7 @@
 
                 this.TempData["ShowWelcomeScreen"] = false;
                 var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                var subscribeId = this.webSubscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
+                //var subscribeId = this.webSubscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
                 var oldValue = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
 
                 var serializedParent = JsonConvert.SerializeObject(subscriptionData);
@@ -357,7 +357,7 @@
                 this.logger.LogInformation("serializedParent :{0}", serializedParent);
                 //subscriptionDetail = (SubscriptionResultExtension)subscriptionData;
                 subscriptionDetail.ShowWelcomeScreen = false;
-                subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.PendingFulfillmentStart;
+                subscriptionDetail.SaasSubscriptionStatus = oldValue.SaasSubscriptionStatus;
                 subscriptionDetail.CustomerEmailAddress = oldValue.CustomerEmailAddress;
                 subscriptionDetail.CustomerName = oldValue.CustomerName;
             }
