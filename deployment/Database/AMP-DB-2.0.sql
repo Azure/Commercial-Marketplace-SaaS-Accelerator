@@ -1,5 +1,5 @@
 /*Use the database you have created earlied from Master. example: [AMP-DB]*/
--- BEGIN 1.1  SCRIPT
+-- BEGIN 2.0  SCRIPT
 
 
 /****** Object:  Table [dbo].[MeteredAuditLogs]    Script Date: 3/12/2020 1:28:58 PM ******/
@@ -61,7 +61,7 @@ CREATE TABLE [dbo].[SubscriptionLicenses](
 GO
 
 
---/* upgrade-to-1.1  Script*/
+--/* upgrade-to-2.0   Script*/
 /****** Object:  Table [dbo].[ApplicationConfiguration]    Script Date: 20-03-2020 12.25.50 PM ******/
 CREATE TABLE [dbo].[ApplicationConfiguration](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
@@ -210,9 +210,9 @@ GO
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsLicenseManagementEnabled', N'True', N'To Enable or Disable Licenses Menu') 
 GO
 
--- END OF 1.1  SCRIPT
+-- END OF update to 2.0  SCRIPT
 
--- 04-10-2020 UPDATE TO 1.1 SCRIPT
+-- 04-10-2020 UPDATE TO 2.0 SCRIPT
 
 INSERT [dbo].[EmailTemplate] ( [Status], [Description], [InsertDate], [TemplateBody], [Subject], [ToRecipients], [CC], [BCC], [IsActive]) VALUES ( N'Subscribed', N'Subscribed Email', CAST(N'2020-03-17T19:35:07.420' AS DateTime), N'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">       
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -520,10 +520,12 @@ GO
 
 INSERT INTO [DatabaseVersionHistory] 
 --Select 1.0, 'Master Schema',Getdate(), 'DB User' Union all
-Select 1.1,
+Select 2.0,
 'Steps: Creates Tables ApplicationConfiguration, EmailTemplate, KnownUsers, Roles. 
 Step 2: Inserts Emails templates, roles, known users, SMTP settings',
 GETDATE(),
 'DB user'
 
 GO
+
+-- End 2.0 script

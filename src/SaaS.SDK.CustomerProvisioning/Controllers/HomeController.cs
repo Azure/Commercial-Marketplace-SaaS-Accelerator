@@ -147,7 +147,7 @@
                                 {
                                     Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
                                     SubscriptionId = subscribeId,
-                                    NewValue = "Pending Activation",
+                                    NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
                                     OldValue = "None",
                                     CreateBy = currentUserId,
                                     CreateDate = DateTime.Now
@@ -710,6 +710,7 @@
                     catch (FulfillmentException fex)
                     {
                         this.TempData["ErrorMsg"] = fex.Message;
+                        this.logger.LogError("Message:{0} :: {1}   ", fex.Message, fex.InnerException);
                     }
                 }
 
