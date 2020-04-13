@@ -191,7 +191,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// <returns></returns>
         public bool UpdateSubscriptionQuantity(Guid subscriptionId, int quantity)
         {
-            if (subscriptionId != default && quantity != null && quantity>0)
+            if (subscriptionId != default && quantity>0)
                 SubscriptionRepository.UpdateQuantityForSubscription(subscriptionId, quantity);
             return false;
         }
