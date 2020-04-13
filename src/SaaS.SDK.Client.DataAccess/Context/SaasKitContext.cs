@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
+namespace SaaS.SDK.Client.DataAccess.Context
 {
     public partial class SaasKitContext : DbContext
     {
@@ -19,6 +19,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<ApplicationConfiguration> ApplicationConfiguration { get; set; }
         public virtual DbSet<ApplicationLog> ApplicationLog { get; set; }
         public virtual DbSet<Armtemplates> Armtemplates { get; set; }
+        public virtual DbSet<DatabaseVersionHistory> DatabaseVersionHistory { get; set; }
         public virtual DbSet<EmailTemplate> EmailTemplate { get; set; }
         public virtual DbSet<Events> Events { get; set; }
         public virtual DbSet<KnownUsers> KnownUsers { get; set; }
@@ -87,6 +88,23 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.Property(e => e.TemplateLocation)
                     .HasMaxLength(225)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<DatabaseVersionHistory>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.ChangeLog).IsRequired();
+
+                entity.Property(e => e.CreateBy).HasMaxLength(100);
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.VersionNumber).HasColumnType("decimal(6, 2)");
             });
 
             modelBuilder.Entity<EmailTemplate>(entity =>
