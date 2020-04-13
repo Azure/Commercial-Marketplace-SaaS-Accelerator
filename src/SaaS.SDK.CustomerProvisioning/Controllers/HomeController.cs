@@ -89,8 +89,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository)
-        public HomeController(IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -122,10 +121,10 @@
             try
             {
                 this.logger.LogInformation($"Landing page with token {token}");
-                SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
-            this.log.Info("Initializing Index Page");
-            SubscriptionResult subscriptionDetail = new SaasKitModels.SubscriptionResult();
-            SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
+                //SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+                //this.log.Info("Initializing Index Page");
+                SubscriptionResult subscriptionDetail = new SaasKitModels.SubscriptionResult();
+                SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
 
                 if (User.Identity.IsAuthenticated)
                 {
@@ -139,95 +138,101 @@
 
                     this.logger.LogInformation("User authenticated successfully");
 
-                if (!string.IsNullOrEmpty(token))
-                {
-                    this.TempData["ShowWelcomeScreen"] = null;
-                    token = token.Replace(' ', '+');
-                    var newSubscription = this.apiClient.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
-
-                    if (newSubscription != null && newSubscription.SubscriptionId != default)
+                    if (!string.IsNullOrEmpty(token))
                     {
-                        var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                        this.TempData["ShowWelcomeScreen"] = null;
+                        token = token.Replace(' ', '+');
+                        var newSubscription = this.apiClient.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                        Offers offers = new Offers()
+                        if (newSubscription != null && newSubscription.SubscriptionId != default)
                         {
-                            OfferId = newSubscription.OfferId,
-                            OfferName = newSubscription.OfferId,
-                            UserId = currentUserId,
-                            CreateDate = DateTime.Now,
-                            OfferGuid = Guid.NewGuid()
-                        };
+                            var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                        Guid newOfferId = this.offersRepository.Add(offers);
-
-                        List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
-                        var serializedPlans = JsonConvert.SerializeObject(subscriptionPlanDetail);
-                        planList = JsonConvert.DeserializeObject<List<PlanDetailResultExtension>>(serializedPlans);
-                        planList.ForEach(x =>
-                        {
-                            x.OfferId = newOfferId;
-                            x.PlanGUID = Guid.NewGuid();
-                        });
-
-                        this.subscriptionService.AddPlanDetailsForSubscription(planList);
-                        var currentPlan = this.planRepository.GetPlanDetailByPlanId(newSubscription.PlanId);
-                        // GetSubscriptionBy SubscriptionId
-                        var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                        var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
-
-                        if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
-                        {
-                            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                            Offers offers = new Offers()
                             {
-                                Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
-                                SubscriptionId = subscribeId,
-                                NewValue = "Pending Activation",
-                                OldValue = "None",
-                                CreateBy = currentUserId,
-                                CreateDate = DateTime.Now
+                                OfferId = newSubscription.OfferId,
+                                OfferName = newSubscription.OfferId,
+                                UserId = currentUserId,
+                                CreateDate = DateTime.Now,
+                                OfferGuid = Guid.NewGuid()
                             };
-                            this.subscriptionLogRepository.Add(auditLog);
+
+                            Guid newOfferId = this.offersRepository.Add(offers);
+
+                            List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
+                            var serializedPlans = JsonConvert.SerializeObject(subscriptionPlanDetail);
+                            planList = JsonConvert.DeserializeObject<List<PlanDetailResultExtension>>(serializedPlans);
+                            planList.ForEach(x =>
+                            {
+                                x.OfferId = newOfferId;
+                                x.PlanGUID = Guid.NewGuid();
+                            });
+
+                            this.subscriptionService.AddPlanDetailsForSubscription(planList);
+                            var currentPlan = this.planRepository.GetPlanDetailByPlanId(newSubscription.PlanId);
+                            // GetSubscriptionBy SubscriptionId
+                            var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
+
+                            if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                            {
+                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                {
+                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                                    SubscriptionId = subscribeId,
+                                    NewValue = "Pending Activation",
+                                    OldValue = "None",
+                                    CreateBy = currentUserId,
+                                    CreateDate = DateTime.Now
+                                };
+                                this.subscriptionLogRepository.Add(auditLog);
+                            }
+
+
+                            subscriptionDetail = subscriptionData;
+                            subscriptionExtension.ShowWelcomeScreen = false;
+                            subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
+                            subscriptionDetail.CustomerName = this.CurrentUserName;
+
+
+                            var serializedSubscription = JsonConvert.SerializeObject(subscriptionDetail);
+                            subscriptionExtension = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedSubscription);
+                            subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
                         }
-
-
-                        subscriptionDetail = subscriptionData;
-                        subscriptionExtension.ShowWelcomeScreen = false;
-                        subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
-                        subscriptionDetail.CustomerName = this.CurrentUserName;
-
-
-                        var serializedSubscription = JsonConvert.SerializeObject(subscriptionDetail);
-                        subscriptionExtension = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedSubscription);
-                        subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
+                    }
+                    else
+                    {
+                        this.TempData["ShowWelcomeScreen"] = "True";
+                        subscriptionExtension.ShowWelcomeScreen = true;
+                        return this.View(subscriptionExtension);
                     }
                 }
                 else
                 {
-                    this.TempData["ShowWelcomeScreen"] = "True";
-                    subscriptionExtension.ShowWelcomeScreen = true;
-                    return this.View(subscriptionExtension);
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(token))
-                {
-                    return this.Challenge(new AuthenticationProperties
+                    if (!string.IsNullOrEmpty(token))
                     {
-                        RedirectUri = "/?token=" + token
-                    }, OpenIdConnectDefaults.AuthenticationScheme);
+                        return this.Challenge(new AuthenticationProperties
+                        {
+                            RedirectUri = "/?token=" + token
+                        }, OpenIdConnectDefaults.AuthenticationScheme);
+                    }
+                    else
+                    {
+                        this.TempData["ShowWelcomeScreen"] = "True";
+                        subscriptionExtension.ShowWelcomeScreen = true;
+                        return this.View(subscriptionExtension);
+                    }
                 }
-                else
-                {
-                    this.TempData["ShowWelcomeScreen"] = "True";
-                    subscriptionExtension.ShowWelcomeScreen = true;
-                    return this.View(subscriptionExtension);
-                }
+
+
+
+                return this.View(subscriptionExtension);
             }
-
-
-
-            return this.View(subscriptionExtension);
+            catch (Exception ex)
+            {
+                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return View("Error");
+            }
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.Models
 {
+    using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
     using Microsoft.Marketplace.SaasKit.Models;
     using System.Collections.Generic;
 
