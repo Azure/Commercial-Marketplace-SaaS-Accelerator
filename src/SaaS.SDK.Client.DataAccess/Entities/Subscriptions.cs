@@ -22,6 +22,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public DateTime? ModifyDate { get; set; }
         public int? UserId { get; set; }
         public string Name { get; set; }
+        public int Ampquantity { get; set; }
 
         public virtual Users User { get; set; }
         public virtual ICollection<MeteredAuditLogs> MeteredAuditLogs { get; set; }

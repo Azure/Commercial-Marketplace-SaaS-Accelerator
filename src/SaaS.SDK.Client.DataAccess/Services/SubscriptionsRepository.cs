@@ -42,7 +42,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                 {
                     existingSubscriptions.SubscriptionStatus = subscriptionDetails.SubscriptionStatus;
                     existingSubscriptions.AmpplanId = subscriptionDetails.AmpplanId;
+                    existingSubscriptions.Ampquantity = subscriptionDetails.Ampquantity;
                     Context.Subscriptions.Update(existingSubscriptions);
+                    Context.SaveChanges();
                     return existingSubscriptions.Id;
                 }
                 else
@@ -96,6 +98,26 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         }
 
         /// <summary>
+        /// Updates the Quantity for subscription.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="quantity">The Quantity.</param>
+        public void UpdateQuantityForSubscription(Guid subscriptionId, int quantity)
+        {
+            try
+            {
+                var existingSubscription = Context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+                if (existingSubscription != null)
+                {
+                    existingSubscription.Ampquantity = quantity;
+                    Context.Subscriptions.Update(existingSubscription);
+                }
+                Context.SaveChanges();
+            }
+            catch (Exception) { }
+        }
+
+        /// <summary>
         /// Gets this instance.
         /// </summary>
         /// <returns></returns>
@@ -140,6 +162,18 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             }
         }
 
+        //public Subscriptions GetSubscriptionsBySubscriptionId(Guid subscriptionId, bool isIncludeDeactvated = false)
+        //{
+        //    if (subscriptionId != default)
+        //    {
+        //        if (!isIncludeDeactvated)
+        //            return Context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId && s.IsActive == true).FirstOrDefault();
+        //        else
+        //            return Context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+        //    }
+        //    return new Subscriptions();
+        //}
+
         /// <summary>
         /// Gets the subscriptions by ScheduleId
         /// </summary>
@@ -155,7 +189,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                 else
                     return Context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
             }
-            return new Subscriptions();
+            return null;
         }
 
         /// <summary>

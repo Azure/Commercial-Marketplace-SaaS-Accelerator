@@ -1,11 +1,12 @@
 ﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.Services;
 using Microsoft.Marketplace.SaasKit.Models;
-using System.Net;
-using System.Net.Mail;
 //using SendGrid;
 //using SendGrid.Helpers.Mail;
-namespace Microsoft.Marketplace.SaasKit.Client.Helpers
+using Microsoft.Marketplace.SaasKit.Web.Services;
+using System.Net;
+using System.Net.Mail;
+
+namespace Microsoft.Marketplace.SaasKit.Web.Helpers
 {
     public class EmailHelper
     {
@@ -33,8 +34,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Helpers
                     mail.To.Add(new MailAddress(Multimailid));
                 }
             }
-
-
+           
             if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())))
             {
                 string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');

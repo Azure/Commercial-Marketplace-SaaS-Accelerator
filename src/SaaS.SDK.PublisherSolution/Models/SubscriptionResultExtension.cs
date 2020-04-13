@@ -8,8 +8,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.Models
 {
     public class SubscriptionResultExtension : SubscriptionResult
     {
+        public bool IsMeteringSupported { get; set; }
+
         public bool IsPerUserPlan { get; set; }
-        public List<SubscriptionParametersModel> SubscriptionParameters { get; set; }
 
     }
 }

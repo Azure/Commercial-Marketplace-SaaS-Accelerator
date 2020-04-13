@@ -115,7 +115,7 @@
         /// <value>
         /// The quantity.
         /// </value>
-        public string Quantity { get; set; }
+        public int Quantity { get; set; }
 
         /// <summary>
         /// Gets or sets the resource location.
@@ -233,9 +233,5 @@
         /// <value>The name of the customer.</value>
         public string CustomerName { get; set; }
 
-        /// <summary>Gets or sets a value indicating whether this instance is metering supported.</summary>
-        /// <value>
-        ///   <c>true</c> if this instance is metering supported; otherwise, <c>false</c>.</value>
-        public bool IsMeteringSupported { get; set; }
     }
 }

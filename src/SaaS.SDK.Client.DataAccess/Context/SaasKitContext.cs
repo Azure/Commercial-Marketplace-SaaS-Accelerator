@@ -402,6 +402,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.Ampquantity).HasColumnName("AMPQuantity");
+
                 entity.Property(e => e.AmpsubscriptionId)
                     .HasColumnName("AMPSubscriptionId")
                     .HasDefaultValueSql("(newid())");

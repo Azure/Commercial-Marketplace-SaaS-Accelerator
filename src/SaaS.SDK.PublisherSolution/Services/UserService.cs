@@ -3,7 +3,7 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.Saas.Web.Models;
 
-namespace Microsoft.Marketplace.Saas.Client.Services
+namespace Microsoft.Marketplace.Saas.Web.Services
 {
     public class UserService
     {

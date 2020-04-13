@@ -11,7 +11,7 @@
         /// <value>
         /// The subscriptions.
         /// </value>
-        public List<SubscriptionResult> Subscriptions { get; set; } = new List<SubscriptionResult>();
+        public List<SubscriptionResultExtension> Subscriptions { get; set; } = new List<SubscriptionResultExtension>();
 
         /// <summary>
         /// Gets or sets the error message.
@@ -36,5 +36,8 @@
         /// The saas application URL.
         /// </value>
         public string SaaSAppUrl { get; set; }
+
+        public bool IsAutomaticProvisioningSupported { get; set; }
+
     }
 }
