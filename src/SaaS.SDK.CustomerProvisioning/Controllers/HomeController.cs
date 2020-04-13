@@ -438,7 +438,7 @@
                             this.logger.LogInformation("GetPartnerSubscription and GetAllSubscriptionPlans");
                             subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                             subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
-                            this.logger.LogInformation("Save Suvbscription Parameters:  {0}", JsonConvert.SerializeObject(model.SubscriptionParameters));
+                            this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(model.SubscriptionParameters));
                             this.subscriptionService.AddSubscriptionParameters(model.SubscriptionParameters, currentUserId);
 
 
