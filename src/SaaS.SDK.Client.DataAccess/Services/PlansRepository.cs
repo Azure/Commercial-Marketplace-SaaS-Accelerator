@@ -68,7 +68,7 @@
                     existingPlan.PlanId = planDetails.PlanId;
                     existingPlan.Description = planDetails.Description;
                     existingPlan.DisplayName = planDetails.DisplayName;
-
+                    existingPlan.OfferId = planDetails.OfferId;
                     Context.Plans.Update(existingPlan);
                     Context.SaveChanges();
                     return existingPlan.Id;
