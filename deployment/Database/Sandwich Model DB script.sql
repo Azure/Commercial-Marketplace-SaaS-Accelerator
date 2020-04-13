@@ -41,6 +41,7 @@ CREATE TABLE [dbo].[OfferAttributes](
 	[UserId] [int] NULL,
 	[OfferId] [uniqueidentifier] not NULL
 	,IsDelete bit
+	,IsRequired bit
 PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
@@ -350,17 +351,17 @@ OA.Isactive=1
 and PA.IsEnabled=1
 END
 
---56E5E465-1657-45C0-BE9D-C1F011D0E77D
+GO
 
---Insert into PlanEventsOutPut
---Exec spGetPlanEvents 'B8F4D276-15EB-4EB6-89D4-E600FF1098EF'
+Insert into Events
+Select 'Activate' , 1, Getdate() UNION ALL
+Select 'Unsubscribe' , 1, Getdate()
 
---Insert into Events
---Select 'Activate' , 1, Getdate() UNION ALL
---Select 'Unsubscribe' , 1, Getdate()
+GO
 
-----update Events set EventsName='Unsubscribe' where EventsId=2
-
+INSERT INTO [dbo].[ValueTypes]
+Select 'Int',Getdate() UNION ALL
+select 'String', Getdate()
 GO
 
  GO

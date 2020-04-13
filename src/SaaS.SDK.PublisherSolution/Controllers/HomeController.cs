@@ -145,7 +145,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error",ex);
             }
         }
 
@@ -196,7 +196,7 @@
             catch (Exception ex)
             {
                 logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error",ex);
             }
         }
 
@@ -228,7 +228,7 @@
             catch (Exception ex)
             {
                 this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error",ex);
             }
         }
 
@@ -266,7 +266,7 @@
             catch (Exception ex)
             {
                 this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error",ex);
             }
         }
 
@@ -401,7 +401,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error while deactivating subscription");
-                return View("Error");
+                return View("Error",ex);
             }
         }
 
@@ -501,7 +501,7 @@
             catch (Exception ex)
             {
                 this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error",ex);
             }
         }
 
@@ -513,7 +513,7 @@
             }
             catch (Exception ex)
             {
-                return View("Error");
+                return View("Error",ex);
             }
         }
 
@@ -572,7 +572,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error",ex);
             }
         }
 
@@ -689,7 +689,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error",ex);
             }
         }
     }

@@ -12,6 +12,8 @@
     using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     [ServiceFilter(typeof(KnownUser))]
     public class OffersController : BaseController
@@ -28,7 +30,13 @@
 
         private OffersService offersService;
 
-        public OffersController(IOffersRepository offersRepository, IApplicationConfigRepository applicationConfigRepository, IUsersRepository usersRepository, IValueTypesRepository valueTypesRepository, IOfferAttributesRepository offersAttributeRepository)
+        /// <summary>
+        /// The logger
+        /// </summary>
+        private readonly ILogger<OffersController> logger;
+
+
+        public OffersController(IOffersRepository offersRepository, IApplicationConfigRepository applicationConfigRepository, IUsersRepository usersRepository, IValueTypesRepository valueTypesRepository, IOfferAttributesRepository offersAttributeRepository, ILogger<OffersController> logger)
         {
             this.offersRepository = offersRepository;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -36,6 +44,7 @@
             this.valueTypesRepository = valueTypesRepository;
             this.offersService = new OffersService(this.offersRepository);
             this.offersAttributeRepository = offersAttributeRepository;
+            this.logger = logger;
         }
 
         /// <summary>
@@ -44,14 +53,23 @@
         /// <returns>return All subscription</returns>
         public IActionResult Index()
         {
-            List<OffersModel> getAllOffersData = new List<OffersModel>();
-            this.TempData["ShowWelcomeScreen"] = "True";
-            var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-            if (currentUserDetail != null)
+            this.logger.LogInformation("Offers Controller / Index");
+            try
             {
-                getAllOffersData = this.offersService.GetOffers();
+                List<OffersModel> getAllOffersData = new List<OffersModel>();
+                this.TempData["ShowWelcomeScreen"] = "True";
+                var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                if (currentUserDetail != null)
+                {
+                    getAllOffersData = this.offersService.GetOffers();
+                }
+                return this.View(getAllOffersData);
             }
-            return this.View(getAllOffersData);
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                return View("Error", ex);
+            }
         }
 
         /// <summary>
@@ -60,46 +78,55 @@
         /// <returns>return All subscription</returns>
         public IActionResult OfferDetails(Guid offerGuId)
         {
-            OffersViewModel OffersData = new OffersViewModel();
-            this.TempData["ShowWelcomeScreen"] = "True";
-            var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-            OffersData = this.offersService.GetOfferOnId(offerGuId);
-
-            var offerAttributes = this.offersAttributeRepository.GetOfferAttributeDetailByOfferId(offerGuId);
-            var valueTypes = valueTypesRepository.GetValueTypes().ToList();
-            ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
-            OffersData.OfferAttributes = new List<OfferAttributesModel>();
-            if (offerAttributes != null)
+            this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", offerGuId);
+            try
             {
-                //OffersData.OfferAttributes = offerAttributes.ToList();
-                foreach (var offerAttribute in offerAttributes)
+                OffersViewModel OffersData = new OffersViewModel();
+                this.TempData["ShowWelcomeScreen"] = "True";
+                var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                OffersData = this.offersService.GetOfferOnId(offerGuId);
+
+                var offerAttributes = this.offersAttributeRepository.GetOfferAttributeDetailByOfferId(offerGuId);
+                var valueTypes = valueTypesRepository.GetValueTypes().ToList();
+                ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
+                OffersData.OfferAttributes = new List<OfferAttributesModel>();
+                if (offerAttributes != null)
                 {
-                    var existingOfferAttribute = new OfferAttributesModel()
+                    //OffersData.OfferAttributes = offerAttributes.ToList();
+                    foreach (var offerAttribute in offerAttributes)
                     {
-                        AttributeID = offerAttribute.Id,
-                        ParameterId = offerAttribute.ParameterId,
-                        DisplayName = offerAttribute.DisplayName,
-                        Description = offerAttribute.Description,
-                        ValueTypeId = offerAttribute.ValueTypeId,
-                        //ValueType = valueTypes,
-                        FromList = offerAttribute.FromList,
-                        ValuesList = offerAttribute.ValuesList,
-                        Max = offerAttribute.Max,
-                        Min = offerAttribute.Min,
-                        Type = offerAttribute.Type,
-                        DisplaySequence = offerAttribute.DisplaySequence,
-                        Isactive = offerAttribute.Isactive,
-                        CreateDate = DateTime.Now,
-                        UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
-                        OfferId = OffersData.OfferGuid
-                    };
-                    OffersData.OfferAttributes.Add(existingOfferAttribute);
+                        var existingOfferAttribute = new OfferAttributesModel()
+                        {
+                            AttributeID = offerAttribute.Id,
+                            ParameterId = offerAttribute.ParameterId,
+                            DisplayName = offerAttribute.DisplayName,
+                            Description = offerAttribute.Description,
+                            ValueTypeId = offerAttribute.ValueTypeId,
+                            //ValueType = valueTypes,
+                            FromList = offerAttribute.FromList,
+                            ValuesList = offerAttribute.ValuesList,
+                            Max = offerAttribute.Max,
+                            Min = offerAttribute.Min,
+                            Type = offerAttribute.Type,
+                            DisplaySequence = offerAttribute.DisplaySequence,
+                            Isactive = offerAttribute.Isactive,
+                            CreateDate = DateTime.Now,
+                            UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
+                            OfferId = OffersData.OfferGuid
+                        };
+                        OffersData.OfferAttributes.Add(existingOfferAttribute);
 
+                    }
                 }
+
+
+                return this.PartialView(OffersData);
             }
-
-
-            return this.PartialView(OffersData);
+            catch (Exception ex)
+            {
+                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return View("Error", ex);
+            }
         }
 
         /// <summary>
@@ -109,59 +136,64 @@
         [HttpPost]
         public IActionResult OfferDetails(OffersViewModel OffersData)
         {
-            var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-            if (OffersData != null && OffersData.OfferAttributes != null)
+            this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", JsonConvert.SerializeObject(OffersData));
+            try
             {
-                // query
-                var validItems = OffersData.OfferAttributes.Where(i => i.IsRemove == false);
-
-                foreach (var offerAttribute in validItems)
+                var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                if (OffersData != null && OffersData.OfferAttributes != null)
                 {
-                    var newOfferAttribute = new OfferAttributes()
+                    // query
+                    var validItems = OffersData.OfferAttributes.Where(i => i.IsRemove == false);
+
+                    foreach (var offerAttribute in validItems)
                     {
-                        Id = offerAttribute.AttributeID,
-                        ParameterId = offerAttribute.ParameterId,
-                        DisplayName = offerAttribute.DisplayName,
-                        Description = offerAttribute.Description,
-                        ValueTypeId = offerAttribute.ValueTypeId,
-                        FromList = offerAttribute.FromList,
-                        ValuesList = offerAttribute.ValuesList,
-                        Max = offerAttribute.Max,
-                        Min = offerAttribute.Min,
-                        Type = offerAttribute.Type,
-                        DisplaySequence = offerAttribute.DisplaySequence,
-                        Isactive = offerAttribute.Isactive,
-                        CreateDate = DateTime.Now,
-                        UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
-                        OfferId = OffersData.OfferGuid
-                    };
+                        var newOfferAttribute = new OfferAttributes()
+                        {
+                            Id = offerAttribute.AttributeID,
+                            ParameterId = offerAttribute.ParameterId,
+                            DisplayName = offerAttribute.DisplayName,
+                            Description = offerAttribute.Description,
+                            ValueTypeId = offerAttribute.ValueTypeId,
+                            FromList = offerAttribute.FromList,
+                            ValuesList = offerAttribute.ValuesList,
+                            Max = offerAttribute.Max,
+                            Min = offerAttribute.Min,
+                            Type = offerAttribute.Type,
+                            DisplaySequence = offerAttribute.DisplaySequence,
+                            Isactive = offerAttribute.Isactive,
+                            CreateDate = DateTime.Now,
+                            UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
+                            OfferId = OffersData.OfferGuid
+                        };
 
-                    this.offersAttributeRepository.Add(newOfferAttribute);
+                        this.offersAttributeRepository.Add(newOfferAttribute);
+                    }
+
+                    var deleteItems = OffersData.OfferAttributes.Where(i => i.IsRemove == true && i.AttributeID != 0);
+
+                    //if (deleteItems != null && deleteItems.Count() > 0)
+                    //{
+                    //    //this.offersAttributeRepository.Remove(deleteItems);
+                    //    /* Delete the Fields from existing Plans and subscriptios*/
+
+
+                    //}
+
+                    var valueTypes = valueTypesRepository.GetValueTypes().ToList();
+                    ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
+                    this.TempData["ShowWelcomeScreen"] = "True";
                 }
-
-                var deleteItems = OffersData.OfferAttributes.Where(i => i.IsRemove == true && i.AttributeID != 0);
-
-                //if (deleteItems != null && deleteItems.Count() > 0)
-                //{
-                //    //this.offersAttributeRepository.Remove(deleteItems);
-                //    /* Delete the Fields from existing Plans and subscriptios*/
-
-
-                //}
-
-                var valueTypes = valueTypesRepository.GetValueTypes().ToList();
-                ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
-                this.TempData["ShowWelcomeScreen"] = "True";
+                ModelState.Clear();
+                //return RedirectToAction(nameof(OfferDetails), new { @offerGuId = offerGuId });
+                return RedirectToAction(nameof(Index));
             }
-            ModelState.Clear();
-            //return RedirectToAction(nameof(OfferDetails), new { @offerGuId = offerGuId });
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                return View("Error", ex);
+            }
 
-
-            //return View(OffersData); 
         }
-
-
 
     }
 }

@@ -277,7 +277,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error", ex);
             }
         }
 
@@ -312,7 +312,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error", ex);
             }
         }
 
@@ -341,7 +341,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error", ex);
             }
         }
 
@@ -369,7 +369,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error", ex);
             }
         }
 
@@ -410,7 +410,7 @@
                 bool isSuccess = false;
                 if (subscriptionId != default)
                 {
-                    SubscriptionResult subscriptionDetail = new SubscriptionResult();
+                    SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
                     this.logger.LogInformation("GetPartnerSubscription");
                     var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
@@ -438,6 +438,8 @@
                             this.logger.LogInformation("GetPartnerSubscription and GetAllSubscriptionPlans");
                             subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                             subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
+                            this.logger.LogInformation("Save Suvbscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionDetail.SubscriptionParameters));
+                            this.subscriptionService.AddSubscriptionParameters(subscriptionDetail.SubscriptionParameters, currentUserId);
 
 
                             //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -520,7 +522,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error", ex);
             }
         }
 
@@ -533,7 +535,7 @@
             catch (Exception ex)
             {
                 this.logger.LogInformation("Home Controller / ActivatedMessage Exception: {0}", ex);
-                return View("Error");
+                return View("Error", ex);
             }
         }
 
@@ -573,7 +575,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error", ex);
             }
         }
 
@@ -616,7 +618,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error", ex);
             }
         }
 
@@ -695,7 +697,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error", ex);
             }
         }
 
@@ -766,7 +768,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error", ex);
             }
         }
         #endregion
