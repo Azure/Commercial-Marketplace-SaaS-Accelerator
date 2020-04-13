@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
-namespace SaaS.SDK.Client.DataAccess.Context
+namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 {
     public partial class SaasKitContext : DbContext
     {

@@ -231,7 +231,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error");
+                return View("Error", ex);
             }
         }
 
