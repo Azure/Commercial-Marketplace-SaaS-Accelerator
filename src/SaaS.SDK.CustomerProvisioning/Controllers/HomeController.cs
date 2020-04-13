@@ -532,6 +532,7 @@
             }
             catch (Exception ex)
             {
+                this.logger.LogInformation("Home Controller / ActivatedMessage Exception: {0}", ex);
                 return View("Error");
             }
         }
@@ -709,7 +710,7 @@
             this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonConvert.SerializeObject(subscriptionDetail));
             try
             {
-                if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity != null && subscriptionDetail.Quantity > 0)
+                if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity > 0)
                 {
                     try
                     {
