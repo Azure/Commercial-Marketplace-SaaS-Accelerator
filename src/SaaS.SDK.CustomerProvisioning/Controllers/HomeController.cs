@@ -410,7 +410,7 @@
                 bool isSuccess = false;
                 if (subscriptionId != default)
                 {
-                    SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+                    SubscriptionResult subscriptionDetail = new SubscriptionResult();
                     this.logger.LogInformation("GetPartnerSubscription");
                     var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
@@ -438,8 +438,8 @@
                             this.logger.LogInformation("GetPartnerSubscription and GetAllSubscriptionPlans");
                             subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                             subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
-                            this.logger.LogInformation("Save Suvbscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionDetail.SubscriptionParameters));
-                            this.subscriptionService.AddSubscriptionParameters(subscriptionDetail.SubscriptionParameters, currentUserId);
+                            this.logger.LogInformation("Save Suvbscription Parameters:  {0}", JsonConvert.SerializeObject(model.SubscriptionParameters));
+                            this.subscriptionService.AddSubscriptionParameters(model.SubscriptionParameters, currentUserId);
 
 
                             //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
