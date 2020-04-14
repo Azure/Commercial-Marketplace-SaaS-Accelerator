@@ -12,5 +12,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Models
 
         public bool IsPerUserPlan { get; set; }
 
+        public Guid GuidPlanId { get; set; }
+
     }
 }

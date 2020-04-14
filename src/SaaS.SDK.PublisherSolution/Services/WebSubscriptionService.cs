@@ -85,16 +85,16 @@ namespace Microsoft.Marketplace.Saas.Web.Services
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="includeUnsubscribed">if set to <c>true</c> [include unsubscribed].</param>
         /// <returns></returns>
-        public SubscriptionResult GetSubscriptionsByScheduleId(Guid subscriptionId, bool includeUnsubscribed = false)
+        public SubscriptionResultExtension GetSubscriptionsByScheduleId(Guid subscriptionId, bool includeUnsubscribed = false)
         {
             var subscriptionDetail = SubscriptionRepository.GetSubscriptionsByScheduleId(subscriptionId, includeUnsubscribed);
             if (subscriptionDetail != null)
             {
-                SubscriptionResult subscritpionDetail = PrepareSubscriptionResponse(subscriptionDetail);
+                SubscriptionResultExtension subscritpionDetail = PrepareSubscriptionResponse(subscriptionDetail);
                 if (subscritpionDetail != null)
                     return subscritpionDetail;
             }
-            return new SubscriptionResult();
+            return new SubscriptionResultExtension();
         }
 
         /// <summary>
