@@ -414,7 +414,7 @@
                 bool isSuccess = false;
                 if (subscriptionId != default)
                 {
-                    SubscriptionResult subscriptionDetail = new SubscriptionResult();
+                    SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
                     this.logger.LogInformation("GetPartnerSubscription");
                     var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
