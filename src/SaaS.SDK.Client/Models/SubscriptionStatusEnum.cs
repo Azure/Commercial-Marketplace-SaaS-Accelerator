@@ -28,6 +28,8 @@
         /// <summary>
         /// Pending Activation
         /// </summary>
-        PendingActivation
+        PendingActivation,
+
+        Failed
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+using Microsoft.Marketplace.SaasKit.Client.Models;
 using Microsoft.Marketplace.SaasKit.Models;
 //using SendGrid;
 //using SendGrid.Helpers.Mail;
@@ -11,7 +12,7 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
     public class EmailHelper
     {
 
-        public static void SendEmail(SubscriptionResult Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository)
+        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository)
         {
             MailMessage mail = new MailMessage();
             string FromMail = applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
@@ -26,6 +27,16 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
             string body = TemplateService.ProcessTemplate(Subscription, emailTemplateRepository, applicationConfigRepository);
             mail.Body = body;
             mail.IsBodyHtml = true;
+
+            if (!string.IsNullOrEmpty(planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId)))
+            {
+                string[] ToEmails = (planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId)).Split(';');
+                foreach (string Multimailid in ToEmails)
+                {
+                    mail.To.Add(new MailAddress(Multimailid));
+                }
+            }
+
             if (!string.IsNullOrEmpty(emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString())))
             {
                 string[] ToEmails = (emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
