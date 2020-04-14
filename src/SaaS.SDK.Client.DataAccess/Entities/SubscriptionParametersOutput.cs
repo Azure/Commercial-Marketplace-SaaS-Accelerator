@@ -14,6 +14,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public string ValueType { get; set; }
         public int DisplaySequence { get; set; }
         public bool IsEnabled { get; set; }
+        public bool? IsRequired { get; set; }
         public string Value { get; set; }
         public Guid SubscriptionId { get; set; }
         public Guid OfferId { get; set; }

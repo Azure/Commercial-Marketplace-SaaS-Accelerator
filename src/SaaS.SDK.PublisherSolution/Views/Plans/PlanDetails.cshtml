@@ -18,9 +18,6 @@
     </script>
     <div class="text-center mt20">
         <div class="card card-header">
-            <input type='hidden' id='offerID' name='offerID' value="@Model.offerID" />
-            <input type='hidden' id='PlanGUID' name='PlanGUID' value="@Model.PlanGUID" />
-            <input type='hidden' id='Id' name='Id' value="@Model.Id" />
             <dl class="row">
                 <dt class="col-2 text-right"><b>Offer Name</b></dt>
                 <dd class="col-3 text-left">@Model.OfferName</dd>
@@ -29,6 +26,11 @@
             </dl>
         </div>
         <form method="post" id="frmPlanEvents" asp-action="PlanDetails" asp-controller="Plans">
+            <div>
+                @Html.HiddenFor(model => model.offerID)
+                @Html.HiddenFor(model => model.PlanGUID)
+                @Html.HiddenFor(model => model.Id)
+            </div>
             <div id="tabs">
                 <ul>
                     <li><a href="#tabs-Parameters">Parameters</a></li>
@@ -69,7 +71,7 @@
                         }
                         <div style="text-align:right;">
                             <p>
-                                <input class="cm-button-default mt0" type="submit" value="Save Parameters" />
+                                <input class="cm-button-default mt0" type="button" onclick="savePlanParameters()" value="Save Parameters" />
                             </p>
                         </div>
                     </div>
@@ -118,7 +120,7 @@
                         }
                         <div style="text-align:right;">
                             <p>
-                                <input class="cm-button-default mt0" type="submit" value="Save Events" />
+                                <input class="cm-button-default mt0" type="button" onclick="savePlanParameters()" value="Save Events" />
                             </p>
                         </div>
                     </div>
@@ -129,3 +131,44 @@
 
 
 </body>
+<script>
+
+
+    function successconfirmDialog() {
+        swal({
+            title: "Saved",
+            text: "Plan parameters saved successfully.",
+            icon: "success",
+            timer: 1000
+        })
+    }
+    function errorconfirmDialog() {
+        swal({
+            title: "Error",
+            text: "An error has occured, please check the log.",
+            icon: "error",
+            timer: 1000
+        })
+    }
+    function savePlanParameters() {
+        alert(0);
+        var formobject = $('#frmPlanEvents').serialize();
+        $.ajax({
+            url: 'Plans/PlanDetails',
+            type: 'POST',
+            data: formobject,
+            cache: false,
+            success: function (result) {
+                debugger;
+                successconfirmDialog();
+                $('#myModal').html(result);
+            },
+            Error:
+                function (result) {
+                    errorconfirmDialog();
+                    $('#myModal').html(result);
+                }
+        });
+    }
+
+</script>

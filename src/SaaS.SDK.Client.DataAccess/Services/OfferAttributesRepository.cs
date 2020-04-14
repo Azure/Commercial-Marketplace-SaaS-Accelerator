@@ -47,6 +47,8 @@
                     existingOfferAttribute.Isactive = offerAttributes.Isactive;
                     existingOfferAttribute.UserId = offerAttributes.UserId;
                     existingOfferAttribute.OfferId = offerAttributes.OfferId;
+                    existingOfferAttribute.IsRequired = offerAttributes.IsRequired;
+                    existingOfferAttribute.IsDelete = offerAttributes.IsDelete;
 
                     Context.OfferAttributes.Update(existingOfferAttribute);
                     Context.SaveChanges();
@@ -65,36 +67,36 @@
 
         public IEnumerable<OfferAttributes> Get()
         {
-            return Context.OfferAttributes;
+            return Context.OfferAttributes.Where(s => s.IsDelete != true);
         }
         public IEnumerable<OfferAttributes> GetOfferAttributeDetailByOfferId(Guid offerGuId)
         {
-            return Context.OfferAttributes.Where(s => s.OfferId == offerGuId);
+            return Context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true));
         }
 
         //IEnumerable<Offers> GetOffersByUser(int userId);
 
         public OfferAttributes Get(int Id)
         {
-            return Context.OfferAttributes.Where(s => s.Id == Id).FirstOrDefault();
+            return Context.OfferAttributes.Where(s => s.Id == Id && s.IsDelete != true).FirstOrDefault();
         }
 
-        /// <summary>
-        /// Removes the specified plan details.
-        /// </summary>
-        /// <param name="offerDetails">The offer details.</param>
-        public void Remove(List<OfferAttributes> offerAttributes)
-        {
-            foreach (var offerAttribute in offerAttributes)
-            {
-                var existingOffersAttribute = Context.OfferAttributes.Where(s => s.Id == offerAttribute.Id).FirstOrDefault();
-                if (existingOffersAttribute != null)
-                {
-                    Context.OfferAttributes.Remove(existingOffersAttribute);
-                    Context.SaveChanges();
-                }
-            }
-        }
+        ///// <summary>
+        ///// Removes the specified plan details.
+        ///// </summary>
+        ///// <param name="offerDetails">The offer details.</param>
+        //public void Remove(List<OfferAttributes> offerAttributes)
+        //{
+        //    foreach (var offerAttribute in offerAttributes)
+        //    {
+        //        var existingOffersAttribute = Context.OfferAttributes.Where(s => s.Id == offerAttribute.Id).FirstOrDefault();
+        //        if (existingOffersAttribute != null)
+        //        {
+        //            Context.OfferAttributes.Remove(existingOffersAttribute);
+        //            Context.SaveChanges();
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

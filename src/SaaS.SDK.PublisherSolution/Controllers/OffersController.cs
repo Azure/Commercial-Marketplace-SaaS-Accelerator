@@ -110,9 +110,14 @@
                             Type = offerAttribute.Type,
                             DisplaySequence = offerAttribute.DisplaySequence,
                             Isactive = offerAttribute.Isactive,
+                            IsRequired = offerAttribute.IsRequired ?? false ,
+                            IsDelete = offerAttribute.IsDelete ?? false,
                             CreateDate = DateTime.Now,
                             UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
                             OfferId = OffersData.OfferGuid
+
+
+
                         };
                         OffersData.OfferAttributes.Add(existingOfferAttribute);
 
@@ -161,15 +166,16 @@
                             Type = offerAttribute.Type,
                             DisplaySequence = offerAttribute.DisplaySequence,
                             Isactive = offerAttribute.Isactive,
+                            IsRequired = offerAttribute.IsRequired,
+                            IsDelete = offerAttribute.IsDelete,
                             CreateDate = DateTime.Now,
                             UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
                             OfferId = OffersData.OfferGuid
                         };
-
                         this.offersAttributeRepository.Add(newOfferAttribute);
                     }
 
-                    var deleteItems = OffersData.OfferAttributes.Where(i => i.IsRemove == true && i.AttributeID != 0);
+                    //var deleteItems = OffersData.OfferAttributes.Where(i => i.IsRemove == true && i.AttributeID != 0);
 
                     //if (deleteItems != null && deleteItems.Count() > 0)
                     //{
@@ -184,8 +190,9 @@
                     this.TempData["ShowWelcomeScreen"] = "True";
                 }
                 ModelState.Clear();
-                //return RedirectToAction(nameof(OfferDetails), new { @offerGuId = offerGuId });
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(OfferDetails), new { @offerGuId = OffersData.OfferGuid });
+                //return RedirectToAction(nameof(Index));
+                //return this.PartialView(OffersData);
             }
             catch (Exception ex)
             {

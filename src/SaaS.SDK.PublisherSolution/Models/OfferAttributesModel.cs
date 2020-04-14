@@ -25,5 +25,9 @@ namespace Microsoft.Marketplace.Saas.Web.Models
         public bool IsRemove { get; set; }
         public int UserId { get; set; }
         public DateTime CreateDate { get; set; }
+        public bool IsDelete { get; set; }
+        public bool IsRequired { get; set; }
+
+
     }
 }

@@ -8,7 +8,7 @@
         <div class="container mrtop maxwidth" style="float:left;">
             <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
                 <input class="cm-button-default mt0" style="line-height:10px; background-color: #2E8B57;" type="button" id="btnAdd" value="Add new row" />
-                <input class="cm-button-default mt0" style="line-height:10px;" type="submit" value="Save changes" />
+                <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="saveOfferParameters()" value="Save changes" />
             </div>
             @*<div calss="text-right maxwidth" style="text-align:right; width:1300px;">
                     <p>
@@ -25,7 +25,7 @@
                     <dt class="col-2 text-right"><b>Offer name</b></dt>
                     <dd class="col-3 text-left">@Model.OfferID</dd>
                     @*<dt class="col-3 text-right"><b>Offer name</b></dt>
-                    <dd class="col-4 text-left">@Model.OfferName</dd>*@
+                        <dd class="col-4 text-left">@Model.OfferName</dd>*@
                 </dl>
             </div>
             <div id="tableload mb0 pb0">
@@ -44,6 +44,7 @@
                             @*<th>  Type                </th>*@
                             <th>  DisplaySequence     </th>
                             <th>  Isactive            </th>
+                            <th>  IsRequired           </th>
                             <th>  Remove            </th>
 
                         </tr>
@@ -61,7 +62,6 @@
                                     <td>
                                         <input id="OfferAttributes_Id_@i" type="hidden" value="@i" class="iHidden" name="OfferAttributes[@i].Id" />
                                         <input id="OfferAttributes_AttributeID_@i" type="hidden" class="iHidden" name="OfferAttributes[@i].AttributeID" value="@Model.OfferAttributes[i].AttributeID" />
-
                                         <input type="text" style="width:70px;" id="OfferAttributes_ParameterId_@i" name="OfferAttributes[@i].ParameterId" value="@Model.OfferAttributes[i].ParameterId" />
                                     </td>
                                     <td><input type="text" style="width:70px;" id="OfferAttributes_DisplayName_@i" name="OfferAttributes[@i].DisplayName" value="@Model.OfferAttributes[i].DisplayName" /></td>
@@ -88,8 +88,12 @@
                                         @Html.CheckBoxFor(model => model.OfferAttributes[i].Isactive, new { name = "OfferAttributes[@i].Isactive", id = string.Format("OfferAttributes_Isactive_{0}", @i) })
                                     </td>
                                     <td>
+                                        @Html.CheckBoxFor(model => model.OfferAttributes[i].IsRequired, new { name = "OfferAttributes[@i].IsRequired", id = string.Format("OfferAttributes_IsRequired_{0}", @i) })
+                                    </td>
+                                    <td>
                                         <input id="btnRemove" class="cm-button-default mt0" style="line-height:10px;background-color: #B22222; width:90px; text-align: left;" type="button" value="Remove" onclick="removeRow(@i);" />
                                         <input type="hidden" value="" id="OfferAttributes_IsRemove_@i" name="OfferAttributes[@i].IsRemove" />
+                                        <input type="hidden" value="" id="OfferAttributes_IsDelete_@i" name="OfferAttributes[@i].IsDelete" />
                                     </td>
                                 </tr>
 
@@ -128,10 +132,13 @@
                                 @*<input type='checkbox' value='true' id='OfferAttributes_Isactive_itemIndex' name='OfferAttributes[itemIndex].Isactive' />*@
                                 @Html.CheckBox("OfferAttributes[itemIndex].Isactive", new { @id = "OfferAttributes_Isactive_itemIndex" })
                             </td>
-
+                            <td>
+                                @Html.CheckBox("OfferAttributes[itemIndex].IsRequired", new { @id = "OfferAttributes_IsRequired_itemIndex" })
+                            </td>
                             <td>
                                 <input id='btnRemove' class="cm-button-default mt0" type='button' style="line-height:10px; background-color: #B22222; width:90px; text-align: left;" value='Remove' onclick='removeRow(itemIndex);' />
                                 <input type='hidden' value='' id='OfferAttributes_IsRemove_itemIndex' name='OfferAttributes[itemIndex].IsRemove' />
+                                <input type='hidden' value='' id='OfferAttributes_IsDelete_itemIndex' name='OfferAttributes[itemIndex].IsDelete' />
                             </td>
                         </tr>
                     </tbody>
@@ -139,7 +146,7 @@
             </div>
             <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
                 <input class="cm-button-default mt0" style="line-height:10px;background-color: #2E8B57;" type="button" id="btnAdd2" value="Add new row" />
-                <input class="cm-button-default mt0" style="line-height:10px;" type="submit" value="Save changes" />
+                <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="saveOfferParameters()" value="Save changes" />
             </div>
             @*<div calss="text-right maxwidth" style="text-align:right; width:1300px;">
                     <p>
@@ -190,7 +197,11 @@
     });
     function removeRow(id) {
         var controlToBeRemoved = "#tr_OfferAttributes_" + id;
-        $("#OfferAttributes_IsRemove_" + id).val(true);
+        var attributeId = "#OfferAttributes_AttributeID_" + id;
+        if ($(attributeId).val() > 0)
+            $("#OfferAttributes_IsDelete_" + id).val(true);
+        else
+            $("#OfferAttributes_IsRemove_" + id).val(true);
         $(controlToBeRemoved).hide();
     }
 
@@ -212,6 +223,44 @@
         }
 
     }
+
+    function successconfirmDialog() {
+        swal({
+            title: "Saved",
+            text: "Offer parameters saved successfully.",
+            icon: "success",
+            timer: 1000
+        })
+    }
+    function errorconfirmDialog() {
+        swal({
+            title: "Error",
+            text: "An error has occured, please check the log.",
+            icon: "error",
+            timer: 1000
+        })
+    }
+    function saveOfferParameters() {
+        debugger;
+        var formobject = $('#frmOfferattributes').serialize();
+        $.ajax({
+            url: 'Offers/OfferDetails',
+            type: 'POST',
+            data: formobject,
+            cache: false,
+            success: function (result) {
+                debugger;
+                successconfirmDialog();
+                $('#myModal').html(result);
+            },
+            Error:
+                function (result) {
+                    errorconfirmDialog();
+                    $('#myModal').html(result);
+                }
+        });
+    }
+
     //function validate(formData, jqForm, options) {
     //    alert(formData);
     //    return false;

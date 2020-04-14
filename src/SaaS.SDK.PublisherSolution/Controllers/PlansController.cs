@@ -155,7 +155,9 @@
                         }
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                ModelState.Clear();
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(PlanDetails), new { @planGuId = plans.PlanGUID });
             }
             catch (Exception ex)
             {

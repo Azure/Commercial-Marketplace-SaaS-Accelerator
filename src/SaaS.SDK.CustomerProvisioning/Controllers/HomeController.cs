@@ -180,7 +180,7 @@
                                 {
                                     Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
                                     SubscriptionId = subscribeId,
-                                    NewValue = "Pending Activation",
+                                    NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
                                     OldValue = "None",
                                     CreateBy = currentUserId,
                                     CreateDate = DateTime.Now
@@ -198,6 +198,7 @@
                             var serializedSubscription = JsonConvert.SerializeObject(subscriptionDetail);
                             subscriptionExtension = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedSubscription);
                             subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
+                            //return this.PartialView("SubscriptionsHome", subscriptionExtension);
                         }
                     }
                     else
@@ -397,7 +398,7 @@
         /// <param name="operation">The operation.</param>
         /// <returns>Subscriptions operation</returns>
         [HttpPost]
-        public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation, SubscriptionResultExtension subscriptionResultExtension)
+        public IActionResult SubscriptionOperation(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation)
         {
             this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId), JsonConvert.SerializeObject(operation));
             try
@@ -439,9 +440,11 @@
                             subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                             subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
                             this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionResultExtension.SubscriptionParameters));
-                            this.subscriptionService.AddSubscriptionParameters(subscriptionResultExtension.SubscriptionParameters, currentUserId);
+                            if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
+                            {
+                                this.subscriptionService.AddSubscriptionParameters(subscriptionResultExtension.SubscriptionParameters, currentUserId);
 
-
+                            }
                             //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
                             //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
@@ -530,7 +533,7 @@
         {
             try
             {
-                return this.View();
+                return this.PartialView();
             }
             catch (Exception ex)
             {
@@ -559,11 +562,13 @@
 
                     this.TempData["ShowWelcomeScreen"] = false;
                     var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                    var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
+                    //var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
                     var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
 
                     var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                     subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
+                    var planDetails = this.planRepository.GetPlanDetailByPlanId(subscriptionData.PlanId);
+                    subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
                     subscriptionDetail.ShowWelcomeScreen = false;
                     subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.PendingFulfillmentStart;

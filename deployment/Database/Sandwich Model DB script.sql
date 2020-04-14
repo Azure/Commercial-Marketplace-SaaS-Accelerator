@@ -291,6 +291,7 @@ RowNumber  Int Primary key
 ,ValueType			  Varchar(225) Not Null	
 ,DisplaySequence	 Int Not Null	
 ,IsEnabled			 bit Not Null	
+,IsRequired			 bit  Null	
 ,Value				  Varchar(MAx) Not Null	
 ,SubscriptionId		 uniqueidentifier Not Null	
 ,OfferId		 uniqueidentifier Not Null	
@@ -326,6 +327,7 @@ SELECT
 ,ISNULL(VT.ValueType,'') ValueType
 ,ISnull(OA.DisplaySequence,0)DisplaySequence
 ,isnull(PA.IsEnabled,0) IsEnabled
+,isnull(OA.IsRequired,0) IsRequired
 ,ISNULL(Value,'')Value
 ,ISNULL(SubscriptionId,@SubscriptionId) SubscriptionId
 ,ISNULL(SAV.OfferID,OA.OfferId) OfferID
