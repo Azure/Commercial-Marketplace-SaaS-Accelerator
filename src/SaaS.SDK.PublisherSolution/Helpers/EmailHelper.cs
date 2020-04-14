@@ -12,7 +12,8 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
     public class EmailHelper
     {
 
-        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository)
+        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, string planEvent = "success")
+
         {
             MailMessage mail = new MailMessage();
             string FromMail = applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
@@ -28,24 +29,47 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
             mail.Body = body;
             mail.IsBodyHtml = true;
 
-            if (!string.IsNullOrEmpty(planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId)))
+            string toReceipents = string.Empty;
+
+            if (planEvent.ToLower() == "success")
             {
-                string[] ToEmails = (planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId)).Split(';');
-                foreach (string Multimailid in ToEmails)
-                {
-                    mail.To.Add(new MailAddress(Multimailid));
-                }
+                toReceipents = (planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId) ??
+              emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString())
+              );
+
+            }
+            if (planEvent.ToLower() == "failure")
+            {
+                toReceipents = (planEventsMappingRepository.GetFailureStateEmails(Subscription.GuidPlanId) ??
+                emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString())
+                );
+            }
+            string[] ToEmails = toReceipents.Split(';');
+
+            foreach (string Multimailid in ToEmails)
+            {
+                mail.To.Add(new MailAddress(Multimailid));
             }
 
-            if (!string.IsNullOrEmpty(emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString())))
-            {
-                string[] ToEmails = (emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
-                foreach (string Multimailid in ToEmails)
-                {
-                    mail.To.Add(new MailAddress(Multimailid));
-                }
-            }
-           
+
+            //if (!string.IsNullOrEmpty(planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId)))
+            //{
+            //    string[] ToEmails = (planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId)).Split(';');
+            //    foreach (string Multimailid in ToEmails)
+            //    {
+            //        mail.To.Add(new MailAddress(Multimailid));
+            //    }
+            //}
+
+            //if (!string.IsNullOrEmpty(emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString())))
+            //{
+            //    string[] ToEmails = (emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
+            //    foreach (string Multimailid in ToEmails)
+            //    {
+            //        mail.To.Add(new MailAddress(Multimailid));
+            //    }
+            //}
+
             if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())))
             {
                 string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
