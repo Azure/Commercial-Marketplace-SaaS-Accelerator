@@ -401,7 +401,7 @@
         /// <param name="operation">The operation.</param>
         /// <returns>Subscriptions operation</returns>
         [HttpPost]
-        public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation, SubscriptionResultExtension model)
+        public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation, SubscriptionResultExtension subscriptionResultExtension)
         {
             this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId), JsonConvert.SerializeObject(operation));
             try
@@ -414,7 +414,7 @@
                 bool isSuccess = false;
                 if (subscriptionId != default)
                 {
-                    SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+                    SubscriptionResult subscriptionDetail = new SubscriptionResult();
                     this.logger.LogInformation("GetPartnerSubscription");
                     var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
@@ -442,11 +442,8 @@
                             this.logger.LogInformation("GetPartnerSubscription and GetAllSubscriptionPlans");
                             subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                             subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
-                            //this.logger.LogInformation("Save Suvbscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionDetail.SubscriptionParameters));
-                            //this.subscriptionService.AddSubscriptionParameters(subscriptionDetail.SubscriptionParameters, currentUserId);
-
-                            this.logger.LogInformation("Save Suvbscription Parameters:  {0}", JsonConvert.SerializeObject(model.SubscriptionParameters));
-                            this.subscriptionService.AddSubscriptionParameters(model.SubscriptionParameters, currentUserId);
+                            this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionResultExtension.SubscriptionParameters));
+                            this.subscriptionService.AddSubscriptionParameters(subscriptionResultExtension.SubscriptionParameters, currentUserId);
 
 
                             //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
