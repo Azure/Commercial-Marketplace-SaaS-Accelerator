@@ -12,5 +12,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models
         public bool IsPerUserPlan { get; set; }
         public List<SubscriptionParametersModel> SubscriptionParameters { get; set; }
         public Guid GuidPlanId { get; set; }
+        public bool? DeployToCustomerSubscription { get; set; }
     }
 }

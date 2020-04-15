@@ -6,6 +6,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
+    using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Client.Helpers;
@@ -70,6 +71,7 @@
         /// </summary>
         private ApplicationLogService applicationLogService = null;
 
+        private PlanService planService = null;
         /// <summary>
         /// The user service
         /// </summary>
@@ -80,6 +82,8 @@
         private readonly IEmailTemplateRepository emailTemplateRepository;
 
         private readonly IPlanEventsMappingRepository planEventsMappingRepository;
+
+        private readonly IOfferAttributesRepository offerAttributesRepository;
 
 
 
@@ -92,7 +96,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -106,9 +110,10 @@
             this.applicationConfigRepository = applicationConfigRepository;
             this.emailTemplateRepository = emailTemplateRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
-
+            this.offerAttributesRepository = offerAttributesRepository;
             this.logger = logger;
             this.offersRepository = offersRepository;
+            this.planService = new PlanService(this.planRepository, this.offerAttributesRepository);
         }
 
         #region View Action Methods
@@ -173,6 +178,19 @@
                             });
 
                             this.subscriptionService.AddPlanDetailsForSubscription(planList);
+
+                            var deploymentAttributes = this.offerAttributesRepository.GetDeploymentParameters();
+                            if (deploymentAttributes != null && deploymentAttributes.Count() > 0)
+                            {
+                                var attribures = this.offerAttributesRepository.AddDeploymentAttributes(newOfferId, currentUserId, deploymentAttributes.ToList());
+                                var allPlansOfSubscription = this.planRepository.GetPlanDetailByOfferId(newOfferId);
+
+                                foreach (var plan in allPlansOfSubscription)
+                                {
+                                    var deploymentAttributesofPlan = this.planService.SavePlanAttributes(plan, currentUserId);
+                                }
+                            }
+
                             var currentPlan = this.planRepository.GetPlanDetailByPlanId(newSubscription.PlanId);
                             // GetSubscriptionBy SubscriptionId
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -202,6 +220,7 @@
                             var serializedSubscription = JsonConvert.SerializeObject(subscriptionDetail);
                             subscriptionExtension = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedSubscription);
                             subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
+                            subscriptionExtension.DeployToCustomerSubscription = currentPlan.DeployToCustomerSubscription ?? false;
                             //return this.PartialView("SubscriptionsHome", subscriptionExtension);
                         }
                     }

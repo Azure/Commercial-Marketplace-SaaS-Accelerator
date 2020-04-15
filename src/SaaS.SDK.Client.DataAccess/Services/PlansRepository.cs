@@ -109,7 +109,22 @@
             return Context.Plans.Where(s => s.PlanGuid == planGuId).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Gets the plan detail by plan identifier.
+        /// </summary>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns></returns>
+        public List<Plans> GetPlanDetailByOfferId(Guid offerId)
+        {
+            return Context.Plans.Where(s => s.OfferId == offerId).ToList();
+        }
 
+        public PlanAttributeMapping GetPlanAttributeOnOfferAttributeId(int offerAttributeId, Guid planGuId)
+        {
+            var planAttribute = Context.PlanAttributeMapping.Where(s => s.OfferAttributeId == offerAttributeId && s.PlanId == planGuId).FirstOrDefault();
+            return planAttribute;
+
+        }
         public IEnumerable<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid offerId)
         {
             try

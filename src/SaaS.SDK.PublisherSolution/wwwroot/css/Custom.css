@@ -122,7 +122,7 @@
 }
 
 .cm-button-default {
-    color: #fff;
+    color: #fff !important;
     background-color: #004578;
     border-color: #2e6da4;
     display: inline-block;

@@ -89,7 +89,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
    })
    .AddCookie();
 
-            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));            
+            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
 
             services.AddDbContext<SaasKitContext>(options =>
@@ -115,6 +115,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
             services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
             services.AddScoped<IOffersRepository, OffersRepository>();
+            services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
 
         }

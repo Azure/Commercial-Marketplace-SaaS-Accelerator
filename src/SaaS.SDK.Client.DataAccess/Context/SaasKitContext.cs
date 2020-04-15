@@ -20,6 +20,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<ApplicationLog> ApplicationLog { get; set; }
         public virtual DbSet<Armtemplates> Armtemplates { get; set; }
         public virtual DbSet<DatabaseVersionHistory> DatabaseVersionHistory { get; set; }
+        public virtual DbSet<DeploymentAttributes> DeploymentAttributes { get; set; }
         public virtual DbSet<EmailTemplate> EmailTemplate { get; set; }
         public virtual DbSet<Events> Events { get; set; }
         public virtual DbSet<KnownUsers> KnownUsers { get; set; }
@@ -105,6 +106,35 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.VersionNumber).HasColumnType("decimal(6, 2)");
+            });
+
+            modelBuilder.Entity<DeploymentAttributes>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Description)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DisplayName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OfferId)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ParameterId)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Type)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ValuesList).IsUnicode(false);
             });
 
             modelBuilder.Entity<EmailTemplate>(entity =>
@@ -385,7 +415,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<SubscriptionParametersOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__Subscrip__AAAC09D85FE3D815");
+                    .HasName("PK__Subscrip__AAAC09D8B1BD00D7");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 

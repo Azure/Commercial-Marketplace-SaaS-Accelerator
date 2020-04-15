@@ -38,6 +38,9 @@
                 </ul>
                 <div id="tabs-Parameters">
                     <div id="PlanAttributes">
+                        <div>
+                            @Html.CheckBoxFor(model => model.DeployToCustomerSubscription ?? false)
+                        </div>
                         @if (Model.PlanAttributes != null && Model.PlanAttributes.Count() > 0)
                         {
                             <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">

@@ -59,6 +59,8 @@
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.PlanId)
+                            @Html.HiddenFor(model => model.DeployToCustomerSubscription)
+
                         </dd>
 
                         @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
@@ -66,10 +68,10 @@
 
                             for (int i = 0; i < Model.SubscriptionParameters.Count(); i++)
                             {
-                                <dt class="col-sm-3 p-2 p10">
-                                    @Html.DisplayName(Model.SubscriptionParameters[i].DisplayName)
+                                <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
+                                    @Html.LabelFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
                                     @if (Model.SubscriptionParameters[i].IsRequired == true)
-                                    {<span class="red-star">★</span>}
+                                    {<span class="red-star @Model.SubscriptionParameters[i].Type">*</span>}
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].Id)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanAttributeId)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].ValueType)
@@ -80,10 +82,10 @@
                                 </dt>
                                 @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                                 {
-                                    <dd class="col-sm-9 p-2 p10">
+                                    <dd class="col-sm-9 p-2 p10 @Model.SubscriptionParameters[i].Type">
                                         @if (Model.SubscriptionParameters[i].IsRequired == true)
                                         {
-                                            @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { required = "required" })
+                                            @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
                                         }
                                         else
                                         {
@@ -150,6 +152,16 @@ else
     </div>
 }
 <script type="text/javascript">
+
+    $(document).ready(function () {
+        var Isdeploy = $('#DeployToCustomerSubscription').val();
+        if (Isdeploy.toLowerCase() == "false") {
+            $(".Deployment").attr("disable", "disable").hide();
+        }
+
+
+    })
+
 
     function SubscriptionOperation(subscriptionId, planId, operation) {
         debugger;

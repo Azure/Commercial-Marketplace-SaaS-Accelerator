@@ -65,11 +65,83 @@
             return null;
         }
 
+        public IEnumerable<DeploymentAttributes> GetDeploymentParameters()
+        {
+
+            var deploymentAttributes = Context.DeploymentAttributes;
+            return deploymentAttributes;
+        }
+        public int? AddDeploymentAttributes(Guid offerId, int curretnUserId, List<DeploymentAttributes> deploymentAttributes)
+        {
+
+            if (deploymentAttributes != null && deploymentAttributes.Count() > 0)
+            {
+                foreach (var attribute in deploymentAttributes)
+                {
+                    var existingOfferAttribute = Context.OfferAttributes.Where(s => s.ParameterId == attribute.ParameterId
+                    && s.OfferId == offerId).FirstOrDefault();
+                    if (existingOfferAttribute != null)
+                    {
+                        existingOfferAttribute.ParameterId = attribute.ParameterId;
+                        existingOfferAttribute.DisplayName = attribute.DisplayName;
+                        existingOfferAttribute.Description = attribute.Description;
+                        existingOfferAttribute.ValueTypeId = attribute.ValueTypeId;
+                        existingOfferAttribute.FromList = attribute.FromList;
+                        existingOfferAttribute.ValuesList = attribute.ValuesList;
+                        existingOfferAttribute.Max = attribute.Max;
+                        existingOfferAttribute.Min = attribute.Min;
+                        existingOfferAttribute.Type = attribute.Type;
+                        existingOfferAttribute.DisplaySequence = attribute.DisplaySequence;
+                        existingOfferAttribute.Isactive = attribute.Isactive;
+                        existingOfferAttribute.UserId = attribute.UserId;
+                        existingOfferAttribute.OfferId = offerId;
+                        existingOfferAttribute.IsRequired = attribute.IsRequired;
+                        existingOfferAttribute.IsDelete = attribute.IsDelete;
+
+                        Context.OfferAttributes.Update(existingOfferAttribute);
+                        Context.SaveChanges();
+
+                    }
+                    else
+                    {
+                        OfferAttributes newAttribute = new OfferAttributes();
+
+                        newAttribute.ParameterId = attribute.ParameterId;
+                        newAttribute.DisplayName = attribute.DisplayName;
+                        newAttribute.Description = attribute.Description;
+                        newAttribute.ValueTypeId = attribute.ValueTypeId;
+                        newAttribute.FromList = attribute.FromList;
+                        newAttribute.ValuesList = attribute.ValuesList;
+                        newAttribute.Max = attribute.Max;
+                        newAttribute.Min = attribute.Min;
+                        newAttribute.Type = attribute.Type;
+                        newAttribute.DisplaySequence = attribute.DisplaySequence;
+                        newAttribute.Isactive = attribute.Isactive;
+                        newAttribute.UserId = attribute.UserId;
+                        newAttribute.OfferId = offerId;
+                        newAttribute.IsRequired = attribute.IsRequired;
+                        newAttribute.IsDelete = attribute.IsDelete;
+                        newAttribute.CreateDate = DateTime.Now;
+                        newAttribute.UserId = curretnUserId;
+                        Context.OfferAttributes.Add(newAttribute);
+                        Context.SaveChanges();
+
+                    }
+                }
+
+            }
+            return null;
+        }
         public IEnumerable<OfferAttributes> Get()
         {
-            return Context.OfferAttributes.Where(s => s.IsDelete != true);
+            return Context.OfferAttributes.Where(s => s.IsDelete != true && s.Type.ToLower() == "input");
         }
         public IEnumerable<OfferAttributes> GetOfferAttributeDetailByOfferId(Guid offerGuId)
+        {
+            return Context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true) && s.Type.ToLower() == "input");
+        }
+
+        public IEnumerable<OfferAttributes> GetAllOfferAttributeDetailByOfferId(Guid offerGuId)
         {
             return Context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true));
         }
@@ -78,7 +150,7 @@
 
         public OfferAttributes Get(int Id)
         {
-            return Context.OfferAttributes.Where(s => s.Id == Id && s.IsDelete != true).FirstOrDefault();
+            return Context.OfferAttributes.Where(s => s.Id == Id && s.IsDelete != true && s.Type.ToLower() == "input").FirstOrDefault();
         }
 
         ///// <summary>

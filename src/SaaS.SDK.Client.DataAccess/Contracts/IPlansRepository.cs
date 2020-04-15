@@ -19,6 +19,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 
         int? AddPlanAttributes(PlanAttributeMapping attributes);
         int? AddPlanEvents(PlanEventsMapping events);
+        List<Plans> GetPlanDetailByOfferId(Guid offerId);
+
+        //int? AddAllPlanAttributesOfOffer(Plans plan, List<DeploymentAttributes> deploymentAttributes);
+
+        PlanAttributeMapping GetPlanAttributeOnOfferAttributeId(int offerAttributeId, Guid planGuId);
 
     }
 }
