@@ -500,7 +500,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                this.logger.LogInformation("Message:{0} :: {1}", ex.Message, ex.InnerException);
                 return View("Error");
             }
         }
@@ -513,6 +513,7 @@
             }
             catch (Exception ex)
             {
+                this.logger.LogInformation("Message:{0} :: {1}", ex.Message, ex.InnerException);
                 return View("Error");
             }
         }
