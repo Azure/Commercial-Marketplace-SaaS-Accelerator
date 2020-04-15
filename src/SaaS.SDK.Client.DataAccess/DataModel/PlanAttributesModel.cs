@@ -13,5 +13,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
         public bool IsEnabled { get; set; }
 
         public int UserId { get; set; }
+
+        public string Type { get; set; }
     }
 }

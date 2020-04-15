@@ -34,7 +34,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 Plans.Description = item.Description;
                 Plans.IsmeteringSupported = item.IsmeteringSupported;
                 Plans.offerID = item.OfferId;
-                Plans.DeployToCustomerSubscription = item.DeployToCustomerSubscription;
+                Plans.DeployToCustomerSubscription = item.DeployToCustomerSubscription ?? false;
                 Plans.PlanGUID = item.PlanGuid;
                 plansList.Add(Plans);
             }
@@ -59,7 +59,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 DisplayName = existingPlan.DisplayName,
                 Description = existingPlan.Description,
                 PlanGUID = existingPlan.PlanGuid,
-                OfferName = offerDetails.OfferName
+                OfferName = offerDetails.OfferName,
+                DeployToCustomerSubscription = existingPlan.DeployToCustomerSubscription ?? false
             };
 
             plan.PlanAttributes = new List<PlanAttributesModel>();
@@ -72,7 +73,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                     PlanAttributeId = attribute.PlanAttributeId,
                     PlanId = existingPlan.PlanGuid,
                     DisplayName = attribute.DisplayName,
-                    IsEnabled = attribute.IsEnabled
+                    IsEnabled = attribute.IsEnabled,
+                    Type = attribute.Type
                 };
                 plan.PlanAttributes.Add(planAttributesmodel);
             }
@@ -94,6 +96,14 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 plan.PlanEvents.Add(planEventsModel);
             }
             return plan;
+        }
+
+        public int? SavePlanDeploymentParameter(PlansModel plan)
+        {
+            var existingPlan = this.plansRepository.GetPlanDetailByPlanGuId(plan.PlanGUID);
+            existingPlan.DeployToCustomerSubscription = plan.DeployToCustomerSubscription;
+            this.plansRepository.Add(existingPlan);
+            return null;
         }
 
         public int? SavePlanAttributes(PlanAttributesModel planAttributes)

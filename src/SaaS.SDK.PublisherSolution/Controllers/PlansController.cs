@@ -138,9 +138,11 @@
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 if (plans != null)
                 {
+                    this.plansService.SavePlanDeploymentParameter(plans);
                     if (plans.PlanAttributes != null)
                     {
-                        foreach (var attributes in plans.PlanAttributes)
+                        var inputAtttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();
+                        foreach (var attributes in inputAtttributes)
                         {
                             attributes.UserId = currentUserDetail.UserId;
                             this.plansService.SavePlanAttributes(attributes);

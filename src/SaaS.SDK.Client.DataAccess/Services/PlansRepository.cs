@@ -144,6 +144,7 @@
                         planAttributes.OfferAttributeId = offerAttribute.OfferAttributeId;
                         planAttributes.IsEnabled = offerAttribute.IsEnabled;
                         planAttributes.DisplayName = offerAttribute.DisplayName;
+                        planAttributes.Type = offerAttribute.Type;
                         attributesList.Add(planAttributes);
                     }
                 }

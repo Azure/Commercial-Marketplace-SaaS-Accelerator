@@ -38,8 +38,21 @@
                 </ul>
                 <div id="tabs-Parameters">
                     <div id="PlanAttributes">
-                        <div>
-                            @Html.CheckBoxFor(model => model.DeployToCustomerSubscription ?? false)
+                        <div calss="container">
+                            <dl class="row">
+                                <dt class="col-5 text-right">Deploy to Customer Subscription</dt>
+                                <dd class="col-3 text-left">
+
+                                    <label class="switch">
+                                        @Html.CheckBoxFor(model => model.DeployToCustomerSubscription)
+                                        <span class="slider round"></span>
+                                    </label>
+                                </dd>
+
+
+
+
+                            </dl>
                         </div>
                         @if (Model.PlanAttributes != null && Model.PlanAttributes.Count() > 0)
                         {
@@ -50,16 +63,17 @@
                                         <th>Enable</th>
                                     </tr>
                                 </theader>
+                                <tbody id="ReplacingTable">
+                                    @for (int i = 0; i < Model.PlanAttributes.Count(); i++)
+                                    {
 
-                                @for (int i = 0; i < Model.PlanAttributes.Count(); i++)
-                                {
-                                    <tbody id="ReplacingTable">
 
-                                        <tr id="tr_PlanAttributes_@i">
+                                        <tr id="tr_PlanAttributes_@i" class="@Model.PlanAttributes[i].Type">
                                             <td>
                                                 <input id="PlanAttributes[@i].PlanAttributeId" type="hidden" value="@Model.PlanAttributes[i].PlanAttributeId" class="iHidden" name="PlanAttributes[@i].PlanAttributeId" />
                                                 <input id="PlanAttributes[@i].OfferAttributeId" type="hidden" value="@Model.PlanAttributes[i].OfferAttributeId" class="iHidden" name="PlanAttributes[@i].OfferAttributeId" />
                                                 <input id="PlanAttributes[@i].PlanId" type="hidden" value="@Model.PlanAttributes[i].PlanId" class="iHidden" name="PlanAttributes[@i].PlanId" />
+                                                <input id="PlanAttributes[@i].Type" type="hidden" value="@Model.PlanAttributes[i].Type" class="iHidden" name="PlanAttributes[@i].Type" />
                                                 @Model.PlanAttributes[i].DisplayName
                                             </td>
                                             <td>
@@ -68,8 +82,9 @@
                                             </td>
                                         </tr>
 
-                                    </tbody>
-                                }
+
+                                    }
+                                </tbody>
                             </table>
                         }
                         <div style="text-align:right;">
@@ -96,10 +111,10 @@
                                         </th>
                                     </tr>
                                 </theader>
+                                <tbody id="ReplacingTable">
+                                    @for (int i = 0; i < Model.PlanEvents.Count(); i++)
+                                    {
 
-                                @for (int i = 0; i < Model.PlanEvents.Count(); i++)
-                                {
-                                    <tbody id="ReplacingTable">
 
                                         <tr id="tr_PlanEvents_@i">
                                             <td>
@@ -117,8 +132,9 @@
                                             <td><input type="text" style="width:200px;" id="PlanEvents_FailureStateEmails_@i" name="PlanEvents[@i].FailureStateEmails" value="@Model.PlanEvents[i].FailureStateEmails" /></td>
                                         </tr>
 
-                                    </tbody>
-                                }
+
+                                    }
+                                </tbody>
                             </table>
                         }
                         <div style="text-align:right;">
@@ -136,7 +152,29 @@
 </body>
 <script>
 
+    $(document).ready(function () {
+        var Isdeploy = $('#DeployToCustomerSubscription').prop('checked');
+        $(".Deployment input:checkbox").attr('disabled','disabled');
+        //$(".Deployment input:checkbox").attr('onclick', "return false");
+        if (Isdeploy == false) {
+            $(".Deployment").hide();
+        }
+        else {
+            $(".Deployment").show();
+        }
 
+
+    })
+
+    $('#DeployToCustomerSubscription').on('change', function () {
+        if (!this.checked) {
+            $(".Deployment").hide();
+        }
+        else {
+
+            $(".Deployment").show();
+        }
+    });
     function successconfirmDialog() {
         swal({
             title: "Saved",
@@ -154,7 +192,6 @@
         })
     }
     function savePlanParameters() {
-        alert(0);
         var formobject = $('#frmPlanEvents').serialize();
         $.ajax({
             url: 'Plans/PlanDetails',

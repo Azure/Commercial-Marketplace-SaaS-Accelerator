@@ -11,5 +11,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public int OfferAttributeId { get; set; }
         public string DisplayName { get; set; }
         public bool IsEnabled { get; set; }
+        public string Type { get; set; }
     }
 }

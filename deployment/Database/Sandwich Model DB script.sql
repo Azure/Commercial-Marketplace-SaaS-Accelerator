@@ -195,7 +195,8 @@ PlanAttributeId Int NOt NULL,
 PlanId Uniqueidentifier NOt NULL,
 OfferAttributeId Int NOT NULL,
 DisplayName Varchar(225) NOT NULL,
-IsEnabled bit NOT NULL
+IsEnabled bit NOT NULL,
+Type Varchar(225)
 )
 
 go
@@ -262,6 +263,7 @@ SELECT
 ,OA.DisplayName  
 --,OA.DisplaySequence  
 ,isnull(PA.IsEnabled,0) IsEnabled  
+,OA.Type
 from [dbo].[OfferAttributes] OA  
 left  join   
 [dbo].[PlanAttributeMapping]  PA  

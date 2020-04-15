@@ -17,7 +17,7 @@ namespace Microsoft.Marketplace.Saas.Web.Models
         public Guid? offerID { get; set; }
 
         public string OfferName { get; set; }
-        public bool? DeployToCustomerSubscription { get; set; }
+        public bool DeployToCustomerSubscription { get; set; }
 
         public SelectList PlansList { get; set; }
 
