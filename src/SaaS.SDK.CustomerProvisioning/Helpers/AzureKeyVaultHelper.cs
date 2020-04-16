@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Newtonsoft.Json;
 
 namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Helpers
 {
@@ -16,11 +17,12 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Helpers
         const string BASESECRETURI = "https://amp-saas-keyvault-test.vault.azure.net/";
         // const string SECRETNAME = "AC57EDA4-EA49-41BD-4452-3AF5F3BBA081";
         const string CONTENTTYPE = "AMP-SaaS";
+        const string TENANTID = "6d7e0652-b03d-4ed2-bf86-f1999cecde17";
         static KeyVaultClient client = null;
 
         /*Creates the secret values and Tag values*/
         //public static string writeKeyVault();
-        private static async Task<string> writeKeyVault(string subscriptionId, string deploymentParameters)
+        public static async Task<string> writeKeyVault(string subscriptionId, string deploymentParameters)
         {
 
             SecretAttributes attribs = new SecretAttributes
@@ -33,7 +35,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Helpers
             };
 
             IDictionary<string, string> tags = new Dictionary<string, string>();
-            tags.Add("OfferId", "56E5E465-1657-45C0-BE9D-C1F011D0E77D");
+            tags.Add("subscriptionId", subscriptionId);
 
             string Name = subscriptionId;
             string Value = deploymentParameters; // Json
@@ -65,19 +67,30 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Helpers
         }
         public static async Task<string> GetAccessToken(string authority, string resource, string scope)
         {
-            string clientId = "";
-            string clientSecret = "";
-
+            string clientId =CLIENTID;
+            string clientSecret = CLIENTSECRET;
+            authority = string.Format("https://login.windows.net/{0}", TENANTID);
+            resource = "https://vault.azure.net";
             ClientCredential clientCredential = new ClientCredential(clientId, clientSecret);
             var context = new AuthenticationContext(authority, TokenCache.DefaultShared);
             var result = await context.AcquireTokenAsync(resource, clientCredential);
             return result.AccessToken;
         }
 
-        public string ValidateUserParameters(string authority, string resource, string clientId, string clientSecret)
+        public static bool ValidateUserParameters(IDictionary<string, string> dictionary)
         {
-            //string authority = "https://login.windows.net/6d7e0652-b03d-4ed2-bf86-f1999cecde17";
-            //string resource = "https://vault.azure.net";
+
+            string authority = "";
+            string resource = "";
+            string clientId = dictionary["Service Principal ID"];
+            string clientSecret = dictionary["Client Secret"];
+            string tenantId = dictionary["Tenant ID"];
+            string subscriptionId = dictionary["Subscription ID"];
+
+            //tenantId = "6d7e0652-b03d-4ed2-bf86-f1999cecde17";
+            authority = string.Format("https://login.windows.net/{0}", tenantId);
+            resource = "https://vault.azure.net";
+            KeyVaultClient kvc = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetAccessToken));
             var authContext = new AuthenticationContext(authority);
             ClientCredential clientCred = new ClientCredential(clientId, clientSecret);
             try
@@ -86,18 +99,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Helpers
 
                 if (result == null)
                 {
-                    return "Failed to obtain the JWT token";
+                    return false;
                 }
                 //throw new InvalidOperationException("Failed to obtain the JWT token");
                 else
                 {
-                    return result.AccessToken;
+                    return true;
                 }
             }
             catch (Exception ex)
             {
-
-                return ex.Message;
+                return false;
             }
         }
     }

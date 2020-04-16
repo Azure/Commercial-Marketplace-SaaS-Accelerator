@@ -3,7 +3,7 @@
 }
 
 <div class="container partner-font-family">
-   
+
     <form method="post" enctype="multipart/form-data" asp-controller="Template" asp-action="UploadBatchUsage">
         <div class="">
             <div class="card-body ">
@@ -36,4 +36,7 @@
             </div>
         </div>
     </form>
+</div>
+<div>
+    @{await Html.RenderPartialAsync("ARMFileParameters");}
 </div>

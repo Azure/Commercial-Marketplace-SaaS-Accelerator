@@ -78,6 +78,8 @@
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanId)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].OfferId)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].SubscriptionId)
+                                    @Html.HiddenFor(model => model.SubscriptionParameters[i].DisplayName)
+                                    @Html.HiddenFor(model => model.SubscriptionParameters[i].Type)
 
                                 </dt>
                                 @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
@@ -115,7 +117,8 @@
                     }
                     @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" class="cm-button-default text-right">Activate</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Activate</a>
+                        <a onclick="ValidateData()" class="cm-button-default text-right">Validate</a>
                     }
                     @* <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default text-right">Save</button>*@
                 </div>
@@ -154,6 +157,7 @@ else
 <script type="text/javascript">
 
     $(document).ready(function () {
+        $("#btnActive").hide();
         var Isdeploy = $('#DeployToCustomerSubscription').val();
         if (Isdeploy.toLowerCase() == "false") {
             $(".Deployment").attr("disable", "disable").hide();
@@ -162,9 +166,44 @@ else
 
     })
 
+    function ValidateData() {
+        var formobject = $('#frmIndex').serialize();
+        $.ajax({
+            url: '/Home/ValidateUserParameters',
+            type: 'POST',
+            data: formobject,
+            cache: false,
+            success: function (result) {
 
+                if (result.status = true) {
+                    swal({
+                        title: "Success",
+                        text: "Credentials are valid",
+                        icon: "Success"
+                    })
+                    $("#btnActive").show();
+                }
+                else {
+                    swal({
+                        title: "Error",
+                        text: result.responseText,
+                        icon: "Error"
+                    })
+                    $("#btnActive").hide();
+                }
+            },
+            Error:
+                function (result) {
+                    swal({
+                        title: "Error",
+                        text: result.responseText,
+                        icon: "Error"
+                    })
+                }
+        });
+
+    }
     function SubscriptionOperation(subscriptionId, planId, operation) {
-        debugger;
         if (validate()) {
             var formobject = $('#frmIndex').serialize();
             $.ajax({

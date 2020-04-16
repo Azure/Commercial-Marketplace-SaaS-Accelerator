@@ -65,5 +65,7 @@
         /// The response.
         /// </value>
         public ResponseModel Response { get; set; }
+
+        public DeploymentParameterViewModel DeploymentParameterViewModel { get; set; }
     }
 }

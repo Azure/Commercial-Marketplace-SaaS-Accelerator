@@ -5,6 +5,7 @@
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    //using global::SaaS.SDK.PublisherSolution.Models;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,6 +20,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Client.Services;
     using Microsoft.Marketplace.SaasKit.Models;
+    using Newtonsoft.Json.Linq;
 
     [ServiceFilter(typeof(KnownUser))]
     public class TemplateController : BaseController
@@ -48,6 +50,7 @@
 
         public IActionResult Index()
         {
+            DeploymentParameterViewModel model = new DeploymentParameterViewModel();
             try
             {
                 bool isKnownUser = knownUsersRepository.GetKnownUserDetail(base.CurrentUserEmailAddress, 1)?.Id > 0;
@@ -55,7 +58,8 @@
                 {
                     var newBatchModel = new TemplateModel();
                     newBatchModel.BulkUploadUsageStagings = new List<BulkUploadUsageStagingResult>();
-                    return View(newBatchModel);
+                    newBatchModel.DeploymentParameterViewModel = model;
+                    return View(model);
                 }
                 else
                     return View("Error", new ErrorViewModel { IsKnownUser = isKnownUser });
@@ -73,7 +77,7 @@
             BatchUsageUploadModel bulkUploadModel = new BatchUsageUploadModel();
             bulkUploadModel.BulkUploadUsageStagings = new List<BulkUploadUsageStagingResult>();
             bulkUploadModel.BatchLogId = 0;
-
+            DeploymentParameterViewModel model = new DeploymentParameterViewModel();
             ResponseModel response = new ResponseModel();
             var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
             var filename = string.Empty;
@@ -91,8 +95,73 @@
                 {
                     // full path to file in temp location
                     filePath = Path.GetTempFileName(); //we are using Temp file name just for the example. Add your own file path.
+                   
+                    model.FileName = filename;
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
+
+                        //string paramFileContext = new System.Net.WebClient().DownloadString(filePath);
+                        //string paramFileContext = new WebClient().DownloadString(paramFilePath);
+                        //dynamic result = JObject.Parse(stream.ToString());
+                        string str = (new StreamReader(formFile.OpenReadStream())).ReadToEnd();
+                        dynamic result = JObject.Parse(str);
+                        foreach (JToken child in result.parameters.Children())
+                        {
+
+                            var paramName = (child as JProperty).Name;
+                            model.ParameterName = paramName;
+                            object paramValue = string.Empty;
+
+                            foreach (JToken grandChild in child)
+                            {
+                                foreach (JToken grandGrandChild in grandChild)
+                                {
+                                    var property = grandGrandChild as JProperty;
+
+                                    if (property != null /*&& property.Name == "value"*/)
+                                    {
+                                        int propertyIntValue = 0;
+                                        bool propertyBoolValue = false;
+
+                                        var type = property.Value.GetType();
+
+                                        if (type == typeof(JArray) ||
+                                        property.Value.Type == JTokenType.Object ||
+                                        property.Value.Type == JTokenType.Date)
+                                        {
+                                            paramValue = property.Value;
+                                            if (paramValue != null)
+                                            {
+                                                model.ParameterValue = paramValue.ToString();
+                                            }
+                                        }
+                                        else if (property.Value.Type == JTokenType.Integer && int.TryParse((string)property.Value, out propertyIntValue))
+                                        {
+                                            model.ParameterType = "int";
+                                            paramValue = propertyIntValue;
+                                            model.ParameterValue = (string)property.Value;
+                                        }
+                                        else if (property.Value.Type == JTokenType.Boolean && bool.TryParse((string)property.Value, out propertyBoolValue))
+                                        {
+                                            model.ParameterType = "bool";
+                                            paramValue = propertyBoolValue;
+                                            model.ParameterValue = (string)property.Value;
+                                        }
+                                        else
+                                        {
+                                            model.ParameterType = "string";
+                                            paramValue = (string)property.Value;
+
+                                        }
+                                    }
+                                }
+                            }
+
+
+                        }
+
+
+                        bulkUploadModel.DeploymentParameterViewModel = model;
 
                         await formFile.CopyToAsync(stream);
                         string fileuploadPath = BlobFileUploadHelper.UploadFile(formFile, filename, fileContantType, ArmtempalteId, applicationConfigRepository);
@@ -122,7 +191,7 @@
                 response.IsSuccess = false;
             }
             bulkUploadModel.Response = response;
-            return View("Index", bulkUploadModel);
+            return View("Index", model);
         }
 
     }

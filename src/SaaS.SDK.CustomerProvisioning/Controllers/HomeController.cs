@@ -5,6 +5,7 @@
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Helpers;
     using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
     using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -18,6 +19,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net;
     using System.Threading.Tasks;
     using SaasKitModels = Microsoft.Marketplace.SaasKit.Models;
 
@@ -259,6 +261,39 @@
             }
         }
 
+        [HttpPost]
+
+        public IActionResult ValidateUserParameters(SubscriptionResultExtension subscriptionResultExtension)
+        {
+
+            if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
+            {
+                var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment").ToList();
+                IDictionary<string, string> parms = new Dictionary<string, string>();
+                foreach (var parm in deploymentParms)
+                {
+                    parms.Add(parm.DisplayName, parm.Value);
+                }
+                bool isFileSupported = AzureKeyVaultHelper.ValidateUserParameters(parms);
+
+
+
+                if (!isFileSupported)
+                {
+                    //  Send "false"
+                    return Json(new { status = false, responseText = "Invalid Credentials." });
+                }
+                else
+                {
+                    return Json(new { status = true, responseText = "Valid Credentials" });
+                }
+            }
+            else
+            {
+                return Json(new { status = false, responseText = "Enter Valid Credentials" });
+            }
+        }
+
         /// <summary>
         /// Subscription this instance.
         /// </summary>
@@ -465,7 +500,19 @@
                             this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionResultExtension.SubscriptionParameters));
                             if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
                             {
-                                this.subscriptionService.AddSubscriptionParameters(subscriptionResultExtension.SubscriptionParameters, currentUserId);
+
+                                var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input").ToList();
+
+                                var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment").ToList();
+
+                                IDictionary<string, string> parms = new Dictionary<string, string>();
+                                foreach (var parm in deploymentParms)
+                                {
+                                    parms.Add(parm.DisplayName, parm.Value);
+                                }
+                                string azureKeyValtSecret = AzureKeyVaultHelper.writeKeyVault(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                                this.subscriptionService.AddSubscriptionParameters(inputParms, currentUserId);
 
                             }
                             //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();

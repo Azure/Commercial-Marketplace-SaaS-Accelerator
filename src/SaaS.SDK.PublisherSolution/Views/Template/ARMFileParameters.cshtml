@@ -1,0 +1,52 @@
+﻿@using Microsoft.Marketplace.SaasKit.Models;
+@model DeploymentParameterViewModel
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@*ARMFileParameters*@</title>
+</head>
+<body>
+    @if (Model.FileName != null && Model.FileName != "")
+    {
+        <div class="table-responsive mt20">
+            <div class="modal-body text-center">
+                <dl class="row text-left">
+                    <dt class="col-sm-4 pl80">
+                        <label><b>ARM Template:</b></label>
+                    </dt>
+                    <dd class="col-sm-8 pl80">
+                        @Html.DisplayFor(model => model.FileName)
+                    </dd>
+                </dl>
+            </div>
+            <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                <tr>
+                    <th>
+                        Parameter Name
+
+                    </th>
+                    <th>
+                        Parameter Type
+
+                    </th>
+                    <th>
+                        Parameter Value
+                    </th>
+                </tr>
+
+                <tr>
+                    <td>@Html.DisplayFor(model => model.ParameterName)</td>
+                    <td>@Html.DisplayFor(model => model.ParameterType)</td>
+                    <td>@Html.TextBoxFor(model => model.ParameterValue)</td>
+                </tr>
+
+            </table>
+            <span class="col-lg-3">
+                <input type="submit" class="cm-button-default" value="Save">
+            </span>
+        </div>
+    }
+</body>
+</html>
