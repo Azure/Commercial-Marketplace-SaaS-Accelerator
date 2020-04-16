@@ -51,8 +51,16 @@
             this.Logger?.Info($"Inside GetAllSubscriptionAsync() of FulfillmentApiClient, trying to get All Subscriptions.");
             var restClient = new FulfillmentApiRestClient<SubscriptionListResult>(this.ClientConfiguration, this.Logger);
             var url = UrlHelper.GetSaaSApiUrl(this.ClientConfiguration, default, SaaSResourceActionEnum.ALL_SUBSCRIPTIONS, null);
-            var subscriptResult = await restClient.DoRequest(url, HttpMethods.GET, null).ConfigureAwait(false);
-            return subscriptResult.SubscriptionsResult;
+            var subscriptionResult = await restClient.DoRequest(url, HttpMethods.GET, null).ConfigureAwait(false);
+            var retval = new List<SubscriptionResult>(subscriptionResult.SubscriptionsResult);
+
+            while (!string.IsNullOrEmpty(subscriptionResult.NextLink))
+            {
+                subscriptionResult = await restClient.DoRequest(subscriptionResult.NextLink, HttpMethods.GET, null).ConfigureAwait(false);
+                retval.AddRange(subscriptionResult.SubscriptionsResult);
+            }
+
+            return retval;
         }
 
         /// <summary>
