@@ -69,7 +69,7 @@
                             for (int i = 0; i < Model.SubscriptionParameters.Count(); i++)
                             {
                                 <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
-                                    @Html.LabelFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
+                                    @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
                                     @if (Model.SubscriptionParameters[i].IsRequired == true)
                                     {<span class="red-star @Model.SubscriptionParameters[i].Type">*</span>}
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].Id)
