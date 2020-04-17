@@ -37,7 +37,7 @@ namespace Microsoft.Marketplace.SaasKit.Helpers
                 case SaaSResourceActionEnum.OPERATION_STATUS:
                     return $"{clientConfiguration.FulFillmentAPIBaseURL}{subscriptionBaseURL}{resourceId}/operations/{operationId}?api-version={clientConfiguration.FulFillmentAPIVersion}";
                 case SaaSResourceActionEnum.ALL_SUBSCRIPTIONS:
-                    return $"{clientConfiguration.FulFillmentAPIBaseURL}?api-version={clientConfiguration.FulFillmentAPIVersion}";
+                    return $"{clientConfiguration.FulFillmentAPIBaseURL}{subscriptionBaseURL}?api-version={clientConfiguration.FulFillmentAPIVersion}";
                 case SaaSResourceActionEnum.SUBSCRIPTION_USAGEEVENT:
                     return $"{clientConfiguration.FulFillmentAPIBaseURL}/usageEvent?api-version={clientConfiguration.FulFillmentAPIVersion}";
                 default:
