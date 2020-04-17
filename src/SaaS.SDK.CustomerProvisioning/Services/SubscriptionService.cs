@@ -262,6 +262,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             {
                 SubscriptionRepository.AddSubscriptionParameters(new SubscriptionParametersOutput
                 {
+                    Id = parameters.Id,
                     PlanId = parameters.PlanId,
                     DisplayName = parameters.DisplayName,
                     PlanAttributeId = parameters.PlanAttributeId,
