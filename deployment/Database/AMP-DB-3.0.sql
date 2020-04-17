@@ -416,3 +416,18 @@ Select 'ServicePrincipalID', 'Service Principal ID','Application ID' ,@Datatype,
 Select 'ClientSecret', 'Client Secret','Client Secret',@Datatype,0,NUll,NULL,NULL, 'Deployment', 4,1,GetDate(),1,NUll,0,1 
 
 GO
+
+
+
+
+INSERT INTO [DatabaseVersionHistory] 
+--Select 1.0, 'Master Schema',Getdate(), 'DB User' Union all
+Select 3.0,
+'Steps: Creates Tables Offer Attributes, Plan attributes,DeploymentAttributes. 
+Step 2: Inserts Value types, events, DeploymentAttributes',
+GETDATE(),
+'DB user'
+
+GO
+
+
