@@ -118,7 +118,7 @@
                     @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                     {
                         <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Activate</a>
-                        <a onclick="ValidateData()" class="cm-button-default text-right">Validate</a>
+                        <a onclick="ValidateData()" id="btnvalidate" class="cm-button-default text-right">Validate</a>
                     }
                     @* <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default text-right">Save</button>*@
                 </div>
@@ -157,13 +157,17 @@ else
 <script type="text/javascript">
 
     $(document).ready(function () {
-        $("#btnActive").hide();
+
         var Isdeploy = $('#DeployToCustomerSubscription').val();
         if (Isdeploy.toLowerCase() == "false") {
             $(".Deployment").attr("disable", "disable").hide();
+            $("#btnvalidate").hide();
+            $("#btnActive").show();
         }
-
-
+        else {
+            $("#btnvalidate").show();
+            $("#btnActive").hide();
+        }
     })
 
     function ValidateData() {
@@ -179,26 +183,30 @@ else
                     swal({
                         title: "Success",
                         text: "Credentials are valid",
-                        icon: "Success"
+                        icon: "success"
                     })
+                    $("#btnvalidate").hide();
                     $("#btnActive").show();
                 }
                 else {
                     swal({
                         title: "Error",
-                        text: result.responseText,
-                        icon: "Error"
+                        text: "Credentials are not valid", //result.responseText,
+                        icon: "error"
                     })
                     $("#btnActive").hide();
+                    $("#btnvalidate").show();
                 }
             },
             Error:
                 function (result) {
                     swal({
                         title: "Error",
-                        text: result.responseText,
-                        icon: "Error"
+                        text: "Credentials are not valid", //result.responseText,
+                        icon: "error"
                     })
+                    $("#btnActive").hide();
+                    $("#btnvalidate").show();
                 }
         });
 
