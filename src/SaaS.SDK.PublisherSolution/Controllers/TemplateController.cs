@@ -95,14 +95,11 @@
                 {
                     // full path to file in temp location
                     filePath = Path.GetTempFileName(); //we are using Temp file name just for the example. Add your own file path.
-                   
+
                     model.FileName = filename;
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
 
-                        //string paramFileContext = new System.Net.WebClient().DownloadString(filePath);
-                        //string paramFileContext = new WebClient().DownloadString(paramFilePath);
-                        //dynamic result = JObject.Parse(stream.ToString());
                         string str = (new StreamReader(formFile.OpenReadStream())).ReadToEnd();
                         dynamic result = JObject.Parse(str);
                         foreach (JToken child in result.parameters.Children())
@@ -168,7 +165,7 @@
                         Armtemplates armTemplate = new Armtemplates()
                         {
                             ArmtempalteName = filename,
-                            TemplateLocation = filePath,
+                            TemplateLocation = fileuploadPath,
                             Isactive = true,
                             CreateDate = DateTime.Now,
                             UserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress),

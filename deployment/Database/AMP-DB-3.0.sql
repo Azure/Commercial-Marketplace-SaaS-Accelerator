@@ -408,6 +408,16 @@ PRIMARY KEY CLUSTERED
 GO
 
 
+CREATE TABLE ARMTemplateParameters
+(
+ID INT Identity Primary Key,
+ARMTemplateID UniqueIdentifier Not Null,
+Parameter Varchar(225) Not NUll,
+Value Varchar(225) Not NUll,
+ParameterType Varchar(225) Not NUll,
+CreateDate Datetime Not NUll,
+UserID Int Not NUll
+)
 
 Insert into Events
 Select 'Activate' , 1, Getdate() UNION ALL
