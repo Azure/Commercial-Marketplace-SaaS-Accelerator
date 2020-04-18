@@ -16,5 +16,6 @@ namespace Microsoft.Marketplace.Saas.Web.Models
         public string SuccessStateEmails { get; set; }
         public string FailureStateEmails { get; set; }
         public int UserId { get; set; }
+        public bool CopyToCustomer { get; set; }
     }
 }

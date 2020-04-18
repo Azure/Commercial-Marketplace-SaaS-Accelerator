@@ -20,13 +20,16 @@
         /// </summary>
         private readonly SaasKitContext Context;
 
+        private readonly IApplicationConfigRepository applicationConfigRepository;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlansRepository"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public PlansRepository(SaasKitContext context)
+        public PlansRepository(SaasKitContext context, IApplicationConfigRepository applicationConfigRepository)
         {
             Context = context;
+            this.applicationConfigRepository = applicationConfigRepository;
         }
 
         /// <summary>
@@ -181,7 +184,16 @@
                         planEvent.FailureStateEmails = events.FailureStateEmails;
                         planEvent.EventsName = events.EventsName;
                         planEvent.EventId = events.EventId;
-                        eventsList.Add(planEvent);
+
+                        planEvent.CopyToCustomer = events.CopytoCustomer;
+                        if (planEvent.EventsName != "Pending Activation")
+                        {
+                            eventsList.Add(planEvent);
+                        }
+                        else if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported")))
+                        {
+                            eventsList.Add(planEvent);
+                        }
                     }
                 }
                 return eventsList;
@@ -240,6 +252,7 @@
                     existingPlanEvents.EventId = planEvents.EventId;
                     existingPlanEvents.UserId = planEvents.UserId;
                     existingPlanEvents.CreateDate = DateTime.Now;
+                    existingPlanEvents.CopytoCustomer = planEvents.CopytoCustomer;
 
                     Context.PlanEventsMapping.Update(existingPlanEvents);
                     Context.SaveChanges();

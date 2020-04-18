@@ -13,7 +13,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
         public string SuccessStateEmails { get; set; }
         public string FailureStateEmails { get; set; }
         public bool Isactive { get; set; }
-
         public int UserId { get; set; }
+        public bool CopyToCustomer { get; set; }
     }
 }

@@ -14,5 +14,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public string FailureStateEmails { get; set; }
         public DateTime? CreateDate { get; set; }
         public int? UserId { get; set; }
+        public bool? CopytoCustomer { get; set; }
     }
 }
