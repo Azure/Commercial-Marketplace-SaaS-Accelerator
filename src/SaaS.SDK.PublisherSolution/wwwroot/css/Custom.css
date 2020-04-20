@@ -149,7 +149,7 @@
 }
 
     .cm-button-default:hover {
-        background-color: #EAE7E7;
+        background-color: #EAE7E7 !important;
         border-radius: 5px;
         padding: 12px 20px;
         font-size: 18px;
