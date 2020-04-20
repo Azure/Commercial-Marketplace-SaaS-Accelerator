@@ -18,6 +18,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
         public virtual DbSet<ApplicationConfiguration> ApplicationConfiguration { get; set; }
         public virtual DbSet<ApplicationLog> ApplicationLog { get; set; }
+        public virtual DbSet<ArmtemplateParameters> ArmtemplateParameters { get; set; }
         public virtual DbSet<Armtemplates> Armtemplates { get; set; }
         public virtual DbSet<DatabaseVersionHistory> DatabaseVersionHistory { get; set; }
         public virtual DbSet<DeploymentAttributes> DeploymentAttributes { get; set; }
@@ -68,6 +69,34 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
                 entity.Property(e => e.LogDetail)
                     .HasMaxLength(4000)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ArmtemplateParameters>(entity =>
+            {
+                entity.ToTable("ARMTemplateParameters");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.ArmtemplateId).HasColumnName("ARMTemplateID");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Parameter)
+                    .IsRequired()
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ParameterType)
+                    .IsRequired()
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UserId).HasColumnName("UserID");
+
+                entity.Property(e => e.Value)
+                    .IsRequired()
+                    .HasMaxLength(225)
                     .IsUnicode(false);
             });
 
@@ -295,6 +324,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
                 entity.Property(e => e.DisplayName)
                     .IsRequired()
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Type)
                     .HasMaxLength(225)
                     .IsUnicode(false);
             });

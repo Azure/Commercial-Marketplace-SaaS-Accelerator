@@ -253,7 +253,7 @@
                     existingPlanEvents.UserId = planEvents.UserId;
                     existingPlanEvents.CreateDate = DateTime.Now;
                     existingPlanEvents.CopytoCustomer = planEvents.CopytoCustomer;
-
+                    existingPlanEvents.ArmtemplateId = planEvents.ArmtemplateId;
                     Context.PlanEventsMapping.Update(existingPlanEvents);
                     Context.SaveChanges();
                     return existingPlanEvents.Id;

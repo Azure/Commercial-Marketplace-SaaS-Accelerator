@@ -110,14 +110,11 @@
                             Type = offerAttribute.Type,
                             DisplaySequence = offerAttribute.DisplaySequence,
                             Isactive = offerAttribute.Isactive,
-                            IsRequired = offerAttribute.IsRequired ?? false ,
+                            IsRequired = offerAttribute.IsRequired ?? false,
                             IsDelete = offerAttribute.IsDelete ?? false,
                             CreateDate = DateTime.Now,
                             UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
                             OfferId = OffersData.OfferGuid
-
-
-
                         };
                         OffersData.OfferAttributes.Add(existingOfferAttribute);
 

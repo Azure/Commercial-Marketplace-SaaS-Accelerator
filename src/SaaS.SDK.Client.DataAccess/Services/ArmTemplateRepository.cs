@@ -60,6 +60,24 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         }
 
         /// <summary>
+        /// Adds the specified Offer details.
+        /// </summary>
+        /// <param name="offerDetails">The Offers details.</param>
+        /// <returns></returns>
+        public Guid? AddTemplateParameters(ArmtemplateParameters templateParms)
+        {
+            if (templateParms != null && !string.IsNullOrEmpty(templateParms.Parameter))
+            {
+                Context.ArmtemplateParameters.Add(templateParms);
+                Context.SaveChanges();
+                return templateParms.ArmtemplateId;
+            }
+            return null;
+        }
+
+
+
+        /// <summary>
         /// Removes the specified plan details.
         /// </summary>
         /// <param name="offerDetails">The offer details.</param>

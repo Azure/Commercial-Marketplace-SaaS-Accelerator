@@ -1,5 +1,6 @@
 ﻿@using Microsoft.Marketplace.SaasKit.Models;
-@model DeploymentParameterViewModel
+@using  Microsoft.Marketplace.Saas.Web.Models;
+@model Microsoft.Marketplace.Saas.Web.Models.DeploymentParameterViewModel
 <!DOCTYPE html>
 
 <html>
@@ -8,45 +9,117 @@
     <title>@*ARMFileParameters*@</title>
 </head>
 <body>
-    @if (Model.FileName != null && Model.FileName != "")
-    {
-        <div class="table-responsive mt20">
-            <div class="modal-body text-center">
-                <dl class="row text-left">
-                    <dt class="col-sm-4 pl80">
-                        <label><b>ARM Template:</b></label>
-                    </dt>
-                    <dd class="col-sm-8 pl80">
-                        @Html.DisplayFor(model => model.FileName)
-                    </dd>
-                </dl>
-            </div>
-            <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
-                <tr>
-                    <th>
-                        Parameter Name
+    <div id="myModal">
+        <form id="TemplateForm" method="post">
+            @if (Model.FileName != null && Model.FileName != "")
+            {
+                <div class="table-responsive mt20">
+                    <div class="modal-body text-center">
+                        <dl class="row text-left">
+                            <dt class="col-sm-4 pl80">
+                                <label><b>ARM Template:</b></label>
+                            </dt>
+                            <dd class="col-sm-8 pl80">
+                                <input id="ArmtempalteId" type="hidden" value="@Model.ArmtempalteId" class="iHidden" name="ArmtempalteId" />
+                                <input id="FileName" type="hidden" value="@Model.FileName" class="iHidden" name="FileName" />
+                                @Html.DisplayFor(model => model.FileName)
+                            </dd>
+                        </dl>
+                    </div>
+                    <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                        <tr>
+                            <th>
+                                Parameter Name
 
-                    </th>
-                    <th>
-                        Parameter Type
+                            </th>
 
-                    </th>
-                    <th>
-                        Parameter Value
-                    </th>
-                </tr>
+                            <th>
+                                Parameter Value
 
-                <tr>
-                    <td>@Html.DisplayFor(model => model.ParameterName)</td>
-                    <td>@Html.DisplayFor(model => model.ParameterType)</td>
-                    <td>@Html.TextBoxFor(model => model.ParameterValue)</td>
-                </tr>
+                            </th>
+                            <th>
+                                Parameter Data Type
 
-            </table>
-            <span class="col-lg-3">
-                <input type="submit" class="cm-button-default" value="Save">
-            </span>
-        </div>
-    }
+                            </th>
+                            <th>
+                                Parameter Type
+                            </th>
+                        </tr>
+                        @for (int i = 0; i < Model.DeplParms.Count(); i++)
+                        {
+                            <tr>
+
+                                <td>
+
+                                    <input id="DeplParms[@i].ParameterName" type="hidden" value="@Model.DeplParms[i].ParameterName" class="iHidden" name="DeplParms[@i].ParameterName" />
+                                    <input id="DeplParms[@i].ParameterDataType" type="hidden" value="@Model.DeplParms[i].ParameterDataType" class="iHidden" name="DeplParms[@i].ParameterDataType" />
+                                    <input id="DeplParms[@i].ParameterType" type="hidden" value="@Model.DeplParms[i].ParameterType" class="iHidden" name="DeplParms[@i].ParameterType" />
+                                    @*<input id="parameters[@i].ParameterName" type="hidden" value="@Model.parameters[i].ParameterName" class="iHidden" name="parameters[@i].ParameterName" />*@
+                                    @Html.DisplayFor(model => model.DeplParms[i].ParameterName)
+                                    @if (@Model.DeplParms[i].ParameterType == "input")
+                                    {<span class="red-star">*</span>
+                                    }
+                                </td>
+                                <td>
+                                    @Html.TextBoxFor(model => model.DeplParms[i].ParameterValue, new { @class = @Model.DeplParms[i].ParameterType })
+                                </td>
+                                <td>@Html.DisplayFor(model => model.DeplParms[i].ParameterDataType)</td>
+
+                                <td>@Html.DisplayFor(model => model.DeplParms[i].ParameterType)</td>
+
+                            </tr>
+                        }
+
+                    </table>
+                    <span class="col-lg-3">
+                        <input class="cm-button-default mt0" type="button" onclick="saveArmTemplateParameters()" value="Save Events" />
+                    </span>
+                </div>
+            }
+        </form>
+    </div>
 </body>
 </html>
+<script>
+
+    $(document).ready(function () {
+        $(".output").attr("disabled", "disabled");
+    })
+
+    function saveArmTemplateParameters() {
+        if (validate()) {
+            var formobject = $('#TemplateForm').serialize();
+            $.ajax({
+                url: 'Template/SaveTemplateParameters',
+                type: 'POST',
+                data: formobject,
+                cache: false,
+                success: function (result) {
+                    debugger;
+                    successconfirmDialog();
+                    $('#myModal').html(result);
+                },
+                Error:
+                    function (result) {
+                        errorconfirmDialog();
+                        $('#myModal').html(result);
+                    }
+            });
+        } else {
+            swal({
+                title: "Required",
+                text: "Please fill all required values",
+                icon: "warning"
+            })
+
+        }
+    }
+    function validate() {
+        var valid = true;
+        $('.input').each(function () {
+            if ($(this).val() == "") //check loginc here
+                return valid = false;
+        });
+        return valid;
+    }
+</script>

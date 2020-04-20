@@ -21,10 +21,5 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public Guid PlanId { get; set; }
         public int? UserId { get; set; }
         public DateTime? CreateDate { get; set; }
-        public bool FromList { get; set; }
-        public string ValuesList { get; set; }
-        public int Max { get; set; }
-        public int Min { get; set; }
-        public string HTMLType { get; set; }
     }
 }

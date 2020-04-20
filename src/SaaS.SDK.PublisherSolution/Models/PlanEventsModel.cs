@@ -9,7 +9,7 @@ namespace Microsoft.Marketplace.Saas.Web.Models
     {
         public int Id { get; set; }
         public Guid PlanId { get; set; }
-        //public Guid ArmtemplateId { get; set; }
+        public Guid ArmtemplateId { get; set; }
         public int EventId { get; set; }
         public string EventName { get; set; }
         public bool Isactive { get; set; }

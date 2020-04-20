@@ -46,6 +46,7 @@
         private IOffersRepository offerRepository;
 
         public IOfferAttributesRepository offerAttributeRepository;
+        public IArmTemplateRepository armTemplateRepository;
 
         /// <summary>
         /// The logger
@@ -58,7 +59,7 @@
         /// <param name="subscriptionLicenses">The subscription licenses.</param>
         /// <param name="subscriptionRepository">The subscription repository.</param>
         /// <param name="usersRepository">The users repository.</param>
-        public PlansController(ISubscriptionLicensesRepository subscriptionLicenses, ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger)
+        public PlansController(ISubscriptionLicensesRepository subscriptionLicenses, ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger, IArmTemplateRepository armTemplateRepository)
         {
             this.subscriptionLicensesRepository = subscriptionLicenses;
             this.subscriptionRepository = subscriptionRepository;
@@ -68,6 +69,7 @@
             this.offerAttributeRepository = offerAttributeRepository;
             this.offerRepository = offerRepository;
             this.logger = logger;
+            this.armTemplateRepository = armTemplateRepository;
             this.plansService = new PlansService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
         }
 
@@ -115,6 +117,8 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
+                var armTemplates = armTemplateRepository.Get().ToList();
+                ViewBag.ARMTempleate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
                 return this.PartialView(plans);
             }
             catch (Exception ex)

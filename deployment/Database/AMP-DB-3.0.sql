@@ -248,9 +248,9 @@ SELECT
  Cast(ROW_NUMBER() OVER ( ORDER BY E.EventsId)  as Int) RowNumber  
  ,ISNULL(OEM.Id,0)  Id  
 ,ISNULL(OEM.PlanId,@PlanId) PlanId  
---,OEM.ARMTemplateId  
+,OEM.ARMTemplateId  
 ,ISNULL(OEM.Isactive,0) Isactive  
-,ISNULL(OEM.[CopyToCustomer],0) CopyToCustomer
+,ISNULL(OEM.CopyToCustomer,0) CopyToCustomer
 ,ISNULL(OEM.SuccessStateEmails,'')SuccessStateEmails  
 ,ISNULL(OEM.FailureStateEmails,'')FailureStateEmails  
 ,E.EventsId as EventId  
@@ -277,6 +277,7 @@ SuccessStateEmails Varchar(max),
 FailureStateEmails Varchar(max), 
 EventId Int Not NUll,
 EventsName Varchar(225) Not NUll,
+CopyToCustomer Bit 
 )
 
 go
@@ -413,11 +414,14 @@ CREATE TABLE ARMTemplateParameters
 ID INT Identity Primary Key,
 ARMTemplateID UniqueIdentifier Not Null,
 Parameter Varchar(225) Not NUll,
+ParameterDataType Varchar(225) Not NUll,
 Value Varchar(225) Not NUll,
 ParameterType Varchar(225) Not NUll,
 CreateDate Datetime Not NUll,
 UserID Int Not NUll
 )
+GO
+
 
 Insert into Events
 Select 'Activate' , 1, Getdate() UNION ALL

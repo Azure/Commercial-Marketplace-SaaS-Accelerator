@@ -49,8 +49,8 @@ namespace Microsoft.Marketplace.Saas.Web.Helpers
                 }
 
                 fileName = fileName.Replace(" ", "-");
-                var guid = referenceid.ToString();
-                fileName = guid.Substring(guid.Length - 6) + '-' + fileName;
+                //var guid = referenceid.ToString();
+                //fileName = guid.Substring(guid.Length - 6) + '-' + fileName;
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
                 blockBlob.Properties.ContentType = fileContantType;
                 blockBlob.UploadFromStreamAsync(file.OpenReadStream(), file.Length);
