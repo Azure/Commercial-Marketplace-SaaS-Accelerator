@@ -22,6 +22,7 @@
     using Microsoft.Marketplace.SaasKit.Exceptions;
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
 
     [ServiceFilter(typeof(KnownUser))]
     /// <summary>
@@ -222,6 +223,38 @@
                     List<SubscriptionAuditLogs> subscriptionAudit = new List<SubscriptionAuditLogs>();
                     subscriptionAudit = this.subscriptionLogRepository.GetSubscriptionBySubscriptionId(subscriptionId).ToList();
                     return this.View(subscriptionAudit);
+                }
+                else
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return View("Error", ex);
+            }
+        }
+
+        /// <summary>
+        /// Subscriptions the log detail.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns> Subscription log detail</returns>
+        public IActionResult SubscriptionTemplateParmeters(Guid subscriptionId, Guid planId)
+        {
+            this.logger.LogInformation("Home Controller / SubscriptionTemplateParmeters subscriptionId : {0}", JsonConvert.SerializeObject(subscriptionId));
+            try
+            {
+                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
+                if (User.Identity.IsAuthenticated)
+                {
+                    List<SubscriptionTemplateParametersModel> subscriptionTemplateParms = new List<SubscriptionTemplateParametersModel>();
+                    subscriptionTemplateParms = this.subscriptionRepository.GetSubscriptionTemplateParameterById(subscriptionId, planId).ToList();
+                    return this.View(subscriptionTemplateParms);
                 }
                 else
                 {

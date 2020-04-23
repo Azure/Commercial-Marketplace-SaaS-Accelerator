@@ -5,10 +5,21 @@
 
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>@*ARMFileParameters*@</title>
+    @*<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="~/css/jquery-ui/jquery-ui.css" rel="stylesheet" />
+        <link href="~/css/jquery-ui/style.css" rel="stylesheet" />
+        <script src="~/lib/jquery-ui/jquery-1.12.4.js"></script>
+        <script src="~/lib/jquery-ui/jquery-ui.js"></script>*@
 </head>
 <body>
+
+
+    @*<script>
+            $(function () {
+                $("#tabs").tabs();
+            });
+        </script>*@
     <div id="myModal">
         <form id="TemplateForm" method="post">
             @if (Model.FileName != null && Model.FileName != "")
@@ -26,55 +37,113 @@
                             </dd>
                         </dl>
                     </div>
-                    <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
-                        <tr>
-                            <th>
-                                Parameter Name
+                    <div id="tabs">
 
-                            </th>
+                        <input id="btninput" type="button" calss="cm-button-default mt0" value="Input">
+                        <input id="btnoutput" type="button" calss="cm-button-default mt0" value="Output">
 
-                            <th>
-                                Parameter Value
+                        <div id="tabinput">
+                            <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                                <tr>
+                                    <th>
+                                        Parameter Name
 
-                            </th>
-                            <th>
-                                Parameter Data Type
+                                    </th>
 
-                            </th>
-                            <th>
-                                Parameter Type
-                            </th>
-                        </tr>
+                                    <th>
+                                        Parameter Value
 
-                        @for (int i = 0; i < Model.DeplParms.Count(); i++)
-                        {
-                            <tr>
+                                    </th>
+                                    <th>
+                                        Parameter Data Type
 
-                                <td>
+                                    </th>
+                                    <th>
+                                        Parameter Type
+                                    </th>
+                                </tr>
 
-                                    <input id="DeplParms[@i].ParameterName" type="hidden" value="@Model.DeplParms[i].ParameterName" class="iHidden" name="DeplParms[@i].ParameterName" />
-                                    <input id="DeplParms[@i].ParameterDataType" type="hidden" value="@Model.DeplParms[i].ParameterDataType" class="iHidden" name="DeplParms[@i].ParameterDataType" />
-                                    <input id="DeplParms[@i].ParameterType" type="hidden" value="@Model.DeplParms[i].ParameterType" class="iHidden" name="DeplParms[@i].ParameterType" />
-                                    @*<input id="parameters[@i].ParameterName" type="hidden" value="@Model.parameters[i].ParameterName" class="iHidden" name="parameters[@i].ParameterName" />*@
-                                    @Html.DisplayFor(model => model.DeplParms[i].ParameterName)
+                                @for (int i = 0; i < Model.DeplParms.Count(); i++)
+                                {
                                     @if (@Model.DeplParms[i].ParameterType == "input")
-                                    {<span class="red-star">*</span>
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input id="DeplParms[@i].ParameterName" type="hidden" value="@Model.DeplParms[i].ParameterName" class="iHidden" name="DeplParms[@i].ParameterName" />
+                                                <input id="DeplParms[@i].ParameterDataType" type="hidden" value="@Model.DeplParms[i].ParameterDataType" class="iHidden" name="DeplParms[@i].ParameterDataType" />
+                                                <input id="DeplParms[@i].ParameterType" type="hidden" value="@Model.DeplParms[i].ParameterType" class="iHidden" name="DeplParms[@i].ParameterType" />
+                                                @*<input id="parameters[@i].ParameterName" type="hidden" value="@Model.parameters[i].ParameterName" class="iHidden" name="parameters[@i].ParameterName" />*@
+                                                @Html.DisplayFor(model => model.DeplParms[i].ParameterName)
+                                                @if (@Model.DeplParms[i].ParameterType == "input")
+                                                {<span class="red-star">*</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.DeplParms[i].ParameterValue, new { @class = @Model.DeplParms[i].ParameterType })
+                                            </td>
+                                            <td>@Html.DisplayFor(model => model.DeplParms[i].ParameterDataType)</td>
+
+                                            <td>@Html.DisplayFor(model => model.DeplParms[i].ParameterType)</td>
+
+                                        </tr>
                                     }
-                                </td>
-                                <td>
-                                    @Html.TextBoxFor(model => model.DeplParms[i].ParameterValue, new { @class = @Model.DeplParms[i].ParameterType })
-                                </td>
-                                <td>@Html.DisplayFor(model => model.DeplParms[i].ParameterDataType)</td>
+                                }
+                            </table>
+                        </div>
+                        <div id="taboutput">
+                            <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                                <tr>
+                                    <th>
+                                        Parameter Name
 
-                                <td>@Html.DisplayFor(model => model.DeplParms[i].ParameterType)</td>
+                                    </th>
 
-                            </tr>
-                        }
+                                    <th>
+                                        Parameter Value
 
-                    </table>
-                    <span class="col-lg-3">
-                        <input class="cm-button-default mt0" type="button" onclick="saveArmTemplateParameters()" value="Save Events" />
-                    </span>
+                                    </th>
+                                    <th>
+                                        Parameter Data Type
+
+                                    </th>
+                                    <th>
+                                        Parameter Type
+                                    </th>
+                                </tr>
+
+                                @for (int i = 0; i < Model.DeplParms.Count(); i++)
+                                {
+                                    @if (@Model.DeplParms[i].ParameterType == "output")
+                                    {
+                                        <tr>
+
+                                            <td>
+
+                                                <input id="DeplParms[@i].ParameterName" type="hidden" value="@Model.DeplParms[i].ParameterName" class="iHidden" name="DeplParms[@i].ParameterName" />
+                                                <input id="DeplParms[@i].ParameterDataType" type="hidden" value="@Model.DeplParms[i].ParameterDataType" class="iHidden" name="DeplParms[@i].ParameterDataType" />
+                                                <input id="DeplParms[@i].ParameterType" type="hidden" value="@Model.DeplParms[i].ParameterType" class="iHidden" name="DeplParms[@i].ParameterType" />
+                                                @*<input id="parameters[@i].ParameterName" type="hidden" value="@Model.parameters[i].ParameterName" class="iHidden" name="parameters[@i].ParameterName" />*@
+                                                @Html.DisplayFor(model => model.DeplParms[i].ParameterName)
+                                                @if (@Model.DeplParms[i].ParameterType == "input")
+                                                {<span class="red-star">*</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.DeplParms[i].ParameterValue, new { @class = @Model.DeplParms[i].ParameterType })
+                                            </td>
+                                            <td>@Html.DisplayFor(model => model.DeplParms[i].ParameterDataType)</td>
+
+                                            <td>@Html.DisplayFor(model => model.DeplParms[i].ParameterType)</td>
+
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                        <span class="col-lg-3">
+                            <input class="cm-button-default mt0" type="button" onclick="saveArmTemplateParameters()" value="Save Events" />
+                        </span>
+                    </div>
                 </div>
             }
         </form>
@@ -85,7 +154,25 @@
 
     $(document).ready(function () {
         $(".output").attr("disabled", "disabled");
+        $("#taboutput").hide();
     })
+    $("#btnoutput").click(function () {
+
+
+        $("#taboutput").show();
+        $("#tabinput").hide();
+
+
+    })
+    $("#btninput").click(function () {
+
+
+        $("#taboutput").hide();
+        $("#tabinput").show();
+
+
+    })
+
 
     function saveArmTemplateParameters() {
         if (validate()) {

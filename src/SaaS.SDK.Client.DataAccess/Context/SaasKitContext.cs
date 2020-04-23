@@ -39,6 +39,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
         public virtual DbSet<SubscriptionLicenses> SubscriptionLicenses { get; set; }
         public virtual DbSet<SubscriptionParametersOutput> SubscriptionParametersOutput { get; set; }
+        public virtual DbSet<SubscriptionStatusLogInWebJob> SubscriptionStatusLogInWebJob { get; set; }
+        public virtual DbSet<SubscriptionTemplateParameters> SubscriptionTemplateParameters { get; set; }
+        public virtual DbSet<SubscriptionTemplateParametersOutPut> SubscriptionTemplateParametersOutPut { get; set; }
         public virtual DbSet<Subscriptions> Subscriptions { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<ValueTypes> ValueTypes { get; set; }
@@ -83,6 +86,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Parameter)
+                    .IsRequired()
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ParameterDataType)
                     .IsRequired()
                     .HasMaxLength(225)
                     .IsUnicode(false);
@@ -472,6 +480,131 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
                 entity.Property(e => e.ValueType)
                     .IsRequired()
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<SubscriptionStatusLogInWebJob>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.DeploymentStatus)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Description).IsUnicode(false);
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.InsertDate).HasColumnType("datetime");
+
+                entity.Property(e => e.SubscriptionStatus)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<SubscriptionTemplateParameters>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.AmpsubscriptionId).HasColumnName("AMPSubscriptionId");
+
+                entity.Property(e => e.ArmtemplateId).HasColumnName("ARMTemplateID");
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EventsName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.OfferGuid).HasColumnName("OfferGUId");
+
+                entity.Property(e => e.OfferName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Parameter)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ParameterDataType)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ParameterType)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PlanGuid).HasColumnName("PlanGUID");
+
+                entity.Property(e => e.PlanId)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SubscriptionName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SubscriptionStatus)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Value)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<SubscriptionTemplateParametersOutPut>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.AmpsubscriptionId).HasColumnName("AMPSubscriptionId");
+
+                entity.Property(e => e.ArmtemplateId).HasColumnName("ARMTemplateID");
+
+                entity.Property(e => e.EventsName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.OfferGuid).HasColumnName("OfferGUId");
+
+                entity.Property(e => e.OfferName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Parameter)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ParameterDataType)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ParameterType)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PlanGuid).HasColumnName("PlanGUID");
+
+                entity.Property(e => e.PlanId)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.RowId).HasColumnName("RowID");
+
+                entity.Property(e => e.SubscriptionName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SubscriptionStatus)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Value)
                     .HasMaxLength(225)
                     .IsUnicode(false);
             });

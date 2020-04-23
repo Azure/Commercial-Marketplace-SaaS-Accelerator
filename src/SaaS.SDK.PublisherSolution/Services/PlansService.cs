@@ -139,7 +139,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 events.EventId = planEvents.EventId;
                 events.UserId = planEvents.UserId;
                 events.CreateDate = DateTime.Now;
-                events.CopytoCustomer = planEvents.CopyToCustomer;
+                events.CopyToCustomer = planEvents.CopyToCustomer;
                 events.ArmtemplateId = planEvents.ArmtemplateId;
                 var planEventsId = this.plansRepository.AddPlanEvents(events);
                 return planEventsId;

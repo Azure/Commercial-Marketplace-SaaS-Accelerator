@@ -119,8 +119,8 @@
                         childparms.ParameterValue = "";
                         childparms.ParameterType = "input";
                         childlist.Add(childparms);
-                        if (result.parameters != null && result.parameters.Children() != null)
-                        {
+                        //if (result.parameters != null && result.parameters.Children() != null)
+                        //{
                             foreach (JToken child in result.parameters.Children())
                             {
                                 childparms = new ChindParameterViewModel();
@@ -180,10 +180,10 @@
 
 
                             }
-                        }
+                        //}
                         model.DeplParms = childlist;
-                        if (result.outputs != null && result.outputs.Children() != null)
-                        {
+                        //if (result.outputs != null && result.outputs.Children() != null)
+                        //{
                             foreach (JToken child in result.outputs.Children())
                             {
                                 childparms = new ChindParameterViewModel();
@@ -243,7 +243,7 @@
 
 
                             }
-                        }
+                        //}
                         model.DeplParms = childlist;
                         bulkUploadModel.DeploymentParameterViewModel = model;
 

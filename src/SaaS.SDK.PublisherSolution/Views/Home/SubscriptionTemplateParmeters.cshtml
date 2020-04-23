@@ -1,0 +1,102 @@
+﻿@model List<Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel.SubscriptionTemplateParametersModel>
+
+@if (Model != null && Model.Count() > 0)
+{
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="~/css/jquery-ui/jquery-ui.css" rel="stylesheet" />
+        <link href="~/css/jquery-ui/style.css" rel="stylesheet" />
+        <script src="~/lib/jquery-ui/jquery-1.12.4.js"></script>
+        <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+    </head>
+    <body>
+
+
+        <script>
+            $(function () {
+                $("#tabs").tabs();
+            });
+        </script>
+
+        <div class="modal-dialog modal-lg mt200">
+            <div class="modal-content">
+                <div class="modal-header header-bg">
+                    <h4><span class="cm-section-heading"> Subscription Deployment Parameters</span></h4>
+                    <button type="button" class="close text-right" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="card card-header mb0 pb0">
+                        <dl class="row">
+                            <dt class="col-3 text-right"><b>Subscription</b></dt>
+                            <dd class="col-3 text-left">@Model.First().SubscriptionName</dd>
+                            <dt class="col-2 text-right"><b>Plan</b></dt>
+                            <dd class="col-4 text-left">@Model.First().PlanId</dd>
+                        </dl>
+                    </div>
+
+                    <div id="tabs">
+                        @*<ul>
+                                <li><a href="#tabs-Inputs">Input Parameters</a></li>
+                                <li><a href="#tabs-Outputs">Output Parameters</a></li>
+                            </ul>*@
+                        <div id="tabs-Inputs">
+                            <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                                <tr>
+                                    <th>
+                                        Parameter Name
+
+                                    </th>
+
+                                    <th>
+                                        Parameter Value
+
+                                    </th>
+                                    <th>
+                                        Parameter Data Type
+
+                                    </th>
+                                    <th>
+                                        Parameter Type
+                                    </th>
+                                </tr>
+                                @foreach (var inputs in Model)
+                                {
+                                    <tr>
+                                        <td>
+
+                                            @inputs.Parameter
+                                        </td>
+                                        <td>
+                                            @inputs.Value
+                                        </td>
+                                        <td>@inputs.ParameterDataType</td>
+
+                                        <td>@inputs.ParameterType</td>
+
+                                    </tr>
+                                }
+
+                            </table>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </body>
+}
+else
+{
+    <div class="modal-dialog modal-lg mt200">
+        <div class="modal-content">
+            <div class="modal-header header-bg">
+
+                <label> No paramameters associated wiht the plan.</label>
+            </div>
+        </div>
+    </div>
+}

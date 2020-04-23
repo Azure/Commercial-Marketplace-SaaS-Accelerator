@@ -33,7 +33,7 @@ Id Int identity(1,1)
 
 GO
 
-CREATE Procedure spGetSubscriptionTemplateParameters
+ALTER Procedure spGetSubscriptionTemplateParameters
 (  
 @SubscriptionId Uniqueidentifier,  
 @PlanId Uniqueidentifier  
@@ -44,7 +44,7 @@ BEGIN
 Declare @OfferId Uniqueidentifier   
 Set @OfferId=(Select OfferId from Plans where PlanGuId =@PlanId )  
 SELECT    
-Cast( ROW_NUMBER() OVER ( ORDER BY ART.ID) as Int)RowNumber  
+Cast( ROW_NUMBER() OVER ( ORDER BY ART.ID) as Int)RowId  
 ,isnull(STP.ID,0) ID  
 ,ofr.OfferName
 ,ofr.OfferGUId 

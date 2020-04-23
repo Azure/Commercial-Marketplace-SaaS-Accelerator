@@ -13,6 +13,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public string FailureStateEmails { get; set; }
         public int EventId { get; set; }
         public string EventsName { get; set; }
-        public bool CopytoCustomer { get; set; }
+        public bool CopyToCustomer { get; set; }
     }
 }

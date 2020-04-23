@@ -1,4 +1,5 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -52,5 +53,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 
         List<SubscriptionParametersOutput> GetSubscriptionsParametersById(Guid subscriptionId, Guid planId);
         void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput);
+        IEnumerable<SubscriptionTemplateParametersModel> GetSubscriptionTemplateParameterById(Guid subscriptionId, Guid planId);
     }
 }

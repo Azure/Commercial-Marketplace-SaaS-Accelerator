@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
@@ -242,6 +243,47 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             catch (Exception) { }
         }
 
+        public IEnumerable<SubscriptionTemplateParametersModel> GetSubscriptionTemplateParameterById(Guid subscriptionId, Guid planId)
+        {
+            try
+            {
+                var subscriptionTemplateParams = Context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionId, planId);
+                var subscriptionTemplateParameters = subscriptionTemplateParams.ToList();
+
+                List<SubscriptionTemplateParametersModel> attributesList = new List<SubscriptionTemplateParametersModel>();
+
+                if (subscriptionTemplateParameters != null && subscriptionTemplateParameters.Count() > 0)
+                {
+                    foreach (var parms in subscriptionTemplateParameters)
+                    {
+                        SubscriptionTemplateParametersModel subscriptionparms = new SubscriptionTemplateParametersModel();
+                        subscriptionparms.Id = parms.Id ?? 0;
+                        subscriptionparms.PlanId = parms.OfferName;
+                        subscriptionparms.OfferGuid = parms.OfferGuid;
+                        subscriptionparms.PlanGuid = parms.PlanGuid;
+                        subscriptionparms.PlanId = parms.PlanId;
+                        subscriptionparms.ArmtemplateId = parms.ArmtemplateId;
+                        subscriptionparms.Parameter = parms.Parameter;
+                        subscriptionparms.ParameterDataType = parms.ParameterDataType;
+                        subscriptionparms.Value = parms.Value;
+                        subscriptionparms.ParameterType = parms.ParameterType;
+                        subscriptionparms.EventId = parms.EventId;
+                        subscriptionparms.EventsName = parms.EventsName;
+                        subscriptionparms.AmpsubscriptionId = parms.AmpsubscriptionId;
+                        subscriptionparms.SubscriptionStatus = parms.SubscriptionStatus;
+                        subscriptionparms.SubscriptionName = parms.SubscriptionName;
+
+                        attributesList.Add(subscriptionparms);
+                    }
+                }
+                return attributesList;
+            }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+            }
+            return null;
+        }
 
         /// <summary>
         /// Removes the specified entity.
