@@ -6,6 +6,6 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
 {
     interface ISubscriptionStatusHandler
     {
-        void Process(int subscriptionID);
+        void Process(Guid subscriptionID);
     }
 }

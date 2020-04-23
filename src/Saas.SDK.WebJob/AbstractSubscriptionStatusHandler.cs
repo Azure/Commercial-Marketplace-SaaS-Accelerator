@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+using System.Linq;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
 namespace Microsoft.Marketplace.SaasKit.WebJob
 {
 
-    abstract class AbstractSubscriptionStatusHandler //: ISubscriptionStatusHandler
+    abstract class AbstractSubscriptionStatusHandler : ISubscriptionStatusHandler
     {
-        protected Subscription GetSubscriptionById(int subscriptionId)
+        private readonly SaasKitContext Context;
+        protected Subscriptions GetSubscriptionById(Guid subscriptionId)
         {
-            return subscription.query(x => x.Id == subscriptionId).FirstOrDefault();
+            return Context.Subscriptions.Where(x => x.AmpsubscriptionId == subscriptionId).FirstOrDefault();
         }
+        public abstract void Process(Guid subscriptionID);
     }
 }
 
