@@ -24,7 +24,9 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 
             if (subscription.SubscriptionStatus == "Subscribed")
             {
-                var subscriptionData = this.fulfillApiclient.GetSubscriptionByIdAsync(subscriptionID).ConfigureAwait(false).GetAwaiter().GetResult();
+                //var subscriptionData = this.fulfillApiclient.GetSubscriptionByIdAsync(subscriptionID).ConfigureAwait(false).GetAwaiter().GetResult();
+                Deploy obj = new Deploy();
+                obj.Run();
             }
         }
 

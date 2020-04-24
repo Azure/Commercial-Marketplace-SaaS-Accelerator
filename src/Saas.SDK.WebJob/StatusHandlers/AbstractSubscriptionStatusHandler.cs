@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Microsoft.Marketplace.SaasKit.WebJob
+namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 {
 
     abstract class AbstractSubscriptionStatusHandler : DbContext, ISubscriptionStatusHandler

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microsoft.Marketplace.SaasKit.WebJob
+namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 {
     interface ISubscriptionStatusHandler
     {
