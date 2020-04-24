@@ -45,9 +45,13 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
             //var service = serviceProvider.GetService<IMyService>();
             //service.MyServiceMethod();
 
+            SubscriptionProcessQueueModel model = new SubscriptionProcessQueueModel()
+            {
+                SubscriptionID = Guid.Parse("25A8379E-E87E-DDDF-C337-259F4FADB09D"),
+                TriggerEvent = "Activate"
 
-
-            ProcessMethod();
+            };
+            ProcessMethod(model);
             //JobHost jobHost = new JobHost();
             //jobHost.CallAsync(typeof(Functions).GetMethod("ProcessMethod"));
             //jobHost.RunAndBlock();
@@ -62,23 +66,37 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
             Services = services;
         }
 
-        protected static List<ISubscriptionStatusHandler> statusHandlers = new List<ISubscriptionStatusHandler>()
+        protected static List<ISubscriptionStatusHandler> activateStatusHandlers = new List<ISubscriptionStatusHandler>()
         {
-            new PendingActivationStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository),
-            new ActivatedStatusHandler(fulfillApiclient),
-            new PendingDeleteStatusHandler(fulfillApiclient),
             new ResourceDeploymentStatusHandler(fulfillApiclient),
+            new PendingActivationStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository),
+
+            new ActivatedStatusHandler(fulfillApiclient),
+            new NotificationStatusHandler(fulfillApiclient)
+        };
+        protected static List<ISubscriptionStatusHandler> deactivateStatusHandlers = new List<ISubscriptionStatusHandler>()
+        {
+
+            new PendingDeleteStatusHandler(fulfillApiclient),
             new UnsubscribeStatusHandler(fulfillApiclient),
             new NotificationStatusHandler(fulfillApiclient)
         };
 
-        public static void ProcessMethod()
+        public static void ProcessMethod(SubscriptionProcessQueueModel model)
         {
-            foreach (var subscriptionStatusHandler in statusHandlers)
+            if (model.TriggerEvent == "Activate")
             {
-                Guid k = Guid.Parse("25A8379E-E87E-DDDF-C337-259F4FADB09D");
-                subscriptionStatusHandler.Process(k);
-
+                foreach (var subscriptionStatusHandler in activateStatusHandlers)
+                {
+                    subscriptionStatusHandler.Process(model.SubscriptionID);
+                }
+            }
+            if (model.TriggerEvent == "Unsubscribe")
+            {
+                foreach (var subscriptionStatusHandler in deactivateStatusHandlers)
+                {
+                    subscriptionStatusHandler.Process(model.SubscriptionID);
+                }
             }
         }
     }
