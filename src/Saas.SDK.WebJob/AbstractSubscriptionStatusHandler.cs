@@ -4,13 +4,20 @@ using System.Text;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using System.Linq;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Microsoft.Marketplace.SaasKit.WebJob
 {
 
-    abstract class AbstractSubscriptionStatusHandler : ISubscriptionStatusHandler
+    abstract class AbstractSubscriptionStatusHandler : DbContext, ISubscriptionStatusHandler
     {
-        private readonly SaasKitContext Context;
+        protected SaasKitContext Context;
+
+
+        public AbstractSubscriptionStatusHandler(SaasKitContext context)
+        {
+            Context = context;
+        }
         protected Subscriptions GetSubscriptionById(Guid subscriptionId)
         {
             return Context.Subscriptions.Where(x => x.AmpsubscriptionId == subscriptionId).FirstOrDefault();

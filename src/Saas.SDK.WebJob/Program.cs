@@ -1,27 +1,85 @@
 ﻿using Microsoft.Azure.WebJobs;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.WebJob.Models;
+using Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers;
+using Saas.SDK.WebJob;
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Microsoft.Marketplace.SaasKit.WebJob
 {
     class Program
     {
+        private static IFulfillmentApiClient fulfillApiclient;
+        private static IApplicationConfigRepository applicationConfigrepository;
+        private static ISubscriptionsRepository subscriptionsrepository;
+        private static IConfiguration configuration;
+        IServiceCollection services;
         static void Main(string[] args)
         {
-            JobHost jobHost = new JobHost();
-            jobHost.RunAndBlock();
+
+            IServiceCollection services = new ServiceCollection();
+            // Startup.cs finally :)
+            Startup startup = new Startup(configuration);
+            startup.ConfigureServices(services);
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+
+            //configure console logging
+            serviceProvider
+                .GetService<ILoggerFactory>();
+            //.AddConsole(LogLevel.Debug);
+
+            var logger = serviceProvider.GetService<ILoggerFactory>()
+                .CreateLogger<Program>();
+
+            logger.LogDebug("Logger is working!");
+
+            // Get Service and call method
+            //var service = serviceProvider.GetService<IMyService>();
+            //service.MyServiceMethod();
+
+
+
+            ProcessMethod();
+            //JobHost jobHost = new JobHost();
+            //jobHost.CallAsync(typeof(Functions).GetMethod("ProcessMethod"));
+            //jobHost.RunAndBlock();
         }
-        public static void ProcessQueueMessage([QueueTrigger("queue-SaaSAppwebJob")] SubscriptionProcessQueueModel model, TextWriter logger)
+
+        public Program(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, IConfiguration Configuration, IServiceCollection Services)
         {
-            Method(model);
-            Method2(model);
+            fulfillApiclient = fulfillApiClient;
+            applicationConfigrepository = applicationConfigRepository;
+            subscriptionsrepository = subscriptionsRepository;
+            Configuration = configuration;
+            Services = services;
         }
-        public static void Method(SubscriptionProcessQueueModel model)
+
+        protected static List<ISubscriptionStatusHandler> statusHandlers = new List<ISubscriptionStatusHandler>()
         {
-        }
-        public static void Method2(SubscriptionProcessQueueModel model)
+            new PendingActivationStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository),
+            new ActivatedStatusHandler(fulfillApiclient),
+            new PendingDeleteStatusHandler(fulfillApiclient),
+            new ResourceDeploymentStatusHandler(fulfillApiclient),
+            new UnsubscribeStatusHandler(fulfillApiclient),
+            new NotificationStatusHandler(fulfillApiclient)
+        };
+
+        public static void ProcessMethod()
         {
+            foreach (var subscriptionStatusHandler in statusHandlers)
+            {
+                Guid k = Guid.Parse("25A8379E-E87E-DDDF-C337-259F4FADB09D");
+                subscriptionStatusHandler.Process(k);
+
+            }
         }
     }
 }

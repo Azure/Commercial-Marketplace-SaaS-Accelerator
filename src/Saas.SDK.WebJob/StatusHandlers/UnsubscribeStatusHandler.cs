@@ -1,16 +1,19 @@
 ﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Contracts;
+using Microsoft.Marketplace.SaasKit.WebJob;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 {
-    class ActivatedStatusHandler : AbstractSubscriptionStatusHandler
+
+    class UnsubscribeStatusHandler : AbstractSubscriptionStatusHandler
     {
+
         readonly IFulfillmentApiClient fulfillApiclient;
 
-        public ActivatedStatusHandler(IFulfillmentApiClient fulfillApiClient) : base(new SaasKitContext())
+        public UnsubscribeStatusHandler(IFulfillmentApiClient fulfillApiClient) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
 
@@ -19,7 +22,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
         {
             var subscription = this.GetSubscriptionById(subscriptionID);
 
-            if (subscription.SubscriptionStatus == "Subscribed")
+            if (subscription.SubscriptionStatus == "Unsubscribe")
             {
                 var subscriptionData = this.fulfillApiclient.GetSubscriptionByIdAsync(subscriptionID).ConfigureAwait(false).GetAwaiter().GetResult();
             }

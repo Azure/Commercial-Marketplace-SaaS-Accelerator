@@ -1,16 +1,19 @@
 ﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Contracts;
+using Microsoft.Marketplace.SaasKit.WebJob;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 {
-    class ActivatedStatusHandler : AbstractSubscriptionStatusHandler
+
+    class PendingDeleteStatusHandler : AbstractSubscriptionStatusHandler
     {
+
         readonly IFulfillmentApiClient fulfillApiclient;
 
-        public ActivatedStatusHandler(IFulfillmentApiClient fulfillApiClient) : base(new SaasKitContext())
+        public  PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
 
