@@ -22,6 +22,11 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
         {
             return Context.Subscriptions.Where(x => x.AmpsubscriptionId == subscriptionId).FirstOrDefault();
         }
+
+        protected Plans GetPlanById(string planId)
+        {
+            return Context.Plans.Where(x => x.PlanId == planId).FirstOrDefault();
+        }
         public abstract void Process(Guid subscriptionID);
     }
 }

@@ -2,7 +2,7 @@
 
 CREATE TABLE WebJobSubscriptionStatus
 (
- ID Int Identity(1,1)
+ ID Int Identity(1,1) Primary Key
 ,SubscriptionId UniqueIdentifier
 ,ARMTemplateID UniqueIdentifier
 ,SubscriptionStatus Varchar(225)
@@ -14,7 +14,7 @@ CREATE TABLE WebJobSubscriptionStatus
 GO
 CREATE TABLE [dbo].[SubscriptionTemplateParameters]
 (
-Id Int identity(1,1)
+Id Int identity(1,1) Primary Key
 ,OfferName Varchar(225)
 ,OfferGUId UniqueIdentifier
 ,PlanGUID UniqueIdentifier
@@ -100,4 +100,15 @@ RowID int  NOT NULL
 ,AMPSubscriptionId UniqueIdentifier
 ,SubscriptionStatus Varchar(225)
 ,SubscriptionName Varchar(225)
+)
+
+GO
+
+CREATE TABLE SubscriptionKeyValut
+(
+Id Int Identity(1,1) Primary Key,
+SubscriptionId UniqueIdentifier,
+SecuteId Varchar(max),
+CreateDate DateTime,
+UserId Int
 )

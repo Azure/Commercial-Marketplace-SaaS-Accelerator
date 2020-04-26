@@ -10,20 +10,22 @@ using Microsoft.Rest;
 using Microsoft.Rest.Azure.Authentication;
 using Microsoft.Marketplace.SaasKit.WebJob.Models;
 using Microsoft.Marketplace.SaasKit.WebJob.Helpers;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+using System.Collections.Generic;
 
 namespace Microsoft.Marketplace.SaasKit.WebJob
 {
     public class Deploy
     {
         string subscriptionId = "980a314e-1f55-416a-a85b-b97f3ff68d8e";
-        string clientId = "28b1d793-eede-411a-a9fe-ba996808d4ea";
-        string clientSecret = "sXJn9bGcp5cmhZ@Ns:?Z77Jb?Zp[?x3.";
+      
+        
         string resourceGroupName = "IndraTest";
         string deploymentName = "ISVs";
         string resourceGroupLocation = "Central US"; // must be specified for creating a new resource group
         string pathToTemplateFile = @"C:\Users\ibijjala\Desktop\deploy-amp-saaskit.json";
         string pathToParameterFile = @"C:\Users\ibijjala\Desktop\deploy-parameters.json";
-        string tenantId = "6d7e0652-b03d-4ed2-bf86-f1999cecde17";
+      
         /// <summary>
         /// Reads a JSON file from the specified path
         /// </summary>
@@ -42,12 +44,16 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
             }
         }
 
-        public async void Run()
+        public async void DeployTemplate(Armtemplates template, List<SubscriptionTemplateParameters> templateParameters, List<SubscriptionParametersOutput> credenitals)
         {
             // Try to obtain the service credentials
 
             try
             {
+                string tenantId = "6d7e0652-b03d-4ed2-bf86-f1999cecde17";
+                string clientId = "28b1d793-eede-411a-a9fe-ba996808d4ea";
+                string clientSecret = "sXJn9bGcp5cmhZ@Ns:?Z77Jb?Zp[?x3.";
+
                 var serviceCreds = ApplicationTokenProvider.LoginSilentAsync(tenantId, clientId, clientSecret).ConfigureAwait(false).GetAwaiter().GetResult();
 
                 // Read the template and parameter file contents

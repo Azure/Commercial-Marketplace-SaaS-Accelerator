@@ -70,7 +70,6 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
         {
             new ResourceDeploymentStatusHandler(fulfillApiclient),
             new PendingActivationStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository),
-
             new ActivatedStatusHandler(fulfillApiclient),
             new NotificationStatusHandler(fulfillApiclient)
         };
