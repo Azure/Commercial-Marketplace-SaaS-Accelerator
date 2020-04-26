@@ -185,7 +185,7 @@
                         planEvent.EventsName = events.EventsName;
                         planEvent.EventId = events.EventId;
 
-                        planEvent.CopyToCustomer = events.CopyToCustomer;
+                        planEvent.CopyToCustomer = events.CopyToCustomer ?? false;
                         if (planEvent.EventsName != "Pending Activation")
                         {
                             eventsList.Add(planEvent);

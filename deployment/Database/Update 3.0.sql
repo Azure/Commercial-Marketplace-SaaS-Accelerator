@@ -1,8 +1,10 @@
 
-CREATE TABLE SubscriptionStatusLogInWebJob
+
+CREATE TABLE WebJobSubscriptionStatus
 (
  ID Int Identity(1,1)
 ,SubscriptionId UniqueIdentifier
+,ARMTemplateID UniqueIdentifier
 ,SubscriptionStatus Varchar(225)
 ,DeploymentStatus Varchar(225)
 ,Description Varchar(max)
@@ -33,7 +35,7 @@ Id Int identity(1,1)
 
 GO
 
-ALTER Procedure spGetSubscriptionTemplateParameters
+CREATE Procedure spGetSubscriptionTemplateParameters
 (  
 @SubscriptionId Uniqueidentifier,  
 @PlanId Uniqueidentifier  

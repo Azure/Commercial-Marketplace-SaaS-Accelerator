@@ -430,7 +430,7 @@ Select 'Unsubscribe' , 1, Getdate()
 GO
 
 INSERT INTO [dbo].[ValueTypes]
-Select 'Int',Getdate() 'int' UNION ALL
+Select 'Int',Getdate(), 'int' UNION ALL
 select 'String', Getdate(),'string' UNION ALL
 select 'Date', Getdate() ,'date'
 GO

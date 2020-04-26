@@ -481,9 +481,6 @@
                     {
                         try
                         {
-
-
-
                             subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                             Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
                             subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
@@ -636,6 +633,31 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return View("Error", ex);
+            }
+        }
+
+
+        public IActionResult TriggerWebJob(Guid subscriptionId, string activity)
+        {
+            try
+            {
+                if (activity == "Activte")
+                {
+                    // update subscriptionstatus to Pendinng activation
+                    // and trigger web jon by passing SubscriptionProcessQueueModel model
+                }
+                if (activity == "Deactivte")
+                {
+                    // update subscriptionstatus to Pendinng deactivation
+                    // and trigger web jon by passing SubscriptionProcessQueueModel model
+                }
+
+                return this.PartialView();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogInformation("Home Controller / ActivatedMessage Exception: {0}", ex);
                 return View("Error", ex);
             }
         }

@@ -39,19 +39,19 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
         public virtual DbSet<SubscriptionLicenses> SubscriptionLicenses { get; set; }
         public virtual DbSet<SubscriptionParametersOutput> SubscriptionParametersOutput { get; set; }
-        public virtual DbSet<SubscriptionStatusLogInWebJob> SubscriptionStatusLogInWebJob { get; set; }
         public virtual DbSet<SubscriptionTemplateParameters> SubscriptionTemplateParameters { get; set; }
         public virtual DbSet<SubscriptionTemplateParametersOutPut> SubscriptionTemplateParametersOutPut { get; set; }
         public virtual DbSet<Subscriptions> Subscriptions { get; set; }
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<ValueTypes> ValueTypes { get; set; }
+        public virtual DbSet<WebJobSubscriptionStatus> WebJobSubscriptionStatus { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=INFIHYD-WS002\\MSSQLSERVER17;Initial Catalog=AMP-SaasKit;Persist Security Info=True;User ID=sa;Password=Sa1;");
+                optionsBuilder.UseSqlServer("Server=INFIHYD-WS002\\MSSQLSERVER17;Initial Catalog=AMP3.0;Persist Security Info=True;User ID=sa;Password=Sa1;");
             }
         }
 
@@ -228,7 +228,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .WithMany(p => p.KnownUsers)
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__KnownUser__RoleI__4D94879B");
+                    .HasConstraintName("FK__KnownUser__RoleI__4F7CD00D");
             });
 
             modelBuilder.Entity<MeteredAuditLogs>(entity =>
@@ -252,7 +252,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.MeteredAuditLogs)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__MeteredAu__Subsc__4E88ABD4");
+                    .HasConstraintName("FK__MeteredAu__Subsc__5070F446");
             });
 
             modelBuilder.Entity<MeteredDimensions>(entity =>
@@ -270,7 +270,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Plan)
                     .WithMany(p => p.MeteredDimensions)
                     .HasForeignKey(d => d.PlanId)
-                    .HasConstraintName("FK__MeteredDi__PlanI__4F7CD00D");
+                    .HasConstraintName("FK__MeteredDi__PlanI__5165187F");
             });
 
             modelBuilder.Entity<OfferAttributes>(entity =>
@@ -316,7 +316,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeMapping>(entity =>
             {
                 entity.HasKey(e => e.PlanAttributeId)
-                    .HasName("PK__PlanAttr__8B476A98E637FD24");
+                    .HasName("PK__PlanAttr__8B476A98BC2701F4");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -326,7 +326,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanAttr__AAAC09D8DEB6181B");
+                    .HasName("PK__PlanAttr__AAAC09D86F860B3F");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -358,7 +358,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanEventsOutPut>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanEven__AAAC09D896A74892");
+                    .HasName("PK__PlanEven__AAAC09D817D976C4");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -434,7 +434,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.SubscriptionAuditLogs)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__Subscript__Subsc__5070F446");
+                    .HasConstraintName("FK__Subscript__Subsc__403A8C7D");
             });
 
             modelBuilder.Entity<SubscriptionLicenses>(entity =>
@@ -450,13 +450,13 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.SubscriptionLicenses)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__Subscript__Subsc__5165187F");
+                    .HasConstraintName("FK__Subscript__Subsc__52593CB8");
             });
 
             modelBuilder.Entity<SubscriptionParametersOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__Subscrip__AAAC09D8B1BD00D7");
+                    .HasName("PK__Subscrip__AAAC09D8695C1385");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -464,6 +464,12 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
                 entity.Property(e => e.DisplayName)
                     .IsRequired()
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Htmltype)
+                    .IsRequired()
+                    .HasColumnName("HTMLType")
                     .HasMaxLength(225)
                     .IsUnicode(false);
 
@@ -482,25 +488,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsRequired()
                     .HasMaxLength(225)
                     .IsUnicode(false);
-            });
 
-            modelBuilder.Entity<SubscriptionStatusLogInWebJob>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.Property(e => e.DeploymentStatus)
-                    .HasMaxLength(225)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Description).IsUnicode(false);
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    .ValueGeneratedOnAdd();
-
-                entity.Property(e => e.InsertDate).HasColumnType("datetime");
-
-                entity.Property(e => e.SubscriptionStatus)
+                entity.Property(e => e.ValuesList)
+                    .IsRequired()
                     .HasMaxLength(225)
                     .IsUnicode(false);
             });
@@ -637,7 +627,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Subscriptions)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Subscript__UserI__52593CB8");
+                    .HasConstraintName("FK__Subscript__UserI__412EB0B6");
             });
 
             modelBuilder.Entity<Users>(entity =>
@@ -658,11 +648,39 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<ValueTypes>(entity =>
             {
                 entity.HasKey(e => e.ValueTypeId)
-                    .HasName("PK__ValueTyp__A51E9C5A265D4175");
+                    .HasName("PK__ValueTyp__A51E9C5A6F5AC41B");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
+                entity.Property(e => e.Htmltype)
+                    .HasColumnName("HTMLType")
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.ValueType)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<WebJobSubscriptionStatus>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.Property(e => e.ArmtemplateId).HasColumnName("ARMTemplateID");
+
+                entity.Property(e => e.DeploymentStatus)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Description).IsUnicode(false);
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("ID")
+                    .ValueGeneratedOnAdd();
+
+                entity.Property(e => e.InsertDate).HasColumnType("datetime");
+
+                entity.Property(e => e.SubscriptionStatus)
                     .HasMaxLength(225)
                     .IsUnicode(false);
             });

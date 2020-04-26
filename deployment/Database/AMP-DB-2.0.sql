@@ -166,7 +166,7 @@ ALTER TABLE [dbo].[MeteredDimensions]  WITH CHECK ADD FOREIGN KEY([PlanId]) REFE
 GO
 --ALTER TABLE [dbo].[MeteredDimensions]  WITH CHECK ADD FOREIGN KEY([PlanId]) REFERENCES [dbo].[Plans] ([Id])
 GO
-ALTER TABLE [dbo].[SubscriptionAuditLogs]  WITH CHECK ADD FOREIGN KEY([SubscriptionID]) REFERENCES [dbo].[Subscriptions] ([Id])
+--ALTER TABLE [dbo].[SubscriptionAuditLogs]  WITH CHECK ADD FOREIGN KEY([SubscriptionID]) REFERENCES [dbo].[Subscriptions] ([Id])
 GO
 -- ALTER TABLE [dbo].[SubscriptionAuditLogs]  WITH CHECK ADD FOREIGN KEY([SubscriptionID]) REFERENCES [dbo].[Subscriptions] ([Id])
 GO

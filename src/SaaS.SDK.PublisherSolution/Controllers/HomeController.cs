@@ -587,6 +587,30 @@
             }
         }
 
+        public IActionResult TriggerWebJob(Guid subscriptionId, string activity)
+        {
+            try
+            {
+                if (activity == "Activte")
+                {
+                    // update subscriptionstatus to Pendinng activation
+                    // and trigger web jon by passing SubscriptionProcessQueueModel model
+                }
+                if (activity == "Deactivte")
+                {
+                    // update subscriptionstatus to Pendinng deactivation
+                    // and trigger web jon by passing SubscriptionProcessQueueModel model
+                }
+
+                return this.PartialView();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogInformation("Home Controller / ActivatedMessage Exception: {0}", ex);
+                return View("Error", ex);
+            }
+        }
+
         /// <summary>
         /// Prepares the subscription response.
         /// </summary>
