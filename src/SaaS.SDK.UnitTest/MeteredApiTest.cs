@@ -8,6 +8,7 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Newtonsoft.Json;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -70,10 +71,43 @@
                 Quantity = 5,
                 ResourceId = defaultSubscription.Id
             };
-            var response = this.client.EmitUsageEventAsync(subscriptionUsageRequest).Result;            
+            var response = this.client.EmitUsageEventAsync(subscriptionUsageRequest).Result;
             Assert.AreEqual(response.Status, "Accepted");
             Assert.AreEqual(response.ResourceId, defaultSubscription?.Id);
             Assert.AreEqual(response.PlanId, defaultSubscription?.PlanId);
+        }
+
+        /// <summary>
+        /// Test subscription batch usage.
+        /// </summary>
+        /// <returns>Test Subscription Batch Usage</returns>
+        [TestMethod]
+        public async Task TestSubscriptionBatchUsage()
+        {
+            var allSubscriptions = await this.fulfillmentClient.GetAllSubscriptionAsync().ConfigureAwait(false);
+            var defaultSubscription = allSubscriptions.FirstOrDefault();
+
+            var subscriptionUsageRequest = new List<MeteringUsageRequest>
+            {
+                new MeteringUsageRequest()
+                {
+                    Dimension = "Test",
+                    EffectiveStartTime = DateTime.UtcNow,
+                    PlanId = defaultSubscription?.PlanId,
+                    Quantity = 5,
+                    ResourceId = defaultSubscription.Id
+                },
+                new MeteringUsageRequest()
+                {
+                    Dimension = "Test",
+                    EffectiveStartTime = DateTime.UtcNow,
+                    PlanId = defaultSubscription?.PlanId,
+                    Quantity = 5,
+                    ResourceId = defaultSubscription.Id
+                },
+            };
+            var response = await this.client.EmitBatchUsageEventAsync(subscriptionUsageRequest);
+            Assert.AreEqual(response.Count, 2);
         }
     }
 }
