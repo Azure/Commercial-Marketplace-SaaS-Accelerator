@@ -63,34 +63,38 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                            s.AmpsubscriptionId == subscriptionID &&
                            s.OfferGuid == offer.OfferGuid);
 
-                        if (templateParameters != null && templateParameters.Count() > 0)
+                        if (templateParameters != null)
                         {
                             var parametersList = templateParameters.ToList();
-                            WebJobSubscriptionStatus status = new WebJobSubscriptionStatus()
+                            if (parametersList.Count() > 0)
                             {
 
-                                SubscriptionId = subscriptionID,
-                                ArmtemplateId = armTemplate.ArmtempalteId,
-                                SubscriptionStatus = subscription.SubscriptionStatus,
-                                DeploymentStatus = "ARMTemplateDeploymentPending",
-                                Description = "Start Deployment",
-                                InsertDate = System.DateTime.Now
+                                WebJobSubscriptionStatus status = new WebJobSubscriptionStatus()
+                                {
 
-                            };
+                                    SubscriptionId = subscriptionID,
+                                    ArmtemplateId = armTemplate.ArmtempalteId,
+                                    SubscriptionStatus = subscription.SubscriptionStatus,
+                                    DeploymentStatus = "ARMTemplateDeploymentPending",
+                                    Description = "Start Deployment",
+                                    InsertDate = System.DateTime.Now
 
-                            Context.WebJobSubscriptionStatus.Add(status);
-                            Console.Write("Start Deployment");
-                            Deploy obj = new Deploy();
+                                };
 
-                            var keyvaultUrl = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
-                            string secretValue = AzureKeyVaultHelper.DoVault(keyvaultUrl.SecuteId);
+                                Context.WebJobSubscriptionStatus.Add(status);
+                                Context.SaveChanges();
+                                Console.Write("Start Deployment");
+                                Deploy obj = new Deploy();
 
-                            var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
-                            var output = obj.DeployARMTemplate(armTemplate, parametersList, credenitals).ConfigureAwait(false).GetAwaiter().GetResult();
-                            string k = JsonConvert.SerializeObject(output.Properties.Outputs);
-                            Console.WriteLine(k);
+                                var keyvaultUrl = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+                                string secretValue = AzureKeyVaultHelper.DoVault(keyvaultUrl.SecuteId);
+
+                                var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
+                                var output = obj.DeployARMTemplate(armTemplate, parametersList, credenitals).ConfigureAwait(false).GetAwaiter().GetResult();
+                                string k = JsonConvert.SerializeObject(output.Properties.Outputs);
+                                Console.WriteLine(k);
+                            }
                         }
-
                     }
 
                     /*
@@ -117,11 +121,10 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
             List<SubscriptionTemplateParameters> _list = new List<SubscriptionTemplateParameters>();
             var subscriptionAttributes = Context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, PlanGuid);
 
-            if (subscriptionAttributes != null)
+            var existingdata = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
+            if (subscriptionAttributes != null && existingdata == null)
             {
-
                 var subscriptionAttributesList = subscriptionAttributes.ToList();
-
 
                 if (subscriptionAttributesList.Count() > 0)
                 {
@@ -146,13 +149,15 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                             CreateDate = DateTime.Now
                         };
                         Context.SubscriptionTemplateParameters.Add(parm);
+                        Context.SaveChanges();
                         _list.Add(parm);
                     }
 
                 }
+
+
             }
             return _list;
-
         }
     }
 }

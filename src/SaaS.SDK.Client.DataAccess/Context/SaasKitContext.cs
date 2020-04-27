@@ -505,8 +505,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
             modelBuilder.Entity<SubscriptionTemplateParameters>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.Property(e => e.AmpsubscriptionId).HasColumnName("AMPSubscriptionId");
 
                 entity.Property(e => e.ArmtemplateId).HasColumnName("ARMTemplateID");
@@ -516,8 +514,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.Property(e => e.EventsName)
                     .HasMaxLength(225)
                     .IsUnicode(false);
-
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.OfferGuid).HasColumnName("OfferGUId");
 
