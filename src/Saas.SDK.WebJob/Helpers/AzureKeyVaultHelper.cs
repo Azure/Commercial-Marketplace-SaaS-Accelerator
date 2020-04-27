@@ -57,12 +57,12 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.Helpers
             //Secret Identifier URL: that can be found under 
 
             SecretBundle secret = Task.Run(() => client.GetSecretAsync(keysecret)).ConfigureAwait(false).GetAwaiter().GetResult();
-            Console.WriteLine(secret.Tags["OfferId"].ToString());
-            Console.WriteLine(secret.Tags["PlanId"].ToString());
-            Console.WriteLine(secret.Tags["SubscriptionId"].ToString());
+            //Console.WriteLine(secret.Tags["OfferId"].ToString());
+            //Console.WriteLine(secret.Tags["PlanId"].ToString());
+            //Console.WriteLine(secret.Tags["SubscriptionId"].ToString());
             Console.WriteLine(secret.ContentType);
-            Console.WriteLine(secret.Value);
-            Console.ReadLine();
+            //Console.WriteLine(secret.Value);
+            //Console.ReadLine();
             return secret.Value;
 
         }

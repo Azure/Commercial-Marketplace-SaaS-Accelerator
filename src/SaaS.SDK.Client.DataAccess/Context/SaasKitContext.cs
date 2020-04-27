@@ -668,7 +668,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
             modelBuilder.Entity<WebJobSubscriptionStatus>(entity =>
             {
-                entity.HasNoKey();
+                entity.Property(e => e.Id).HasColumnName("ID");
 
                 entity.Property(e => e.ArmtemplateId).HasColumnName("ARMTemplateID");
 
@@ -677,10 +677,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsUnicode(false);
 
                 entity.Property(e => e.Description).IsUnicode(false);
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.InsertDate).HasColumnType("datetime");
 

@@ -14,17 +14,20 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System.Collections.Generic;
 using Saas.SDK.WebJob.Helpers;
 using System.Threading.Tasks;
+using System.Collections;
+using System.Linq;
 
 namespace Microsoft.Marketplace.SaasKit.WebJob
 {
     public class Deploy
     {
-        string subscriptionId = "980a314e-1f55-416a-a85b-b97f3ff68d8e";
+        //string subscriptionId = "980a314e-1f55-416a-a85b-b97f3ff68d8e";
 
 
-        string resourceGroupName = "IndraTest";
-        string deploymentName = "ISVs";
-        string resourceGroupLocation = "Central US"; // must be specified for creating a new resource group
+        //string resourceGroupName = "IndraTest";
+        //string deploymentName = "ISVs";
+        //string resourceGroupLocation = "Central US"; 
+        // must be specified for creating a new resource group
         //string pathToTemplateFile = @"C:\Users\ibijjala\Desktop\deploy-amp-saaskit.json";
         //string pathToParameterFile = @"C:\Users\ibijjala\Desktop\deploy-parameters.json";
 
@@ -53,13 +56,13 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
             try
             {
                 string tenantId = credenitals.TenantID;            //"6d7e0652-b03d-4ed2-bf86-f1999cecde17";
-                string clientId = credenitals.ServicePrincipalID;                // "28b1d793-eede-411a-a9fe-ba996808d4ea";
+                string clientId = credenitals.ServicePrincipalID;
                 string clientSecret = credenitals.ClientSecret;               //"sXJn9bGcp5cmhZ@Ns:?Z77Jb?Zp[?x3.";
 
 
 
                 var serviceCreds = ApplicationTokenProvider.LoginSilentAsync(tenantId, clientId, clientSecret).ConfigureAwait(false).GetAwaiter().GetResult();
-                string armContent = AzureBlobHelper.ReadARMTemplateFromBlob("deploy-amp-saaskit.json");
+                string armContent = AzureBlobHelper.ReadARMTemplateFromBlob(template.ArmtempalteName);
 
                 // Read the template and parameter file contents
                 JObject templateFileContents = JObject.Parse(armContent);
@@ -68,21 +71,26 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
                 //webAppNamePrefix parm = JsonConvert.DeserializeObject<webAppNamePrefix>(parameterFileContents.ToString());
 
 
-
-                Parameters configuration = new Parameters()
-                {
-                    webAppNamePrefix = resourceGroupName
-                };
+                var resourceGroupName = templateParameters.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
+                var resourceGroupLocation = templateParameters.Where(s => s.Parameter.ToLower() == "location").FirstOrDefault();
 
                 // Create the resource manager client
                 var resourceManagementClient = new ResourceManagementClient(serviceCreds);
-                resourceManagementClient.SubscriptionId = subscriptionId;
+                resourceManagementClient.SubscriptionId = credenitals.SubscriptionID;
 
                 // Create or check that resource group exists
-                EnsureResourceGroupExists(resourceManagementClient, resourceGroupName, resourceGroupLocation);
+                EnsureResourceGroupExists(resourceManagementClient, resourceGroupName.Value, resourceGroupLocation.Value);
+
+                templateParameters.Remove(resourceGroupName);
+                templateParameters.Remove(resourceGroupLocation);
+                Hashtable hashTable = new Hashtable();
+                foreach (var cred in templateParameters)
+                {
+                    hashTable.Add(cred.Parameter, cred.Value);
+                }
 
                 // Start a deployment
-                var result = DeployTemplate(resourceManagementClient, resourceGroupName, resourceGroupName, templateFileContents, configuration);
+                var result = DeployTemplate(resourceManagementClient, resourceGroupName.Value, "testdeployment", templateFileContents, hashTable);
                 return result;
             }
 
@@ -123,27 +131,37 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
         /// <param name="deploymentName">The name of the deployment.</param>
         /// <param name="templateFileContents">The template file contents.</param>
         /// <param name="parameterFileContents">The parameter file contents.</param>
-        private static DeploymentExtended DeployTemplate(ResourceManagementClient resourceManagementClient, string resourceGroupName, string deploymentName, JObject templateFileContents, Parameters configuration)
+        private static DeploymentExtended DeployTemplate(ResourceManagementClient resourceManagementClient, string resourceGroupName, string deploymentName, JObject templateFileContents, Hashtable hashTable)
         {
-            Console.WriteLine(string.Format("Starting template deployment '{0}' in resource group '{1}'", deploymentName, resourceGroupName));
-            var deployment = new Deployment();
-
-
-
-            string parameters = JsonConvert.SerializeObject(configuration, Formatting.Indented, new JsonARMPropertiesConverter(typeof(Parameters)));
-
-            deployment.Properties = new DeploymentProperties
+            try
             {
-                Mode = DeploymentMode.Incremental,
-                Template = templateFileContents,
-                Parameters = parameters
-            };
+                Console.WriteLine(string.Format("Starting template deployment '{0}' in resource group '{1}'", deploymentName, resourceGroupName));
+                var deployment = new Deployment();
 
-            var deploymentResult = resourceManagementClient.Deployments.CreateOrUpdate(resourceGroupName, deploymentName, deployment);
-            var outputs = deploymentResult.Properties.Outputs;
-            Console.WriteLine(string.Format("Deployment status: {0}", deploymentResult.Properties.ProvisioningState));
 
-            return deploymentResult;
+
+                string parameters = JsonConvert.SerializeObject(hashTable, Formatting.Indented, new JsonARMPropertiesConverter(typeof(Hashtable)));
+
+                deployment.Properties = new DeploymentProperties
+                {
+                    Mode = DeploymentMode.Incremental,
+                    Template = templateFileContents,
+                    Parameters = parameters
+                };
+
+                var deploymentResult = resourceManagementClient.Deployments.CreateOrUpdate(resourceGroupName, deploymentName, deployment);
+                var outputs = deploymentResult.Properties.Outputs;
+                Console.WriteLine(string.Format("Deployment status: {0}", deploymentResult.Properties.ProvisioningState));
+
+                return deploymentResult;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+
+            }
+            return new DeploymentExtended();
         }
 
 

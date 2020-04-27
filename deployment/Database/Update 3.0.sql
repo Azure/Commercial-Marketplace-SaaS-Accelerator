@@ -11,6 +11,9 @@ CREATE TABLE WebJobSubscriptionStatus
 ,InsertDate DateTime
 )
 
+
+
+
 GO
 CREATE TABLE [dbo].[SubscriptionTemplateParameters]
 (

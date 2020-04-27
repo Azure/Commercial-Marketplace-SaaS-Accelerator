@@ -6,6 +6,6 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.Models
 {
     public class Parameters
     {
-        public string webAppNamePrefix { get; set; }
+        public List<string> parameterList { get; set; }
     }
 }

@@ -29,18 +29,18 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
         }
         public override void Process(Guid subscriptionID)
         {
-            Console.Write("Process...");
-            Console.Write("GetSubscriptionById");
+            Console.WriteLine("Process...");
+            Console.WriteLine("GetSubscriptionById");
             var subscription = this.GetSubscriptionById(subscriptionID);
-            Console.Write("GetPlanById");
+            Console.WriteLine("GetPlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
-            Console.Write("Offers");
+            Console.WriteLine("Offers");
             var offer = Context.Offers.Where(s => s.OfferGuid == planDetails.OfferId).FirstOrDefault();
-            Console.Write("Events");
+            Console.WriteLine("Events");
             var events = Context.Events.Where(s => s.EventsName == "Activate").FirstOrDefault();
-            Console.Write("Events");
+            Console.WriteLine("Events");
 
-            Console.Write("subscription.SubscriptionStatus: SubscriptionStatus: {0}", subscription.SubscriptionStatus);
+            Console.WriteLine("subscription.SubscriptionStatus: SubscriptionStatus: {0}", subscription.SubscriptionStatus);
             if (subscription.SubscriptionStatus == "PendingActivation")
             {
                 try
@@ -65,7 +65,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 
                         if (templateParameters != null)
                         {
-                            var parametersList = templateParameters.ToList();
+                            var parametersList = templateParameters.Where(s => s.ParameterType.ToLower() == "input" && s.EventsName == "Activate").ToList();
                             if (parametersList.Count() > 0)
                             {
 
@@ -82,8 +82,9 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                                 };
 
                                 Context.WebJobSubscriptionStatus.Add(status);
+
                                 Context.SaveChanges();
-                                Console.Write("Start Deployment");
+                                Console.WriteLine("Start Deployment");
                                 Deploy obj = new Deploy();
 
                                 var keyvaultUrl = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
@@ -122,7 +123,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
             var subscriptionAttributes = Context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, PlanGuid);
 
             var existingdata = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
-            if (subscriptionAttributes != null && existingdata == null)
+            if (subscriptionAttributes != null)
             {
                 var subscriptionAttributesList = subscriptionAttributes.ToList();
 
