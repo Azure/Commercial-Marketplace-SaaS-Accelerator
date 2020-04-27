@@ -57,7 +57,7 @@ namespace Saas.SDK.WebJob.Services
             }
             if (Subscription.ARMTemplateParameters!= null && Subscription.ARMTemplateParameters.Count>0)
             {
-                armoutputlist = Subscription.ARMTemplateParameters.Where(s => s.Type.ToLower() == "output" && s.EventsName == "Active").ToList();
+                armoutputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output" && s.EventsName == "Active").ToList();
                 if (armoutputlist.Count > 0)
                     context.Put("armoutputparms", armoutputlist);
             }
