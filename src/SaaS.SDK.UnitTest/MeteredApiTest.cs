@@ -106,7 +106,7 @@
                     ResourceId = defaultSubscription.Id
                 },
             };
-            var response = this.client.EmitBatchUsageEventAsync(subscriptionUsageRequest).Result;
+            var response = await this.client.EmitBatchUsageEventAsync(subscriptionUsageRequest);
             Assert.AreEqual(response.Count, 2);
         }
     }
