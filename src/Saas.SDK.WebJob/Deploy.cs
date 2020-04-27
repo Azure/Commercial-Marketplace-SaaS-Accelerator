@@ -13,6 +13,7 @@ using Microsoft.Marketplace.SaasKit.WebJob.Helpers;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System.Collections.Generic;
 using Saas.SDK.WebJob.Helpers;
+using System.Threading.Tasks;
 
 namespace Microsoft.Marketplace.SaasKit.WebJob
 {
@@ -45,7 +46,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
             }
         }
 
-        public async void DeployARMTemplate(Armtemplates template, List<SubscriptionTemplateParameters> templateParameters, CredentialsModel credenitals)
+        public async Task<DeploymentExtended> DeployARMTemplate(Armtemplates template, List<SubscriptionTemplateParameters> templateParameters, CredentialsModel credenitals)
         {
             // Try to obtain the service credentials
 
@@ -66,7 +67,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
                 //JObject parameterFileContents = GetJsonFileContents(pathToParameterFile);
                 //webAppNamePrefix parm = JsonConvert.DeserializeObject<webAppNamePrefix>(parameterFileContents.ToString());
 
-                
+
 
                 Parameters configuration = new Parameters()
                 {
@@ -81,12 +82,16 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
                 EnsureResourceGroupExists(resourceManagementClient, resourceGroupName, resourceGroupLocation);
 
                 // Start a deployment
-                DeployTemplate(resourceManagementClient, resourceGroupName, resourceGroupName, templateFileContents, configuration);
+                var result = DeployTemplate(resourceManagementClient, resourceGroupName, resourceGroupName, templateFileContents, configuration);
+                return result;
             }
+
+
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+            return new DeploymentExtended();
         }
 
         /// <summary>
@@ -118,7 +123,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
         /// <param name="deploymentName">The name of the deployment.</param>
         /// <param name="templateFileContents">The template file contents.</param>
         /// <param name="parameterFileContents">The parameter file contents.</param>
-        private static void DeployTemplate(ResourceManagementClient resourceManagementClient, string resourceGroupName, string deploymentName, JObject templateFileContents, Parameters configuration)
+        private static DeploymentExtended DeployTemplate(ResourceManagementClient resourceManagementClient, string resourceGroupName, string deploymentName, JObject templateFileContents, Parameters configuration)
         {
             Console.WriteLine(string.Format("Starting template deployment '{0}' in resource group '{1}'", deploymentName, resourceGroupName));
             var deployment = new Deployment();
@@ -135,7 +140,10 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
             };
 
             var deploymentResult = resourceManagementClient.Deployments.CreateOrUpdate(resourceGroupName, deploymentName, deployment);
+            var outputs = deploymentResult.Properties.Outputs;
             Console.WriteLine(string.Format("Deployment status: {0}", deploymentResult.Properties.ProvisioningState));
+
+            return deploymentResult;
         }
 
 

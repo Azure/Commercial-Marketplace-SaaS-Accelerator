@@ -22,7 +22,7 @@ namespace Saas.SDK.WebJob
         {
             services.AddLogging();
             services.AddDbContext<SaasKitContext>(options =>
-              options.UseSqlServer("Data source=INFIHYD-WS002\\MSSQLSERVER17;initial catalog=AMP-SaasKit;user id=sa;password=Sa1"));
+              options.UseSqlServer("Data source=INFIHYD-WS002\\MSSQLSERVER17;initial catalog=AMP3.0;user id=sa;password=Sa1"));
 
             //Configuration.GetConnectionString("DefaultConnection"))
 

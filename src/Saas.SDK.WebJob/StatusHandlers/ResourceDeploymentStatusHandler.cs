@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.WebJob;
@@ -18,10 +19,12 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
     {
 
         readonly IFulfillmentApiClient fulfillApiclient;
+        //private readonly ISubscriptionsRepository subscriptionsRepository;
 
         public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
+
 
         }
         public override void Process(Guid subscriptionID)
@@ -47,8 +50,8 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                     var planEvent = Context.PlanEventsMapping.Where(s => s.PlanId == planDetails.PlanGuid && s.EventId == events.EventsId).FirstOrDefault();
                     var armTemplate = Context.Armtemplates.Where(s => s.ArmtempalteId == planEvent.ArmtemplateId).FirstOrDefault();
 
+                    var attributelsit = GetTemplateParameters(subscriptionID, planDetails.PlanGuid, Context);
 
-                    //var subscriptionAttributes = Context.SubscriptionParametersOutput.FromSqlRaw("dbo.spGetSubscriptionParameters {0},{1}", subscriptionID, planDetails.PlanGuid);
 
                     if (armTemplate != null)
                     {
@@ -83,7 +86,9 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                             string secretValue = AzureKeyVaultHelper.DoVault(keyvaultUrl.SecuteId);
 
                             var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
-                            obj.DeployARMTemplate(armTemplate, parametersList, credenitals);
+                            var output = obj.DeployARMTemplate(armTemplate, parametersList, credenitals).ConfigureAwait(false).GetAwaiter().GetResult();
+                            string k = JsonConvert.SerializeObject(output.Properties.Outputs);
+                            Console.WriteLine(k);
                         }
 
                     }
@@ -107,6 +112,48 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
             }
         }
 
+        public static List<SubscriptionTemplateParameters> GetTemplateParameters(Guid subscriptionID, Guid PlanGuid, SaasKitContext Context)
+        {
+            List<SubscriptionTemplateParameters> _list = new List<SubscriptionTemplateParameters>();
+            var subscriptionAttributes = Context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, PlanGuid);
+
+            if (subscriptionAttributes != null)
+            {
+
+                var subscriptionAttributesList = subscriptionAttributes.ToList();
+
+
+                if (subscriptionAttributesList.Count() > 0)
+                {
+                    foreach (var attr in subscriptionAttributesList)
+                    {
+                        SubscriptionTemplateParameters parm = new SubscriptionTemplateParameters()
+                        {
+                            OfferName = attr.OfferName,
+                            OfferGuid = attr.OfferGuid,
+                            PlanGuid = attr.PlanGuid,
+                            PlanId = attr.PlanId,
+                            ArmtemplateId = attr.ArmtemplateId,
+                            Parameter = attr.Parameter,
+                            ParameterDataType = attr.ParameterDataType,
+                            Value = attr.Value,
+                            ParameterType = attr.ParameterType,
+                            EventId = attr.EventId,
+                            EventsName = attr.EventsName,
+                            AmpsubscriptionId = attr.AmpsubscriptionId,
+                            SubscriptionStatus = attr.SubscriptionStatus,
+                            SubscriptionName = attr.SubscriptionName,
+                            CreateDate = DateTime.Now
+                        };
+                        Context.SubscriptionTemplateParameters.Add(parm);
+                        _list.Add(parm);
+                    }
+
+                }
+            }
+            return _list;
+
+        }
     }
 }
 

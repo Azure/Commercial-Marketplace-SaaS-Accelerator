@@ -80,8 +80,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Helpers
         public static bool ValidateUserParameters(IDictionary<string, string> dictionary)
         {
 
-            string authority = "";
-            string resource = "";
+            string authority = string.Format("https://login.windows.net/{0}", dictionary["Tenant ID"]);
+            string resource = "https://vault.azure.net";
             string clientId = dictionary["Service Principal ID"];
             string clientSecret = dictionary["Client Secret"];
             string tenantId = dictionary["Tenant ID"];

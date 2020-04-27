@@ -512,9 +512,10 @@
 
                             isSuccess = true;
 
-
-                            subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
-
+                            if (subscriptionResultExtension.SubscriptionParameters != null)
+                            {
+                                subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
+                            }
 
                             this.logger.LogInformation("GetPartnerSubscription and GetAllSubscriptionPlans");
                             subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
@@ -524,25 +525,33 @@
                             {
                                 //this.subscriptionService.AddSubscriptionParameters(subscriptionResultExtension.SubscriptionParameters, currentUserId);
 
-                                var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input").ToList();
-
-                                var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment").ToList();
-
-                                IDictionary<string, string> parms = new Dictionary<string, string>();
-                                foreach (var parm in deploymentParms)
+                                var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input");
+                                if (inputParms != null)
                                 {
-                                    parms.Add(parm.DisplayName, parm.Value);
+                                    var inputParmsList = inputParms.ToList();
+                                    this.subscriptionService.AddSubscriptionParameters(inputParmsList, currentUserId);
                                 }
-                                string azureKeyValtSecret = AzureKeyVaultHelper.writeKeyVault(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
-                                
-
-                                this.subscriptionService.AddSubscriptionParameters(inputParms, currentUserId);
+                                var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment");
+                                if (deploymentParms != null)
+                                {
+                                    var deploymentParmslist = deploymentParms.ToList();
+                                    IDictionary<string, string> parms = new Dictionary<string, string>();
+                                    foreach (var parm in deploymentParmslist)
+                                    {
+                                        parms.Add(parm.DisplayName, parm.Value);
+                                    }
+                                    string azureKeyValtSecret = AzureKeyVaultHelper.writeKeyVault(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
+                                    this.subscriptionRepository.AddSubscriptionKeyValutSecret(subscriptionId, azureKeyValtSecret,currentUserId);
+                                }
 
                             }
                             //  var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             //var serializedParent = JsonConvert.SerializeObject(subscriptionDetail);
                             //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                             //Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
+
+
+                           
                             subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             this.logger.LogInformation("checkIsActive");
                             bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
