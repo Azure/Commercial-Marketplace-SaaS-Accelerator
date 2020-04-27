@@ -9,12 +9,12 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.Helpers
 {
     public static class HashTablelHelper
     {
-        public static Hashtable MapCredentials(List<SubscriptionParametersOutput> credenitals)
+        public static Hashtable MapCredentials(Dictionary<string, string> credenitals)
         {
             Hashtable hashTable = new Hashtable();
             foreach (var cred in credenitals)
             {
-                hashTable.Add(cred.DisplayName, cred.Value);
+                hashTable.Add(cred.Key, cred.Value);
             }
             return hashTable;
 

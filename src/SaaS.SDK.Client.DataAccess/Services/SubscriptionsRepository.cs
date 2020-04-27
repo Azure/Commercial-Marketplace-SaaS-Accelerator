@@ -209,7 +209,32 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             return new List<SubscriptionParametersOutput>();
         }
 
+        public void AddSubscriptionKeyValutSecret(Guid subscriptionId, string keyVaultSecret, int userId)
+        {
+            var existingKey = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
+            if (existingKey != null)
+            {
+                existingKey.SecuteId = keyVaultSecret;
+                existingKey.SubscriptionId = subscriptionId;
+                Context.SubscriptionKeyValut.Update(existingKey);
+            }
+            else
+            {
+                SubscriptionKeyValut subscriptionKeyValut = new SubscriptionKeyValut()
+                {
+                    SubscriptionId = subscriptionId,
+                    SecuteId = keyVaultSecret,
+                    CreateDate = DateTime.Now,
+                    UserId = userId
+                };
 
+                Context.SubscriptionKeyValut.Add(subscriptionKeyValut);
+
+
+            }
+
+
+        }
         /// <summary>
         /// Updates the plan for subscription.
         /// </summary>

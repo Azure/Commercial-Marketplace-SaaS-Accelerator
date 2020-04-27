@@ -8,7 +8,9 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.WebJob.Models;
 using Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers;
+using Newtonsoft.Json.Linq;
 using Saas.SDK.WebJob;
+using Saas.SDK.WebJob.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,6 +26,8 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
         IServiceCollection services;
         static void Main(string[] args)
         {
+
+           
 
             IServiceCollection services = new ServiceCollection();
             // Startup.cs finally :)

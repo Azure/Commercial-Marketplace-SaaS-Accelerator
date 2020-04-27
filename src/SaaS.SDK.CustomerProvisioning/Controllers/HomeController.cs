@@ -534,6 +534,7 @@
                                     parms.Add(parm.DisplayName, parm.Value);
                                 }
                                 string azureKeyValtSecret = AzureKeyVaultHelper.writeKeyVault(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
+                                
 
                                 this.subscriptionService.AddSubscriptionParameters(inputParms, currentUserId);
 

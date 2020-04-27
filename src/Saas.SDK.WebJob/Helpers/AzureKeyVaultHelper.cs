@@ -51,23 +51,24 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.Helpers
                 return ex.Message;
             }
         }
-        public static void DoVault()
+        public static string DoVault(string keysecret)
         {
             client = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetAccessToken));
             //Secret Identifier URL: that can be found under 
 
-            SecretBundle secret = Task.Run(() => client.GetSecretAsync("https://amp-saas-keyvault-test.vault.azure.net/secrets/Amp-testkey/262f295ab9b74d5cbaf8c4310b325a5b")).ConfigureAwait(false).GetAwaiter().GetResult();
+            SecretBundle secret = Task.Run(() => client.GetSecretAsync(keysecret)).ConfigureAwait(false).GetAwaiter().GetResult();
             Console.WriteLine(secret.Tags["OfferId"].ToString());
             Console.WriteLine(secret.Tags["PlanId"].ToString());
             Console.WriteLine(secret.Tags["SubscriptionId"].ToString());
             Console.WriteLine(secret.ContentType);
             Console.WriteLine(secret.Value);
             Console.ReadLine();
+            return secret.Value;
 
         }
         public static async Task<string> GetAccessToken(string authority, string resource, string scope)
         {
-            string clientId =CLIENTID;
+            string clientId = CLIENTID;
             string clientSecret = CLIENTSECRET;
             authority = string.Format("https://login.windows.net/{0}", TENANTID);
             resource = "https://vault.azure.net";

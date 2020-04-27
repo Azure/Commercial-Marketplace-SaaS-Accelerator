@@ -3,6 +3,9 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.WebJob;
+using Microsoft.Marketplace.SaasKit.WebJob.Helpers;
+using Microsoft.Marketplace.SaasKit.WebJob.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,11 +48,12 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                     var armTemplate = Context.Armtemplates.Where(s => s.ArmtempalteId == planEvent.ArmtemplateId).FirstOrDefault();
 
 
-                    var subscriptionAttributes = Context.SubscriptionParametersOutput.FromSqlRaw("dbo.spGetSubscriptionParameters {0},{1}", subscriptionID, planDetails.PlanGuid);
+                    //var subscriptionAttributes = Context.SubscriptionParametersOutput.FromSqlRaw("dbo.spGetSubscriptionParameters {0},{1}", subscriptionID, planDetails.PlanGuid);
 
-                    if (armTemplate != null && subscriptionAttributes != null && subscriptionAttributes.Count() > 0)
+                    if (armTemplate != null)
                     {
-                        var credenitals = subscriptionAttributes.Where(s => s.Type.ToLower() == "deployment").ToList();
+                        //&& subscriptionAttributes != null && subscriptionAttributes.Count() > 0
+                        //var credenitals = subscriptionAttributes.Where(s => s.Type.ToLower() == "deployment").ToList();
                         var templateParameters = Context.SubscriptionTemplateParameters.Where(
                            s => s.PlanGuid == planDetails.PlanGuid &&
                            s.ArmtemplateId == armTemplate.ArmtempalteId &&
@@ -74,27 +78,35 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                             Context.WebJobSubscriptionStatus.Add(status);
                             Console.Write("Start Deployment");
                             Deploy obj = new Deploy();
-                            obj.DeployTemplate(armTemplate, parametersList, credenitals);
+
+                            var keyvaultUrl = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+                            string secretValue = AzureKeyVaultHelper.DoVault(keyvaultUrl.SecuteId);
+
+                            var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
+                            obj.DeployARMTemplate(armTemplate, parametersList, credenitals);
                         }
 
                     }
 
-
+                    /*
+                     {"Tenant ID":"6d7e0652-b03d-4ed2-bf86-f1999cecde17","Subscription ID":"AC57EDA4-EA49-41BD-4452-3AF5F3BBA081","Service Principal ID":"28b1d793-eede-411a-a9fe-ba996808d4ea","Client Secret":"sXJn9bGcp5cmhZ@Ns:?Z77Jb?Zp[?x3."}
+                     */
 
                     //Start ARM template Deployment
                     //Change status to ARMTemplateDeploymentSuccess
 
                 }
 
-                }
+
                 catch (Exception ex)
-            {
-                //Change status to ARMTemplateDeploymentFailure
+                {
+                    //Change status to ARMTemplateDeploymentFailure
+
+                }
 
             }
-
         }
-    }
 
+    }
 }
-}
+

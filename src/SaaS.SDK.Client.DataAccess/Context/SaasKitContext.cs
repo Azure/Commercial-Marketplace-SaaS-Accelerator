@@ -37,6 +37,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<SubscriptionAttributeValues> SubscriptionAttributeValues { get; set; }
         public virtual DbSet<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
+        public virtual DbSet<SubscriptionKeyValut> SubscriptionKeyValut { get; set; }
         public virtual DbSet<SubscriptionLicenses> SubscriptionLicenses { get; set; }
         public virtual DbSet<SubscriptionParametersOutput> SubscriptionParametersOutput { get; set; }
         public virtual DbSet<SubscriptionTemplateParameters> SubscriptionTemplateParameters { get; set; }
@@ -435,6 +436,13 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .WithMany(p => p.SubscriptionAuditLogs)
                     .HasForeignKey(d => d.SubscriptionId)
                     .HasConstraintName("FK__Subscript__Subsc__403A8C7D");
+            });
+
+            modelBuilder.Entity<SubscriptionKeyValut>(entity =>
+            {
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.SecuteId).IsUnicode(false);
             });
 
             modelBuilder.Entity<SubscriptionLicenses>(entity =>

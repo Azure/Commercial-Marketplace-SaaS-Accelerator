@@ -51,6 +51,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// <param name="quantity">The quantity identifier.</param>
         void UpdateQuantityForSubscription(Guid subscriptionId, int quantity);
 
+        void AddSubscriptionKeyValutSecret(Guid subscriptionId, string keyVaultSecret,int userId);
+
         List<SubscriptionParametersOutput> GetSubscriptionsParametersById(Guid subscriptionId, Guid planId);
         void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput);
         IEnumerable<SubscriptionTemplateParametersModel> GetSubscriptionTemplateParameterById(Guid subscriptionId, Guid planId);
