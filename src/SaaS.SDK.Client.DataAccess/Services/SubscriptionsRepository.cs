@@ -229,6 +229,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                 };
 
                 Context.SubscriptionKeyValut.Add(subscriptionKeyValut);
+                Context.SaveChanges();
 
 
             }

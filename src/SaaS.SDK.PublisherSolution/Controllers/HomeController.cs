@@ -140,6 +140,7 @@
             this.logger.LogInformation("Home Controller / Index ");
             try
             {
+                var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
                 if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
                 {
                     this.TempData["ShowLicensesMenu"] = true;
