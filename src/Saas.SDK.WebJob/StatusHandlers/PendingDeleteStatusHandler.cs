@@ -1,5 +1,6 @@
 ﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.WebJob;
 using Microsoft.Marketplace.SaasKit.WebJob.Helpers;
@@ -18,11 +19,13 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 
         readonly IFulfillmentApiClient fulfillApiclient;
         readonly IApplicationConfigRepository applicationConfigRepository;
+        readonly ISubscriptionLogRepository subscriptionLogRepository;
 
-        public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository) : base(new SaasKitContext())
+        public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionLogRepository subscriptionLogRepository) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
+            this.subscriptionLogRepository = subscriptionLogRepository;
 
         }
         public override void Process(Guid subscriptionID)
@@ -55,7 +58,16 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                             deploy.DeleteResoureGroup(parametersList, credenitals);
 
                             StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), string.Format("Delete Resource Group: {0} End", resourceGroup), Context, subscription.SubscriptionStatus.ToString());
-
+                            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                            {
+                                Attribute = SubscriptionLogAttributes.Deployment.ToString(),
+                                SubscriptionId = subscription.Id,
+                                NewValue = DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(),
+                                OldValue = DeploymentStatusEnum.DeleteResourceGroupPending.ToString(),
+                                CreateBy = 0,
+                                CreateDate = DateTime.Now
+                            };
+                            this.subscriptionLogRepository.Add(auditLog);
                         }
                     }
                 }
@@ -65,7 +77,16 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
                     StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(), errorDescriptin, Context, subscription.SubscriptionStatus.ToString());
                     Console.WriteLine(errorDescriptin);
-
+                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                    {
+                        Attribute = SubscriptionLogAttributes.Deployment.ToString(),
+                        SubscriptionId = subscription.Id,
+                        NewValue = DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(),
+                        OldValue = DeploymentStatusEnum.DeleteResourceGroupPending.ToString(),
+                        CreateBy = 0,
+                        CreateDate = DateTime.Now
+                    };
+                    this.subscriptionLogRepository.Add(auditLog);
                 }
 
             }

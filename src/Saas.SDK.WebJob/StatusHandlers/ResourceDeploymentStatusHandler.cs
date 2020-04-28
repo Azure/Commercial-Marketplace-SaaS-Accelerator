@@ -92,16 +92,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 
                                     UpdateSubscriptionTemplateParameters(outPutList.ToList(), subscriptionID, Context);
 
-                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                                    {
-                                        Attribute = SubscriptionLogAttributes.Deployment.ToString(),
-                                        SubscriptionId = subscription.Id,
-                                        NewValue = DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(),
-                                        OldValue = DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(),
-                                        CreateBy = 0,
-                                        CreateDate = DateTime.Now
-                                    };
-                                    this.subscriptionLogRepository.Add(auditLog);
+
                                 }
 
                                 Console.WriteLine(outputstring);
@@ -116,6 +107,17 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                     //Start ARM template Deployment
                     //Change status to ARMTemplateDeploymentSuccess
                     StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", Context, subscription.SubscriptionStatus.ToString());
+
+                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                    {
+                        Attribute = SubscriptionLogAttributes.Deployment.ToString(),
+                        SubscriptionId = subscription.Id,
+                        NewValue = DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(),
+                        OldValue = DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(),
+                        CreateBy = 0,
+                        CreateDate = DateTime.Now
+                    };
+                    this.subscriptionLogRepository.Add(auditLog);
                 }
 
 
@@ -125,6 +127,17 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
                     StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentFailure.ToString(), errorDescriptin, Context, subscription.SubscriptionStatus.ToString());
                     Console.WriteLine(errorDescriptin);
+
+                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                    {
+                        Attribute = SubscriptionLogAttributes.Deployment.ToString(),
+                        SubscriptionId = subscription.Id,
+                        NewValue = DeploymentStatusEnum.ARMTemplateDeploymentFailure.ToString(),
+                        OldValue = DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(),
+                        CreateBy = 0,
+                        CreateDate = DateTime.Now
+                    };
+                    this.subscriptionLogRepository.Add(auditLog);
                 }
 
             }

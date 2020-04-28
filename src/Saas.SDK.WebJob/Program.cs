@@ -91,7 +91,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
         protected static List<ISubscriptionStatusHandler> deactivateStatusHandlers = new List<ISubscriptionStatusHandler>()
         {
 
-            new PendingDeleteStatusHandler(fulfillApiclient,applicationConfigrepository),
+            new PendingDeleteStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionLogrepository),
             new UnsubscribeStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogrepository),
             new NotificationStatusHandler(fulfillApiclient,applicationConfigrepository,emailTemplaterepository,planEventsMappingrepository,offerAttributesrepository,eventsrepository,subscriptionsrepository)
         };
