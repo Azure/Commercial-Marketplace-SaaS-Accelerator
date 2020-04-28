@@ -22,7 +22,7 @@ namespace Saas.SDK.WebJob.Services
             string parameterType = string.Empty;
 
 
-            body = emailTemplateRepository.GetTemplateBody("ActiveArmTemplate");
+            body = emailTemplateRepository.GetTemplateBody("Template");
 
             string applicationName = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationName");
             Hashtable hashTable = new Hashtable();
@@ -32,6 +32,9 @@ namespace Saas.SDK.WebJob.Services
             hashTable.Add("Id", Subscription.Id);
             hashTable.Add("SubscriptionName", Subscription.Name);
             hashTable.Add("SaasSubscriptionStatus", Subscription.SaasSubscriptionStatus);
+            hashTable.Add("oldValue", oldValue);
+            hashTable.Add("newValue", newValue);
+            hashTable.Add("planevent", planEvent);
 
 
             ExtendedProperties p = new ExtendedProperties();

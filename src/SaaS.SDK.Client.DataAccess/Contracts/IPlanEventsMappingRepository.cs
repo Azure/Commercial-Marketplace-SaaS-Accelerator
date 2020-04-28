@@ -7,8 +7,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
     public interface IPlanEventsMappingRepository
     {
-        string GetSuccessStateEmails(Guid PlanID);
-
-        string GetFailureStateEmails(Guid PlanID);
+        PlanEventsMapping GetPlanEventsMappingEmails(Guid PlanID, int eventID);
     }
 }

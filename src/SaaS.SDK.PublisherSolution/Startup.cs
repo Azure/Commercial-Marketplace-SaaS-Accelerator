@@ -128,6 +128,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
             services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
+            services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<KnownUser>();
         }
 
