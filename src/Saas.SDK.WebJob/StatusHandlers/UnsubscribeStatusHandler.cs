@@ -48,7 +48,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
-                        Attribute = Saas.SDK.WebJob.Models.SubscriptionLogAttributes.Status.ToString(),
+                        Attribute = Microsoft.Marketplace.SaasKit.WebJob.Models.SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.Unsubscribed.ToString(),
                         OldValue = subscription.SubscriptionStatus,

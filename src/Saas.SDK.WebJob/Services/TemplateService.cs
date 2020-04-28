@@ -7,14 +7,15 @@ using NVelocity;
 using System.IO;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Models;
-using Saas.SDK.WebJob.Models;
+using Microsoft.Marketplace.SaasKit.WebJob.Models;
 using System.Linq;
+using Microsoft.Marketplace.SaasKit.WebJob.Models;
 
 namespace Saas.SDK.WebJob.Services
 {
     public class TemplateService
     {
-        public static string ProcessTemplate(SubscriptionResultExtension Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository,string planEvent,SubscriptionStatusEnum oldValue, string newValue)
+        public static string ProcessTemplate(SubscriptionResultExtension Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository,string planEvent, SubscriptionWebJobStatusEnum oldValue, string newValue)
         {
             string body = string.Empty;
             string parameter = string.Empty;

@@ -22,11 +22,13 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 
         readonly IFulfillmentApiClient fulfillApiclient;
         //private readonly ISubscriptionsRepository subscriptionsRepository;
-
-        public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient) : base(new SaasKitContext())
+        readonly IApplicationConfigRepository applicationConfigRepository;
+        readonly ISubscriptionLogRepository subscriptionLogRepository;
+        public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionLogRepository subscriptionLogRepository) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
-
+            this.applicationConfigRepository = applicationConfigRepository;
+            this.subscriptionLogRepository = subscriptionLogRepository;
 
         }
         public override void Process(Guid subscriptionID)
@@ -89,6 +91,17 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                                 {
 
                                     UpdateSubscriptionTemplateParameters(outPutList.ToList(), subscriptionID, Context);
+
+                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                    {
+                                        Attribute = SubscriptionLogAttributes.Deployment.ToString(),
+                                        SubscriptionId = subscription.Id,
+                                        NewValue = DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(),
+                                        OldValue = DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(),
+                                        CreateBy = 0,
+                                        CreateDate = DateTime.Now
+                                    };
+                                    this.subscriptionLogRepository.Add(auditLog);
                                 }
 
                                 Console.WriteLine(outputstring);
@@ -102,7 +115,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 
                     //Start ARM template Deployment
                     //Change status to ARMTemplateDeploymentSuccess
-
+                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", Context, subscription.SubscriptionStatus.ToString());
                 }
 
 
@@ -136,7 +149,9 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                 {
                     if (subscriptionAttributes != null)
                     {
-                        var subscriptionAttributesList = subscriptionAttributes.ToList();
+                        var beforeReplaceList = subscriptionAttributes.ToList();
+
+                        var subscriptionAttributesList = ReplaceDeploymentparms(beforeReplaceList);
 
                         if (subscriptionAttributesList.Count() > 0)
                         {
@@ -241,6 +256,20 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
             }
 
 
+        }
+
+
+        public static List<SubscriptionTemplateParametersOutPut> ReplaceDeploymentparms(List<SubscriptionTemplateParametersOutPut> parmList)
+        {
+            foreach (var parm in parmList)
+            {
+
+                parm.Value = parm.Value.Replace("${Subscription}", parm.SubscriptionName.Replace(" ", "-"));
+                parm.Value = parm.Value.Replace("${Offer}", parm.OfferName.Replace(" ", "-"));
+                parm.Value = parm.Value.Replace("${Plan}", parm.PlanId.Replace(" ", "-"));
+            }
+
+            return parmList;
         }
     }
 }

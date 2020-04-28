@@ -22,7 +22,13 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
         private static IFulfillmentApiClient fulfillApiclient;
         private static IApplicationConfigRepository applicationConfigrepository;
         private static ISubscriptionsRepository subscriptionsrepository;
-        private static ISubscriptionLogRepository subscriptionLogRepository;
+        private static ISubscriptionLogRepository subscriptionLogrepository;
+        private static IEmailTemplateRepository emailTemplaterepository;
+        private static IPlanEventsMappingRepository planEventsMappingrepository;
+        private static IOfferAttributesRepository offerAttributesrepository;
+        private static IEventsRepository eventsrepository;
+
+
         private static IConfiguration configuration;
         IServiceCollection services;
         static void Main(string[] args)
@@ -60,28 +66,34 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
             //jobHost.RunAndBlock();
         }
 
-        public Program(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, IConfiguration Configuration, IServiceCollection Services, ISubscriptionLogRepository subscriptionLogrepository)
+        public Program(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, IConfiguration Configuration, IServiceCollection Services, ISubscriptionLogRepository subscriptionLogRepository, IEmailTemplateRepository emailTemplateRepository,
+        IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository,
+           IEventsRepository eventsRepository)
         {
             fulfillApiclient = fulfillApiClient;
             applicationConfigrepository = applicationConfigRepository;
             subscriptionsrepository = subscriptionsRepository;
             Configuration = configuration;
             Services = services;
-            subscriptionLogRepository = subscriptionLogrepository;
+            subscriptionLogrepository = subscriptionLogRepository;
+            emailTemplaterepository = emailTemplateRepository;
+            planEventsMappingrepository = planEventsMappingRepository;
+            offerAttributesrepository = offerAttributesRepository;
+            eventsrepository = eventsRepository;
         }
 
         protected static List<ISubscriptionStatusHandler> activateStatusHandlers = new List<ISubscriptionStatusHandler>()
         {
-            new ResourceDeploymentStatusHandler(fulfillApiclient),
-            new PendingActivationStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogRepository),
-            new NotificationStatusHandler(fulfillApiclient)
+           // new ResourceDeploymentStatusHandler(fulfillApiclient,applicationConfigrepository),
+            new PendingActivationStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogrepository),
+            new NotificationStatusHandler(fulfillApiclient,applicationConfigrepository,emailTemplaterepository,planEventsMappingrepository,offerAttributesrepository,eventsrepository,subscriptionsrepository)
         };
         protected static List<ISubscriptionStatusHandler> deactivateStatusHandlers = new List<ISubscriptionStatusHandler>()
         {
 
-            new PendingDeleteStatusHandler(fulfillApiclient),
-            new UnsubscribeStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogRepository),
-            new NotificationStatusHandler(fulfillApiclient)
+            new PendingDeleteStatusHandler(fulfillApiclient,applicationConfigrepository),
+            new UnsubscribeStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogrepository),
+            new NotificationStatusHandler(fulfillApiclient,applicationConfigrepository,emailTemplaterepository,planEventsMappingrepository,offerAttributesrepository,eventsrepository,subscriptionsrepository)
         };
 
         public static void ProcessMethod(SubscriptionProcessQueueModel model)

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Saas.SDK.WebJob.Models
+namespace Microsoft.Marketplace.SaasKit.WebJob.Models
 {
     public class SubscriptionResultExtension : SubscriptionResult
     {
@@ -17,6 +17,8 @@ namespace Saas.SDK.WebJob.Models
 
         public List<SubscriptionTemplateParametersModel> ARMTemplateParameters { get; set; }
         public string EventName { get; set; }
+
+        public string SubscriptionStatus { get; set; }
 
 
     }

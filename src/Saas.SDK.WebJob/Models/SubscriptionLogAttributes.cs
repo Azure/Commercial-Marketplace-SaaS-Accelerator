@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Saas.SDK.WebJob.Models
+namespace Microsoft.Marketplace.SaasKit.WebJob.Models
 {
     public enum SubscriptionLogAttributes
     {

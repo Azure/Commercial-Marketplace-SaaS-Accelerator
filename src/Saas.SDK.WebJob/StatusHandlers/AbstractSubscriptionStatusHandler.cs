@@ -5,6 +5,9 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using System.Linq;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Marketplace.SaasKit.Contracts;
+using Microsoft.Marketplace.SaasKit.Models;
+using Microsoft.Marketplace.SaasKit.Services;
 
 namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 {
@@ -12,7 +15,6 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
     abstract class AbstractSubscriptionStatusHandler : DbContext, ISubscriptionStatusHandler
     {
         protected SaasKitContext Context;
-
 
         public AbstractSubscriptionStatusHandler(SaasKitContext context)
         {
@@ -27,6 +29,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
         {
             return Context.Plans.Where(x => x.PlanId == planId).FirstOrDefault();
         }
+
         public abstract void Process(Guid subscriptionID);
     }
 }

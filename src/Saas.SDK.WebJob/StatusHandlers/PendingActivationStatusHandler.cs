@@ -4,7 +4,7 @@ using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.Models;
 using Microsoft.Marketplace.SaasKit.WebJob.Models;
 using Microsoft.Marketplace.SaasKit.WebJob;
-using Saas.SDK.WebJob.Models;
+using Microsoft.Marketplace.SaasKit.WebJob.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,10 +19,10 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
     class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
     {
 
-        private readonly IFulfillmentApiClient fulfillApiclient;
-        private readonly IApplicationConfigRepository applicationConfigRepository;
-        private readonly ISubscriptionsRepository subscriptionsRepository;
-        private readonly ISubscriptionLogRepository subscriptionLogRepository;
+        readonly IFulfillmentApiClient fulfillApiclient;
+        readonly IApplicationConfigRepository applicationConfigRepository;
+        readonly ISubscriptionsRepository subscriptionsRepository;
+        readonly ISubscriptionLogRepository subscriptionLogRepository;
 
         public PendingActivationStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, ISubscriptionLogRepository subscriptionLogRepository) : base(new SaasKitContext())
         {
@@ -37,14 +37,15 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
         {
             Console.WriteLine("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
-            Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription)); ;
+            Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription));
             var deploymentStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
 
-            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingActivation.ToString() && deploymentStatus.SubscriptionStatus == DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString())
+            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingActivation.ToString() && deploymentStatus.DeploymentStatus == DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString())
             {
                 try
                 {
                     Console.WriteLine("Get attributelsit");
+
                     var subscriptionData = this.fulfillApiclient.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
 
                     Console.WriteLine("subscriptionData : {0}", JsonConvert.SerializeObject(subscriptionData));

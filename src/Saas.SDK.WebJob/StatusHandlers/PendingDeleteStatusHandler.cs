@@ -1,4 +1,5 @@
 ﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.WebJob;
 using Microsoft.Marketplace.SaasKit.WebJob.Helpers;
@@ -16,10 +17,12 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
     {
 
         readonly IFulfillmentApiClient fulfillApiclient;
+        readonly IApplicationConfigRepository applicationConfigRepository;
 
-        public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient) : base(new SaasKitContext())
+        public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
+            this.applicationConfigRepository = applicationConfigRepository;
 
         }
         public override void Process(Guid subscriptionID)

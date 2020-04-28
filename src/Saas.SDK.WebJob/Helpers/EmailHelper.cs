@@ -2,7 +2,8 @@
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.Models;
-using Saas.SDK.WebJob.Models;
+using Microsoft.Marketplace.SaasKit.WebJob.Models;
+using Microsoft.Marketplace.SaasKit.WebJob.Models;
 using Saas.SDK.WebJob.Services;
 using System;
 //using SendGrid;
@@ -10,12 +11,12 @@ using System;
 using System.Net;
 using System.Net.Mail;
 
-namespace Saas.SDK.WebJob.Helpers
+namespace Microsoft.Marketplace.SaasKit.WebJob.Helpers
 {
     public class EmailHelper
     {
 
-        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, string planEvent = "success", SubscriptionStatusEnum oldValue = SubscriptionStatusEnum.PendingFulfillmentStart, string newValue = null)
+        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, string planEvent = "success", SubscriptionWebJobStatusEnum oldValue = SubscriptionWebJobStatusEnum.PendingFulfillmentStart, string newValue = null)
         {
             MailMessage mail = new MailMessage();
             string FromMail = applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
