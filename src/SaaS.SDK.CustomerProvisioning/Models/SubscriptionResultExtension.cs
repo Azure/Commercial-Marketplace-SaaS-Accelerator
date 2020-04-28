@@ -13,5 +13,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models
         public List<SubscriptionParametersModel> SubscriptionParameters { get; set; }
         public Guid GuidPlanId { get; set; }
         public bool? DeployToCustomerSubscription { get; set; }
+        public string EventName { get; set; }
+
     }
 }

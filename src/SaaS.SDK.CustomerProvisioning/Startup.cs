@@ -117,6 +117,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddScoped<IOffersRepository, OffersRepository>();
             services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
+            services.AddScoped<IEventsRepository, EventsRepository>();
 
         }
 

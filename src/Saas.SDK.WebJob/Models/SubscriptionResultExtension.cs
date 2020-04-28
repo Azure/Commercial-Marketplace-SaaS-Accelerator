@@ -16,6 +16,8 @@ namespace Saas.SDK.WebJob.Models
         public List<SubscriptionParametersModel> SubscriptionParameters { get; set; }
 
         public List<SubscriptionTemplateParametersModel> ARMTemplateParameters { get; set; }
+        public string EventName { get; set; }
+
 
     }
 }
