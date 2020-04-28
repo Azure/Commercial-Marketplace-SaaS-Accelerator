@@ -1,11 +1,17 @@
 ﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Contracts;
+using Microsoft.Marketplace.SaasKit.Models;
+using Microsoft.Marketplace.SaasKit.WebJob.Models;
 using Microsoft.Marketplace.SaasKit.WebJob;
 using Saas.SDK.WebJob.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+using Newtonsoft.Json;
+using System.Linq;
+using Microsoft.Marketplace.SaasKit.WebJob.Helpers;
 
 namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 {
@@ -16,39 +22,67 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
         private readonly IFulfillmentApiClient fulfillApiclient;
         private readonly IApplicationConfigRepository applicationConfigRepository;
         private readonly ISubscriptionsRepository subscriptionsRepository;
+        private readonly ISubscriptionLogRepository subscriptionLogRepository;
 
-        public PendingActivationStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository) : base(new SaasKitContext())
+        public PendingActivationStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, ISubscriptionLogRepository subscriptionLogRepository) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionsRepository = subscriptionsRepository;
+            this.subscriptionLogRepository = subscriptionLogRepository;
 
 
         }
         public override void Process(Guid subscriptionID)
         {
+            Console.WriteLine("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
+            Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription)); ;
+            var deploymentStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
 
-            if (subscription.SubscriptionStatus == "PendingActivation")
+            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingActivation.ToString() && deploymentStatus.SubscriptionStatus == DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString())
             {
-                bool isDeploymentRequired = false;
-                if (!isDeploymentRequired)
+                try
                 {
-                    try
-                    {
-                        var subscriptionData = this.fulfillApiclient.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
-                        this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.PendingActivation.ToString(), true);
-                    }
-                    catch (Exception ex)
-                    {
+                    Console.WriteLine("Get attributelsit");
+                    var subscriptionData = this.fulfillApiclient.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                    }
+                    Console.WriteLine("subscriptionData : {0}", JsonConvert.SerializeObject(subscriptionData));
+                    Console.WriteLine("UpdateWebJobSubscriptionStatus");
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.Subscribed.ToString(), true);
+
+                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                    {
+                        Attribute = SubscriptionLogAttributes.Status.ToString(),
+                        SubscriptionId = subscription.Id,
+                        NewValue = SubscriptionWebJobStatusEnum.Subscribed.ToString(),
+                        OldValue = subscription.SubscriptionStatus,
+                        CreateBy = 0,
+                        CreateDate = DateTime.Now
+                    };
+                    this.subscriptionLogRepository.Add(auditLog);
                 }
-                else
+                catch (Exception ex)
                 {
+                    string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
+                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, Context, SubscriptionWebJobStatusEnum.ActivationFailure.ToString());
+                    Console.WriteLine(errorDescriptin);
+
+                    // Activation Failure SubscriptionWebJobStatusEnum.ActivationFailure
+
+                    /*SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                    {
+                        Attribute = SubscriptionLogAttributes.Status.ToString(),
+                        SubscriptionId = subscription.Id,
+                        NewValue = SubscriptionWebJobStatusEnum.ActivationFailure.ToString(),
+                        OldValue = "None",
+                        CreateBy = 0,
+                        CreateDate = DateTime.Now
+                    };
+                    this.subscriptionLogRepository.Add(auditLog);*/
 
 
-                    // code to get arm template and start deployment
+                    //Call Email helper with ActivationFailure
                 }
 
             }

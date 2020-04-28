@@ -22,12 +22,11 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
         private static IFulfillmentApiClient fulfillApiclient;
         private static IApplicationConfigRepository applicationConfigrepository;
         private static ISubscriptionsRepository subscriptionsrepository;
+        private static ISubscriptionLogRepository subscriptionLogRepository;
         private static IConfiguration configuration;
         IServiceCollection services;
         static void Main(string[] args)
         {
-
-           
 
             IServiceCollection services = new ServiceCollection();
             // Startup.cs finally :)
@@ -61,27 +60,27 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
             //jobHost.RunAndBlock();
         }
 
-        public Program(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, IConfiguration Configuration, IServiceCollection Services)
+        public Program(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, IConfiguration Configuration, IServiceCollection Services, ISubscriptionLogRepository subscriptionLogrepository)
         {
             fulfillApiclient = fulfillApiClient;
             applicationConfigrepository = applicationConfigRepository;
             subscriptionsrepository = subscriptionsRepository;
             Configuration = configuration;
             Services = services;
+            subscriptionLogRepository = subscriptionLogrepository;
         }
 
         protected static List<ISubscriptionStatusHandler> activateStatusHandlers = new List<ISubscriptionStatusHandler>()
         {
             new ResourceDeploymentStatusHandler(fulfillApiclient),
-            new PendingActivationStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository),
-            new ActivatedStatusHandler(fulfillApiclient),
+            new PendingActivationStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogRepository),
             new NotificationStatusHandler(fulfillApiclient)
         };
         protected static List<ISubscriptionStatusHandler> deactivateStatusHandlers = new List<ISubscriptionStatusHandler>()
         {
 
             new PendingDeleteStatusHandler(fulfillApiclient),
-            new UnsubscribeStatusHandler(fulfillApiclient),
+            new UnsubscribeStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogRepository),
             new NotificationStatusHandler(fulfillApiclient)
         };
 

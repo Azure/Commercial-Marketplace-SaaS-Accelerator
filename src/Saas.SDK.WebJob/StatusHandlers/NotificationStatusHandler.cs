@@ -22,10 +22,10 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
         {
             var subscription = this.GetSubscriptionById(subscriptionID);
 
-            if (subscription.SubscriptionStatus == "Subscribed")
-            {
-                var subscriptionData = this.fulfillApiclient.GetSubscriptionByIdAsync(subscriptionID).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
+            //if (subscription.SubscriptionStatus == "Subscribed")
+            //{
+            //    var subscriptionData = this.fulfillApiclient.GetSubscriptionByIdAsync(subscriptionID).ConfigureAwait(false).GetAwaiter().GetResult();
+            //}
         }
 
     }

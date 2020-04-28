@@ -51,52 +51,59 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
 
         public async Task<DeploymentExtended> DeployARMTemplate(Armtemplates template, List<SubscriptionTemplateParameters> templateParameters, CredentialsModel credenitals)
         {
-            // Try to obtain the service credentials
-
+            Console.WriteLine("DeployARMTemplate");
             try
             {
-                string tenantId = credenitals.TenantID;            //"6d7e0652-b03d-4ed2-bf86-f1999cecde17";
-                string clientId = credenitals.ServicePrincipalID;
-                string clientSecret = credenitals.ClientSecret;               //"sXJn9bGcp5cmhZ@Ns:?Z77Jb?Zp[?x3.";
+                string tenantId = credenitals.TenantID.Trim();
+                string clientId = credenitals.ServicePrincipalID.Trim();
+                string clientSecret = credenitals.ClientSecret.Trim();
 
-
-
+                Console.WriteLine("LoginSilentAsync");
                 var serviceCreds = ApplicationTokenProvider.LoginSilentAsync(tenantId, clientId, clientSecret).ConfigureAwait(false).GetAwaiter().GetResult();
+                Console.WriteLine("ReadARMTemplateFromBlob template.ArmtempalteName {0}", template.ArmtempalteName);
                 string armContent = AzureBlobHelper.ReadARMTemplateFromBlob(template.ArmtempalteName);
 
                 // Read the template and parameter file contents
                 JObject templateFileContents = JObject.Parse(armContent);
-                //GetJsonFileContents(pathToTemplateFile);
-                //JObject parameterFileContents = GetJsonFileContents(pathToParameterFile);
-                //webAppNamePrefix parm = JsonConvert.DeserializeObject<webAppNamePrefix>(parameterFileContents.ToString());
 
-
+                Console.WriteLine("Get resourceGroupName");
                 var resourceGroupName = templateParameters.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
+                Console.WriteLine("resourceGroupName: {0} ", resourceGroupName);
+                Console.WriteLine("Get resourceGroupLocation");
                 var resourceGroupLocation = templateParameters.Where(s => s.Parameter.ToLower() == "location").FirstOrDefault();
 
-                // Create the resource manager client
+
                 var resourceManagementClient = new ResourceManagementClient(serviceCreds);
                 resourceManagementClient.SubscriptionId = credenitals.SubscriptionID;
+                Console.WriteLine("resourceManagementClient.SubscriptionId: {0}", resourceManagementClient.SubscriptionId);
 
-                // Create or check that resource group exists
+                Console.WriteLine(" Create or check that resource group exists");
                 EnsureResourceGroupExists(resourceManagementClient, resourceGroupName.Value, resourceGroupLocation.Value);
 
+                Console.WriteLine(" Remove resourceGroupName , resourceGroupLocation from parameters List (not deleting the resource)");
                 templateParameters.Remove(resourceGroupName);
                 templateParameters.Remove(resourceGroupLocation);
+
+                Console.WriteLine("Prepare input parms list");
+
                 Hashtable hashTable = new Hashtable();
                 foreach (var cred in templateParameters)
                 {
                     hashTable.Add(cred.Parameter, cred.Value);
                 }
 
-                // Start a deployment
-                var result = DeployTemplate(resourceManagementClient, resourceGroupName.Value, "testdeployment", templateFileContents, hashTable);
+
+                string deploymentName = string.Format("{0}-deployment", resourceGroupName.Value);
+                Console.WriteLine(" Start a deployment {0}: DeployTemplate: {1}", deploymentName, template.ArmtempalteName);
+                var result = DeployTemplate(resourceManagementClient, resourceGroupName.Value, deploymentName, templateFileContents, hashTable);
+                Console.WriteLine("DeployTemplate Request Complete");
                 return result;
             }
 
 
             catch (Exception ex)
             {
+                Console.WriteLine("Error in Deployment {0} : {1}", ex.Message, ex.InnerException);
                 Console.WriteLine(ex.Message);
             }
             return new DeploymentExtended();
@@ -110,6 +117,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
         /// <param name="resourceGroupLocation">The resource group location. Required when creating a new resource group.</param>
         private static void EnsureResourceGroupExists(ResourceManagementClient resourceManagementClient, string resourceGroupName, string resourceGroupLocation)
         {
+            Console.WriteLine(string.Format("check if  resource group '{0}' in location '{1}' exists", resourceGroupName, resourceGroupLocation));
             if (resourceManagementClient.ResourceGroups.CheckExistence(resourceGroupName) != true)
             {
                 Console.WriteLine(string.Format("Creating resource group '{0}' in location '{1}'", resourceGroupName, resourceGroupLocation));
@@ -120,6 +128,65 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
             else
             {
                 Console.WriteLine(string.Format("Using existing resource group '{0}'", resourceGroupName));
+            }
+        }
+
+
+        public void DeleteResoureGroup(List<SubscriptionTemplateParameters> templateParameters, CredentialsModel credenitals)
+        {
+            Console.WriteLine("DeployARMTemplate");
+            try
+            {
+                string tenantId = credenitals.TenantID.Trim();
+                string clientId = credenitals.ServicePrincipalID.Trim();
+                string clientSecret = credenitals.ClientSecret.Trim();
+
+                Console.WriteLine("LoginSilentAsync");
+                var serviceCreds = ApplicationTokenProvider.LoginSilentAsync(tenantId, clientId, clientSecret).ConfigureAwait(false).GetAwaiter().GetResult();
+                //Console.WriteLine("ReadARMTemplateFromBlob template.ArmtempalteName {0}", template.ArmtempalteName);
+                //string armContent = AzureBlobHelper.ReadARMTemplateFromBlob(template.ArmtempalteName);
+
+                //// Read the template and parameter file contents
+                //JObject templateFileContents = JObject.Parse(armContent);
+
+                Console.WriteLine("Get resourceGroupName");
+                var resourceGroupName = templateParameters.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
+                Console.WriteLine("resourceGroupName: {0} ", resourceGroupName);
+                Console.WriteLine("Get resourceGroupLocation");
+                var resourceGroupLocation = templateParameters.Where(s => s.Parameter.ToLower() == "location").FirstOrDefault();
+
+
+                var resourceManagementClient = new ResourceManagementClient(serviceCreds);
+                resourceManagementClient.SubscriptionId = credenitals.SubscriptionID;
+                Console.WriteLine("resourceManagementClient.SubscriptionId: {0}", resourceManagementClient.SubscriptionId);
+
+                Console.WriteLine(" Create or check that resource group exists");
+                DeleteExistingResourceGroup(resourceManagementClient, resourceGroupName.Value, resourceGroupLocation.Value);
+
+            }
+            catch (Exception ex)
+            {
+
+                string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
+                Console.WriteLine(errorDescriptin);
+            }
+
+        }
+
+        private static void DeleteExistingResourceGroup(ResourceManagementClient resourceManagementClient, string resourceGroupName, string resourceGroupLocation)
+        {
+            Console.WriteLine(string.Format("check if  resource group '{0}' in location '{1}' exists", resourceGroupName, resourceGroupLocation));
+            if (resourceManagementClient.ResourceGroups.CheckExistence(resourceGroupName) != true)
+            {
+                Console.WriteLine(string.Format("Delete resource group '{0}' in location '{1}'", resourceGroupName, resourceGroupLocation));
+                var resourceGroup = new ResourceGroup();
+                resourceGroup.Location = resourceGroupLocation;
+                resourceManagementClient.ResourceGroups.BeginDelete(resourceGroupName);
+                Console.WriteLine(string.Format("Resource group '{0}' in location '{1}' Deleted", resourceGroupName, resourceGroupLocation));
+            }
+            else
+            {
+                Console.WriteLine(string.Format("Resource Group not found existing resource group '{0}'", resourceGroupName));
             }
         }
 
@@ -151,6 +218,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
 
                 var deploymentResult = resourceManagementClient.Deployments.CreateOrUpdate(resourceGroupName, deploymentName, deployment);
                 var outputs = deploymentResult.Properties.Outputs;
+
                 Console.WriteLine(string.Format("Deployment status: {0}", deploymentResult.Properties.ProvisioningState));
 
                 return deploymentResult;

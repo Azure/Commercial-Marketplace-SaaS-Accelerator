@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Saas.SDK.WebJob.Models
+namespace Microsoft.Marketplace.SaasKit.WebJob.Models
 {
     public enum SubscriptionWebJobStatusEnum
     {
+
         /// <summary>
         /// The pending fulfillment start
         /// </summary>
@@ -22,13 +23,17 @@ namespace Saas.SDK.WebJob.Models
         Unsubscribed,
 
         /// <summary>
-        /// The not started
-        /// </summary>
-        NotStarted,
-
-        /// <summary>
         /// Pending Activation
         /// </summary>
-        PendingActivation
+        PendingActivation,
+
+        PendingUnsubscribe,
+
+        ActivationFailure,
+
+        UnsubscribeFailure
+
+
+
     }
 }
