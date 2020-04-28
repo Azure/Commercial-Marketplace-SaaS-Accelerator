@@ -48,7 +48,18 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
+                    if (Subscription.SaasSubscriptionStatus.ToString() == "PendingActivation")
+                    {
+                        Subject = "Pending Activation Email";
+                    }
+                    else if (Subscription.SaasSubscriptionStatus.ToString() == "Unsubscribed")
+                    {
+                        Subject = "Subscription Activation";
+                    }
+                    else if (Subscription.SaasSubscriptionStatus.ToString() == "Subscribed")
+                    {
+                        Subject = "Unsubscription";
+                    }
                     mail.Subject = Subject;
                     if (!string.IsNullOrEmpty(toReceipents))
                     {
@@ -88,7 +99,7 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    Subject = emailTemplateRepository.GetSubject(planEvent);
+                    Subject = "Failed";
                     mail.Subject = Subject;
                     if (!string.IsNullOrEmpty(toReceipents))
                     {

@@ -19,14 +19,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         {
             //string body = emailTemplateRepository.GetTemplateBody(Subscription.SaasSubscriptionStatus.ToString());
             string body = string.Empty;
-            if (planEvent == "failure")
-            {
-                body = emailTemplateRepository.GetTemplateBody(planEvent);
-            }
-            else
-            {
-                body = emailTemplateRepository.GetTemplateBody(Subscription.SaasSubscriptionStatus.ToString());
-            }
+            body = emailTemplateRepository.GetTemplateBody("Template");
+
             string applicationName = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationName");
             Hashtable hashTable = new Hashtable();
             hashTable.Add("ApplicationName", applicationName);
@@ -37,6 +31,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             hashTable.Add("SaasSubscriptionStatus", Subscription.SaasSubscriptionStatus);
             hashTable.Add("oldValue", oldValue);
             hashTable.Add("newValue", newValue);
+            hashTable.Add("planevent", planEvent);
+
+
             ExtendedProperties p = new ExtendedProperties();
 
             VelocityEngine v = new VelocityEngine();

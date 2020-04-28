@@ -17,14 +17,8 @@ namespace Microsoft.Marketplace.SaasKit.Web.Services
         public static string ProcessTemplate(SubscriptionResultExtension Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository, string planEvent, SubscriptionStatusEnum oldValue, string newValue)
         {
             string body = string.Empty;
-            if (planEvent == "failure")
-            {
-                body = emailTemplateRepository.GetTemplateBody(planEvent);
-            }
-            else
-            {
-                body = emailTemplateRepository.GetTemplateBody(Subscription.SaasSubscriptionStatus.ToString());
-            }
+            body = emailTemplateRepository.GetTemplateBody("Template");
+
             string applicationName = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationName");
             Hashtable hashTable = new Hashtable();
             hashTable.Add("ApplicationName", applicationName);
@@ -35,6 +29,8 @@ namespace Microsoft.Marketplace.SaasKit.Web.Services
             hashTable.Add("SaasSubscriptionStatus", Subscription.SaasSubscriptionStatus);
             hashTable.Add("oldValue", oldValue);
             hashTable.Add("newValue", newValue);
+            hashTable.Add("planevent", planEvent);
+
 
 
             ExtendedProperties p = new ExtendedProperties();
