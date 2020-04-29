@@ -95,7 +95,16 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 ARMTemplateParameters = subscriptionTemplateParametersList
             };
 
-
+            /*
+             *  KB: Trigger the email when the subscription is in one of the following statuses:
+             *  PendingFulfillmentStart - Send out the pending activation email.
+             *  DeploymentFailed
+             *  Subscribed
+             *  ActivationFailed
+             *  DeletedFailed
+             *  Unsubscribed
+             *  
+             */
 
 
 
