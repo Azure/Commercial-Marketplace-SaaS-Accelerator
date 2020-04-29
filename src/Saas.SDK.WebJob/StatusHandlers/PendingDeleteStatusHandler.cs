@@ -20,24 +20,29 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
         readonly IFulfillmentApiClient fulfillApiclient;
         readonly IApplicationConfigRepository applicationConfigRepository;
         readonly ISubscriptionLogRepository subscriptionLogRepository;
+        readonly ISubscriptionsRepository subscriptionsRepository;
 
-        public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionLogRepository subscriptionLogRepository) : base(new SaasKitContext())
+        public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionLogRepository subscriptionLogRepository, ISubscriptionsRepository subscriptionsRepository) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
+            this.subscriptionsRepository = subscriptionsRepository;
 
         }
         public override void Process(Guid subscriptionID)
         {
             var subscription = this.GetSubscriptionById(subscriptionID);
 
-            if (subscription.SubscriptionStatus == "Subscribed")
+            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingUnsubscribe.ToString())
             {
                 try
                 {
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeleteResourcePendign.ToString(), true);
 
                     StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupPending.ToString(), "Delete Resource Group Begin", Context, subscription.SubscriptionStatus);
+
+
                     var subscriptionParameters = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
                     if (subscriptionParameters != null)
                     {
@@ -58,12 +63,15 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                             deploy.DeleteResoureGroup(parametersList, credenitals);
 
                             StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), string.Format("Delete Resource Group: {0} End", resourceGroup), Context, subscription.SubscriptionStatus.ToString());
+
+                            this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeleteResourceSuccess.ToString(), true);
+
                             SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                             {
                                 Attribute = SubscriptionLogAttributes.Deployment.ToString(),
                                 SubscriptionId = subscription.Id,
-                                NewValue = DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(),
-                                OldValue = DeploymentStatusEnum.DeleteResourceGroupPending.ToString(),
+                                NewValue = SubscriptionWebJobStatusEnum.DeleteResourceSuccess.ToString(),
+                                OldValue = SubscriptionWebJobStatusEnum.DeleteResourcePendign.ToString(),
                                 CreateBy = 0,
                                 CreateDate = DateTime.Now
                             };
@@ -77,12 +85,15 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
                     StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(), errorDescriptin, Context, subscription.SubscriptionStatus.ToString());
                     Console.WriteLine(errorDescriptin);
+
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeleteResourceFailed.ToString(), true);
+
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Deployment.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(),
-                        OldValue = DeploymentStatusEnum.DeleteResourceGroupPending.ToString(),
+                        NewValue = SubscriptionWebJobStatusEnum.DeleteResourceFailed.ToString(),
+                        OldValue = subscription.SubscriptionStatus.ToString(),
                         CreateBy = 0,
                         CreateDate = DateTime.Now
                     };

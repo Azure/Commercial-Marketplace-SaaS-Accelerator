@@ -39,12 +39,16 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
             var deploymentStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
 
 
-            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingUnsubscribe.ToString())
+            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingUnsubscribe.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeleteResourceSuccess.ToString()
+                )
             {
                 try
                 {
                     var subscriptionData = this.fulfillApiclient.DeleteSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.Subscribed.ToString(), true);
+                   
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.Unsubscribed.ToString(), true);
+
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {

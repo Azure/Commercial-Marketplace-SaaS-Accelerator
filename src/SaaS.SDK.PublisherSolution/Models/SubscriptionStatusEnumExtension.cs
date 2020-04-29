@@ -1,10 +1,12 @@
-﻿using System;
+﻿using Microsoft.Marketplace.SaasKit.Models;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Microsoft.Marketplace.SaasKit.WebJob.Models
+namespace Microsoft.Marketplace.SaasKit.Client.Models
 {
-    public enum SubscriptionWebJobStatusEnum
+    public enum SubscriptionStatusEnumExtension
     {
 
         /// <summary>
@@ -23,6 +25,11 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.Models
         Unsubscribed,
 
         /// <summary>
+        /// The not started
+        /// </summary>
+        NotStarted,
+
+        /// <summary>
         /// Pending Activation
         /// </summary>
         PendingActivation,
@@ -39,7 +46,5 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.Models
         DeleteResourcePendign,
         DeleteResourceSuccess,
         DeleteResourceFailed
-
-
     }
 }

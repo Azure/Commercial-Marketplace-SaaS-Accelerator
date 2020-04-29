@@ -23,10 +23,17 @@ namespace SaaS.SDK.Provisioning.Webjob
         public void ProcessQueueMessage([QueueTrigger("saas-provisioning-queue")] string message,
                                                                                            Microsoft.Extensions.Logging.ILogger logger)
         {
-            logger.LogInformation($"{message} and FulfillmentClient is null : ${fulfillmentApiClient == null}");
-
-            // Deserialize the message as object
-            // Do process
+            try
+            {
+                logger.LogInformation($"{message} and FulfillmentClient is null : ${fulfillmentApiClient == null}");
+                Guid subscriptionid = Guid.Parse("c07e41d0-67ac-73a4-4eef-c6f18dee7000");
+                var subscriptionData = this.fulfillmentApiClient.ActivateSubscriptionAsync(subscriptionid, "tiered-plan-with-onetime-fee").ConfigureAwait(false).GetAwaiter().GetResult();
+                // Deserialize the message as object
+                // Do process
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

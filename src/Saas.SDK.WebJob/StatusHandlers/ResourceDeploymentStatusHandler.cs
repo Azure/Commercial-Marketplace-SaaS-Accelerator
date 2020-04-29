@@ -21,14 +21,15 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
     {
 
         readonly IFulfillmentApiClient fulfillApiclient;
-        //private readonly ISubscriptionsRepository subscriptionsRepository;
+        private readonly ISubscriptionsRepository subscriptionsRepository;
         readonly IApplicationConfigRepository applicationConfigRepository;
         readonly ISubscriptionLogRepository subscriptionLogRepository;
-        public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionLogRepository subscriptionLogRepository) : base(new SaasKitContext())
+        public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionLogRepository subscriptionLogRepository, ISubscriptionsRepository subscriptionsRepository) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
+            this.subscriptionsRepository = subscriptionsRepository;
 
         }
         public override void Process(Guid subscriptionID)
@@ -70,7 +71,10 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                             {
 
                                 Console.WriteLine("UpdateWebJobSubscriptionStatus");
+
                                 StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(), "Start Deployment", Context, subscription.SubscriptionStatus);
+
+                                this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeploymentPending.ToString(), true);
 
                                 Console.WriteLine("Get SubscriptionKeyValut");
                                 var keyvaultUrl = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
@@ -96,6 +100,22 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                                 }
 
                                 Console.WriteLine(outputstring);
+
+
+                                this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString(), true);
+
+                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                {
+                                    Attribute = SubscriptionLogAttributes.Deployment.ToString(),
+                                    SubscriptionId = subscription.Id,
+                                    NewValue = SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString(),
+                                    OldValue = SubscriptionWebJobStatusEnum.DeploymentPending.ToString(),
+                                    CreateBy = 0,
+                                    CreateDate = DateTime.Now
+                                };
+                                this.subscriptionLogRepository.Add(auditLog);
+
+                                StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", Context, SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString());
                             }
                         }
                     }
@@ -106,18 +126,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 
                     //Start ARM template Deployment
                     //Change status to ARMTemplateDeploymentSuccess
-                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", Context, subscription.SubscriptionStatus.ToString());
 
-                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                    {
-                        Attribute = SubscriptionLogAttributes.Deployment.ToString(),
-                        SubscriptionId = subscription.Id,
-                        NewValue = DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(),
-                        OldValue = DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(),
-                        CreateBy = 0,
-                        CreateDate = DateTime.Now
-                    };
-                    this.subscriptionLogRepository.Add(auditLog);
                 }
 
 

@@ -4,7 +4,6 @@ using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.Models;
 using Microsoft.Marketplace.SaasKit.WebJob.Models;
 using Microsoft.Marketplace.SaasKit.WebJob;
-using Microsoft.Marketplace.SaasKit.WebJob.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -40,7 +39,8 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
             Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription));
             var deploymentStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
 
-            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingActivation.ToString() && deploymentStatus.DeploymentStatus == DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString())
+            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingActivation.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString())
             {
                 try
                 {
@@ -50,6 +50,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
 
                     Console.WriteLine("subscriptionData : {0}", JsonConvert.SerializeObject(subscriptionData));
                     Console.WriteLine("UpdateWebJobSubscriptionStatus");
+
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.Subscribed.ToString(), true);
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
@@ -69,18 +70,20 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                     StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, Context, SubscriptionWebJobStatusEnum.ActivationFailure.ToString());
                     Console.WriteLine(errorDescriptin);
 
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.ActivationFailure.ToString(), true);
+
                     // Activation Failure SubscriptionWebJobStatusEnum.ActivationFailure
 
-                    /*SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.ActivationFailure.ToString(),
-                        OldValue = "None",
+                        OldValue = subscription.SubscriptionStatus,
                         CreateBy = 0,
                         CreateDate = DateTime.Now
                     };
-                    this.subscriptionLogRepository.Add(auditLog);*/
+                    this.subscriptionLogRepository.Add(auditLog);
 
 
                     //Call Email helper with ActivationFailure
