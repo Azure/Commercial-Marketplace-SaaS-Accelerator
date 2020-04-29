@@ -92,7 +92,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                 if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                                 {
                                     var keyvault = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
-                                    secretKey = keyvault.SecuteId;
+                                    secretKey = keyvault.SecuteId; //KB: Typo
                                 }
                                 else
                                 {
