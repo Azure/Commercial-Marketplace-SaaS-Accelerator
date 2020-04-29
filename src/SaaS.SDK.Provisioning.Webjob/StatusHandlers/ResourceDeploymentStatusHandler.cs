@@ -48,12 +48,15 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             Console.WriteLine("Get PlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
             Console.WriteLine("Get Offers");
+            //KB: Remove Context and have repository
             var offer = Context.Offers.Where(s => s.OfferGuid == planDetails.OfferId).FirstOrDefault();
             Console.WriteLine("Get Events");
+            //KB: Remove Context and have repository
             var events = Context.Events.Where(s => s.EventsName == "Activate").FirstOrDefault();
 
             Console.WriteLine("subscription.SubscriptionStatus: SubscriptionStatus: {0}", subscription.SubscriptionStatus);
-            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingActivation.ToString())
+            
+            if (SubscriptionWebJobStatusEnum.PendingActivation.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
             {
 
                 // Check if arm template is available for the plan in Plan Event Mapping table with isactive=1
@@ -103,7 +106,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                 var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
                                 Console.WriteLine("SecretValue : {0}", secretValue);
 
-                                Deploy deploy = new Deploy();
+                                ARMTemplateDeploymentManager deploy = new ARMTemplateDeploymentManager();
                                 Console.WriteLine("Start Deployment: DeployARMTemplate");
                                 var output = deploy.DeployARMTemplate(armTemplate, parametersList, credenitals).ConfigureAwait(false).GetAwaiter().GetResult();
 
@@ -127,7 +130,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                     SubscriptionId = subscription.Id,
                                     NewValue = SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString(),
                                     OldValue = SubscriptionWebJobStatusEnum.DeploymentPending.ToString(),
-                                    CreateBy = 0,
+                                    CreateBy = 0, // KB: Put some name here. It can be backgroundjob or the user that triggered the job.
                                     CreateDate = DateTime.Now
                                 };
                                 this.subscriptionLogRepository.Add(auditLog);
@@ -138,8 +141,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                     }
 
                 }
-
-
+                //KB: Remove empty lines
                 catch (Exception ex)
                 {
                     //Change status to  ARMTemplateDeploymentFailure
@@ -276,7 +278,6 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         {
             foreach (var parm in parms)
             {
-
                 var outputparm = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID && s.Parameter == parm.ParameterName && s.ParameterType.ToLower() == "output").FirstOrDefault();
 
                 if (outputparm != null)
@@ -285,19 +286,20 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                     Context.SubscriptionTemplateParameters.Update(outputparm);
                     Context.SaveChanges();
                 }
-
-
             }
-
-
         }
 
 
         public static List<SubscriptionTemplateParametersOutPut> ReplaceDeploymentparms(List<SubscriptionTemplateParametersOutPut> parmList)
         {
+            //KB: Expect subscriptionID to this method
+            // Call a stored procedure to return the default set of values as key value pairs
+            /* foreach param
+             *  Apply nvelocity and take the processed value.
+             */ 
+            // Use Nvelocity to do the substitution
             foreach (var parm in parmList)
             {
-
                 parm.Value = parm.Value.Replace("${Subscription}", parm.SubscriptionName.Replace(" ", "-"));
                 parm.Value = parm.Value.Replace("${Offer}", parm.OfferName.Replace(" ", "-"));
                 parm.Value = parm.Value.Replace("${Plan}", parm.PlanId.Replace(" ", "-"));

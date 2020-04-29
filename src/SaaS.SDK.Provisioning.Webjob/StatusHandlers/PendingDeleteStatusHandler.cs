@@ -65,7 +65,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                             var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
                             Console.WriteLine("SecretValue : {0}", secretValue);
 
-                            Deploy deploy = new Deploy();
+                            ARMTemplateDeploymentManager deploy = new ARMTemplateDeploymentManager();
                             deploy.DeleteResoureGroup(parametersList, credenitals);
 
                             StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), string.Format("Delete Resource Group: {0} End", resourceGroup), Context, subscription.SubscriptionStatus.ToString());

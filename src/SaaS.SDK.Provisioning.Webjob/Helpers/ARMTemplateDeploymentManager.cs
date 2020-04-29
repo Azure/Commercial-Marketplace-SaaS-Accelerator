@@ -19,18 +19,8 @@ using System.Linq;
 
 namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob
 {
-    public class Deploy
-    {
-        //string subscriptionId = "980a314e-1f55-416a-a85b-b97f3ff68d8e";
-
-
-        //string resourceGroupName = "IndraTest";
-        //string deploymentName = "ISVs";
-        //string resourceGroupLocation = "Central US"; 
-        // must be specified for creating a new resource group
-        //string pathToTemplateFile = @"C:\Users\ibijjala\Desktop\deploy-amp-saaskit.json";
-        //string pathToParameterFile = @"C:\Users\ibijjala\Desktop\deploy-parameters.json";
-
+    public class ARMTemplateDeploymentManager
+    {   
         /// <summary>
         /// Reads a JSON file from the specified path
         /// </summary>
@@ -59,7 +49,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob
                 string clientSecret = credenitals.ClientSecret.Trim();
 
                 Console.WriteLine("LoginSilentAsync");
-                var serviceCreds = ApplicationTokenProvider.LoginSilentAsync(tenantId, clientId, clientSecret).ConfigureAwait(false).GetAwaiter().GetResult();
+                var serviceCreds = await ApplicationTokenProvider.LoginSilentAsync(tenantId, clientId, clientSecret).ConfigureAwait(false);
                 Console.WriteLine("ReadARMTemplateFromBlob template.ArmtempalteName {0}", template.ArmtempalteName);
                 string armContent = AzureBlobHelper.ReadARMTemplateFromBlob(template.ArmtempalteName);
 
@@ -205,8 +195,6 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob
                 Console.WriteLine(string.Format("Starting template deployment '{0}' in resource group '{1}'", deploymentName, resourceGroupName));
                 var deployment = new Deployment();
 
-
-
                 string parameters = JsonConvert.SerializeObject(hashTable, Formatting.Indented, new JsonARMPropertiesConverter(typeof(Hashtable)));
 
                 deployment.Properties = new DeploymentProperties
@@ -226,8 +214,6 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-
-
             }
             return new DeploymentExtended();
         }
