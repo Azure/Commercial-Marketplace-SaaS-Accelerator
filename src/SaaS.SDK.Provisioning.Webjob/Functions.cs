@@ -21,7 +21,7 @@ namespace SaaS.SDK.Provisioning.Webjob
         }
 
         public void ProcessQueueMessage([QueueTrigger("saas-provisioning-queue")] string message,
-                                                                                           Microsoft.Extensions.Logging.ILogger logger)
+                                                                               Microsoft.Extensions.Logging.ILogger logger)
         {
             try
             {

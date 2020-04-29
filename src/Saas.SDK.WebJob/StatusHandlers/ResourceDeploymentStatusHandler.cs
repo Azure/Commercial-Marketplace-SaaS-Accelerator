@@ -77,10 +77,20 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                                 this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeploymentPending.ToString(), true);
 
                                 Console.WriteLine("Get SubscriptionKeyValut");
-                                var keyvaultUrl = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+                                string keyvaultUrl = "";
+                                if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
+                                {
+                                    var keyvault = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+                                    keyvaultUrl = keyvault.SecuteId;
+                                }
+                                else
+                                {
+                                    keyvaultUrl = applicationConfigRepository.GetValuefromApplicationConfig("LocalkeyvaultUrl");
+                                }
+
 
                                 Console.WriteLine("Get DoVault");
-                                string secretValue = AzureKeyVaultHelper.DoVault(keyvaultUrl.SecuteId);
+                                string secretValue = AzureKeyVaultHelper.DoVault(keyvaultUrl);
 
                                 var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
                                 Console.WriteLine("SecretValue : {0}", secretValue);
