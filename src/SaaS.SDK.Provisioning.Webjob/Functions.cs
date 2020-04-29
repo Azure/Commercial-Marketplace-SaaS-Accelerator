@@ -20,9 +20,9 @@ namespace SaaS.SDK.Provisioning.Webjob
         protected readonly IApplicationConfigRepository applicationConfigrepository;
         protected readonly ISubscriptionLogRepository subscriptionLogrepository;
         protected readonly IEmailTemplateRepository emailTemplaterepository;
-        protected readonly IPlanEventsMappingRepository planEventsMappingrepository;
-        protected readonly IOfferAttributesRepository offerAttributesrepository;
-        protected readonly IEventsRepository eventsrepository;
+        protected readonly IPlanEventsMappingRepository planEventsMappingRepository;
+        protected readonly IOfferAttributesRepository offerAttributesRepository;
+        protected readonly IEventsRepository eventsRepository;
         protected readonly IAzureKeyVaultClient azureKeyVaultClient;
 
 
@@ -32,9 +32,9 @@ namespace SaaS.SDK.Provisioning.Webjob
         public Functions(IFulfillmentApiClient fulfillmentApiClient,
                             ISubscriptionsRepository subscriptionRepository,
                             IApplicationConfigRepository applicationConfigRepository,
-                            ISubscriptionLogRepository subscriptionLogRepository, 
-                            IEmailTemplateRepository emailTemplateRepository,
-                            IPlanEventsMappingRepository planEventsMappingRepository, 
+                            ISubscriptionLogRepository subscriptionLogRepository,
+                            IEmailTemplateRepository emailTemplaterepository,
+                            IPlanEventsMappingRepository planEventsMappingRepository,
                             IOfferAttributesRepository offerAttributesRepository,
                             IEventsRepository eventsRepository,
                             IAzureKeyVaultClient azureKeyVaultClient)
@@ -42,18 +42,24 @@ namespace SaaS.SDK.Provisioning.Webjob
             this.fulfillmentApiClient = fulfillmentApiClient;
             this.subscriptionRepository = subscriptionRepository;
             this.azureKeyVaultClient = azureKeyVaultClient;
+            this.applicationConfigrepository = applicationConfigRepository;
+            this.emailTemplaterepository = emailTemplaterepository;
+            this.planEventsMappingRepository = planEventsMappingRepository;
+            this.offerAttributesRepository = offerAttributesRepository;
+            this.eventsRepository = eventsRepository;
+
 
             this.activateStatusHandlers = new List<ISubscriptionStatusHandler>();
             this.deactivateStatusHandlers = new List<ISubscriptionStatusHandler>();
 
-            // Add status handlers
             activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogrepository, subscriptionRepository, azureKeyVaultClient));
             activateStatusHandlers.Add(new PendingActivationStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogrepository));
-            activateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, applicationConfigrepository, emailTemplaterepository, planEventsMappingrepository, offerAttributesrepository, eventsrepository, subscriptionRepository));
+            activateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository));
+            activateStatusHandlers.Add(new PendingFulfillmentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogrepository));
 
             deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogrepository, subscriptionRepository, azureKeyVaultClient));
             deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogrepository));
-            deactivateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, applicationConfigrepository, emailTemplaterepository, planEventsMappingrepository, offerAttributesrepository, eventsrepository, subscriptionRepository));
+            deactivateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository));
         }
 
         public void ProcessQueueMessage([QueueTrigger("saas-provisioning-queue")] string message,
@@ -62,12 +68,16 @@ namespace SaaS.SDK.Provisioning.Webjob
             try
             {
                 logger.LogInformation($"{message} and FulfillmentClient is null : ${fulfillmentApiClient == null}");
-                //Guid subscriptionid = Guid.Parse("c07e41d0-67ac-73a4-4eef-c6f18dee7000");
-                //var subscriptionData = this.fulfillmentApiClient.ActivateSubscriptionAsync(subscriptionid, "tiered-plan-with-onetime-fee").ConfigureAwait(false).GetAwaiter().GetResult();
-                // Deserialize the message as object
+
+                //SubscriptionProcessQueueModel delete = new SubscriptionProcessQueueModel()
+                //{
+                //    SubscriptionID = Guid.Parse("66EC58C9-17F6-2C63-087C-8BF45C236395"),
+                //    TriggerEvent = "Unsubscribe"
+                //};
+                //message = JsonConvert.SerializeObject(delete);
+
                 // Do process
-                SubscriptionProcessQueueModel model = new SubscriptionProcessQueueModel();
-                model = JsonConvert.DeserializeObject<SubscriptionProcessQueueModel>(message);
+                var model = JsonConvert.DeserializeObject<SubscriptionProcessQueueModel>(message);
 
                 if (model.TriggerEvent == "Activate")
                 {

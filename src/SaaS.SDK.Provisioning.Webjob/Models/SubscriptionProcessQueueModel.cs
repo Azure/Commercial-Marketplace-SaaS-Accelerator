@@ -8,5 +8,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models
     {
         public Guid SubscriptionID { get; set; }
         public string TriggerEvent { get; set; }
+        public int UserId { get; set; }
+        public string PortalName { get; set; }
     }
 }

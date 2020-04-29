@@ -32,7 +32,7 @@ namespace Saas.SDK.WebJob.Services
             hashTable.Add("CustomerName", Subscription.CustomerName);
             hashTable.Add("Id", Subscription.Id);
             hashTable.Add("SubscriptionName", Subscription.Name);
-            hashTable.Add("SaasSubscriptionStatus", Subscription.SaasSubscriptionStatus);
+            hashTable.Add("SaasSubscriptionStatus", Subscription.SubscriptionStatus);
             hashTable.Add("oldValue", oldValue);
             hashTable.Add("newValue", newValue);
             hashTable.Add("planevent", planEvent);

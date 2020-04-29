@@ -93,8 +93,9 @@
         private readonly IOfferAttributesRepository offerAttributesRepository;
 
         private readonly IEventsRepository eventsRepository;
-        private readonly IOptions<SaaSApiClientConfiguration> options;
+        private readonly IOptions<CloudStorageConfigs> options;
 
+        private string azureWebJobsStorage;
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
         /// </summary>
@@ -104,7 +105,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, IOptions<CloudStorageConfigs> options)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -124,6 +125,7 @@
             this.planService = new PlanService(this.planRepository, this.offerAttributesRepository);
             this.eventsRepository = eventsRepository;
             this.options = options;
+            azureWebJobsStorage = options.Value.AzureWebJobsStorage;
         }
 
         #region View Action Methods
@@ -783,7 +785,7 @@
                                 newStatus = "Subscribed";
                                 //  var response = this.apiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                                 this.logger.LogInformation("UpdateStateOfSubscription Subscribed: SubscriptionId: {0} ", subscriptionId);
-                                //  this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
+                                //this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
                                 subscriptionDetail.EventName = "Activate";
                             }
 
@@ -814,13 +816,13 @@
                                     this.subscriptionService.AddSubscriptionParameters(inputParmsList, currentUserId);
                                 }
                                 var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment");
-                                if (deploymentParms != null)
+                                if (deploymentParms != null && PlanDetail.DeployToCustomerSubscription == true)
                                 {
                                     var deploymentParmslist = deploymentParms.ToList();
                                     IDictionary<string, string> parms = new Dictionary<string, string>();
                                     foreach (var parm in deploymentParmslist)
                                     {
-                                        parms.Add(parm.DisplayName, parm.Value);
+                                        parms.Add(parm.DisplayName, parm.Value.Trim());
                                     }
                                     string azureKeyValtSecret = AzureKeyVaultHelper.writeKeyVault(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
                                     this.subscriptionRepository.AddSubscriptionKeyValutSecret(subscriptionId, azureKeyValtSecret, currentUserId);
@@ -923,14 +925,16 @@
                     //    }
                     //}
                 }
-
+                var userDetails = this.userRepository.GetPartnerDetailFromEmail(CurrentUserEmailAddress);
                 SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
-                if (operation == "Activte")
+                if (operation == "Activate")
                 {
-                    this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
 
                     queueObject.SubscriptionID = subscriptionId;
                     queueObject.TriggerEvent = "Activate";
+                    queueObject.UserId = userDetails.UserId;
+                    queueObject.PortalName = "Client";
+
 
                 }
                 if (operation == "Deactivte")
@@ -938,16 +942,21 @@
                     this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
                     queueObject.SubscriptionID = subscriptionId;
                     queueObject.TriggerEvent = "Deactivte";
+                    queueObject.UserId = userDetails.UserId;
+                    queueObject.PortalName = "Client";
+
                 }
                 string queueMessage = JsonConvert.SerializeObject(queueObject);
 
 
-                string StorageConnectionString = this.options.Value.FulFillmentAPIBaseURL;
+                string StorageConnectionString = this.options.Value.AzureWebJobsStorage ?? azureWebJobsStorage;
+                StorageConnectionString = "DefaultEndpointsProtocol=https;AccountName=storagequeueforwebjob;AccountKey=MkzwMqxVK/Lev5D4GQSJOof/txDU+G46LmNIzEV4U6v7ANrO7TBOLqePE/JI5Wh2dLLO09OUR7WXUHAKXSkBJA==;BlobEndpoint=https://storagequeueforwebjob.blob.core.windows.net/;QueueEndpoint=https://storagequeueforwebjob.queue.core.windows.net/;TableEndpoint=https://storagequeueforwebjob.table.core.windows.net/;FileEndpoint=https://storagequeueforwebjob.file.core.windows.net/;";
+
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(StorageConnectionString);
 
                 //// Create the queue client.
                 CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-                CloudQueue queue = queueClient.GetQueueReference("queue-actionpmwebjob");
+                CloudQueue queue = queueClient.GetQueueReference("saas-provisioning-queue");
 
                 ////Create the queue if it doesn't already exist
                 queue.CreateIfNotExistsAsync();

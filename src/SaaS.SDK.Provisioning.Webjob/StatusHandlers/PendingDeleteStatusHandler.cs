@@ -23,9 +23,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         protected readonly ISubscriptionsRepository subscriptionsRepository;
         protected readonly IAzureKeyVaultClient azureKeyVaultClient;
 
-        public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient, 
-                                            IApplicationConfigRepository applicationConfigRepository, 
-                                            ISubscriptionLogRepository subscriptionLogRepository, 
+        public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient,
+                                            IApplicationConfigRepository applicationConfigRepository,
+                                            ISubscriptionLogRepository subscriptionLogRepository,
                                             ISubscriptionsRepository subscriptionsRepository,
                                             IAzureKeyVaultClient azureKeyVaultClient) : base(new SaasKitContext())
         {
@@ -44,17 +44,16 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             {
                 try
                 {
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeleteResourcePendign.ToString(), true);
-
-                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupPending.ToString(), "Delete Resource Group Begin", Context, subscription.SubscriptionStatus);
-
-
+                  
                     var subscriptionParameters = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
                     if (subscriptionParameters != null)
                     {
                         var parametersList = subscriptionParameters.ToList();
                         if (parametersList.Count() > 0)
                         {
+                            StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupPending.ToString(), "Delete Resource Group Begin", Context, subscription.SubscriptionStatus);
+                            this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeleteResourcePendign.ToString(), true);
+
                             var resourceGroup = parametersList.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
                             Console.WriteLine("Get SubscriptionKeyValut");
                             var keyvaultUrl = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();

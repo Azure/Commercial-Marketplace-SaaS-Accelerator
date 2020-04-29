@@ -574,6 +574,7 @@
 
 
 
+                var userDetails = this.userRepository.GetPartnerDetailFromEmail(CurrentUserEmailAddress);
                 SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
                 if (operation == "Activte")
                 {
@@ -581,6 +582,9 @@
 
                     queueObject.SubscriptionID = subscriptionId;
                     queueObject.TriggerEvent = "Activate";
+                    queueObject.UserId = userDetails.UserId;
+                    queueObject.PortalName = "Admin";
+
 
                 }
                 if (operation == "Deactivte")
@@ -588,27 +592,24 @@
                     this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
                     queueObject.SubscriptionID = subscriptionId;
                     queueObject.TriggerEvent = "Deactivte";
+                    queueObject.UserId = userDetails.UserId;
+                    queueObject.PortalName = "Admin";
+
                 }
                 string queueMessage = JsonConvert.SerializeObject(queueObject);
-
-
                 string StorageConnectionString = this.options.Value.FulFillmentAPIBaseURL;
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(StorageConnectionString);
 
                 //// Create the queue client.
                 CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-                CloudQueue queue = queueClient.GetQueueReference("queue-actionpmwebjob");
+                CloudQueue queue = queueClient.GetQueueReference("saas-provisioning-queue");
 
                 ////Create the queue if it doesn't already exist
                 queue.CreateIfNotExistsAsync();
 
-
-
                 //// Create a message and add it to the queue.
                 CloudQueueMessage message = new CloudQueueMessage(queueMessage);
                 queue.AddMessageAsync(message);
-
-
 
                 return this.RedirectToAction(nameof(this.ActivatedMessage));
             }

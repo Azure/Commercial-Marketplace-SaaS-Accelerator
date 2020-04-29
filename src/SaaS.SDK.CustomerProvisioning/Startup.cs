@@ -21,6 +21,8 @@ namespace Microsoft.Marketplace.SaasKit.Client
     using Microsoft.Marketplace.SaasKit.WebHook;
     using Microsoft.Marketplace.SaasKit.Client.WebHook;
     using Microsoft.Marketplace.SaasKit.Client.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
+    using Microsoft.Extensions.Options;
 
     /// <summary>
     /// Defines the <see cref="Startup" />
@@ -69,6 +71,10 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"]
             };
+            var cloudConfig = new CloudStorageConfigs
+            {
+                AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
+            };
 
             services.AddAuthentication(options =>
             {
@@ -91,6 +97,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
 
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
+            services.AddSingleton<CloudStorageConfigs>(cloudConfig);
 
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));

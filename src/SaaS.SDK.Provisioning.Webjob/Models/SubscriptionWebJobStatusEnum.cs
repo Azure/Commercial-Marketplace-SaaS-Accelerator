@@ -29,9 +29,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models
 
         PendingUnsubscribe,
 
-        ActivationFailure,
+        ActivationFailed,
 
-        UnsubscribeFailure,
+        UnsubscribeFailed,
 
         DeploymentPending,
         DeploymentSuccessful,

@@ -16,10 +16,27 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
     public class EmailHelper
     {
 
-        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, string planEvent = "success", SubscriptionWebJobStatusEnum oldValue = SubscriptionWebJobStatusEnum.PendingFulfillmentStart, string newValue = null)
+        private readonly IApplicationConfigRepository applicationConfigRepository;
+        private readonly ISubscriptionsRepository subscriptionsRepository;
+        //private readonly ISubscriptionLogRepository subscriptionLogRepository;
+        private readonly IEmailTemplateRepository emailTemplateRepository;
+        private readonly IEventsRepository eventsRepository;
+        private readonly IPlanEventsMappingRepository planEventsMappingRepository;
+
+        public EmailHelper(IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository)
+        {
+            this.applicationConfigRepository = applicationConfigRepository;
+            this.subscriptionsRepository = subscriptionsRepository;
+            //this.subscriptionLogRepository = subscriptionLogRepository;
+            this.emailTemplateRepository = emailTemplateRepository;
+            this.eventsRepository = eventsRepository;
+            this.planEventsMappingRepository = planEventsMappingRepository;
+        }
+
+        public void SendEmail(SubscriptionResultExtension Subscription, string planEvent = "success", SubscriptionWebJobStatusEnum oldValue = SubscriptionWebJobStatusEnum.PendingFulfillmentStart, string newValue = null)
         {
             MailMessage mail = new MailMessage();
-            string FromMail = applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
+            string FromMail = this.applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
             string password = applicationConfigRepository.GetValuefromApplicationConfig("SMTPPassword");
             string username = applicationConfigRepository.GetValuefromApplicationConfig("SMTPUserName");
             string Subject = string.Empty;
@@ -31,7 +48,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
             mail.Body = body;
             mail.IsBodyHtml = true;
 
-            int eventID = eventsRepository.GetEventID(Subscription.EventName);
+            int eventID = this.eventsRepository.GetEventID(Subscription.EventName);
 
             string toReceipents = string.Empty;
             bool CustomerToCopy = false;

@@ -22,7 +22,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
     {
 
         protected readonly IFulfillmentApiClient fulfillApiclient;
-        protected private readonly ISubscriptionsRepository subscriptionsRepository;
+        protected readonly ISubscriptionsRepository subscriptionsRepository;
         protected readonly IApplicationConfigRepository applicationConfigRepository;
         protected readonly ISubscriptionLogRepository subscriptionLogRepository;
         protected readonly IAzureKeyVaultClient azureKeyVaultClient;
@@ -55,7 +55,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             var events = Context.Events.Where(s => s.EventsName == "Activate").FirstOrDefault();
 
             Console.WriteLine("subscription.SubscriptionStatus: SubscriptionStatus: {0}", subscription.SubscriptionStatus);
-            
+
             if (SubscriptionWebJobStatusEnum.PendingActivation.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
             {
 
@@ -296,8 +296,10 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             // Call a stored procedure to return the default set of values as key value pairs
             /* foreach param
              *  Apply nvelocity and take the processed value.
-             */ 
+             */
             // Use Nvelocity to do the substitution
+            
+
             foreach (var parm in parmList)
             {
                 parm.Value = parm.Value.Replace("${Subscription}", parm.SubscriptionName.Replace(" ", "-"));

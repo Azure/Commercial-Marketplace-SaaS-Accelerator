@@ -35,7 +35,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         {
             Console.WriteLine("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
-            Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription)); ;
+            Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription));
             var deploymentStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
 
 
@@ -52,7 +52,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
-                        Attribute = Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models.SubscriptionLogAttributes.Status.ToString(),
+                        Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.Unsubscribed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
@@ -64,20 +64,20 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), errorDescriptin, Context, SubscriptionWebJobStatusEnum.UnsubscribeFailure.ToString());
+                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), errorDescriptin, Context, SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString());
                     Console.WriteLine(errorDescriptin);
 
-                    // Activation Failure SubscriptionWebJobStatusEnum.ActivationFailure
+                    // Activation Failure SubscriptionWebJobStatusEnum.ActivationFailed
 
 
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.UnsubscribeFailure.ToString(), true);
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString(), true);
 
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionWebJobStatusEnum.UnsubscribeFailure.ToString(),
+                        NewValue = SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
                         CreateBy = 0,
                         CreateDate = DateTime.Now
@@ -85,7 +85,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                     this.subscriptionLogRepository.Add(auditLog);
 
 
-                    //Call Email helper with ActivationFailure
+                    //Call Email helper with ActivationFailed
                 }
             }
         }

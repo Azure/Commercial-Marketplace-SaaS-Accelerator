@@ -18,24 +18,23 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
     class NotificationStatusHandler : AbstractSubscriptionStatusHandler
     {
 
-        readonly IFulfillmentApiClient fulfillApiclient;
+        protected readonly IFulfillmentApiClient fulfillApiclient;
 
-        readonly ISubscriptionsRepository SubscriptionRepository;
+        protected readonly ISubscriptionsRepository SubscriptionRepository;
 
-        readonly IApplicationConfigRepository applicationConfigRepository;
+        protected readonly IApplicationConfigRepository applicationConfigRepository;
 
-        readonly IEmailTemplateRepository emailTemplateRepository;
+        protected readonly IEmailTemplateRepository emailTemplateRepository;
 
-        readonly IPlanEventsMappingRepository planEventsMappingRepository;
+        protected readonly IPlanEventsMappingRepository planEventsMappingRepository;
 
-        readonly IOfferAttributesRepository offerAttributesRepository;
+        protected readonly IOfferAttributesRepository offerAttributesRepository;
 
-        readonly IEventsRepository eventsRepository;
+        protected readonly IEventsRepository eventsRepository;
         public NotificationStatusHandler(IFulfillmentApiClient fulfillApiClient,
             IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ISubscriptionsRepository SubscriptionRepository) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
-
             this.applicationConfigRepository = applicationConfigRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.offerAttributesRepository = offerAttributesRepository;
@@ -79,21 +78,21 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
 
 
-            SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension
-            {
-                Id = subscription.AmpsubscriptionId,
-                SubscribeId = subscription.Id,
-                PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId,
-                Quantity = subscription.Ampquantity,
-                Name = subscription.Name,
-                SubscriptionStatus = subscription.SubscriptionStatus,
-                IsActiveSubscription = subscription.IsActive ?? false,
-                CustomerEmailAddress = subscription.User?.EmailAddress,
-                CustomerName = subscription.User?.FullName,
-                GuidPlanId = planDetails.PlanGuid,
-                SubscriptionParameters = subscriptionParametersList,
-                ARMTemplateParameters = subscriptionTemplateParametersList
-            };
+            SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+
+            subscriptionDetail.Id = subscription.AmpsubscriptionId;
+            subscriptionDetail.SubscribeId = subscription.Id;
+            subscriptionDetail.PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId;
+            subscriptionDetail.Quantity = subscription.Ampquantity;
+            subscriptionDetail.Name = subscription.Name;
+            subscriptionDetail.SubscriptionStatus = subscription.SubscriptionStatus;
+            subscriptionDetail.IsActiveSubscription = subscription.IsActive ?? false;
+            subscriptionDetail.CustomerEmailAddress = subscription.User?.EmailAddress;
+            subscriptionDetail.CustomerName = subscription.User?.FullName;
+            subscriptionDetail.GuidPlanId = planDetails.PlanGuid;
+            subscriptionDetail.SubscriptionParameters = subscriptionParametersList;
+            subscriptionDetail.ARMTemplateParameters = subscriptionTemplateParametersList;
+
 
             /*
              *  KB: Trigger the email when the subscription is in one of the following statuses:
@@ -101,14 +100,37 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
              *  DeploymentFailed
              *  Subscribed
              *  ActivationFailed
-             *  DeletedFailed
+             *  DeleteResourceFailed
              *  Unsubscribed
-             *  
+             *  UnsubscribeFailed
              */
+            string eventStatus = "Activate";
 
 
+            if (
+             subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.Unsubscribed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeleteResourceFailed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString()
+                )
+            {
+                eventStatus = "Unsubscribe";
 
-            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository, "failure", SubscriptionWebJobStatusEnum.PendingActivation, "");
+            }
+            subscriptionDetail.EventName = eventStatus;
+
+            string emailStatusKey = "success";
+            if (
+                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeploymentFailed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.ActivationFailed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeleteResourceFailed.ToString()
+                )
+            {
+                emailStatusKey = "failure";
+
+            }
+            EmailHelper emial = new EmailHelper(this.applicationConfigRepository, this.SubscriptionRepository, this.emailTemplateRepository, this.planEventsMappingRepository, this.eventsRepository);
+            emial.SendEmail(subscriptionDetail, emailStatusKey, SubscriptionWebJobStatusEnum.PendingActivation, "");
 
         }
 
