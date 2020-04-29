@@ -5,6 +5,7 @@ using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers;
 using Newtonsoft.Json;
+using SaaS.SDK.Provisioning.Webjob.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,42 +17,44 @@ namespace SaaS.SDK.Provisioning.Webjob
         protected readonly IFulfillmentApiClient fulfillmentApiClient;
         protected readonly ISubscriptionsRepository subscriptionRepository;
 
-        private readonly IApplicationConfigRepository applicationConfigrepository;
-        private readonly ISubscriptionLogRepository subscriptionLogrepository;
-        private readonly IEmailTemplateRepository emailTemplaterepository;
-        private readonly IPlanEventsMappingRepository planEventsMappingrepository;
-        private readonly IOfferAttributesRepository offerAttributesrepository;
-        private readonly IEventsRepository eventsrepository;
+        protected readonly IApplicationConfigRepository applicationConfigrepository;
+        protected readonly ISubscriptionLogRepository subscriptionLogrepository;
+        protected readonly IEmailTemplateRepository emailTemplaterepository;
+        protected readonly IPlanEventsMappingRepository planEventsMappingrepository;
+        protected readonly IOfferAttributesRepository offerAttributesrepository;
+        protected readonly IEventsRepository eventsrepository;
+        protected readonly IAzureKeyVaultClient azureKeyVaultClient;
 
 
-
-
+        private readonly List<ISubscriptionStatusHandler> activateStatusHandlers;
+        private readonly List<ISubscriptionStatusHandler> deactivateStatusHandlers;
 
         public Functions(IFulfillmentApiClient fulfillmentApiClient,
                             ISubscriptionsRepository subscriptionRepository,
                             IApplicationConfigRepository applicationConfigRepository,
-                            ISubscriptionLogRepository subscriptionLogRepository, IEmailTemplateRepository emailTemplateRepository,
-        IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository,
-           IEventsRepository eventsRepository)
+                            ISubscriptionLogRepository subscriptionLogRepository, 
+                            IEmailTemplateRepository emailTemplateRepository,
+                            IPlanEventsMappingRepository planEventsMappingRepository, 
+                            IOfferAttributesRepository offerAttributesRepository,
+                            IEventsRepository eventsRepository,
+                            IAzureKeyVaultClient azureKeyVaultClient)
         {
             this.fulfillmentApiClient = fulfillmentApiClient;
             this.subscriptionRepository = subscriptionRepository;
+            this.azureKeyVaultClient = azureKeyVaultClient;
+
+            this.activateStatusHandlers = new List<ISubscriptionStatusHandler>();
+            this.deactivateStatusHandlers = new List<ISubscriptionStatusHandler>();
+
+            // Add status handlers
+            activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogrepository, subscriptionRepository, azureKeyVaultClient));
+            activateStatusHandlers.Add(new PendingActivationStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogrepository));
+            activateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, applicationConfigrepository, emailTemplaterepository, planEventsMappingrepository, offerAttributesrepository, eventsrepository, subscriptionRepository));
+
+            deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogrepository, subscriptionRepository, azureKeyVaultClient));
+            deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogrepository));
+            deactivateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, applicationConfigrepository, emailTemplaterepository, planEventsMappingrepository, offerAttributesrepository, eventsrepository, subscriptionRepository));
         }
-
-
-        protected static List<ISubscriptionStatusHandler> activateStatusHandlers = new List<ISubscriptionStatusHandler>()
-        {
-            new ResourceDeploymentStatusHandler(fulfillmentApiClient,applicationConfigrepository,subscriptionLogrepository,subscriptionsrepository),
-            new PendingActivationStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogrepository),
-            new NotificationStatusHandler(fulfillApiclient,applicationConfigrepository,emailTemplaterepository,planEventsMappingrepository,offerAttributesrepository,eventsrepository,subscriptionsrepository)
-        };
-        protected static List<ISubscriptionStatusHandler> deactivateStatusHandlers = new List<ISubscriptionStatusHandler>()
-        {
-
-            new PendingDeleteStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionLogrepository,subscriptionsrepository),
-            new UnsubscribeStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogrepository),
-            new NotificationStatusHandler(fulfillApiclient,applicationConfigrepository,emailTemplaterepository,planEventsMappingrepository,offerAttributesrepository,eventsrepository,subscriptionsrepository)
-        };
 
         public void ProcessQueueMessage([QueueTrigger("saas-provisioning-queue")] string message,
                                                                                Microsoft.Extensions.Logging.ILogger logger)
@@ -80,9 +83,6 @@ namespace SaaS.SDK.Provisioning.Webjob
                         subscriptionStatusHandler.Process(model.SubscriptionID);
                     }
                 }
-
-
-
             }
             catch (Exception ex)
             {

@@ -13,6 +13,9 @@ using SaaS.SDK.Provisioning.Webjob.Utilities;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
 using Microsoft.EntityFrameworkCore;
+using SaaS.SDK.Provisioning.Webjob.Models;
+using SaaS.SDK.Provisioning.Webjob.Contracts;
+using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
 
 namespace SaaS.SDK.Provisioning.Webjob
 {
@@ -77,8 +80,19 @@ namespace SaaS.SDK.Provisioning.Webjob
                 TenantId = Configuration["SaaSApiConfiguration:TenantId"]
             };
 
+            var keyVaultConfig = new KeyVaultConfig()
+            {
+                ClientID = Configuration["KeyVaultConfig:ClientID"],
+                ClientSecret = Configuration["KeyVaultConfig:ClientSecret"],
+                TenantID = Configuration["KeyVaultConfig:TenantID"],
+                KeyVaultUrl = Configuration["KeyVaultConfig:KeyVaultUrl"]
+            };
+
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
+
+            services.AddSingleton<IAzureKeyVaultClient>(new AzureKeyVaultClient(keyVaultConfig));
+            services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
 
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));

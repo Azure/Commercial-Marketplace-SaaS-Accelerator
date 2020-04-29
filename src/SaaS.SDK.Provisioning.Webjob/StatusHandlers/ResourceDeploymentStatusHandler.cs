@@ -9,6 +9,7 @@ using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SaaS.SDK.Provisioning.Webjob.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,19 +18,26 @@ using System.Text;
 namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
 
-    class ResourceDeploymentStatusHandler : AbstractSubscriptionStatusHandler
+    public class ResourceDeploymentStatusHandler : AbstractSubscriptionStatusHandler
     {
 
-        readonly IFulfillmentApiClient fulfillApiclient;
-        private readonly ISubscriptionsRepository subscriptionsRepository;
-        readonly IApplicationConfigRepository applicationConfigRepository;
-        readonly ISubscriptionLogRepository subscriptionLogRepository;
-        public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionLogRepository subscriptionLogRepository, ISubscriptionsRepository subscriptionsRepository) : base(new SaasKitContext())
+        protected readonly IFulfillmentApiClient fulfillApiclient;
+        protected private readonly ISubscriptionsRepository subscriptionsRepository;
+        protected readonly IApplicationConfigRepository applicationConfigRepository;
+        protected readonly ISubscriptionLogRepository subscriptionLogRepository;
+        protected readonly IAzureKeyVaultClient azureKeyVaultClient;
+
+        public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient,
+                                                IApplicationConfigRepository applicationConfigRepository,
+                                                ISubscriptionLogRepository subscriptionLogRepository,
+                                                ISubscriptionsRepository subscriptionsRepository,
+                                                IAzureKeyVaultClient azureKeyVaultClient) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
             this.subscriptionsRepository = subscriptionsRepository;
+            this.azureKeyVaultClient = azureKeyVaultClient;
 
         }
         public override void Process(Guid subscriptionID)
@@ -77,20 +85,20 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                 this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeploymentPending.ToString(), true);
 
                                 Console.WriteLine("Get SubscriptionKeyValut");
-                                string keyvaultUrl = "";
+                                string secretKey = "";
                                 if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                                 {
                                     var keyvault = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
-                                    keyvaultUrl = keyvault.SecuteId;
+                                    secretKey = keyvault.SecuteId;
                                 }
                                 else
                                 {
-                                    keyvaultUrl = applicationConfigRepository.GetValuefromApplicationConfig("LocalkeyvaultUrl");
+                                    secretKey = applicationConfigRepository.GetValuefromApplicationConfig("LocalkeyvaultUrl");
                                 }
 
 
                                 Console.WriteLine("Get DoVault");
-                                string secretValue = AzureKeyVaultHelper.DoVault(keyvaultUrl);
+                                string secretValue = azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
 
                                 var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
                                 Console.WriteLine("SecretValue : {0}", secretValue);
@@ -128,13 +136,6 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                             }
                         }
                     }
-
-                    /*
-                     {"Tenant ID":"6d7e0652-b03d-4ed2-bf86-f1999cecde17","Subscription ID":"AC57EDA4-EA49-41BD-4452-3AF5F3BBA081","Service Principal ID":"28b1d793-eede-411a-a9fe-ba996808d4ea","Client Secret":"sXJn9bGcp5cmhZ@Ns:?Z77Jb?Zp[?x3."}
-                     */
-
-                    //Start ARM template Deployment
-                    //Change status to ARMTemplateDeploymentSuccess
 
                 }
 

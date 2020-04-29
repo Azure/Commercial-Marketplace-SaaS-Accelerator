@@ -6,6 +6,7 @@ using Microsoft.Marketplace.SaasKit.Provisioning.Webjob;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
 using Newtonsoft.Json;
+using SaaS.SDK.Provisioning.Webjob.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,21 +14,26 @@ using System.Text;
 
 namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
-
     class PendingDeleteStatusHandler : AbstractSubscriptionStatusHandler
     {
 
-        readonly IFulfillmentApiClient fulfillApiclient;
-        readonly IApplicationConfigRepository applicationConfigRepository;
-        readonly ISubscriptionLogRepository subscriptionLogRepository;
-        readonly ISubscriptionsRepository subscriptionsRepository;
+        protected readonly IFulfillmentApiClient fulfillApiclient;
+        protected readonly IApplicationConfigRepository applicationConfigRepository;
+        protected readonly ISubscriptionLogRepository subscriptionLogRepository;
+        protected readonly ISubscriptionsRepository subscriptionsRepository;
+        protected readonly IAzureKeyVaultClient azureKeyVaultClient;
 
-        public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionLogRepository subscriptionLogRepository, ISubscriptionsRepository subscriptionsRepository) : base(new SaasKitContext())
+        public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient, 
+                                            IApplicationConfigRepository applicationConfigRepository, 
+                                            ISubscriptionLogRepository subscriptionLogRepository, 
+                                            ISubscriptionsRepository subscriptionsRepository,
+                                            IAzureKeyVaultClient azureKeyVaultClient) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
             this.subscriptionsRepository = subscriptionsRepository;
+            this.azureKeyVaultClient = azureKeyVaultClient;
 
         }
         public override void Process(Guid subscriptionID)
@@ -54,7 +60,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                             var keyvaultUrl = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
 
                             Console.WriteLine("Get DoVault");
-                            string secretValue = AzureKeyVaultHelper.DoVault(keyvaultUrl.SecuteId);
+                            string secretValue = azureKeyVaultClient.GetKeyAsync(keyvaultUrl.SecuteId).ConfigureAwait(false).GetAwaiter().GetResult();
 
                             var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
                             Console.WriteLine("SecretValue : {0}", secretValue);

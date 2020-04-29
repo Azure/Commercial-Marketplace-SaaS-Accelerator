@@ -12,7 +12,7 @@ using Microsoft.Marketplace.SaasKit.Services;
 namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
 
-    abstract class AbstractSubscriptionStatusHandler : DbContext, ISubscriptionStatusHandler
+    public abstract class AbstractSubscriptionStatusHandler : DbContext, ISubscriptionStatusHandler
     {
         protected SaasKitContext Context;
 
