@@ -38,7 +38,11 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         }
         public override void Process(Guid subscriptionID)
         {
+            Console.WriteLine("Get GetSubscriptionById");
             var subscription = this.GetSubscriptionById(subscriptionID);
+
+            Console.WriteLine("Get User");
+            var userdeatils = this.GetUserById(subscription.UserId);
 
             if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingUnsubscribe.ToString())
             {
@@ -77,7 +81,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                 SubscriptionId = subscription.Id,
                                 NewValue = SubscriptionWebJobStatusEnum.DeleteResourceSuccess.ToString(),
                                 OldValue = SubscriptionWebJobStatusEnum.DeleteResourcePendign.ToString(),
-                                CreateBy = 0,
+                                CreateBy = userdeatils.UserId,
                                 CreateDate = DateTime.Now
                             };
                             this.subscriptionLogRepository.Add(auditLog);
@@ -99,7 +103,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.DeleteResourceFailed.ToString(),
                         OldValue = subscription.SubscriptionStatus.ToString(),
-                        CreateBy = 0,
+                        CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
                     this.subscriptionLogRepository.Add(auditLog);

@@ -3,7 +3,6 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.Models;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
 using Saas.SDK.WebJob.Services;
 using System;
 //using SendGrid;
@@ -69,15 +68,15 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    if (Subscription.SaasSubscriptionStatus.ToString() == "PendingActivation")
+                    if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
                     {
                         Subject = "Pending Activation Email";
                     }
-                    else if (Subscription.SaasSubscriptionStatus.ToString() == "Unsubscribed")
+                    else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
                     {
                         Subject = "Subscription Activation";
                     }
-                    else if (Subscription.SaasSubscriptionStatus.ToString() == "Subscribed")
+                    else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
                     {
                         Subject = "Unsubscription";
                     }
@@ -91,9 +90,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                             mail.To.Add(new MailAddress(Multimailid));
                         }
 
-                        if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())))
+                        if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SubscriptionStatus.ToString())))
                         {
-                            string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
+                            string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SubscriptionStatus.ToString())).Split(';');
                             foreach (string Multimailid in CcEmails)
                             {
                                 mail.CC.Add(new MailAddress(Multimailid));
@@ -101,9 +100,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                         }
                     }
 
-                    if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())))
+                    if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(Subscription.SubscriptionStatus.ToString())))
                     {
-                        string[] BccEmails = (emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
+                        string[] BccEmails = (emailTemplateRepository.GetBccRecipients(Subscription.SubscriptionStatus.ToString())).Split(';');
                         foreach (string Multimailid in BccEmails)
                         {
                             mail.Bcc.Add(new MailAddress(Multimailid));

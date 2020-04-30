@@ -47,6 +47,10 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             var subscription = this.GetSubscriptionById(subscriptionID);
             Console.WriteLine("Get PlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
+
+            Console.WriteLine("Get User");
+            var userdeatils = this.GetUserById(subscription.UserId);
+
             Console.WriteLine("Get Offers");
             //KB: Remove Context and have repository
             var offer = Context.Offers.Where(s => s.OfferGuid == planDetails.OfferId).FirstOrDefault();
@@ -55,6 +59,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             var events = Context.Events.Where(s => s.EventsName == "Activate").FirstOrDefault();
 
             Console.WriteLine("subscription.SubscriptionStatus: SubscriptionStatus: {0}", subscription.SubscriptionStatus);
+            
+
 
             if (SubscriptionWebJobStatusEnum.PendingActivation.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -65,7 +71,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 Console.WriteLine("Get Armtemplates");
                 var armTemplate = Context.Armtemplates.Where(s => s.ArmtempalteId == planEvent.ArmtemplateId).FirstOrDefault();
                 Console.WriteLine("Get GetTemplateParameters");
-                var attributelsit = GetTemplateParameters(subscriptionID, planDetails.PlanGuid, Context);
+                var attributelsit = GetTemplateParameters(subscriptionID, planDetails.PlanGuid, Context, userdeatils);
 
 
                 try
@@ -130,7 +136,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                     SubscriptionId = subscription.Id,
                                     NewValue = SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString(),
                                     OldValue = SubscriptionWebJobStatusEnum.DeploymentPending.ToString(),
-                                    CreateBy = 0, // KB: Put some name here. It can be backgroundjob or the user that triggered the job.
+                                    CreateBy = userdeatils.UserId,
                                     CreateDate = DateTime.Now
                                 };
                                 this.subscriptionLogRepository.Add(auditLog);
@@ -157,7 +163,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.DeploymentFailed.ToString(),
                         OldValue = SubscriptionWebJobStatusEnum.PendingActivation.ToString(),
-                        CreateBy = 0,
+                        CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
                     this.subscriptionLogRepository.Add(auditLog);
@@ -166,7 +172,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             }
         }
 
-        public static List<SubscriptionTemplateParameters> GetTemplateParameters(Guid subscriptionID, Guid PlanGuid, SaasKitContext Context)
+        public static List<SubscriptionTemplateParameters> GetTemplateParameters(Guid subscriptionID, Guid PlanGuid, SaasKitContext Context, Users userdeatils)
         {
             List<SubscriptionTemplateParameters> _list = new List<SubscriptionTemplateParameters>();
             var subscriptionAttributes = Context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, PlanGuid);
@@ -209,7 +215,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                     AmpsubscriptionId = attr.AmpsubscriptionId,
                                     SubscriptionStatus = attr.SubscriptionStatus,
                                     SubscriptionName = attr.SubscriptionName,
-                                    CreateDate = DateTime.Now
+                                    CreateDate = DateTime.Now,
+                                    UserId = userdeatils.UserId
                                 };
                                 Context.SubscriptionTemplateParameters.Add(parm);
                                 Context.SaveChanges();
@@ -298,13 +305,16 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
              *  Apply nvelocity and take the processed value.
              */
             // Use Nvelocity to do the substitution
-            
+
 
             foreach (var parm in parmList)
             {
                 parm.Value = parm.Value.Replace("${Subscription}", parm.SubscriptionName.Replace(" ", "-"));
                 parm.Value = parm.Value.Replace("${Offer}", parm.OfferName.Replace(" ", "-"));
                 parm.Value = parm.Value.Replace("${Plan}", parm.PlanId.Replace(" ", "-"));
+                parm.Value = parm.Value.Replace("${Subscription}", parm.SubscriptionName.Replace("_", "-"));
+                parm.Value = parm.Value.Replace("${Offer}", parm.OfferName.Replace("_", "-"));
+                parm.Value = parm.Value.Replace("${Plan}", parm.PlanId.Replace("_", "-"));
             }
 
             return parmList;

@@ -187,3 +187,4 @@ namespace Microsoft.Marketplace.SaasKit.Client.Helpers
             }
         }
     }
+}
