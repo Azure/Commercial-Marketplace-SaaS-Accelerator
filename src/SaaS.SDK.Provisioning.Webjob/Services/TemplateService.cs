@@ -55,20 +55,19 @@ namespace Saas.SDK.WebJob.Services
             }
             if (Subscription.ARMTemplateParameters != null && Subscription.ARMTemplateParameters.Count > 0)
             {
-                arminputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input" && s.EventsName == "Active").ToList();
+                arminputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input").ToList();
                 if (arminputlist.Count > 0)
                     context.Put("arminputparms", arminputlist);
             }
             if (Subscription.ARMTemplateParameters!= null && Subscription.ARMTemplateParameters.Count>0)
             {
-                armoutputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output" && s.EventsName == "Active").ToList();
+                armoutputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output").ToList();
                 if (armoutputlist.Count > 0)
                     context.Put("armoutputparms", armoutputlist);
             }
             StringWriter writer = new StringWriter();
             v.Evaluate(context, writer, string.Empty, body);
             return writer.ToString();
-
         }
     }
 }

@@ -68,7 +68,18 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
+                    if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
+                    {
+                        Subject = "Pending Activation";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
+                    {
+                        Subject = "Subscription Activation";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
+                    {
+                        Subject = "Unsubscription";
+                    }
                     mail.Subject = Subject;
                     mail.To.Add(toReceipents);
                     SmtpClient copy = new SmtpClient();
@@ -78,7 +89,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                     copy.Credentials = new NetworkCredential(
                         username, password);
                     copy.EnableSsl = smtpSsl;
-                    copy.Send(mail);
+                    //copy.Send(mail);
                 }
 
                 if (CustomerToCopy && planEvent.ToLower() == "failure" && isActive)
@@ -88,7 +99,22 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    Subject = emailTemplateRepository.GetSubject(planEvent);
+                    if (Subscription.SubscriptionStatus.ToString() == "DeploymentFailed")
+                    {
+                        Subject = "Deployment Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "ActivationFailed")
+                    {
+                        Subject = "Activation Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "UnsubscribeFailed")
+                    {
+                        Subject = "Unsubscribe Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "DeleteResourceFailed")
+                    {
+                        Subject = "Delete Resource Failed";
+                    }
                     mail.Subject = Subject;
                     mail.To.Add(toReceipents);
                     SmtpClient copy = new SmtpClient();
@@ -98,7 +124,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                     copy.Credentials = new NetworkCredential(
                         username, password);
                     copy.EnableSsl = smtpSsl;
-                    copy.Send(mail);
+                    //copy.Send(mail);
                 }
 
                 mail.To.Clear();
@@ -113,13 +139,13 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                     }
                     if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
                     {
-                        Subject = "Pending Activation Email";
+                        Subject = "Pending Activation";
                     }
-                    else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
+                    else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
                     {
                         Subject = "Subscription Activation";
                     }
-                    else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
+                    else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
                     {
                         Subject = "Unsubscription";
                     }
@@ -162,7 +188,22 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    Subject = "Failed";
+                    if (Subscription.SubscriptionStatus.ToString() == "DeploymentFailed")
+                    {
+                        Subject = "Deployment Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "ActivationFailed")
+                    {
+                        Subject = "Activation Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "UnsubscribeFailed")
+                    {
+                        Subject = "Unsubscribe Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "DeleteResourceFailed")
+                    {
+                        Subject = "Delete Resource Failed";
+                    }
                     mail.Subject = Subject;
                     if (!string.IsNullOrEmpty(toReceipents))
                     {
