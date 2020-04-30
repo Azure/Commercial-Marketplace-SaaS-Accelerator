@@ -484,6 +484,7 @@
                             //subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             subscriptionDetail.EventName = "Activate";
                             subscriptionDetail.PlanList = this.webSubscriptionService.GetAllSubscriptionPlans();
+                            subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
                             var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             //PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
                             //subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
