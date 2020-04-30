@@ -11,6 +11,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Helpers
 {
     public class AzureKeyVaultHelper
     {
+        //KB: Remove the hardcoding. Follow the webjob.
         const string CLIENTSECRET = "sXJn9bGcp5cmhZ@Ns:?Z77Jb?Zp[?x3.";
         const string CLIENTID = "28b1d793-eede-411a-a9fe-ba996808d4ea";
         // available from the Key Vault resource page

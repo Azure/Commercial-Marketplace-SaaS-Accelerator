@@ -84,14 +84,14 @@ namespace Microsoft.Marketplace.SaasKit.WebJob
 
         protected static List<ISubscriptionStatusHandler> activateStatusHandlers = new List<ISubscriptionStatusHandler>()
         {
-           // new ResourceDeploymentStatusHandler(fulfillApiclient,applicationConfigrepository),
+            new ResourceDeploymentStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionLogrepository,subscriptionsrepository),
             new PendingActivationStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogrepository),
             new NotificationStatusHandler(fulfillApiclient,applicationConfigrepository,emailTemplaterepository,planEventsMappingrepository,offerAttributesrepository,eventsrepository,subscriptionsrepository)
         };
         protected static List<ISubscriptionStatusHandler> deactivateStatusHandlers = new List<ISubscriptionStatusHandler>()
         {
 
-            new PendingDeleteStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionLogrepository),
+            new PendingDeleteStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionLogrepository,subscriptionsrepository),
             new UnsubscribeStatusHandler(fulfillApiclient,applicationConfigrepository,subscriptionsrepository,subscriptionLogrepository),
             new NotificationStatusHandler(fulfillApiclient,applicationConfigrepository,emailTemplaterepository,planEventsMappingrepository,offerAttributesrepository,eventsrepository,subscriptionsrepository)
         };

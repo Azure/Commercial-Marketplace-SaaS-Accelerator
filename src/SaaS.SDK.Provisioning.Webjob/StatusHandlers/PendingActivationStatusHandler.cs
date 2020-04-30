@@ -2,17 +2,17 @@
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.Models;
-using Microsoft.Marketplace.SaasKit.WebJob.Models;
-using Microsoft.Marketplace.SaasKit.WebJob;
+using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
+using Microsoft.Marketplace.SaasKit.Provisioning.Webjob;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Newtonsoft.Json;
 using System.Linq;
-using Microsoft.Marketplace.SaasKit.WebJob.Helpers;
+using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
 
-namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
+namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
 
     class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
@@ -67,18 +67,18 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, Context, SubscriptionWebJobStatusEnum.ActivationFailure.ToString());
+                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, Context, SubscriptionWebJobStatusEnum.ActivationFailed.ToString());
                     Console.WriteLine(errorDescriptin);
 
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.ActivationFailure.ToString(), true);
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.ActivationFailed.ToString(), true);
 
-                    // Activation Failure SubscriptionWebJobStatusEnum.ActivationFailure
+                    // Activation Failure SubscriptionWebJobStatusEnum.ActivationFailed
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionWebJobStatusEnum.ActivationFailure.ToString(),
+                        NewValue = SubscriptionWebJobStatusEnum.ActivationFailed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
                         CreateBy = 0,
                         CreateDate = DateTime.Now
@@ -86,7 +86,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                     this.subscriptionLogRepository.Add(auditLog);
 
 
-                    //Call Email helper with ActivationFailure
+                    //Call Email helper with ActivationFailed
                 }
 
             }

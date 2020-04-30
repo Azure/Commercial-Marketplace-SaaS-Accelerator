@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microsoft.Marketplace.SaasKit.WebJob.Models
+namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models
 {
     public enum SubscriptionWebJobStatusEnum
     {
@@ -29,9 +29,9 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.Models
 
         PendingUnsubscribe,
 
-        ActivationFailure,
+        ActivationFailed,
 
-        UnsubscribeFailure,
+        UnsubscribeFailed,
 
         DeploymentPending,
         DeploymentSuccessful,
