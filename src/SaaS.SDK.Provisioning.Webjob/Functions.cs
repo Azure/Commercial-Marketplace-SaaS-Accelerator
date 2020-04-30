@@ -73,7 +73,7 @@ namespace SaaS.SDK.Provisioning.Webjob
 
                 SubscriptionProcessQueueModel delete = new SubscriptionProcessQueueModel()
                 {
-                    SubscriptionID = Guid.Parse("66EC58C9-17F6-2C63-087C-8BF45C236395"),
+                    SubscriptionID = Guid.Parse("92badc23-5cac-8404-7c97-52b1bc8e02ff"),
                     TriggerEvent = "Activate"
                 };
                 message = JsonConvert.SerializeObject(delete);

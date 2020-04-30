@@ -331,7 +331,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                 {
                     if (subscriptionAttributes != null)
                     {
-                        var subscriptionAttributesList = subscriptionAttributes.ToList();
+                        var beforeReplaceList = subscriptionAttributes.ToList();
+
+                        var subscriptionAttributesList = ReplaceDeploymentparms(beforeReplaceList);
 
 
                         if (subscriptionAttributesList.Count() > 0)
@@ -371,6 +373,27 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 
             }
             return _list;
+        }
+
+
+        public static List<SubscriptionTemplateParametersOutPut> ReplaceDeploymentparms(List<SubscriptionTemplateParametersOutPut> parmList)
+        {
+            //KB: Expect subscriptionID to this method
+            // Call a stored procedure to return the default set of values as key value pairs
+            /* foreach param
+             *  Apply nvelocity and take the processed value.
+             */
+            // Use Nvelocity to do the substitution
+
+
+            foreach (var parm in parmList)
+            {
+                parm.Value = parm.Value.Replace("${Subscription}", parm.SubscriptionName.Replace(" ", "-").Replace("_", "-"));
+                parm.Value = parm.Value.Replace("${Offer}", parm.OfferName.Replace(" ", "-").Replace("_", "-"));
+                parm.Value = parm.Value.Replace("${Plan}", parm.PlanId.Replace(" ", "-").Replace("_", "-"));
+            }
+
+            return parmList;
         }
 
         /// <summary>

@@ -64,16 +64,16 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), errorDescriptin, Context, SubscriptionWebJobStatusEnum.UnsubscribeFailure.ToString());
+                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), errorDescriptin, Context, SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString());
                     Console.WriteLine(errorDescriptin);
 
-                    // Activation Failure SubscriptionWebJobStatusEnum.ActivationFailure
+                    // Activation Failure SubscriptionWebJobStatusEnum.ActivationFailed
 
                     /*SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionWebJobStatusEnum.ActivationFailure.ToString(),
+                        NewValue = SubscriptionWebJobStatusEnum.ActivationFailed.ToString(),
                         OldValue = "None",
                         CreateBy = 0,
                         CreateDate = DateTime.Now
@@ -81,7 +81,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                     this.subscriptionLogRepository.Add(auditLog);*/
 
 
-                    //Call Email helper with ActivationFailure
+                    //Call Email helper with ActivationFailed
                 }
             }
         }

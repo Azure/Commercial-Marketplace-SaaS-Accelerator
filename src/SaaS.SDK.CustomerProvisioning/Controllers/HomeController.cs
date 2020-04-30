@@ -522,7 +522,12 @@
                     var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                     subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
                     var planDetails = this.planRepository.GetPlanDetailByPlanId(subscriptionData.PlanId);
-                    subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+                    var subscriptionParmaeters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+                    var inputParanetrs = subscriptionParmaeters.Where(s => s.Type.ToLower() == "input");
+                    if (inputParanetrs != null && inputParanetrs.ToList().Count() > 0)
+                    {
+                        subscriptionDetail.SubscriptionParameters = inputParanetrs.ToList();
+                    }
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
                     subscriptionDetail.ShowWelcomeScreen = false;
                     subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.PendingFulfillmentStart;

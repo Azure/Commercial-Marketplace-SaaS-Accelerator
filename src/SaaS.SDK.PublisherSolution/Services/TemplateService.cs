@@ -9,12 +9,13 @@ using System.IO;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Models;
 using System.Linq;
+using Microsoft.Marketplace.Saas.Web.Models;
 
 namespace Microsoft.Marketplace.SaasKit.Web.Services
 {
     public class TemplateService
     {
-        public static string ProcessTemplate(SubscriptionResultExtension Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository, string planEvent, SubscriptionStatusEnum oldValue, string newValue)
+        public static string ProcessTemplate(SubscriptionResultExtension Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository, string planEvent, SubscriptionStatusEnumExtension oldValue, string newValue)
         {
             string body = string.Empty;
             body = emailTemplateRepository.GetTemplateBody("Template");

@@ -15,6 +15,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.Models
         public string EventName { get; set; }
         public List<SubscriptionParametersModel> SubscriptionParameters { get; set; }
 
+        public new  SubscriptionStatusEnumExtension SaasSubscriptionStatus { get; set; }
+
+
 
     }
 }

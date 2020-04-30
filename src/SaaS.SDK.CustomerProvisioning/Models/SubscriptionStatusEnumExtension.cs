@@ -36,9 +36,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models
 
         PendingUnsubscribe,
 
-        ActivationFailure,
+        ActivationFailed,
 
-        UnsubscribeFailure,
+        UnsubscribeFailed,
 
         DeploymentPending,
         DeploymentSuccessful,

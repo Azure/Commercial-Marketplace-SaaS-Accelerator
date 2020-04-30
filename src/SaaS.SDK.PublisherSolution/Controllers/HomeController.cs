@@ -382,7 +382,7 @@
         public IActionResult ActivateSubscription(Guid subscriptionId, string planId)
         {
             this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId:{1}", subscriptionId, planId);
-            SubscriptionResult subscriptionDetail = new SubscriptionResult();
+            SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
             if (User.Identity.IsAuthenticated)
             {
@@ -399,7 +399,7 @@
                 var oldValue = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
 
                 var serializedParent = JsonConvert.SerializeObject(subscriptionData);
-                subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
+                subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
                 this.logger.LogInformation("serializedParent :{0}", serializedParent);
                 //subscriptionDetail = (SubscriptionResultExtension)subscriptionData;
                 subscriptionDetail.ShowWelcomeScreen = false;
@@ -438,7 +438,7 @@
                     subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
                     subscriptionDetail.ShowWelcomeScreen = false;
-                    subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
+                    subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnumExtension.Subscribed;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
                 }
@@ -484,7 +484,7 @@
                             //subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             subscriptionDetail.EventName = "Activate";
                             subscriptionDetail.PlanList = this.webSubscriptionService.GetAllSubscriptionPlans();
-                            subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
+                            subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnumExtension.Subscribed;
                             var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             //PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
                             //subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
@@ -518,7 +518,7 @@
                             //this.logger.LogInformation("UpdateStateOfSubscription");
                             //this.webSubscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Unsubscribed, false);
                             //subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId, true);
-                            subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Unsubscribed;
+                            subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnumExtension.Unsubscribed;
                             subscriptionDetail.EventName = "Unsubscribe ";
                             isSuccess = true;
                             this.logger.LogInformation("GetIsActive");
@@ -721,17 +721,32 @@
         /// </summary>
         /// <param name="subscriptionStatus">The subscription status.</param>
         /// <returns></returns>
-        public SubscriptionStatusEnum GetSubscriptionStatus(string subscriptionStatus)
+        public SubscriptionStatusEnumExtension GetSubscriptionStatus(string subscriptionStatus)
         {
             if (!string.IsNullOrEmpty(subscriptionStatus))
             {
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.NotStarted)) return SubscriptionStatusEnum.NotStarted;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.PendingFulfillmentStart)) return SubscriptionStatusEnum.PendingFulfillmentStart;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Subscribed)) return SubscriptionStatusEnum.Subscribed;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Unsubscribed)) return SubscriptionStatusEnum.Unsubscribed;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.PendingActivation)) return SubscriptionStatusEnum.PendingActivation;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.NotStarted)) return SubscriptionStatusEnumExtension.NotStarted;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingFulfillmentStart)) return SubscriptionStatusEnumExtension.PendingFulfillmentStart;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.Subscribed)) return SubscriptionStatusEnumExtension.Subscribed;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.Unsubscribed)) return SubscriptionStatusEnumExtension.Unsubscribed;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingActivation)) return SubscriptionStatusEnumExtension.PendingActivation;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingUnsubscribe)) return SubscriptionStatusEnumExtension.PendingUnsubscribe;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.ActivationFailed)) return SubscriptionStatusEnumExtension.ActivationFailed;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.UnsubscribeFailed)) return SubscriptionStatusEnumExtension.UnsubscribeFailed;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeploymentPending)) return SubscriptionStatusEnumExtension.DeploymentPending;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeploymentSuccessful)) return SubscriptionStatusEnumExtension.DeploymentSuccessful;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeploymentFailed)) return SubscriptionStatusEnumExtension.DeploymentFailed;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeleteResourcePendign)) return SubscriptionStatusEnumExtension.DeleteResourcePendign;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeleteResourceFailed)) return SubscriptionStatusEnumExtension.DeleteResourceFailed;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeleteResourceSuccess)) return SubscriptionStatusEnumExtension.DeleteResourceSuccess;
             }
-            return SubscriptionStatusEnum.NotStarted;
+            return SubscriptionStatusEnumExtension.NotStarted;
         }
 
         /// <summary>

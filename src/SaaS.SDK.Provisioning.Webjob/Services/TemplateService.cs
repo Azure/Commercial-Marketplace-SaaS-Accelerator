@@ -15,7 +15,7 @@ namespace Saas.SDK.WebJob.Services
 {
     public class TemplateService
     {
-        public static string ProcessTemplate(SubscriptionResultExtension Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository,string planEvent, SubscriptionWebJobStatusEnum oldValue, string newValue)
+        public static string ProcessTemplate(SubscriptionResultExtension Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository, string planEvent, SubscriptionWebJobStatusEnum oldValue, string newValue)
         {
             string body = string.Empty;
             string parameter = string.Empty;
@@ -55,13 +55,17 @@ namespace Saas.SDK.WebJob.Services
             }
             if (Subscription.ARMTemplateParameters != null && Subscription.ARMTemplateParameters.Count > 0)
             {
-                arminputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input" && s.EventsName == "Active").ToList();
+                arminputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input"
+                /*&& s.EventsName == "Active"*/
+                ).ToList();
                 if (arminputlist.Count > 0)
                     context.Put("arminputparms", arminputlist);
             }
-            if (Subscription.ARMTemplateParameters!= null && Subscription.ARMTemplateParameters.Count>0)
+            if (Subscription.ARMTemplateParameters != null && Subscription.ARMTemplateParameters.Count > 0)
             {
-                armoutputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output" && s.EventsName == "Active").ToList();
+                armoutputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output"
+                /*&& s.EventsName == "Active"*/
+                  ).ToList();
                 if (armoutputlist.Count > 0)
                     context.Put("armoutputparms", armoutputlist);
             }

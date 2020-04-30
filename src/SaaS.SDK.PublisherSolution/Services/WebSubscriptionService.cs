@@ -157,17 +157,32 @@ namespace Microsoft.Marketplace.Saas.Web.Services
             return subscritpionDetail;
         }
 
-        public SubscriptionStatusEnum GetSubscriptionStatus(string subscriptionStatus)
+        public SubscriptionStatusEnumExtension GetSubscriptionStatus(string subscriptionStatus)
         {
             if (!string.IsNullOrEmpty(subscriptionStatus))
             {
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.NotStarted)) return SubscriptionStatusEnum.NotStarted;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.PendingFulfillmentStart)) return SubscriptionStatusEnum.PendingFulfillmentStart;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Subscribed)) return SubscriptionStatusEnum.Subscribed;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.Unsubscribed)) return SubscriptionStatusEnum.Unsubscribed;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnum.PendingActivation)) return SubscriptionStatusEnum.PendingActivation;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.NotStarted)) return SubscriptionStatusEnumExtension.NotStarted;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingFulfillmentStart)) return SubscriptionStatusEnumExtension.PendingFulfillmentStart;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.Subscribed)) return SubscriptionStatusEnumExtension.Subscribed;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.Unsubscribed)) return SubscriptionStatusEnumExtension.Unsubscribed;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingActivation)) return SubscriptionStatusEnumExtension.PendingActivation;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingUnsubscribe)) return SubscriptionStatusEnumExtension.PendingUnsubscribe;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.ActivationFailed)) return SubscriptionStatusEnumExtension.ActivationFailed;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.UnsubscribeFailed)) return SubscriptionStatusEnumExtension.UnsubscribeFailed;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeploymentPending)) return SubscriptionStatusEnumExtension.DeploymentPending;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeploymentSuccessful)) return SubscriptionStatusEnumExtension.DeploymentSuccessful;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeploymentFailed)) return SubscriptionStatusEnumExtension.DeploymentFailed;
+
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeleteResourcePendign)) return SubscriptionStatusEnumExtension.DeleteResourcePendign;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeleteResourceFailed)) return SubscriptionStatusEnumExtension.DeleteResourceFailed;
+                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeleteResourceSuccess)) return SubscriptionStatusEnumExtension.DeleteResourceSuccess;
             }
-            return SubscriptionStatusEnum.NotStarted;
+            return SubscriptionStatusEnumExtension.NotStarted;
         }
 
         /// <summary>
