@@ -18,7 +18,7 @@ namespace SaaS.SDK.Provisioning.Webjob
         protected readonly ISubscriptionsRepository subscriptionRepository;
 
         protected readonly IApplicationConfigRepository applicationConfigrepository;
-        protected readonly ISubscriptionLogRepository subscriptionLogrepository;
+        protected readonly ISubscriptionLogRepository subscriptionLogRepository;
         protected readonly IEmailTemplateRepository emailTemplaterepository;
         protected readonly IPlanEventsMappingRepository planEventsMappingRepository;
         protected readonly IOfferAttributesRepository offerAttributesRepository;
@@ -47,18 +47,20 @@ namespace SaaS.SDK.Provisioning.Webjob
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.offerAttributesRepository = offerAttributesRepository;
             this.eventsRepository = eventsRepository;
+            this.subscriptionLogRepository = subscriptionLogRepository;
 
 
             this.activateStatusHandlers = new List<ISubscriptionStatusHandler>();
             this.deactivateStatusHandlers = new List<ISubscriptionStatusHandler>();
 
-            activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogrepository, subscriptionRepository, azureKeyVaultClient));
-            activateStatusHandlers.Add(new PendingActivationStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogrepository));
+            activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient));
+            activateStatusHandlers.Add(new PendingActivationStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository));
+            activateStatusHandlers.Add(new PendingFulfillmentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository));
             activateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository));
-            activateStatusHandlers.Add(new PendingFulfillmentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogrepository));
 
-            deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogrepository, subscriptionRepository, azureKeyVaultClient));
-            deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogrepository));
+
+            deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient));
+            deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository));
             deactivateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository));
         }
 
@@ -69,12 +71,12 @@ namespace SaaS.SDK.Provisioning.Webjob
             {
                 logger.LogInformation($"{message} and FulfillmentClient is null : ${fulfillmentApiClient == null}");
 
-                //SubscriptionProcessQueueModel delete = new SubscriptionProcessQueueModel()
-                //{
-                //    SubscriptionID = Guid.Parse("66EC58C9-17F6-2C63-087C-8BF45C236395"),
-                //    TriggerEvent = "Unsubscribe"
-                //};
-                //message = JsonConvert.SerializeObject(delete);
+                SubscriptionProcessQueueModel delete = new SubscriptionProcessQueueModel()
+                {
+                    SubscriptionID = Guid.Parse("66EC58C9-17F6-2C63-087C-8BF45C236395"),
+                    TriggerEvent = "Activate"
+                };
+                message = JsonConvert.SerializeObject(delete);
 
                 // Do process
                 var model = JsonConvert.DeserializeObject<SubscriptionProcessQueueModel>(message);

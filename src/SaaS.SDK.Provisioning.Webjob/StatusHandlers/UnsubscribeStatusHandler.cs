@@ -37,6 +37,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             var subscription = this.GetSubscriptionById(subscriptionID);
             Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription));
             var deploymentStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+            Console.WriteLine("Get User");
+            var userdeatils = this.GetUserById(subscription.UserId);
 
 
             if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingUnsubscribe.ToString() ||
@@ -56,7 +58,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.Unsubscribed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
-                        CreateBy = 0,
+                        CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
                     this.subscriptionLogRepository.Add(auditLog);
@@ -79,7 +81,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
-                        CreateBy = 0,
+                        CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
                     this.subscriptionLogRepository.Add(auditLog);

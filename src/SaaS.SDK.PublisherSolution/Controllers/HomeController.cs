@@ -262,7 +262,7 @@
                 }
                 if (User.Identity.IsAuthenticated)
                 {
-                    List<SubscriptionTemplateParametersModel> subscriptionTemplateParms = new List<SubscriptionTemplateParametersModel>();
+                    List<SubscriptionTemplateParameters> subscriptionTemplateParms = new List<SubscriptionTemplateParameters>();
                     subscriptionTemplateParms = this.subscriptionRepository.GetSubscriptionTemplateParameterById(subscriptionId, planId).ToList();
                     return this.View(subscriptionTemplateParms);
                 }

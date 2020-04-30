@@ -5,7 +5,6 @@ using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -30,6 +29,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
         protected readonly IOfferAttributesRepository offerAttributesRepository;
 
+
+
+
         protected readonly IEventsRepository eventsRepository;
         public NotificationStatusHandler(IFulfillmentApiClient fulfillApiClient,
             IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ISubscriptionsRepository SubscriptionRepository) : base(new SaasKitContext())
@@ -50,6 +52,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             var subscription = this.GetSubscriptionById(subscriptionID);
             Console.WriteLine("Get PlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
+            Console.WriteLine("Get User");
+            var userdeatils = this.GetUserById(subscription.UserId);
             Console.WriteLine("Get Offers");
             var offer = Context.Offers.Where(s => s.OfferGuid == planDetails.OfferId).FirstOrDefault();
             Console.WriteLine("Get Events");
@@ -87,8 +91,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             subscriptionDetail.Name = subscription.Name;
             subscriptionDetail.SubscriptionStatus = subscription.SubscriptionStatus;
             subscriptionDetail.IsActiveSubscription = subscription.IsActive ?? false;
-            subscriptionDetail.CustomerEmailAddress = subscription.User?.EmailAddress;
-            subscriptionDetail.CustomerName = subscription.User?.FullName;
+            subscriptionDetail.CustomerEmailAddress = userdeatils.EmailAddress;
+            subscriptionDetail.CustomerName = userdeatils.FullName;
             subscriptionDetail.GuidPlanId = planDetails.PlanGuid;
             subscriptionDetail.SubscriptionParameters = subscriptionParametersList;
             subscriptionDetail.ARMTemplateParameters = subscriptionTemplateParametersList;

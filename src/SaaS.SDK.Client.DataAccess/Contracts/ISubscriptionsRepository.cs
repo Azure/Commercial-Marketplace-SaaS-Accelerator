@@ -55,6 +55,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 
         List<SubscriptionParametersOutput> GetSubscriptionsParametersById(Guid subscriptionId, Guid planId);
         void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput);
-        IEnumerable<SubscriptionTemplateParametersModel> GetSubscriptionTemplateParameterById(Guid subscriptionId, Guid planId);
+        List<SubscriptionTemplateParameters> GetSubscriptionTemplateParameterById(Guid subscriptionId, Guid planId);
     }
 }

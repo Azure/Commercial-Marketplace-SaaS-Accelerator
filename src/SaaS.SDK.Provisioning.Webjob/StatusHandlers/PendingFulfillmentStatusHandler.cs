@@ -35,6 +35,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             var subscription = this.GetSubscriptionById(subscriptionID);
             Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription));
             var deploymentStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+            Console.WriteLine("Get User");
+            var userdeatils = this.GetUserById(subscription.UserId);
 
 
             if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingFulfillmentStart.ToString())
@@ -42,7 +44,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 try
                 {
 
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.PendingActivation.ToString(), true);
+                    //this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.PendingActivation.ToString(), true);
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
@@ -50,7 +52,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.PendingActivation.ToString(),
                         OldValue = subscription.SubscriptionStatus,
-                        CreateBy = 0,
+                        CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
                     this.subscriptionLogRepository.Add(auditLog);
@@ -71,7 +73,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.PendingActivation.ToString(),
                         OldValue = subscription.SubscriptionStatus,
-                        CreateBy = 0,
+                        CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
                     this.subscriptionLogRepository.Add(auditLog);

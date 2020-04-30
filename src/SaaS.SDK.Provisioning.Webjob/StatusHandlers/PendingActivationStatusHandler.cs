@@ -36,8 +36,12 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         {
             Console.WriteLine("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
+            Console.WriteLine("Get User");
+
             Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription));
+            
             var deploymentStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+            var userdeatils = this.GetUserById(subscription.UserId);
 
             if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingActivation.ToString() ||
                 subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString())
@@ -59,7 +63,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.Subscribed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
-                        CreateBy = 0,
+                        CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
                     this.subscriptionLogRepository.Add(auditLog);
@@ -80,7 +84,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionWebJobStatusEnum.ActivationFailed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
-                        CreateBy = 0,
+                        CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
                     this.subscriptionLogRepository.Add(auditLog);

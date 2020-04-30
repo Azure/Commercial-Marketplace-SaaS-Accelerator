@@ -30,6 +30,12 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             return Context.Plans.Where(x => x.PlanId == planId).FirstOrDefault();
         }
 
+        protected Users GetUserById(int? UserId)
+        {
+            return Context.Users.Where(x => x.UserId == UserId).FirstOrDefault();
+        }
+
+
         public abstract void Process(Guid subscriptionID);
     }
 }

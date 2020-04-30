@@ -121,128 +121,128 @@
                         childlist.Add(childparms);
                         //if (result.parameters != null && result.parameters.Children() != null)
                         //{
-                            foreach (JToken child in result.parameters.Children())
+                        foreach (JToken child in result.parameters.Children())
+                        {
+                            childparms = new ChindParameterViewModel();
+                            childparms.ParameterType = "input";
+                            var paramName = (child as JProperty).Name;
+                            childparms.ParameterName = paramName;
+                            object paramValue = string.Empty;
+
+                            foreach (JToken grandChild in child)
                             {
-                                childparms = new ChindParameterViewModel();
-                                childparms.ParameterType = "input";
-                                var paramName = (child as JProperty).Name;
-                                childparms.ParameterName = paramName;
-                                object paramValue = string.Empty;
-
-                                foreach (JToken grandChild in child)
+                                foreach (JToken grandGrandChild in grandChild)
                                 {
-                                    foreach (JToken grandGrandChild in grandChild)
+                                    var property = grandGrandChild as JProperty;
+
+                                    if (property != null /*&& property.Name == "value"*/)
                                     {
-                                        var property = grandGrandChild as JProperty;
+                                        int propertyIntValue = 0;
+                                        bool propertyBoolValue = false;
 
-                                        if (property != null /*&& property.Name == "value"*/)
+                                        var type = property.Value.GetType();
+
+                                        if (type == typeof(JArray) ||
+                                        property.Value.Type == JTokenType.Object ||
+                                        property.Value.Type == JTokenType.Date)
                                         {
-                                            int propertyIntValue = 0;
-                                            bool propertyBoolValue = false;
-
-                                            var type = property.Value.GetType();
-
-                                            if (type == typeof(JArray) ||
-                                            property.Value.Type == JTokenType.Object ||
-                                            property.Value.Type == JTokenType.Date)
+                                            paramValue = property.Value;
+                                            if (paramValue != null)
                                             {
-                                                paramValue = property.Value;
-                                                if (paramValue != null)
-                                                {
-                                                    //childparms.ParameterValue = paramValue.ToString();
-                                                }
-                                            }
-                                            else if (property.Value.Type == JTokenType.Integer && int.TryParse((string)property.Value, out propertyIntValue))
-                                            {
-                                                childparms.ParameterDataType = "int";
-                                                paramValue = propertyIntValue;
-                                                //childparms.ParameterValue = (string)property.Value;
-                                            }
-                                            else if (property.Value.Type == JTokenType.Boolean && bool.TryParse((string)property.Value, out propertyBoolValue))
-                                            {
-                                                childparms.ParameterDataType = "bool";
-                                                paramValue = propertyBoolValue;
-                                                //childparms.ParameterValue = (string)property.Value;
-                                            }
-                                            else
-                                            {
-                                                childparms.ParameterDataType = "string";
-                                                paramValue = (string)property.Value;
-
+                                                //childparms.ParameterValue = paramValue.ToString();
                                             }
                                         }
+                                        else if (property.Value.Type == JTokenType.Integer && int.TryParse((string)property.Value, out propertyIntValue))
+                                        {
+                                            childparms.ParameterDataType = "int";
+                                            paramValue = propertyIntValue;
+                                            //childparms.ParameterValue = (string)property.Value;
+                                        }
+                                        else if (property.Value.Type == JTokenType.Boolean && bool.TryParse((string)property.Value, out propertyBoolValue))
+                                        {
+                                            childparms.ParameterDataType = "bool";
+                                            paramValue = propertyBoolValue;
+                                            //childparms.ParameterValue = (string)property.Value;
+                                        }
+                                        else
+                                        {
+                                            childparms.ParameterDataType = "string";
+                                            paramValue = (string)property.Value;
 
+                                        }
                                     }
+
                                 }
-                                childlist.Add(childparms);
-                                //childparms.listparms= grandlist;
-                                //childlist.Add(childparms);
-
-
                             }
+                            childlist.Add(childparms);
+                            //childparms.listparms= grandlist;
+                            //childlist.Add(childparms);
+
+
+                        }
                         //}
                         model.DeplParms = childlist;
                         //if (result.outputs != null && result.outputs.Children() != null)
                         //{
-                            foreach (JToken child in result.outputs.Children())
+                        foreach (JToken child in result.outputs.Children())
+                        {
+                            childparms = new ChindParameterViewModel();
+                            childparms.ParameterType = "output";
+                            var paramName = (child as JProperty).Name;
+                            childparms.ParameterName = paramName;
+                            object paramValue = string.Empty;
+
+                            foreach (JToken grandChild in child)
                             {
-                                childparms = new ChindParameterViewModel();
-                                childparms.ParameterType = "output";
-                                var paramName = (child as JProperty).Name;
-                                childparms.ParameterName = paramName;
-                                object paramValue = string.Empty;
-
-                                foreach (JToken grandChild in child)
+                                foreach (JToken grandGrandChild in grandChild)
                                 {
-                                    foreach (JToken grandGrandChild in grandChild)
+                                    var property = grandGrandChild as JProperty;
+
+                                    if (property != null /*&& property.Name == "value"*/)
                                     {
-                                        var property = grandGrandChild as JProperty;
+                                        int propertyIntValue = 0;
+                                        bool propertyBoolValue = false;
 
-                                        if (property != null /*&& property.Name == "value"*/)
+                                        var type = property.Value.GetType();
+
+                                        if (type == typeof(JArray) ||
+                                        property.Value.Type == JTokenType.Object ||
+                                        property.Value.Type == JTokenType.Date)
                                         {
-                                            int propertyIntValue = 0;
-                                            bool propertyBoolValue = false;
-
-                                            var type = property.Value.GetType();
-
-                                            if (type == typeof(JArray) ||
-                                            property.Value.Type == JTokenType.Object ||
-                                            property.Value.Type == JTokenType.Date)
+                                            paramValue = property.Value;
+                                            if (paramValue != null)
                                             {
-                                                paramValue = property.Value;
-                                                if (paramValue != null)
-                                                {
-                                                    //childparms.ParameterValue = paramValue.ToString();
-                                                }
-                                            }
-                                            else if (property.Value.Type == JTokenType.Integer && int.TryParse((string)property.Value, out propertyIntValue))
-                                            {
-                                                childparms.ParameterDataType = "int";
-                                                paramValue = propertyIntValue;
-                                                //childparms.ParameterValue = (string)property.Value;
-                                            }
-                                            else if (property.Value.Type == JTokenType.Boolean && bool.TryParse((string)property.Value, out propertyBoolValue))
-                                            {
-                                                childparms.ParameterDataType = "bool";
-                                                paramValue = propertyBoolValue;
-                                                //childparms.ParameterValue = (string)property.Value;
-                                            }
-                                            else
-                                            {
-                                                childparms.ParameterDataType = "string";
-                                                paramValue = (string)property.Value;
-
+                                                //childparms.ParameterValue = paramValue.ToString();
                                             }
                                         }
+                                        else if (property.Value.Type == JTokenType.Integer && int.TryParse((string)property.Value, out propertyIntValue))
+                                        {
+                                            childparms.ParameterDataType = "int";
+                                            paramValue = propertyIntValue;
+                                            //childparms.ParameterValue = (string)property.Value;
+                                        }
+                                        else if (property.Value.Type == JTokenType.Boolean && bool.TryParse((string)property.Value, out propertyBoolValue))
+                                        {
+                                            childparms.ParameterDataType = "bool";
+                                            paramValue = propertyBoolValue;
+                                            //childparms.ParameterValue = (string)property.Value;
+                                        }
+                                        else
+                                        {
+                                            childparms.ParameterDataType = "string";
+                                            paramValue = (string)property.Value;
 
+                                        }
                                     }
+
                                 }
-                                childlist.Add(childparms);
-                                //childparms.listparms= grandlist;
-                                //childlist.Add(childparms);
-
-
                             }
+                            childlist.Add(childparms);
+                            //childparms.listparms= grandlist;
+                            //childlist.Add(childparms);
+
+
+                        }
                         //}
                         model.DeplParms = childlist;
                         bulkUploadModel.DeploymentParameterViewModel = model;
@@ -303,12 +303,7 @@
                 }
 
             }
-
-
-
-
-            return View();
-
+            return PartialView("SuccessMessage");
         }
 
     }
