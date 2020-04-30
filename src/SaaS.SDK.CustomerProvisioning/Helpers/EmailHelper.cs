@@ -83,107 +83,105 @@ namespace Microsoft.Marketplace.SaasKit.Client.Helpers
                 mail.To.Clear();
 
 
-                if (isActive)
+                if (planEvent.ToLower() == "success")
                 {
-                    if (planEvent.ToLower() == "success")
+                    toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).SuccessStateEmails
+                  );
+                    if (string.IsNullOrEmpty(toReceipents))
                     {
-                        toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).SuccessStateEmails
-                      );
-                        if (string.IsNullOrEmpty(toReceipents))
-                        {
-                            throw new Exception(" Error while sending an email, please check the configuration. ");
-                        }
-                        if (Subscription.SaasSubscriptionStatus.ToString() == "PendingActivation")
-                        {
-                            Subject = "Pending Activation Email";
-                        }
-                        else if (Subscription.SaasSubscriptionStatus.ToString() == "Unsubscribed")
-                        {
-                            Subject = "Unsubscription";
-                        }
-                        else if (Subscription.SaasSubscriptionStatus.ToString() == "Subscribed")
-                        {
-                            Subject = "Subscription Activation";
-                        }
-                        mail.Subject = Subject; mail.Subject = Subject;
-                        if (!string.IsNullOrEmpty(toReceipents))
-                        {
-                            string[] ToEmails = toReceipents.Split(';');
-
-                            foreach (string Multimailid in ToEmails)
-                            {
-                                mail.To.Add(new MailAddress(Multimailid));
-                            }
-
-                            if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())))
-                            {
-                                string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
-                                foreach (string Multimailid in CcEmails)
-                                {
-                                    mail.CC.Add(new MailAddress(Multimailid));
-                                }
-                            }
-                        }
-
-                        if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())))
-                        {
-                            string[] BccEmails = (emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
-                            foreach (string Multimailid in BccEmails)
-                            {
-                                mail.Bcc.Add(new MailAddress(Multimailid));
-                            }
-                        }
-
+                        throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-
-                    if (planEvent.ToLower() == "failure")
+                    if (Subscription.SaasSubscriptionStatus.ToString() == "PendingActivation")
                     {
-                        toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).FailureStateEmails
-                        );
-                        if (string.IsNullOrEmpty(toReceipents))
-                        {
-                            throw new Exception(" Error while sending an email, please check the configuration. ");
-                        }
-                        Subject = "Failed";
-                        mail.Subject = Subject;
-                        if (!string.IsNullOrEmpty(toReceipents))
-                        {
-                            string[] ToEmails = toReceipents.Split(';');
+                        Subject = "Pending Activation Email";
+                    }
+                    else if (Subscription.SaasSubscriptionStatus.ToString() == "Unsubscribed")
+                    {
+                        Subject = "Unsubscription";
+                    }
+                    else if (Subscription.SaasSubscriptionStatus.ToString() == "Subscribed")
+                    {
+                        Subject = "Subscription Activation";
+                    }
+                    mail.Subject = Subject; mail.Subject = Subject;
+                    if (!string.IsNullOrEmpty(toReceipents))
+                    {
+                        string[] ToEmails = toReceipents.Split(';');
 
-                            foreach (string Multimailid in ToEmails)
-                            {
-                                mail.To.Add(new MailAddress(Multimailid));
-                            }
-
-                            if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(planEvent)))
-                            {
-                                string[] CcEmails = (emailTemplateRepository.GetCCRecipients(planEvent)).Split(';');
-                                foreach (string Multimailid in CcEmails)
-                                {
-                                    mail.CC.Add(new MailAddress(Multimailid));
-                                }
-                            }
+                        foreach (string Multimailid in ToEmails)
+                        {
+                            mail.To.Add(new MailAddress(Multimailid));
                         }
 
-                        if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(planEvent)))
+                        if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())))
                         {
-                            string[] BccEmails = (emailTemplateRepository.GetBccRecipients(planEvent)).Split(';');
-                            foreach (string Multimailid in BccEmails)
+                            string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
+                            foreach (string Multimailid in CcEmails)
                             {
-                                mail.Bcc.Add(new MailAddress(Multimailid));
+                                mail.CC.Add(new MailAddress(Multimailid));
                             }
                         }
                     }
 
-                    SmtpClient smtp = new SmtpClient();
-                    smtp.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
-                    smtp.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
-                    smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential(
-                        username, password);
-                    smtp.EnableSsl = smtpSsl;
-                    smtp.Send(mail);
+                    if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())))
+                    {
+                        string[] BccEmails = (emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
+                        foreach (string Multimailid in BccEmails)
+                        {
+                            mail.Bcc.Add(new MailAddress(Multimailid));
+                        }
+                    }
+
                 }
+
+                if (planEvent.ToLower() == "failure")
+                {
+                    toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).FailureStateEmails
+                    );
+                    if (string.IsNullOrEmpty(toReceipents))
+                    {
+                        throw new Exception(" Error while sending an email, please check the configuration. ");
+                    }
+                    Subject = "Failed";
+                    mail.Subject = Subject;
+                    if (!string.IsNullOrEmpty(toReceipents))
+                    {
+                        string[] ToEmails = toReceipents.Split(';');
+
+                        foreach (string Multimailid in ToEmails)
+                        {
+                            mail.To.Add(new MailAddress(Multimailid));
+                        }
+
+                        if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(planEvent)))
+                        {
+                            string[] CcEmails = (emailTemplateRepository.GetCCRecipients(planEvent)).Split(';');
+                            foreach (string Multimailid in CcEmails)
+                            {
+                                mail.CC.Add(new MailAddress(Multimailid));
+                            }
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(planEvent)))
+                    {
+                        string[] BccEmails = (emailTemplateRepository.GetBccRecipients(planEvent)).Split(';');
+                        foreach (string Multimailid in BccEmails)
+                        {
+                            mail.Bcc.Add(new MailAddress(Multimailid));
+                        }
+                    }
+                }
+
+                SmtpClient smtp = new SmtpClient();
+                smtp.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+                smtp.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = new NetworkCredential(
+                    username, password);
+                smtp.EnableSsl = smtpSsl;
+                smtp.Send(mail);
             }
         }
     }
+}

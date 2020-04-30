@@ -56,11 +56,54 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
             var eventrep = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
             if (eventrep != null)
             {
+                CustomerToCopy = eventrep.CopyToCustomer ?? false;
                 isActive = eventrep.Isactive;
             }
 
             if (isActive)
             {
+                if (CustomerToCopy && planEvent.ToLower() == "success")
+                {
+                    toReceipents = Subscription.CustomerEmailAddress;
+                    if (string.IsNullOrEmpty(toReceipents))
+                    {
+                        throw new Exception(" Error while sending an email, please check the configuration. ");
+                    }
+                    Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
+                    mail.Subject = Subject;
+                    mail.To.Add(toReceipents);
+                    SmtpClient copy = new SmtpClient();
+                    copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+                    copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+                    copy.UseDefaultCredentials = false;
+                    copy.Credentials = new NetworkCredential(
+                        username, password);
+                    copy.EnableSsl = smtpSsl;
+                    copy.Send(mail);
+                }
+
+                if (CustomerToCopy && planEvent.ToLower() == "failure" && isActive)
+                {
+                    toReceipents = Subscription.CustomerEmailAddress;
+                    if (string.IsNullOrEmpty(toReceipents))
+                    {
+                        throw new Exception(" Error while sending an email, please check the configuration. ");
+                    }
+                    Subject = emailTemplateRepository.GetSubject(planEvent);
+                    mail.Subject = Subject;
+                    mail.To.Add(toReceipents);
+                    SmtpClient copy = new SmtpClient();
+                    copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+                    copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+                    copy.UseDefaultCredentials = false;
+                    copy.Credentials = new NetworkCredential(
+                        username, password);
+                    copy.EnableSsl = smtpSsl;
+                    copy.Send(mail);
+                }
+
+                mail.To.Clear();
+
                 if (planEvent.ToLower() == "success")
                 {
                     toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).SuccessStateEmails
