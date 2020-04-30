@@ -72,7 +72,6 @@ namespace Saas.SDK.WebJob.Services
             StringWriter writer = new StringWriter();
             v.Evaluate(context, writer, string.Empty, body);
             return writer.ToString();
-
         }
     }
 }

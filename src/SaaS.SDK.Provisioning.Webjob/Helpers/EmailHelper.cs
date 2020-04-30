@@ -55,11 +55,80 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
             var eventrep = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
             if (eventrep != null)
             {
+                CustomerToCopy = eventrep.CopyToCustomer ?? false;
                 isActive = eventrep.Isactive;
             }
 
             if (isActive)
             {
+                if (CustomerToCopy && planEvent.ToLower() == "success")
+                {
+                    toReceipents = Subscription.CustomerEmailAddress;
+                    if (string.IsNullOrEmpty(toReceipents))
+                    {
+                        throw new Exception(" Error while sending an email, please check the configuration. ");
+                    }
+                    if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
+                    {
+                        Subject = "Pending Activation";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
+                    {
+                        Subject = "Subscription Activation";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
+                    {
+                        Subject = "Unsubscription";
+                    }
+                    mail.Subject = Subject;
+                    mail.To.Add(toReceipents);
+                    SmtpClient copy = new SmtpClient();
+                    copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+                    copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+                    copy.UseDefaultCredentials = false;
+                    copy.Credentials = new NetworkCredential(
+                        username, password);
+                    copy.EnableSsl = smtpSsl;
+                    //copy.Send(mail);
+                }
+
+                if (CustomerToCopy && planEvent.ToLower() == "failure" && isActive)
+                {
+                    toReceipents = Subscription.CustomerEmailAddress;
+                    if (string.IsNullOrEmpty(toReceipents))
+                    {
+                        throw new Exception(" Error while sending an email, please check the configuration. ");
+                    }
+                    if (Subscription.SubscriptionStatus.ToString() == "DeploymentFailed")
+                    {
+                        Subject = "Deployment Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "ActivationFailed")
+                    {
+                        Subject = "Activation Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "UnsubscribeFailed")
+                    {
+                        Subject = "Unsubscribe Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "DeleteResourceFailed")
+                    {
+                        Subject = "Delete Resource Failed";
+                    }
+                    mail.Subject = Subject;
+                    mail.To.Add(toReceipents);
+                    SmtpClient copy = new SmtpClient();
+                    copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+                    copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+                    copy.UseDefaultCredentials = false;
+                    copy.Credentials = new NetworkCredential(
+                        username, password);
+                    copy.EnableSsl = smtpSsl;
+                    //copy.Send(mail);
+                }
+
+                mail.To.Clear();
+
                 if (planEvent.ToLower() == "success")
                 {
                     toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).SuccessStateEmails
@@ -70,13 +139,13 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                     }
                     if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
                     {
-                        Subject = "Pending Activation Email";
+                        Subject = "Pending Activation";
                     }
-                    else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
+                    else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
                     {
                         Subject = "Subscription Activation";
                     }
-                    else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
+                    else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
                     {
                         Subject = "Unsubscription";
                     }
@@ -119,7 +188,22 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    Subject = "Failed";
+                    if (Subscription.SubscriptionStatus.ToString() == "DeploymentFailed")
+                    {
+                        Subject = "Deployment Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "ActivationFailed")
+                    {
+                        Subject = "Activation Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "UnsubscribeFailed")
+                    {
+                        Subject = "Unsubscribe Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "DeleteResourceFailed")
+                    {
+                        Subject = "Delete Resource Failed";
+                    }
                     mail.Subject = Subject;
                     if (!string.IsNullOrEmpty(toReceipents))
                     {
