@@ -269,7 +269,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             catch (Exception) { }
         }
 
-        public IEnumerable<SubscriptionTemplateParametersModel> GetSubscriptionTemplateParameterById(Guid subscriptionId, Guid planId)
+        public IEnumerable<SubscriptionTemplateParametersModel> GetSubscriptionTemplateParameter(Guid subscriptionId, Guid planId)
         {
             try
             {
@@ -309,6 +309,68 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                 string error = ex.Message;
             }
             return null;
+        }
+
+
+        public List<SubscriptionTemplateParameters> GetSubscriptionTemplateParameterById(Guid subscriptionID, Guid PlanGuid)
+        {
+            List<SubscriptionTemplateParameters> _list = new List<SubscriptionTemplateParameters>();
+            var subscriptionAttributes = Context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, PlanGuid);
+
+            var existingdata = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
+            if (existingdata != null)
+            {
+                var existingdatalist = existingdata.ToList();
+                if (existingdatalist.Count() > 0)
+                {
+                    return existingdatalist;
+
+                }
+
+                else
+                {
+                    if (subscriptionAttributes != null)
+                    {
+                        var subscriptionAttributesList = subscriptionAttributes.ToList();
+
+
+                        if (subscriptionAttributesList.Count() > 0)
+                        {
+                            foreach (var attr in subscriptionAttributesList)
+                            {
+                                SubscriptionTemplateParameters parm = new SubscriptionTemplateParameters()
+                                {
+                                    OfferName = attr.OfferName,
+                                    OfferGuid = attr.OfferGuid,
+                                    PlanGuid = attr.PlanGuid,
+                                    PlanId = attr.PlanId,
+                                    ArmtemplateId = attr.ArmtemplateId,
+                                    Parameter = attr.Parameter,
+                                    ParameterDataType = attr.ParameterDataType,
+                                    Value = attr.Value,
+                                    ParameterType = attr.ParameterType,
+                                    EventId = attr.EventId,
+                                    EventsName = attr.EventsName,
+                                    AmpsubscriptionId = attr.AmpsubscriptionId,
+                                    SubscriptionStatus = attr.SubscriptionStatus,
+                                    SubscriptionName = attr.SubscriptionName,
+                                    CreateDate = DateTime.Now
+                                };
+                                Context.SubscriptionTemplateParameters.Add(parm);
+                                Context.SaveChanges();
+                                _list.Add(parm);
+                            }
+
+                        }
+
+
+                    }
+
+                }
+
+
+            }
+            return _list;
         }
 
         /// <summary>

@@ -5,7 +5,6 @@ using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

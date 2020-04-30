@@ -18,32 +18,80 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 
         public string GetSubject(string status)
         {
-            return Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault().Subject;
+            string subject = "";
+            var template = Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault();
+            if (template != null)
+            {
+                subject = template.Subject;
+
+
+            }
+            return subject;
         }
 
-        public bool? GetIsActive (string status)
+        public bool? GetIsActive(string status)
         {
-            return Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault().IsActive;
+            bool? isactive = false;
+            var template = Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault();
+            if (template != null)
+            {
+                isactive = template.IsActive;
+
+
+            }
+            return isactive;
+
+
         }
 
         public string GetTemplateBody(string status)
         {
-            return Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault().TemplateBody;
+            string templateBody = "";
+            var template = Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault();
+            if (template != null)
+            {
+                templateBody = template.TemplateBody;
+
+            }
+            return templateBody;
         }
 
         public string GetCCRecipients(string status)
         {
-            return Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault().Cc;
+            string cc = "";
+            var cclist = Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault();
+            if (cclist != null)
+            {
+
+                cc = cclist.Cc;
+
+            }
+
+            return cc;
         }
 
         public string GetToRecipients(string status)
         {
-            return Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault().ToRecipients;
+            string toRecipients = "";
+            var tempalte = Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault();
+            if (tempalte != null)
+            {
+                toRecipients = tempalte.ToRecipients;
+            }
+            return toRecipients;
         }
 
         public string GetBccRecipients(string status)
         {
-            return Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault().Bcc;
+            string bcc = "";
+            var tempalte = Context.EmailTemplate.Where(s => s.Status == status).FirstOrDefault();
+            if (tempalte != null)
+            {
+                bcc = tempalte.Bcc;
+            }
+            return bcc;
+
+
         }
     }
 }
