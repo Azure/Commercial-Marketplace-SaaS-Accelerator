@@ -4,6 +4,14 @@
 
 The Provisioning and the Publisher applications use SQL Server database as the data source to store subscriptions and the status, metered dimensions by plans and activity against subscriptions.
 
+### Install Using SQL Scripts
+
+The SQL scripts build on top of each other. When setting up your database, do the following.
+ 
+ 1. Start with a blank database
+ 2. Run AMP-DB-1.0.sql
+ 3. Run AMP-DB-2.0.sql
+
 
 ### Description 
 

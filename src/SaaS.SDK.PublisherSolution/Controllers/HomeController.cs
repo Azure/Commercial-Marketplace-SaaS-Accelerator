@@ -616,8 +616,8 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error", ex);
+                this.logger.LogInformation("Message:{0} :: {1}", ex.Message, ex.InnerException);
+                return View("Error");
             }
         }
 

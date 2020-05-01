@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Marketplace.SaasKit.Configurations;
     using Microsoft.Marketplace.SaasKit.Contracts;
@@ -69,6 +70,31 @@
             var meteringUsageResult = await restClient.DoRequest(url, HttpMethods.POST, usageEventRequest).ConfigureAwait(false);
 
             return meteringUsageResult;
+        }
+
+        /// <summary>
+        /// Manage Subscription Batch Usage.
+        /// </summary>
+        /// <param name="subscriptionBatchUsageRequest">The subscription batch usage request.</param>
+        /// <returns>
+        /// Subscription Usage
+        /// </returns>
+        public async Task<MeteringBatchUsageResult> EmitBatchUsageEventAsync(IEnumerable<MeteringUsageRequest> subscriptionBatchUsageRequest)
+        {
+            this.Logger?.Info($"Inside ManageSubscriptionUsageAsync() of FulfillmentApiClient, with number of request items :: {subscriptionBatchUsageRequest.Count()} and trying to Manage Subscription Batch Usage :: {subscriptionBatchUsageRequest.FirstOrDefault()?.ResourceId}");
+
+            var restClient = new MeteringApiRestClient<MeteringBatchUsageResult>(this.ClientConfiguration, this.Logger);
+
+            var url = UrlHelper.GetSaaSApiUrl(this.ClientConfiguration, Guid.Empty, SaaSResourceActionEnum.SUBSCRIPTION_BATCHUSAGEEVENT);
+
+            Dictionary<string, object> batchUsageEventRequest = new Dictionary<string, object>
+            {
+                { "request", subscriptionBatchUsageRequest }
+            };
+
+            var meteringBatchUsageResult = await restClient.DoRequest(url, HttpMethods.POST, batchUsageEventRequest).ConfigureAwait(false);
+
+            return meteringBatchUsageResult;
         }
     }
 }

@@ -44,7 +44,7 @@
         /// The message time.
         /// </value>
         [JsonProperty("messageTime")]
-        public DateTimeOffset MessageTime { get; set; }
+        public DateTime MessageTime { get; set; }
 
         /// <summary>
         /// Gets or sets the resource identifier.

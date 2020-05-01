@@ -487,9 +487,6 @@ BEGIN
 END
 GO
 
---ALTER TABLE Subscriptions ADD AMPQuantity INT
-
-GO
 Update Subscriptions set AMPQuantity = 0
 
 GO

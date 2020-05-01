@@ -17,10 +17,15 @@
                 </div>
                 @* <button type="button" class="cm-button-default" onclick="fnAddSubscriptionLicense()" data-toggle="modal" data-target="#AddLicense">Add License</button>*@
                 <div class="text-left mt20">
-                    @{await Html.RenderPartialAsync("AddSubscriptionLicense", Model); }
+                    @{
+                        await Html.RenderPartialAsync("AddSubscriptionLicense", Model);
+                    }
                 </div>
                 <div class="text-left ">
-                    @{await Html.RenderPartialAsync("Licenses", Model.Licenses);}
+                    @{
+                        await Html.RenderPartialAsync("Licenses", Model.Licenses);
+                    }
+
                 </div>
             </div>
         </div>
