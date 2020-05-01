@@ -394,11 +394,11 @@
                 this.logger.LogInformation("User authenticate successfully & GetSubscriptionByIdAsync  SubscriptionID :{0}", JsonConvert.SerializeObject(subscriptionId));
 
                 this.TempData["ShowWelcomeScreen"] = false;
-                var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                //var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                 //var subscribeId = this.webSubscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
                 var oldValue = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
 
-                var serializedParent = JsonConvert.SerializeObject(subscriptionData);
+                var serializedParent = JsonConvert.SerializeObject(oldValue);
                 subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
                 this.logger.LogInformation("serializedParent :{0}", serializedParent);
                 //subscriptionDetail = (SubscriptionResultExtension)subscriptionData;
@@ -433,7 +433,7 @@
                     var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                     var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
                     var oldValue = this.subscriptionService.GetPartnerSubscriptions(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-
+                    var plandetails = this.planRepository.GetPlanDetailByPlanId(oldValue.PlanId);
                     var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                     subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
@@ -441,6 +441,9 @@
                     subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnumExtension.Subscribed;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
+                    subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
+
+                    //var inputParms= 
                 }
                 return this.View("ActivateSubscription", subscriptionDetail);
             }
@@ -590,11 +593,28 @@
                 }
                 if (operation == "Deactivte")
                 {
+
                     this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
                     queueObject.SubscriptionID = subscriptionId;
                     queueObject.TriggerEvent = "Deactivte";
                     queueObject.UserId = userDetails.UserId;
                     queueObject.PortalName = "Admin";
+
+
+
+                    //SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                    //{
+                    //    Attribute = SubscriptionLogAttributes.Status.ToString(),
+                    //    SubscriptionId = newValue.Id,
+                    //    NewValue = SubscriptionWebJobStatusEnum.PendingUnsubscribe.ToString(),
+                    //    OldValue = SubscriptionWebJobStatusEnum.Subscribed.ToString(),
+                    //    CreateBy = userdeatils.UserId,
+                    //    CreateDate = DateTime.Now
+                    //};
+                    //this.subscriptionLogRepository.Add(auditLog);
+
+
+
 
                 }
                 string queueMessage = JsonConvert.SerializeObject(queueObject);

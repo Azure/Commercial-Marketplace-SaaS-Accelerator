@@ -1,6 +1,6 @@
-﻿@using Microsoft.Marketplace.SaasKit.Models
+﻿@using Microsoft.Marketplace.SaasKit.Client.Models
 
-@model Microsoft.Marketplace.SaasKit.Models.SubscriptionResult
+@model Microsoft.Marketplace.SaasKit.Client.Models.SubscriptionResultExtension
 @{
     //ViewData["Title"] = "Home";
 }
@@ -52,29 +52,38 @@
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.SaasSubscriptionStatus)
                         </dd>
-                        @*@if (Model.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart || Model.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
-                            {
-                                <dd class="col-sm-9 p-2">
-                                    @Html.TextBoxFor(model => model.NumberofProviders, new { @type = "number", @min = "1" })
 
-                                </dd>
+
+
+                        @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
+                        {
+
+                            for (int i = 0; i < Model.SubscriptionParameters.Count(); i++)
+                            {
+
+                                if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
+                                {
+                                    <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
+                                        @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
+
+
+                                    </dt>
+                                    <dd class="col-sm-9 p-2 p10">
+                                        @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
+                                        @Html.HiddenFor(model => model.SubscriptionParameters[i].Value)
+                                    </dd>
+                                }
                             }
-                            else
-                            {
-
-                                <dd class="col-sm-9 p-2">
-                                    @Html.DisplayFor(model => model.NumberofProviders)
-                                </dd>
-                            }*@
+                        }
                     </dl>
                 </div>
                 <div class="text-right">
-                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed || Model.SaasSubscriptionStatus == SubscriptionStatusEnum.Unsubscribed)
+                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed || Model.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed)
                     {
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
                         <button type="submit" asp-action="Subscriptions" class="cm-button-default mt40 text-right">Go to Subscription List</button>
                     }
-                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart || Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingActivation)
+                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart || Model.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
                     {
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default mt40 text-right">Activate</button>
                     }

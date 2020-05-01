@@ -438,7 +438,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             {
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.SecuteId).IsUnicode(false);
+                entity.Property(e => e.SecureId).IsUnicode(false);
             });
 
             modelBuilder.Entity<SubscriptionLicenses>(entity =>
