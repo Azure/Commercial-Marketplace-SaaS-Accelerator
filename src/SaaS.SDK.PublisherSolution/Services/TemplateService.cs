@@ -10,6 +10,7 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Models;
 using System.Linq;
 using Microsoft.Marketplace.Saas.Web.Models;
+using System;
 
 namespace Microsoft.Marketplace.SaasKit.Web.Services
 {
@@ -31,8 +32,8 @@ namespace Microsoft.Marketplace.SaasKit.Web.Services
             hashTable.Add("oldValue", oldValue);
             hashTable.Add("newValue", newValue);
             hashTable.Add("planevent", planEvent);
-
-
+            hashTable.Add("PurchaserEmail", Subscription.Purchaser.EmailId ?? "");
+            hashTable.Add("PurchaserTenant", Convert.ToString(Subscription.Purchaser.TenantId) ?? "");
 
             ExtendedProperties p = new ExtendedProperties();
 

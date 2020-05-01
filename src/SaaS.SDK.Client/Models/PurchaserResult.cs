@@ -16,5 +16,11 @@
         /// </value>
         [JsonProperty("tenantId")]
         public Guid TenantId { get; set; }
+
+        [JsonProperty("emailId")]
+        public string EmailId { get; set; }
+
+        [JsonProperty("objectId")]
+        public Guid ObjectId { get; set; }
     }
 }
