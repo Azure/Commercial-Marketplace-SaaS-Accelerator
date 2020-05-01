@@ -81,7 +81,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                                 if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                                 {
                                     var keyvault = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
-                                    keyvaultUrl = keyvault.SecuteId;
+                                    keyvaultUrl = keyvault.SecureId;
                                 }
                                 else
                                 {

@@ -39,7 +39,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             Console.WriteLine("Get User");
 
             Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription));
-            
+
             var deploymentStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
             var userdeatils = this.GetUserById(subscription.UserId);
 
@@ -52,7 +52,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
                     var subscriptionData = this.fulfillApiclient.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                    Console.WriteLine("subscriptionData : {0}", JsonConvert.SerializeObject(subscriptionData));
+                    //Console.WriteLine("subscriptionData : {0}", JsonConvert.SerializeObject(subscriptionData));
                     Console.WriteLine("UpdateWebJobSubscriptionStatus");
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.Subscribed.ToString(), true);

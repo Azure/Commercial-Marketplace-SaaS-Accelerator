@@ -40,7 +40,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         {
             Console.WriteLine("Get GetSubscriptionById");
             var subscription = this.GetSubscriptionById(subscriptionID);
-
+            Console.WriteLine("Get PlanById");
+            var planDetails = this.GetPlanById(subscription.AmpplanId);
             Console.WriteLine("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
 
@@ -48,22 +49,31 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             {
                 try
                 {
-                  
+
                     var subscriptionParameters = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
                     if (subscriptionParameters != null)
                     {
                         var parametersList = subscriptionParameters.ToList();
                         if (parametersList.Count() > 0)
                         {
+
                             StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupPending.ToString(), "Delete Resource Group Begin", Context, subscription.SubscriptionStatus);
                             this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeleteResourcePendign.ToString(), true);
 
                             var resourceGroup = parametersList.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
                             Console.WriteLine("Get SubscriptionKeyValut");
-                            var keyvaultUrl = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
-
+                            string secretKey = "";
+                            if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
+                            {
+                                var keyvault = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+                                secretKey = keyvault.SecureId;  //KB: Typo (change db column name)
+                            }
+                            else
+                            {
+                                secretKey = applicationConfigRepository.GetValuefromApplicationConfig("LocalkeyvaultUrl");
+                            }                           
                             Console.WriteLine("Get DoVault");
-                            string secretValue = azureKeyVaultClient.GetKeyAsync(keyvaultUrl.SecuteId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            string secretValue = azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
 
                             var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
                             Console.WriteLine("SecretValue : {0}", secretValue);

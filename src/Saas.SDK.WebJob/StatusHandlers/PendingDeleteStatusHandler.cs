@@ -54,7 +54,7 @@ namespace Microsoft.Marketplace.SaasKit.WebJob.StatusHandlers
                             var keyvaultUrl = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
 
                             Console.WriteLine("Get DoVault");
-                            string secretValue = AzureKeyVaultHelper.DoVault(keyvaultUrl.SecuteId);
+                            string secretValue = AzureKeyVaultHelper.DoVault(keyvaultUrl.SecureId);
 
                             var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
                             Console.WriteLine("SecretValue : {0}", secretValue);

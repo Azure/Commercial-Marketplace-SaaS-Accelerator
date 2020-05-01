@@ -171,7 +171,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob
                 Console.WriteLine(string.Format("Delete resource group '{0}' in location '{1}'", resourceGroupName, resourceGroupLocation));
                 var resourceGroup = new ResourceGroup();
                 resourceGroup.Location = resourceGroupLocation;
-                resourceManagementClient.ResourceGroups.BeginDelete(resourceGroupName);
+                resourceManagementClient.ResourceGroups.Delete(resourceGroupName);
                 Console.WriteLine(string.Format("Resource group '{0}' in location '{1}' Deleted", resourceGroupName, resourceGroupLocation));
             }
             else

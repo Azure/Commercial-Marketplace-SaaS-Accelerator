@@ -214,7 +214,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             var existingKey = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
             if (existingKey != null)
             {
-                existingKey.SecuteId = keyVaultSecret;
+                existingKey.SecureId = keyVaultSecret;
                 existingKey.SubscriptionId = subscriptionId;
                 Context.SubscriptionKeyValut.Update(existingKey);
             }
@@ -223,7 +223,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                 SubscriptionKeyValut subscriptionKeyValut = new SubscriptionKeyValut()
                 {
                     SubscriptionId = subscriptionId,
-                    SecuteId = keyVaultSecret,
+                    SecureId = keyVaultSecret,
                     CreateDate = DateTime.Now,
                     UserId = userId
                 };
