@@ -93,7 +93,7 @@
         private readonly IOfferAttributesRepository offerAttributesRepository;
 
         private readonly IEventsRepository eventsRepository;
-        private readonly IOptions<CloudStorageConfigs> options;
+        private readonly CloudStorageConfigs options;
 
         private string azureWebJobsStorage;
         /// <summary>
@@ -105,7 +105,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, IOptions<CloudStorageConfigs> options)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, CloudStorageConfigs options)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -125,7 +125,7 @@
             this.planService = new PlanService(this.planRepository, this.offerAttributesRepository);
             this.eventsRepository = eventsRepository;
             this.options = options;
-            azureWebJobsStorage = options.Value.AzureWebJobsStorage;
+            azureWebJobsStorage = options.AzureWebJobsStorage;
         }
 
         #region View Action Methods
@@ -954,7 +954,7 @@
                 string queueMessage = JsonConvert.SerializeObject(queueObject);
 
 
-                string StorageConnectionString = this.options.Value.AzureWebJobsStorage ?? azureWebJobsStorage;
+                string StorageConnectionString = this.options.AzureWebJobsStorage ?? azureWebJobsStorage;
                 StorageConnectionString = "DefaultEndpointsProtocol=https;AccountName=storagequeueforwebjob;AccountKey=MkzwMqxVK/Lev5D4GQSJOof/txDU+G46LmNIzEV4U6v7ANrO7TBOLqePE/JI5Wh2dLLO09OUR7WXUHAKXSkBJA==;BlobEndpoint=https://storagequeueforwebjob.blob.core.windows.net/;QueueEndpoint=https://storagequeueforwebjob.queue.core.windows.net/;TableEndpoint=https://storagequeueforwebjob.table.core.windows.net/;FileEndpoint=https://storagequeueforwebjob.file.core.windows.net/;";
 
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(StorageConnectionString);
