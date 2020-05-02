@@ -16,9 +16,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
     public class BlobFileUploadHelper
     {
-
-
-
         /// <summary>
         /// Uploads the image.
         /// </summary>
@@ -30,7 +27,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
         {
             try
             {
-                //this.LoggerService.Log("Inside of UploadImage() of UploadManager");
                 string StorageConnectionString = "DefaultEndpointsProtocol=https;AccountName=ampsaasarmtemplates;AccountKey=0ljw7MwweuwnLYl45L2SrXYUpI7kLwlJVqtwg569ibZEnhJqtI/ps2pXhpnt8AxiCaTZAPaQNH9D3qIYUwbIdQ==;EndpointSuffix=core.windows.net";
                 CloudStorageAccount fileStorageAccount = CloudStorageAccount.Parse(StorageConnectionString);
                 CloudBlobClient blobClient = fileStorageAccount.CreateCloudBlobClient();
@@ -49,8 +45,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                 }
 
                 fileName = fileName.Replace(" ", "-");
-                //var guid = referenceid.ToString();
-                //fileName = guid.Substring(guid.Length - 6) + '-' + fileName;
                 CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
                 blockBlob.Properties.ContentType = fileContantType;
                 blockBlob.UploadFromStreamAsync(file.OpenReadStream(), file.Length);
@@ -59,34 +53,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             }
             catch (Exception ex)
             {
-                //this.LoggerService.Log("UploadImage() -> Erroe while uploading the image", ex, LogSeverity.ERROR);
-                //throw new CloudhubException(JsonConvert.SerializeObject(new { ErrorValue = C3ErrorConstants.FAILED_TO_UPLOAD_IMAGE, ErrorNotifyType = ErrorNotifyTypes.TRANSLATE_KEY }));
                 throw ex;
             }
         }
-
-        ///// <summary>
-        ///// Deletes the image.
-        ///// </summary>
-        ///// <param name="url">The URL.</param>
-        //public void DeleteImage(string url)
-        //{
-        //    //this.LoggerService.Log("Inside of DeleteImage() of UploadManager");
-
-        //    CloudStorageAccount fileStorageAccount = CloudStorageAccount.Parse(ConfigurationManager.AppSettings["StorageConnectionString"]);
-
-        //    CloudBlobClient blobClient = fileStorageAccount.CreateCloudBlobClient();
-
-        //    CloudBlobContainer container = blobClient.GetContainerReference("profileimages");
-
-        //    if (container.Exists())
-        //    {
-        //        var index = url.LastIndexOf('/');
-        //        var fileName = url.Substring(index + 1);
-        //        CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
-        //        blockBlob.DeleteIfExists();
-        //    }
-        //}
-
     }
 }

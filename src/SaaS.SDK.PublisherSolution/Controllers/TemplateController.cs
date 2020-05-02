@@ -73,14 +73,11 @@
         [HttpPost("UploadBatchUsage")]
         public async Task<IActionResult> UploadBatchUsage(List<IFormFile> uploadfile)
         {
-
             BatchUsageUploadModel bulkUploadModel = new BatchUsageUploadModel();
             bulkUploadModel.BulkUploadUsageStagings = new List<BulkUploadUsageStagingResult>();
             bulkUploadModel.BatchLogId = 0;
             DeploymentParameterViewModel model = new DeploymentParameterViewModel();
             List<ChindParameterViewModel> childlist = new List<ChindParameterViewModel>();
-
-
 
             ResponseModel response = new ResponseModel();
             var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);

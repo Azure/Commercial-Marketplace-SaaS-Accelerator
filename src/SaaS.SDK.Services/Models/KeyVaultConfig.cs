@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SaaS.SDK.Provisioning.Webjob.Models
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     public class KeyVaultConfig
     {

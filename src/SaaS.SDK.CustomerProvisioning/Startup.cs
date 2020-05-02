@@ -23,6 +23,8 @@ namespace Microsoft.Marketplace.SaasKit.Client
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Extensions.Options;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
 
     /// <summary>
     /// Defines the <see cref="Startup" />
@@ -76,6 +78,13 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
             };
 
+            var keyVaultConfig = new KeyVaultConfig()
+            {
+                ClientID = Configuration["KeyVaultConfig:ClientID"],
+                ClientSecret = Configuration["KeyVaultConfig:ClientSecret"],
+                TenantID = Configuration["KeyVaultConfig:TenantID"],
+                KeyVaultUrl = Configuration["KeyVaultConfig:KeyVaultUrl"]
+            };
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -98,7 +107,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddSingleton<CloudStorageConfigs>(cloudConfig);
-
+            services.AddSingleton<IAzureKeyVaultClient>(new AzureKeyVaultClient(keyVaultConfig));
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -125,7 +134,6 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

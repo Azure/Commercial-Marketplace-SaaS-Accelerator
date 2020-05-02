@@ -23,6 +23,7 @@
     using Microsoft.WindowsAzure.Storage.Queue;
     using Microsoft.Extensions.Options;
     using Microsoft.Marketplace.SaasKit.Configurations;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
 
     /// <summary>Home Controller</summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Web.Controllers.BaseController"/>
@@ -91,6 +92,10 @@
         private readonly IEventsRepository eventsRepository;
         private readonly CloudStorageConfigs cloudConfigs;
 
+        private readonly IAzureKeyVaultClient keyVaultClient;
+
+
+
         private string azureWebJobsStorage;
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
@@ -101,7 +106,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, CloudStorageConfigs cloudConfigs)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, CloudStorageConfigs cloudConfigs, IAzureKeyVaultClient keyVaultClient)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -122,6 +127,7 @@
             this.eventsRepository = eventsRepository;
             this.cloudConfigs = cloudConfigs;
             azureWebJobsStorage = cloudConfigs.AzureWebJobsStorage;
+            this.keyVaultClient = keyVaultClient;
         }
 
         #region View Action Methods
@@ -255,7 +261,7 @@
                 {
                     parms.Add(parm.DisplayName, parm.Value);
                 }
-                bool isFileSupported = AzureKeyVaultHelper.ValidateUserParameters(parms);
+                bool isFileSupported =this.keyVaultClient.ValidateUserParameters(parms);
                 if (!isFileSupported)
                 {
                     return Json(new { status = false, responseText = "Invalid Credentials." });
@@ -713,10 +719,9 @@
                                     {
                                         parms.Add(parm.DisplayName, parm.Value.Trim());
                                     }
-                                    string azureKeyValtSecret = AzureKeyVaultHelper.writeKeyVault(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
+                                    string azureKeyValtSecret = this.keyVaultClient.WriteKeyAsync(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
                                     this.subscriptionRepository.AddSubscriptionKeyValutSecret(subscriptionId, azureKeyValtSecret, currentUserId);
                                 }
-
                             }
                             if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported")))
                             {
