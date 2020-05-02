@@ -1,7 +1,7 @@
-﻿@using Microsoft.Marketplace.SaasKit.Models
-@using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models
+﻿@*@using Microsoft.Marketplace.SaasKit.Models*@
+@using Microsoft.Marketplace.SaaS.SDK.Library.Models
 
-@model Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models.SubscriptionResultExtension
+@model Microsoft.Marketplace.SaaS.SDK.Library.Models.SubscriptionResultExtension
 
 @{
     ViewData["Title"] = "Home";
@@ -99,7 +99,7 @@
                                 </dt>
 
 
-                                @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                                @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
                                 {
                                     @if (Model.SubscriptionParameters[i].FromList == true)
                                     {
@@ -168,12 +168,12 @@
                     </dl>
                 </div>
                 <div class="text-right">
-                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                     {
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
                         <button type="submit" asp-action="Subscriptions" class="cm-button-default text-right">Go to Subscription List</button>
                     }
-                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
                     {
                         <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Activate</a>
                         <a onclick="ValidateData()" id="btnvalidate" class="cm-button-default text-right">Validate</a>

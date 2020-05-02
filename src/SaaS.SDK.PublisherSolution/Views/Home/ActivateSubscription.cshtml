@@ -1,6 +1,6 @@
-﻿@using Microsoft.Marketplace.SaasKit.Client.Models
+﻿@using Microsoft.Marketplace.SaaS.SDK.Library.Models
 
-@model Microsoft.Marketplace.SaasKit.Client.Models.SubscriptionResultExtension
+@model Microsoft.Marketplace.SaaS.SDK.Library.Models.SubscriptionResultExtension
 @{
     //ViewData["Title"] = "Home";
 }
@@ -93,12 +93,12 @@
                     </dl>
                 </div>
                 <div class="text-right">
-                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed || Model.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed)
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed)
                     {
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
                         <button type="submit" asp-action="Subscriptions" class="cm-button-default mt40 text-right">Go to Subscription List</button>
                     }
-                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart || Model.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
                     {
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default mt40 text-right">Activate</button>
                     }

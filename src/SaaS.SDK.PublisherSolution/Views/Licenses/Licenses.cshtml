@@ -1,7 +1,8 @@
-﻿@model List<SubscriptionLicensesViewModel>
-    <div>
-        @if (Model != null && Model.Count() > 0)
-        {
+﻿@using Microsoft.Marketplace.SaaS.SDK.Library.Models
+@model List<SubscriptionLicensesViewModel>
+<div>
+    @if (Model != null && Model.Count() > 0)
+    {
 
         <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
             <thead class="cm-table-head">
@@ -18,48 +19,48 @@
                 @{ var i = 0;}
                 @foreach (var item in Model)
                 {
-                <tr>
-                    <td class="text-left">@item.AmpsubscriptionId</td>
-                    <td class="text-left">@item.SubscriptionName</td>
-                    <td class="text-left">@item.PlanName</td>
-                    <td class="text-left">@item.LicenseKey</td>
-                    <td class="text-left">
-                        @if (item.Status)
-                        {
-                        <span>Active</span>
-                        }
-                        else
-                        {
-                        <span>Revoked</span>
-                        }
-                    </td>
-                    <td class="cm-minus-circle">
-                        <div class="nav-item dropdown">
-                            <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-minus-circle"></i>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="dropdown01">
+                    <tr>
+                        <td class="text-left">@item.AmpsubscriptionId</td>
+                        <td class="text-left">@item.SubscriptionName</td>
+                        <td class="text-left">@item.PlanName</td>
+                        <td class="text-left">@item.LicenseKey</td>
+                        <td class="text-left">
+                            @if (item.Status)
+                            {
+                                <span>Active</span>
+                            }
+                            else
+                            {
+                                <span>Revoked</span>
+                            }
+                        </td>
+                        <td class="cm-minus-circle">
+                            <div class="nav-item dropdown">
+                                <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-minus-circle"></i>
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown01">
 
-                                @if (item.Status)
-                                {
-                                <a class="btn patner-btn-proceed cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID','Revoke')">Revoke</a>
-                                }
-                                else
-                                {
-                                <a class="btn patner-btn-danger cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID','Activate')">Activate</a>
-                                }
+                                    @if (item.Status)
+                                    {
+                                        <a class="btn patner-btn-proceed cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID','Revoke')">Revoke</a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn patner-btn-danger cm-dropdown-option" onclick="fnUpdateSubscriptionStatus('@item.Id','@item.SubScriptionID','Activate')">Activate</a>
+                                    }
+                                </div>
                             </div>
-                        </div>
 
-                    </td>
-                </tr>
-                i++;
+                        </td>
+                    </tr>
+                    i++;
                 }
             </tbody>
         </table>
-        }
-        else
-        {
+    }
+    else
+    {
 
         <div class="cm-panel-default mt40">
             <div class="p-3">
@@ -68,10 +69,10 @@
                 </p>
             </div>
         </div>
-        }
-    </div>
+    }
+</div>
 
-    <script>
+<script>
 
     //Update Subscription Status
     function fnUpdateSubscriptionStatus(Id, subscriptionId, key) {
@@ -112,5 +113,5 @@
             }
         });
     }
-    </script>
+</script>
 

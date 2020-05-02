@@ -4,8 +4,8 @@
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace.Saas.Web.Models;
-    using Microsoft.Marketplace.Saas.Web.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.Library.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Library.Utilities;
 
     /// <summary>
     /// Base Controller

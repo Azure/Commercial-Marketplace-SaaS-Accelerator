@@ -5,11 +5,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.Marketplace.SaasKit.Client.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Library.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace.Saas.Web.Models;
-    using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.Library.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Library.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
@@ -28,7 +28,7 @@
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
 
-        private OffersService offersService;
+        private OfferServices offersService;
 
         /// <summary>
         /// The logger
@@ -42,7 +42,7 @@
             this.applicationConfigRepository = applicationConfigRepository;
             this.usersRepository = usersRepository;
             this.valueTypesRepository = valueTypesRepository;
-            this.offersService = new OffersService(this.offersRepository);
+            this.offersService = new OfferServices(this.offersRepository);
             this.offersAttributeRepository = offersAttributeRepository;
             this.logger = logger;
         }

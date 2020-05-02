@@ -1,4 +1,4 @@
-﻿@using Microsoft.Marketplace.SaasKit.Models;
+﻿@using Microsoft.Marketplace.SaaS.SDK.Library.Models;
 @model SubscriptionViewModel
 @{
     ViewData["Title"] = "Subscriptions";
@@ -58,17 +58,17 @@
                                                 <div class="nav-item dropdown">
                                                     <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                     <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                        @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed && Model.IsAutomaticProvisioningSupported == false)
+                                                        @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed && Model.IsAutomaticProvisioningSupported == false)
                                                         {
                                                             <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
                                                             <a class="dropdown-item cm-dropdown-option" asp-action="DeActivateSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
                                                             <a class="dropdown-item cm-dropdown-option" target="_blank" href="@Model.SaaSAppUrl" title="Click here to go to SaaS App">SaasApp</a>
                                                         }
-                                                        @if (subscription.IsPerUserPlan && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed )
+                                                        @if (subscription.IsPerUserPlan && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed )
                                                         {
                                                             <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Quantity</a>
                                                         }
-                                                        @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                                                        @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
                                                         {
                                                             <a class="dropdown-item cm-dropdown-option" asp-action="ActivateSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
                                                         }

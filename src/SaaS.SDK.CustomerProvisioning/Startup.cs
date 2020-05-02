@@ -20,8 +20,8 @@ namespace Microsoft.Marketplace.SaasKit.Client
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
     using Microsoft.Marketplace.SaasKit.WebHook;
     using Microsoft.Marketplace.SaasKit.Client.WebHook;
-    using Microsoft.Marketplace.SaasKit.Client.Utilities;
-    using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Library.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.Library.Models;
     using Microsoft.Extensions.Options;
 
     /// <summary>

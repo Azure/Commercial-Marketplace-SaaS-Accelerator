@@ -6,8 +6,8 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
-    using Microsoft.Marketplace.Saas.Web.Models;
-    using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.Library.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Library.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Models;

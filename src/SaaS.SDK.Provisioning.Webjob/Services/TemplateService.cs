@@ -9,7 +9,6 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Models;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
 using System.Linq;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
 
 namespace Saas.SDK.WebJob.Services
 {
