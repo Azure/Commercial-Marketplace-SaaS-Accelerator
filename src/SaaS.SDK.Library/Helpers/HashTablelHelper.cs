@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Library.Helpers
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
     public static class HashTablelHelper
     {

@@ -8,8 +8,8 @@ using System.IO;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.Rest;
 using Microsoft.Rest.Azure.Authentication;
-using Microsoft.Marketplace.SaaS.SDK.Library.Models;
-using Microsoft.Marketplace.SaaS.SDK.Library.Helpers;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System.Collections.Generic;
 using Microsoft.Marketplace.SaasKit.Helpers;
@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Linq;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Library.Helpers
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
     public class ARMTemplateDeploymentManager
     {   

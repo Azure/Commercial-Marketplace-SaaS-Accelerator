@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Library.Models
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;

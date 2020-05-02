@@ -2,7 +2,7 @@
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using System;
 
-namespace  Microsoft.Marketplace.SaaS.SDK.Library.Services
+namespace  Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
     public class ApplicationLogService
     {

@@ -2,8 +2,8 @@
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.WebHook;
-using Microsoft.Marketplace.SaaS.SDK.Library.Models;
-using Microsoft.Marketplace.SaaS.SDK.Library.Services;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -129,7 +129,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.WebHook
         {
             var oldValue = subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
 
-            subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnum.Unsubscribed, false);
+            subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Unsubscribed.ToString(), false);
             applicationLogService.AddApplicationLog("Offer Successfully UnSubscribed.");
 
             if (oldValue != null)

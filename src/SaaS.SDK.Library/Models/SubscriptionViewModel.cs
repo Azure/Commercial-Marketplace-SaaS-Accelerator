@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Library.Models
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     //using Microsoft.Marketplace.SaasKit.Client.Models;
     using Microsoft.Marketplace.SaasKit.Models;

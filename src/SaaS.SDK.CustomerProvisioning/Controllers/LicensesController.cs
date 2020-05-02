@@ -6,8 +6,8 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Library.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Library.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 
     /// <summary>
     /// Licenses Controller

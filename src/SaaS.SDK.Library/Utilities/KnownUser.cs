@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Marketplace.SaaS.SDK.Library.Utilities;
+using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Library.Utilities
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Utilities
 {
     public class KnownUser : AuthorizeAttribute, IAuthorizationFilter
     {

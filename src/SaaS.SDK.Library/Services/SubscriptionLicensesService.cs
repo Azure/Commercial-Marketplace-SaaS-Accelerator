@@ -1,12 +1,12 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Library.Services
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Library;
+    using Microsoft.Marketplace.SaaS.SDK.Services;
     using Microsoft.Marketplace.SaasKit.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Library.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 
     /// <summary>
     /// SubscriptionLicenses Service

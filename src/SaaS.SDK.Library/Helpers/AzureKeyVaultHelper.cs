@@ -7,7 +7,7 @@ using Microsoft.Azure.KeyVault.Models;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Newtonsoft.Json;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Library.Helpers
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
     public class AzureKeyVaultHelper
     {

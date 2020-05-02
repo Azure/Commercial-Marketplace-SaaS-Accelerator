@@ -1,6 +1,6 @@
 ﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
-using Microsoft.Marketplace.SaaS.SDK.Library.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using System.Collections;
 using Commons.Collections;
 using NVelocity.App;
@@ -11,7 +11,7 @@ using Microsoft.Marketplace.SaasKit.Models;
 //using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
 using System.Linq;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Library.Services
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
     public class TemplateService
     {

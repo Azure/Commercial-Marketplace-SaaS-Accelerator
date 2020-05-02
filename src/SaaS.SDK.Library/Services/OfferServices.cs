@@ -1,12 +1,12 @@
 ﻿//using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
-using Microsoft.Marketplace.SaaS.SDK.Library.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Library.Services
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
     public class OfferServices
     {

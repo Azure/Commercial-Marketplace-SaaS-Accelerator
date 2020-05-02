@@ -11,7 +11,7 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-    using Microsoft.Marketplace.SaaS.SDK.Library.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;

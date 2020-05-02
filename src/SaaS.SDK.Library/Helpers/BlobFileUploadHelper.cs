@@ -12,7 +12,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Library.Helpers
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
     public class BlobFileUploadHelper
     {

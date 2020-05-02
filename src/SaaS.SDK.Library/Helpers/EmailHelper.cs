@@ -1,16 +1,16 @@
-﻿using Microsoft.Marketplace.SaaS.SDK.Library.Models;
+﻿using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 //using Microsoft.Marketplace.SaasKit.Client.Models;
 using Microsoft.Marketplace.SaasKit.Models;
 //using SendGrid;
 //using SendGrid.Helpers.Mail;
-using Microsoft.Marketplace.SaaS.SDK.Library;
-using Microsoft.Marketplace.SaaS.SDK.Library.Services;
+using Microsoft.Marketplace.SaaS.SDK.Services;
+using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 using System;
 using System.Net;
 using System.Net.Mail;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Library.Helpers
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
     public class EmailHelper
     {

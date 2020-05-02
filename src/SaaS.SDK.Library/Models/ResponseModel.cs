@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Library.Models
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     /// <summary>
     /// Response Model to return View Responses

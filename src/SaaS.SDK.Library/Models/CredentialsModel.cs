@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Library.Models
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     public class CredentialsModel
     {

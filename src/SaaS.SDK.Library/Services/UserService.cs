@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaaS.SDK.Library.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 
-namespace  Microsoft.Marketplace.SaaS.SDK.Library.Services
+namespace  Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
     public class UserService
     {

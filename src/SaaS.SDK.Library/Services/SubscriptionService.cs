@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Marketplace.SaasKit.Models;
 //using Microsoft.Marketplace.SaasKit.Client.Models;
-using Microsoft.Marketplace.SaaS.SDK.Library.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Newtonsoft.Json;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Library.Services
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
     public class SubscriptionService
     {
@@ -76,9 +76,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Library.Services
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="status">The status.</param>
         /// <param name="isActivate">if set to <c>true</c> [is activate].</param>
-        public void UpdateStateOfSubscription(Guid subscriptionId, SubscriptionStatusEnum status, bool isActivate)
+        public void UpdateStateOfSubscription(Guid subscriptionId, string status, bool isActivate)
         {
-            SubscriptionRepository.UpdateStatusForSubscription(subscriptionId, Convert.ToString(status), isActivate);
+            SubscriptionRepository.UpdateStatusForSubscription(subscriptionId, status, isActivate);
         }
 
         ///// <summary>
@@ -160,8 +160,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Library.Services
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns></returns>
-        private SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
+        public SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
         {
+            var existingPlanDetail = this.PlanRepository.GetPlanDetailByPlanId(subscription.AmpplanId);
+
             SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
             {
                 Id = subscription.AmpsubscriptionId,
@@ -173,6 +175,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Library.Services
                 IsActiveSubscription = subscription.IsActive ?? false,
                 CustomerEmailAddress = subscription.User?.EmailAddress,
                 CustomerName = subscription.User?.FullName,
+                IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false
+
             };
             return subscritpionDetail;
         }

@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Microsoft.Marketplace.SaaS.SDK.Library</RootNamespace>
-    <AssemblyName>Microsoft.Marketplace.SaaS.SDK.Library</AssemblyName>
+    <RootNamespace>Microsoft.Marketplace.SaaS.SDK.Services</RootNamespace>
+    <AssemblyName>Microsoft.Marketplace.SaaS.SDK.Services</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
