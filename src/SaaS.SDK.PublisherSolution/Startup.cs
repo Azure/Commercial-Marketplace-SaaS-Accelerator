@@ -11,6 +11,7 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -67,6 +68,11 @@ namespace Microsoft.Marketplace.Saas.Web
                 SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"]
+            };
+
+            var blobConfig = new BlobStorageConfig
+            {
+                BlobConnectionString = this.Configuration["BlobConnectionString"],
             };
 
             services.AddAuthentication(options =>

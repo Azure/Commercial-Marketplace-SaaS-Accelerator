@@ -8,6 +8,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
     public interface ISubscriptionTemplateParametersRepository
     {
-        SubscriptionTemplateParameters GetSubscriptionTemplateParameters(Guid SubscriptionID);
+        IEnumerable<SubscriptionTemplateParameters> GetSubscriptionTemplateParameters(Guid SubscriptionID);
     }
 }

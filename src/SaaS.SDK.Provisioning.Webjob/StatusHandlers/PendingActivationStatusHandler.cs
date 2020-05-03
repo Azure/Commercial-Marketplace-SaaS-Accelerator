@@ -2,7 +2,7 @@
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.Models;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Text;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Newtonsoft.Json;
 using System.Linq;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
+using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
 
 namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
@@ -22,13 +22,15 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         readonly IApplicationConfigRepository applicationConfigRepository;
         readonly ISubscriptionsRepository subscriptionsRepository;
         readonly ISubscriptionLogRepository subscriptionLogRepository;
-
-        public PendingActivationStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, ISubscriptionLogRepository subscriptionLogRepository) : base(new SaasKitContext())
+        readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
+        public PendingActivationStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, ISubscriptionLogRepository subscriptionLogRepository,
+            ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionsRepository = subscriptionsRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
+            this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
 
 
         }
@@ -40,11 +42,10 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
             Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription));
 
-            var deploymentStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
             var userdeatils = this.GetUserById(subscription.UserId);
 
-            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingActivation.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString())
+            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString())
             {
                 try
                 {
@@ -55,13 +56,13 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                     //Console.WriteLine("subscriptionData : {0}", JsonConvert.SerializeObject(subscriptionData));
                     Console.WriteLine("UpdateWebJobSubscriptionStatus");
 
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.Subscribed.ToString(), true);
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.Subscribed.ToString(), true);
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionWebJobStatusEnum.Subscribed.ToString(),
+                        NewValue = SubscriptionStatusEnumExtension.Subscribed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
                         CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
@@ -71,18 +72,18 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, Context, SubscriptionWebJobStatusEnum.ActivationFailed.ToString());
+                   this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, SubscriptionStatusEnumExtension.ActivationFailed.ToString());
                     Console.WriteLine(errorDescriptin);
 
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.ActivationFailed.ToString(), true);
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.ActivationFailed.ToString(), true);
 
-                    // Activation Failure SubscriptionWebJobStatusEnum.ActivationFailed
+                    // Activation Failure SubscriptionStatusEnumExtension.ActivationFailed
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionWebJobStatusEnum.ActivationFailed.ToString(),
+                        NewValue = SubscriptionStatusEnumExtension.ActivationFailed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
                         CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now

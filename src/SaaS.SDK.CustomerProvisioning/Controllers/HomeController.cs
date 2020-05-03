@@ -738,7 +738,7 @@
                         catch (FulfillmentException fex)
                         {
                             this.logger.LogInformation(fex.Message);
-                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository, "failure", oldValue.SubscriptionStatus, "Activate");
+                            //EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository, "failure", oldValue.SubscriptionStatus, "Activate");
                         }
                     }
 

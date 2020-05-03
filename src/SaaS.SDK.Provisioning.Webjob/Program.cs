@@ -9,13 +9,14 @@ using Microsoft.Marketplace.SaasKit.Configurations;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.Services;
-using SaaS.SDK.Provisioning.Webjob.Utilities;
+using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
 using Microsoft.EntityFrameworkCore;
-using SaaS.SDK.Provisioning.Webjob.Models;
-using SaaS.SDK.Provisioning.Webjob.Contracts;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
+using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 
 namespace SaaS.SDK.Provisioning.Webjob
 {

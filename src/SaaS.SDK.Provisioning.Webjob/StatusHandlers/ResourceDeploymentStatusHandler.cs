@@ -1,15 +1,14 @@
 ﻿using Microsoft.Azure.Management.ResourceManager.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.Contracts;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SaaS.SDK.Provisioning.Webjob.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,10 +58,10 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             var events = Context.Events.Where(s => s.EventsName == "Activate").FirstOrDefault();
 
             Console.WriteLine("subscription.SubscriptionStatus: SubscriptionStatus: {0}", subscription.SubscriptionStatus);
-            
 
 
-            if (SubscriptionWebJobStatusEnum.PendingActivation.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
+
+            if (SubscriptionStatusEnumExtension.PendingActivation.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
             {
 
                 // Check if arm template is available for the plan in Plan Event Mapping table with isactive=1
@@ -89,9 +88,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
                                 Console.WriteLine("UpdateWebJobSubscriptionStatus");
 
-                                StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(), "Start Deployment", Context, subscription.SubscriptionStatus);
+                                this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(), "Start Deployment", subscription.SubscriptionStatus);
 
-                                this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeploymentPending.ToString(), true);
+                                this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentPending.ToString(), true);
 
                                 Console.WriteLine("Get SubscriptionKeyValut");
                                 string secretKey = "";
@@ -128,20 +127,20 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                 Console.WriteLine(outputstring);
 
 
-                                this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString(), true);
+                                this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString(), true);
 
                                 SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                                 {
                                     Attribute = SubscriptionLogAttributes.Deployment.ToString(),
                                     SubscriptionId = subscription.Id,
-                                    NewValue = SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString(),
-                                    OldValue = SubscriptionWebJobStatusEnum.DeploymentPending.ToString(),
+                                    NewValue = SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString(),
+                                    OldValue = SubscriptionStatusEnumExtension.DeploymentPending.ToString(),
                                     CreateBy = userdeatils.UserId,
                                     CreateDate = DateTime.Now
                                 };
                                 this.subscriptionLogRepository.Add(auditLog);
 
-                                StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", Context, SubscriptionWebJobStatusEnum.DeploymentSuccessful.ToString());
+                                this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString());
                             }
                         }
                     }
@@ -152,17 +151,17 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 {
                     //Change status to  ARMTemplateDeploymentFailure
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentFailure.ToString(), errorDescriptin, Context, subscription.SubscriptionStatus.ToString());
+                    this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
                     Console.WriteLine(errorDescriptin);
 
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.DeploymentFailed.ToString(), true);
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentFailed.ToString(), true);
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Deployment.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionWebJobStatusEnum.DeploymentFailed.ToString(),
-                        OldValue = SubscriptionWebJobStatusEnum.PendingActivation.ToString(),
+                        NewValue = SubscriptionStatusEnumExtension.DeploymentFailed.ToString(),
+                        OldValue = SubscriptionStatusEnumExtension.PendingActivation.ToString(),
                         CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };

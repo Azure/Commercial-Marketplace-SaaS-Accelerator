@@ -1,33 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Marketplace.SaasKit.Models;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-//using Microsoft.Azure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using System.IO;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
-    public class BlobFileUploadHelper
+    public class FileUploadClient : IFileUploadClient
     {
-        /// <summary>
-        /// Uploads the image.
-        /// </summary>
-        /// <param name="file">The file.</param>
-        /// <returns>
-        /// File URL
-        /// </returns>
-        public string UploadFile(IFormFile file, string fileName, string fileContantType, Guid referenceid, IApplicationConfigRepository applicationConfigRepository)
+        private readonly IApplicationConfigRepository applicationConfigRepository;
+        public FileUploadClient(IApplicationConfigRepository applicationConfigRepository)
+        {
+            this.applicationConfigRepository = applicationConfigRepository;
+        }
+
+        public string UploadFile(IFormFile file, string fileName, string fileContantType, Guid referenceid, IApplicationConfigRepository applicationConfigRepository, string StorageConnectionString)
         {
             try
             {
-                string StorageConnectionString = "DefaultEndpointsProtocol=https;AccountName=ampsaasarmtemplates;AccountKey=0ljw7MwweuwnLYl45L2SrXYUpI7kLwlJVqtwg569ibZEnhJqtI/ps2pXhpnt8AxiCaTZAPaQNH9D3qIYUwbIdQ==;EndpointSuffix=core.windows.net";
                 CloudStorageAccount fileStorageAccount = CloudStorageAccount.Parse(StorageConnectionString);
                 CloudBlobClient blobClient = fileStorageAccount.CreateCloudBlobClient();
 

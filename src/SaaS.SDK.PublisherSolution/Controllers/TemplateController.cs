@@ -11,6 +11,7 @@
     using Microsoft.AspNetCore.Mvc.Rendering;
     //using Microsoft.Marketplace.Saas.Client.Services;
     using Microsoft.Marketplace.Saas.Web.Controllers;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
@@ -37,8 +38,13 @@
 
         private readonly IArmTemplateRepository armTemplateRepository;
 
+        private readonly IFileUploadClient fileUploadClient;
 
-        public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository)
+        private readonly BlobStorageConfig blobConfigs;
+
+        private string blobConnectionString;
+        public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository,
+            IFileUploadClient fileUploadClient, BlobStorageConfig blobConfigs)
         {
             this.usersRepository = usersRepository;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -46,6 +52,9 @@
             this.userRepository = userRepository;
             this.userService = new UserService(this.userRepository);
             this.armTemplateRepository = armTemplateRepository;
+            this.fileUploadClient = new FileUploadClient(applicationConfigRepository);
+            this.blobConfigs = blobConfigs;
+            blobConnectionString = blobConfigs.BlobConnectionString;
         }
 
         public IActionResult Index()
@@ -245,7 +254,8 @@
                         bulkUploadModel.DeploymentParameterViewModel = model;
 
                         await formFile.CopyToAsync(stream);
-                        string fileuploadPath = BlobFileUploadHelper.UploadFile(formFile, filename, fileContantType, ArmtempalteId, applicationConfigRepository);
+                        string blobstorageConnectionString = this.blobConfigs.BlobConnectionString ?? blobConnectionString;
+                        string fileuploadPath = this.fileUploadClient.UploadFile(formFile, filename, fileContantType, ArmtempalteId, applicationConfigRepository, blobstorageConnectionString);
                         Armtemplates armTemplate = new Armtemplates()
                         {
                             ArmtempalteName = filename,

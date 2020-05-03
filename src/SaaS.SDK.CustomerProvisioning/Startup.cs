@@ -77,7 +77,6 @@ namespace Microsoft.Marketplace.SaasKit.Client
             {
                 AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
             };
-
             var keyVaultConfig = new KeyVaultConfig()
             {
                 ClientID = Configuration["KeyVaultConfig:ClientID"],

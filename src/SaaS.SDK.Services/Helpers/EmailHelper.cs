@@ -1,12 +1,13 @@
-﻿using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+﻿
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-//using Microsoft.Marketplace.SaasKit.Client.Models;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.Models;
-//using SendGrid;
-//using SendGrid.Helpers.Mail;
-using Microsoft.Marketplace.SaaS.SDK.Services;
+using Microsoft.Marketplace.SaasKit.Services;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 using System;
+//using SendGrid;
+//using SendGrid.Helpers.Mail;
 using System.Net;
 using System.Net.Mail;
 
@@ -15,21 +16,39 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
     public class EmailHelper
     {
 
-        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, string planEvent = "success", SubscriptionStatusEnumExtension oldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart, string newValue = null)
+        private readonly IApplicationConfigRepository applicationConfigRepository;
+        private readonly ISubscriptionsRepository subscriptionsRepository;
+        //private readonly ISubscriptionLogRepository subscriptionLogRepository;
+        private readonly IEmailTemplateRepository emailTemplateRepository;
+        private readonly IEventsRepository eventsRepository;
+        private readonly IPlanEventsMappingRepository planEventsMappingRepository;
+
+        public EmailHelper(IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository)
+        {
+            this.applicationConfigRepository = applicationConfigRepository;
+            this.subscriptionsRepository = subscriptionsRepository;
+            //this.subscriptionLogRepository = subscriptionLogRepository;
+            this.emailTemplateRepository = emailTemplateRepository;
+            this.eventsRepository = eventsRepository;
+            this.planEventsMappingRepository = planEventsMappingRepository;
+        }
+
+        public void SendEmail(SubscriptionResultExtension Subscription, string planEvent = "success", SubscriptionStatusEnumExtension oldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart, string newValue = null)
         {
             MailMessage mail = new MailMessage();
-            string FromMail = applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
+            string FromMail = this.applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
             string password = applicationConfigRepository.GetValuefromApplicationConfig("SMTPPassword");
             string username = applicationConfigRepository.GetValuefromApplicationConfig("SMTPUserName");
             string Subject = string.Empty;
             bool smtpSsl = bool.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPSslEnabled"));
             mail.From = new MailAddress(FromMail);
 
+
             string body = TemplateService.ProcessTemplate(Subscription, emailTemplateRepository, applicationConfigRepository, planEvent, oldValue, newValue);
             mail.Body = body;
             mail.IsBodyHtml = true;
 
-            int eventID = eventsRepository.GetEventID(Subscription.EventName);
+            int eventID = this.eventsRepository.GetEventID(Subscription.EventName);
 
             string toReceipents = string.Empty;
             bool CustomerToCopy = false;
@@ -50,7 +69,18 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
+                    if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
+                    {
+                        Subject = "Pending Activation";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
+                    {
+                        Subject = "Subscription Activation";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
+                    {
+                        Subject = "Unsubscription";
+                    }
                     mail.Subject = Subject;
                     mail.To.Add(toReceipents);
                     SmtpClient copy = new SmtpClient();
@@ -60,7 +90,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                     copy.Credentials = new NetworkCredential(
                         username, password);
                     copy.EnableSsl = smtpSsl;
-                    copy.Send(mail);
+                    //copy.Send(mail);
                 }
 
                 if (CustomerToCopy && planEvent.ToLower() == "failure" && isActive)
@@ -70,7 +100,22 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    Subject = emailTemplateRepository.GetSubject(planEvent);
+                    if (Subscription.SubscriptionStatus.ToString() == "DeploymentFailed")
+                    {
+                        Subject = "Deployment Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "ActivationFailed")
+                    {
+                        Subject = "Activation Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "UnsubscribeFailed")
+                    {
+                        Subject = "Unsubscribe Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "DeleteResourceFailed")
+                    {
+                        Subject = "Delete Resource Failed";
+                    }
                     mail.Subject = Subject;
                     mail.To.Add(toReceipents);
                     SmtpClient copy = new SmtpClient();
@@ -80,10 +125,11 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                     copy.Credentials = new NetworkCredential(
                         username, password);
                     copy.EnableSsl = smtpSsl;
-                    copy.Send(mail);
+                    //copy.Send(mail);
                 }
 
                 mail.To.Clear();
+
                 if (planEvent.ToLower() == "success")
                 {
                     toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).SuccessStateEmails
@@ -92,17 +138,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    if (Subscription.SaasSubscriptionStatus.ToString() == "PendingActivation")
+                    if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
                     {
-                        Subject = "Pending Activation Email";
+                        Subject = "Pending Activation";
                     }
-                    else if (Subscription.SaasSubscriptionStatus.ToString() == "Unsubscribed")
-                    {
-                        Subject = "Unsubscription";
-                    }
-                    else if (Subscription.SaasSubscriptionStatus.ToString() == "Subscribed")
+                    else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
                     {
                         Subject = "Subscription Activation";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
+                    {
+                        Subject = "Unsubscription";
                     }
                     mail.Subject = Subject;
                     if (!string.IsNullOrEmpty(toReceipents))
@@ -114,9 +160,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                             mail.To.Add(new MailAddress(Multimailid));
                         }
 
-                        if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())))
+                        if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SubscriptionStatus.ToString())))
                         {
-                            string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
+                            string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SubscriptionStatus.ToString())).Split(';');
                             foreach (string Multimailid in CcEmails)
                             {
                                 mail.CC.Add(new MailAddress(Multimailid));
@@ -124,9 +170,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                         }
                     }
 
-                    if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())))
+                    if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(Subscription.SubscriptionStatus.ToString())))
                     {
-                        string[] BccEmails = (emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
+                        string[] BccEmails = (emailTemplateRepository.GetBccRecipients(Subscription.SubscriptionStatus.ToString())).Split(';');
                         foreach (string Multimailid in BccEmails)
                         {
                             mail.Bcc.Add(new MailAddress(Multimailid));
@@ -143,7 +189,22 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                     {
                         throw new Exception(" Error while sending an email, please check the configuration. ");
                     }
-                    Subject = "Failed";
+                    if (Subscription.SubscriptionStatus.ToString() == "DeploymentFailed")
+                    {
+                        Subject = "Deployment Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "ActivationFailed")
+                    {
+                        Subject = "Activation Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "UnsubscribeFailed")
+                    {
+                        Subject = "Unsubscribe Failed";
+                    }
+                    else if (Subscription.SubscriptionStatus.ToString() == "DeleteResourceFailed")
+                    {
+                        Subject = "Delete Resource Failed";
+                    }
                     mail.Subject = Subject;
                     if (!string.IsNullOrEmpty(toReceipents))
                     {

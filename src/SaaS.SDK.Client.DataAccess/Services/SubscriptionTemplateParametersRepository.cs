@@ -16,13 +16,13 @@ namespace SaaS.SDK.Client.DataAccess.Services
         {
             Context = context;
         }
-        public SubscriptionTemplateParameters GetSubscriptionTemplateParameters(Guid SubscriptionID)
+        public IEnumerable<SubscriptionTemplateParameters> GetSubscriptionTemplateParameters(Guid SubscriptionID)
         {
             var results = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == SubscriptionID);
             if (results.Count() == 0)
                 return null;
             else
-                return Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == SubscriptionID).FirstOrDefault();
+                return Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == SubscriptionID);
         }
     }
 }
