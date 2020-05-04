@@ -20,9 +20,11 @@ namespace Microsoft.Marketplace.SaasKit.Client
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
     using Microsoft.Marketplace.SaasKit.WebHook;
     using Microsoft.Marketplace.SaasKit.Client.WebHook;
-    using Microsoft.Marketplace.SaasKit.Client.Utilities;
-    using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Extensions.Options;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
 
     /// <summary>
     /// Defines the <see cref="Startup" />
@@ -75,7 +77,19 @@ namespace Microsoft.Marketplace.SaasKit.Client
             {
                 AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
             };
+            var keyVaultConfig = new KeyVaultConfig()
+            {
+                ClientID = this.Configuration["KeyVaultConfig:ClientID"],
+                ClientSecret = this.Configuration["KeyVaultConfig:ClientSecret"],
+                TenantID = this.Configuration["KeyVaultConfig:TenantID"],
+                KeyVaultUrl = this.Configuration["KeyVaultConfig:KeyVaultUrl"]
+            };
+            var azureBlobConfig = new AzureBlobConfig()
+            {
+                BlobContainer = this.Configuration["AzureBlobConfig:BlobContainer"],
+                BlobConnectionString = this.Configuration["AzureBlobConfig:BlobConnectionString"]
 
+            };
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -98,7 +112,10 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddSingleton<CloudStorageConfigs>(cloudConfig);
-
+            services.AddSingleton<IAzureKeyVaultClient>(new AzureKeyVaultClient(keyVaultConfig));
+            services.AddSingleton<IAzureBlobFileClient>(new AzureBlobFileClient(azureBlobConfig));
+            services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
+            services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -125,7 +142,6 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

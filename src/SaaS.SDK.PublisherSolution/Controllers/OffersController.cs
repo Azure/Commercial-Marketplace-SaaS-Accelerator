@@ -5,11 +5,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.Marketplace.SaasKit.Client.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace.Saas.Web.Models;
-    using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
@@ -28,7 +28,7 @@
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
 
-        private OffersService offersService;
+        private OfferServices offersService;
 
         /// <summary>
         /// The logger
@@ -42,7 +42,7 @@
             this.applicationConfigRepository = applicationConfigRepository;
             this.usersRepository = usersRepository;
             this.valueTypesRepository = valueTypesRepository;
-            this.offersService = new OffersService(this.offersRepository);
+            this.offersService = new OfferServices(this.offersRepository);
             this.offersAttributeRepository = offersAttributeRepository;
             this.logger = logger;
         }
@@ -59,9 +59,9 @@
                 List<OffersModel> getAllOffersData = new List<OffersModel>();
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-               
-                    getAllOffersData = this.offersService.GetOffers();
-                
+
+                getAllOffersData = this.offersService.GetOffers();
+
                 return this.View(getAllOffersData);
             }
             catch (Exception ex)
@@ -91,7 +91,6 @@
                 OffersData.OfferAttributes = new List<OfferAttributesModel>();
                 if (offerAttributes != null)
                 {
-                    //OffersData.OfferAttributes = offerAttributes.ToList();
                     foreach (var offerAttribute in offerAttributes)
                     {
                         var existingOfferAttribute = new OfferAttributesModel()
@@ -101,7 +100,6 @@
                             DisplayName = offerAttribute.DisplayName,
                             Description = offerAttribute.Description,
                             ValueTypeId = offerAttribute.ValueTypeId,
-                            //ValueType = valueTypes,
                             FromList = offerAttribute.FromList,
                             ValuesList = offerAttribute.ValuesList,
                             Max = offerAttribute.Max,
@@ -171,24 +169,12 @@
                         this.offersAttributeRepository.Add(newOfferAttribute);
                     }
 
-                    //var deleteItems = OffersData.OfferAttributes.Where(i => i.IsRemove == true && i.AttributeID != 0);
-
-                    //if (deleteItems != null && deleteItems.Count() > 0)
-                    //{
-                    //    //this.offersAttributeRepository.Remove(deleteItems);
-                    //    /* Delete the Fields from existing Plans and subscriptios*/
-
-
-                    //}
-
                     var valueTypes = valueTypesRepository.GetValueTypes().ToList();
                     ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
                     this.TempData["ShowWelcomeScreen"] = "True";
                 }
                 ModelState.Clear();
                 return RedirectToAction(nameof(OfferDetails), new { @offerGuId = OffersData.OfferGuid });
-                //return RedirectToAction(nameof(Index));
-                //return this.PartialView(OffersData);
             }
             catch (Exception ex)
             {

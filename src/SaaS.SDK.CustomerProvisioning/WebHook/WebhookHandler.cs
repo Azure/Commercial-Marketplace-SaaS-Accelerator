@@ -2,8 +2,8 @@
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.WebHook;
-using Microsoft.Marketplace.SaasKit.Client.Models;
-using Microsoft.Marketplace.SaasKit.Client.Services;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -67,7 +67,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.WebHook
         /// <param name="payload">The payload.</param>
         public async Task ChangePlanAsync(WebhookPayload payload)
         {
-            var oldValue = subscriptionService.GetSubscriptionsForSubscriptionId(payload.SubscriptionId);
+            var oldValue = subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
 
             subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
             applicationLogService.AddApplicationLog("Plan Successfully Changed.");
@@ -127,9 +127,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.WebHook
         /// <param name="payload">The payload.</param>
         public async Task UnsubscribedAsync(WebhookPayload payload)
         {
-            var oldValue = subscriptionService.GetSubscriptionsForSubscriptionId(payload.SubscriptionId);
+            var oldValue = subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
 
-            subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnum.Unsubscribed, false);
+            subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Unsubscribed.ToString(), false);
             applicationLogService.AddApplicationLog("Offer Successfully UnSubscribed.");
 
             if (oldValue != null)

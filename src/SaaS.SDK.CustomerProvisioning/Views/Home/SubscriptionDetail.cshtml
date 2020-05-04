@@ -1,4 +1,4 @@
-﻿@model Microsoft.Marketplace.SaasKit.Models.SubscriptionResult
+﻿@model Microsoft.Marketplace.SaaS.SDK.Services.Models.SubscriptionResultExtension
 
 <div>
     <div class="modal-dialog modal-lg mt200" data-backdrop="static">
@@ -23,10 +23,10 @@
                             @Html.DisplayFor(model => model.Name)
                         </dd>
                         <dt class="col-sm-4 pl80">
-                            @Html.DisplayNameFor(model => model.SaasSubscriptionStatus)
+                            @Html.DisplayNameFor(model => model.SubscriptionStatus)
                         </dt>
                         <dd class="col-sm-8 pl80">
-                            @Html.DisplayFor(model => model.SaasSubscriptionStatus)
+                            @Html.DisplayFor(model => model.SubscriptionStatus)
                         </dd>
                         <dt class="col-sm-4 pl80">
                             @Html.DisplayName("Current Plan")

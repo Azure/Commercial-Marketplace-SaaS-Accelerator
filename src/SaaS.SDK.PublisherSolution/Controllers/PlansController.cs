@@ -6,11 +6,11 @@
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
-    using Microsoft.Marketplace.Saas.Web.Models;
-    using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Client.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Models;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -41,7 +41,7 @@
 
         private readonly IPlansRepository plansRepository;
 
-            private PlansService plansService;
+        private PlanService plansService;
 
         private IOffersRepository offerRepository;
 
@@ -70,7 +70,7 @@
             this.offerRepository = offerRepository;
             this.logger = logger;
             this.armTemplateRepository = armTemplateRepository;
-            this.plansService = new PlansService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
+            this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 if (plans != null)
                 {
-                    this.plansService.SavePlanDeploymentParameter(plans);
+                    this.plansService.UpadtePlanDeployToCustomerSubscription(plans);
                     if (plans.PlanAttributes != null)
                     {
                         var inputAtttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();

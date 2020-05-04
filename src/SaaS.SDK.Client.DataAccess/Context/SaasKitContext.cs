@@ -37,6 +37,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<SubscriptionAttributeValues> SubscriptionAttributeValues { get; set; }
         public virtual DbSet<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
+        public virtual DbSet<SubscriptionKeyValueOutPut> SubscriptionKeyValueOutPut { get; set; }
         public virtual DbSet<SubscriptionKeyValut> SubscriptionKeyValut { get; set; }
         public virtual DbSet<SubscriptionLicenses> SubscriptionLicenses { get; set; }
         public virtual DbSet<SubscriptionParametersOutput> SubscriptionParametersOutput { get; set; }
@@ -52,7 +53,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=localhost;Initial Catalog=AMP3.0;Persist Security Info=True;User ID=sa;Password=Sa1;");
+                optionsBuilder.UseSqlServer("Server=INFIHYD-WS002\\MSSQLSERVER17;Initial Catalog=AMP3.0;Persist Security Info=True;User ID=sa;Password=Sa1;");
             }
         }
 
@@ -436,6 +437,17 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .WithMany(p => p.SubscriptionAuditLogs)
                     .HasForeignKey(d => d.SubscriptionId)
                     .HasConstraintName("FK__Subscript__Subsc__70DDC3D8");
+            });
+
+            modelBuilder.Entity<SubscriptionKeyValueOutPut>(entity =>
+            {
+                entity.Property(e => e.Key)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Value)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<SubscriptionKeyValut>(entity =>

@@ -37,7 +37,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                 Context.SaveChanges();
                 return subscriptionLogs.Id;
             }
-            catch (Exception) {}
+            catch (Exception) { }
             return 0;
         }
 
@@ -79,5 +79,42 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             Context.SubscriptionAuditLogs.Remove(entity);
             Context.SaveChanges();
         }
+
+
+        public void AddWebJobSubscriptionStatus(Guid subscriptionID, Guid? ArmtempalteId, string deploymentStatus, string errorDescription, string subscriptionStatus)
+        {
+            var subscription = Context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionID).FirstOrDefault();
+            var existingWebJobStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+            if (existingWebJobStatus == null)
+            {
+                WebJobSubscriptionStatus status = new WebJobSubscriptionStatus()
+                {
+                    SubscriptionId = subscriptionID,
+                    ArmtemplateId = ArmtempalteId,
+                    SubscriptionStatus = subscriptionStatus,
+                    DeploymentStatus = deploymentStatus,
+                    Description = errorDescription,
+                    InsertDate = DateTime.Now
+                };
+                Context.WebJobSubscriptionStatus.Add(status);
+                Context.SaveChanges();
+            }
+            else
+            {
+                existingWebJobStatus.SubscriptionId = subscriptionID;
+                if (ArmtempalteId != default)
+                {
+                    existingWebJobStatus.ArmtemplateId = ArmtempalteId;
+                }
+                existingWebJobStatus.SubscriptionStatus = subscription.SubscriptionStatus;
+                existingWebJobStatus.DeploymentStatus = deploymentStatus;
+                existingWebJobStatus.Description = errorDescription;
+                Context.WebJobSubscriptionStatus.Update(existingWebJobStatus);
+                Context.SaveChanges();
+
+            }
+
+        }
+
     }
 }

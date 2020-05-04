@@ -1,7 +1,7 @@
 ﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Contracts;
 using Microsoft.Marketplace.SaasKit.Provisioning.Webjob;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Linq;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
+using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
 
 namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
@@ -41,22 +41,22 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             var userdeatils = this.GetUserById(subscription.UserId);
 
 
-            if (subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.PendingUnsubscribe.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeleteResourceSuccess.ToString()
+            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeleteResourceSuccess.ToString()
                 )
             {
                 try
                 {
                     var subscriptionData = this.fulfillApiclient.DeleteSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.Unsubscribed.ToString(), true);
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.Unsubscribed.ToString(), true);
 
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionWebJobStatusEnum.Unsubscribed.ToString(),
+                        NewValue = SubscriptionStatusEnumExtension.Unsubscribed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
                         CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
@@ -66,20 +66,20 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    StatusUpadeHelpers.UpdateWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), errorDescriptin, Context, SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString());
+                   this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), errorDescriptin, SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString());
                     Console.WriteLine(errorDescriptin);
 
-                    // Activation Failure SubscriptionWebJobStatusEnum.ActivationFailed
+                    // Activation Failure SubscriptionStatusEnumExtension.ActivationFailed
 
 
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString(), true);
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString(), true);
 
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString(),
+                        NewValue = SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString(),
                         OldValue = subscription.SubscriptionStatus,
                         CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now

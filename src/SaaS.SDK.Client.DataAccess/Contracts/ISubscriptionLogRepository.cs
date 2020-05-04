@@ -17,5 +17,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns></returns>
         IEnumerable<SubscriptionAuditLogs> GetSubscriptionBySubscriptionId(Guid subscriptionId);
+        void AddWebJobSubscriptionStatus(Guid subscriptionID, Guid? ArmtempalteId, string deploymentStatus, string errorDescription, string subscriptionStatus);
     }
 }

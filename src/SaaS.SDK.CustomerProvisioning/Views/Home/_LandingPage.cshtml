@@ -1,7 +1,7 @@
-﻿@using Microsoft.Marketplace.SaasKit.Models
-@using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models
+﻿@*@using Microsoft.Marketplace.SaasKit.Models*@
+@using Microsoft.Marketplace.SaaS.SDK.Services.Models
 
-@model Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models.SubscriptionResultExtension
+@model Microsoft.Marketplace.SaaS.SDK.Services.Models.SubscriptionResultExtension
 
 @{
     ViewData["Title"] = "Home";
@@ -52,7 +52,7 @@
                             @Html.DisplayName("Status ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.SaasSubscriptionStatus)
+                            @Html.DisplayFor(model => model.SubscriptionStatus)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Plan ")
@@ -85,7 +85,7 @@
                             {
                                 <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
                                     @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
-                                    @if (Model.SubscriptionParameters[i].IsRequired == true)
+                                    @if (Model.SubscriptionParameters[i].IsRequired == true && Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
                                     {<span class="red-star @Model.SubscriptionParameters[i].Type">*</span>}
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].Id)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanAttributeId)
@@ -99,7 +99,7 @@
                                 </dt>
 
 
-                                @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                                @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
                                 {
                                     @if (Model.SubscriptionParameters[i].FromList == true)
                                     {
@@ -156,7 +156,7 @@
                                 }
                                 else
                                 {
-                                    <dd class="col-sm-9 p-2 p10">
+                                    <dd class="col-sm-9 p-2 p10  @Model.SubscriptionParameters[i].Type">
                                         @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
                                         @Html.HiddenFor(model => model.SubscriptionParameters[i].Value)
                                     </dd>
@@ -168,17 +168,16 @@
                     </dl>
                 </div>
                 <div class="text-right">
-                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                     {
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
                         <button type="submit" asp-action="Subscriptions" class="cm-button-default text-right">Go to Subscription List</button>
                     }
-                    @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
                     {
                         <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Activate</a>
                         <a onclick="ValidateData()" id="btnvalidate" class="cm-button-default text-right">Validate</a>
                     }
-                    @* <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default text-right">Save</button>*@
                 </div>
             }
         </form>

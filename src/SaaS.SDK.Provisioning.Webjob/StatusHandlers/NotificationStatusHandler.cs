@@ -2,9 +2,10 @@
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.Marketplace.SaasKit.Contracts;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Helpers;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services;
+using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -29,12 +30,18 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
         protected readonly IOfferAttributesRepository offerAttributesRepository;
 
+        private SubscriptionService subscriptionService = null;
 
+        protected readonly IPlansRepository planRepository;
 
+        protected readonly IOffersRepository offersRepository;
 
         protected readonly IEventsRepository eventsRepository;
-        public NotificationStatusHandler(IFulfillmentApiClient fulfillApiClient,
-            IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ISubscriptionsRepository SubscriptionRepository) : base(new SaasKitContext())
+
+        protected readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
+
+        public NotificationStatusHandler(IFulfillmentApiClient fulfillApiClient, IPlansRepository planRepository,
+            IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ISubscriptionsRepository SubscriptionRepository, IOffersRepository offersRepository, ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -43,6 +50,10 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             this.eventsRepository = eventsRepository;
             this.emailTemplateRepository = emailTemplateRepository;
             this.SubscriptionRepository = SubscriptionRepository;
+            this.planRepository = planRepository;
+            this.subscriptionService = new SubscriptionService(this.SubscriptionRepository, this.planRepository);
+            this.offersRepository = offersRepository;
+            this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
 
         }
         public override void Process(Guid subscriptionID)
@@ -55,17 +66,11 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             Console.WriteLine("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
             Console.WriteLine("Get Offers");
-            var offer = Context.Offers.Where(s => s.OfferGuid == planDetails.OfferId).FirstOrDefault();
+            var offer = this.offersRepository.GetOfferDetailByOfferId(planDetails.OfferId);
             Console.WriteLine("Get Events");
-            var events = Context.Events.Where(s => s.EventsName == "Activate").FirstOrDefault();
+            var events = this.eventsRepository.GetEventID("Activate");
 
-            //if (subscription.SubscriptionStatus == "Subscribed")
-            //{
-            //    var subscriptionData = this.fulfillApiclient.GetSubscriptionByIdAsync(subscriptionID).ConfigureAwait(false).GetAwaiter().GetResult();
-            //}
-
-
-            var subscriptionTemplateParameters = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
+            var subscriptionTemplateParameters = this.subscriptionTemplateParametersRepository.GetSubscriptionTemplateParameters(subscription.AmpsubscriptionId);
             List<SubscriptionTemplateParametersModel> subscriptionTemplateParametersList = new List<SubscriptionTemplateParametersModel>();
             if (subscriptionTemplateParameters != null)
             {
@@ -90,7 +95,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             subscriptionDetail.PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId;
             subscriptionDetail.Quantity = subscription.Ampquantity;
             subscriptionDetail.Name = subscription.Name;
-            subscriptionDetail.SubscriptionStatus = subscription.SubscriptionStatus;
+            subscriptionDetail.SubscriptionStatus = this.subscriptionService.GetSubscriptionStatus(subscription.SubscriptionStatus);
             subscriptionDetail.IsActiveSubscription = subscription.IsActive ?? false;
             subscriptionDetail.CustomerEmailAddress = userdeatils.EmailAddress;
             subscriptionDetail.CustomerName = userdeatils.FullName;
@@ -113,9 +118,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
 
             if (
-             subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.Unsubscribed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeleteResourceFailed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString()
+             subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString()
                 )
             {
                 eventStatus = "Unsubscribe";
@@ -125,17 +130,17 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
             string emailStatusKey = "success";
             if (
-                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeploymentFailed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.ActivationFailed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.UnsubscribeFailed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionWebJobStatusEnum.DeleteResourceFailed.ToString()
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeploymentFailed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString()
                 )
             {
                 emailStatusKey = "failure";
 
             }
             EmailHelper emial = new EmailHelper(this.applicationConfigRepository, this.SubscriptionRepository, this.emailTemplateRepository, this.planEventsMappingRepository, this.eventsRepository);
-            emial.SendEmail(subscriptionDetail, emailStatusKey, SubscriptionWebJobStatusEnum.PendingActivation, "");
+            //emial.SendEmail(subscriptionDetail, emailStatusKey, SubscriptionStatusEnumExtension.PendingActivation, "");
 
         }
 

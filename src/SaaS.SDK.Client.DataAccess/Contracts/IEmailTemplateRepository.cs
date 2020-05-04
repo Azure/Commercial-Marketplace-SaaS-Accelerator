@@ -7,11 +7,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
     public interface IEmailTemplateRepository
     {
-        string GetSubject(string status);
-        bool? GetIsActive(string status);
-        string GetTemplateBody(string status);
-        string GetCCRecipients(string status);
-        string GetToRecipients(string status);
-        string GetBccRecipients(string status);
+        EmailTemplate GetEmailTemplateOnStatus(string status);
+
     }
 }

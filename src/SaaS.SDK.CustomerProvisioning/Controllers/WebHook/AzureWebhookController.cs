@@ -2,7 +2,7 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.WebHook;
     using Newtonsoft.Json;
 

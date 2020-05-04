@@ -1,4 +1,4 @@
-﻿@using Microsoft.Marketplace.SaasKit.Models;
+﻿@using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 @model SubscriptionViewModel
 
 @{
@@ -62,20 +62,20 @@
                                                         <span>N/A</span>
                                                     }
                                                 </td>
-                                                <td class="text-left">@subscription.SaasSubscriptionStatus</td>
+                                                <td class="text-left">@subscription. SubscriptionStatus</td>
                                                 <td class="text-left cm-ellipsis">
                                                     <div class="nav-item dropdown">
                                                         <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                         <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                            @if (subscription.IsMeteringSupported && subscription.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
+                                                            @if (subscription.IsMeteringSupported && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                             {
                                                                 <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId">Manage Usage</a>
                                                             }
-                                                            @if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
+                                                            @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
                                                             {
                                                                 <a class="dropdown-item cm-dropdown-option" asp-action="ActivateSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
                                                             }
-                                                            @if (Model.IsAutomaticProvisioningSupported == true && subscription.SaasSubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
+                                                            @if (Model.IsAutomaticProvisioningSupported == true && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                             {
                                                                 <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
                                                                 <a class="dropdown-item cm-dropdown-option" asp-action="DeActivateSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>

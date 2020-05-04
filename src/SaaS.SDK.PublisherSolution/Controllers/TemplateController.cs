@@ -11,14 +11,15 @@
     using Microsoft.AspNetCore.Mvc.Rendering;
     //using Microsoft.Marketplace.Saas.Client.Services;
     using Microsoft.Marketplace.Saas.Web.Controllers;
-    using Microsoft.Marketplace.Saas.Web.Helpers;
-    using Microsoft.Marketplace.Saas.Web.Models;
-    using Microsoft.Marketplace.Saas.Web.Services;
-    using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Client.Services;
+    //using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json.Linq;
 
@@ -37,20 +38,22 @@
 
         private readonly IArmTemplateRepository armTemplateRepository;
 
+        private readonly IAzureBlobFileClient azureBlobFileClient;
         private ArmTemplateService armTemplateService;
 
         private readonly IArmTemplateParametersRepository armTemplateParametersRepository;
 
-        public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository, IArmTemplateParametersRepository armTemplateParametersRepository)
+        public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository, IArmTemplateParametersRepository armTemplateParametersRepository, IAzureBlobFileClient azureBlobFileClient)
         {
             this.usersRepository = usersRepository;
-            this.applicationConfigRepository = applicationConfigRepository;
+            this.applicationConfigRepository = applicationConfigRepository
             this.knownUsersRepository = knownUsersRepository;
             this.userRepository = userRepository;
             this.userService = new UserService(this.userRepository);
             this.armTemplateRepository = armTemplateRepository;
             this.armTemplateService = new ArmTemplateService(this.armTemplateRepository);
             this.armTemplateParametersRepository = armTemplateParametersRepository;
+            this.azureBlobFileClient = azureBlobFileClient;
         }
 
         public IActionResult Index()
@@ -82,14 +85,11 @@
         [HttpPost("UploadBatchUsage")]
         public async Task<IActionResult> UploadBatchUsage(List<IFormFile> uploadfile)
         {
-
             BatchUsageUploadModel bulkUploadModel = new BatchUsageUploadModel();
             bulkUploadModel.BulkUploadUsageStagings = new List<BulkUploadUsageStagingResult>();
             bulkUploadModel.BatchLogId = 0;
             DeploymentParameterViewModel model = new DeploymentParameterViewModel();
             List<ChindParameterViewModel> childlist = new List<ChindParameterViewModel>();
-
-
 
             ResponseModel response = new ResponseModel();
             var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -247,17 +247,13 @@
                                 }
                             }
                             childlist.Add(childparms);
-                            //childparms.listparms= grandlist;
-                            //childlist.Add(childparms);
-
-
                         }
                         //}
                         model.DeplParms = childlist;
                         bulkUploadModel.DeploymentParameterViewModel = model;
 
                         await formFile.CopyToAsync(stream);
-                        string fileuploadPath = BlobFileUploadHelper.UploadFile(formFile, filename, fileContantType, ArmtempalteId, applicationConfigRepository);
+                        string fileuploadPath = this.azureBlobFileClient.UploadARMTemplateToBlob(formFile, filename, fileContantType, ArmtempalteId);
                         Armtemplates armTemplate = new Armtemplates()
                         {
                             ArmtempalteName = filename,
