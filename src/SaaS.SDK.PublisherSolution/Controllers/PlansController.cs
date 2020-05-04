@@ -41,7 +41,7 @@
 
         private readonly IPlansRepository plansRepository;
 
-        private PlansService plansService;
+            private PlansService plansService;
 
         private IOffersRepository offerRepository;
 

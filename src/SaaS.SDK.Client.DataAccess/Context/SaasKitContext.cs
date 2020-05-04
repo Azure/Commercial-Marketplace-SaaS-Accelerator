@@ -49,7 +49,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=localhost;Initial Catalog=AMP3.0;Persist Security Info=True;User ID=sa;Password=Sa1;");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -225,7 +229,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .WithMany(p => p.KnownUsers)
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__KnownUser__RoleI__4F7CD00D");
+                    .HasConstraintName("FK__KnownUser__RoleI__6E01572D");
             });
 
             modelBuilder.Entity<MeteredAuditLogs>(entity =>
@@ -249,7 +253,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.MeteredAuditLogs)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__MeteredAu__Subsc__5070F446");
+                    .HasConstraintName("FK__MeteredAu__Subsc__6EF57B66");
             });
 
             modelBuilder.Entity<MeteredDimensions>(entity =>
@@ -267,7 +271,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Plan)
                     .WithMany(p => p.MeteredDimensions)
                     .HasForeignKey(d => d.PlanId)
-                    .HasConstraintName("FK__MeteredDi__PlanI__5165187F");
+                    .HasConstraintName("FK__MeteredDi__PlanI__6FE99F9F");
             });
 
             modelBuilder.Entity<OfferAttributes>(entity =>
@@ -313,7 +317,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeMapping>(entity =>
             {
                 entity.HasKey(e => e.PlanAttributeId)
-                    .HasName("PK__PlanAttr__8B476A98BC2701F4");
+                    .HasName("PK__PlanAttr__8B476A98340E6BF3");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -323,7 +327,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanAttr__AAAC09D86F860B3F");
+                    .HasName("PK__PlanAttr__AAAC09D808149A14");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -355,7 +359,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanEventsOutPut>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanEven__AAAC09D817D976C4");
+                    .HasName("PK__PlanEven__AAAC09D85B46A2E0");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -431,14 +435,12 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.SubscriptionAuditLogs)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__Subscript__Subsc__403A8C7D");
+                    .HasConstraintName("FK__Subscript__Subsc__70DDC3D8");
             });
 
             modelBuilder.Entity<SubscriptionKeyValut>(entity =>
             {
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.SecureId).IsUnicode(false);
             });
 
             modelBuilder.Entity<SubscriptionLicenses>(entity =>
@@ -454,13 +456,13 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.Subscription)
                     .WithMany(p => p.SubscriptionLicenses)
                     .HasForeignKey(d => d.SubscriptionId)
-                    .HasConstraintName("FK__Subscript__Subsc__52593CB8");
+                    .HasConstraintName("FK__Subscript__Subsc__71D1E811");
             });
 
             modelBuilder.Entity<SubscriptionParametersOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__Subscrip__AAAC09D8695C1385");
+                    .HasName("PK__Subscrip__AAAC09D888CBD0C7");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -620,6 +622,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.PurchaserEmail).HasMaxLength(255);
+
                 entity.Property(e => e.SubscriptionStatus)
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -627,7 +631,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Subscriptions)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Subscript__UserI__412EB0B6");
+                    .HasConstraintName("FK__Subscript__UserI__72C60C4A");
             });
 
             modelBuilder.Entity<Users>(entity =>
@@ -648,7 +652,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<ValueTypes>(entity =>
             {
                 entity.HasKey(e => e.ValueTypeId)
-                    .HasName("PK__ValueTyp__A51E9C5A6F5AC41B");
+                    .HasName("PK__ValueTyp__A51E9C5A40B96C6C");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 

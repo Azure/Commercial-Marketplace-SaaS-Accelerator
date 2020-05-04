@@ -42,7 +42,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             return Context.Armtemplates.Where(s => s.ArmtempalteId == ArmtempalteId).FirstOrDefault();
         }
 
-
         /// <summary>
         /// Adds the specified Offer details.
         /// </summary>

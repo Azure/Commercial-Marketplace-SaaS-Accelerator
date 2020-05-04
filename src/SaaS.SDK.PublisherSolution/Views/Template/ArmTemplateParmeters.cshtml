@@ -1,0 +1,146 @@
+﻿@model List<Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.ArmtemplateParameters>
+
+@if (Model != null && Model.Count() > 0)
+{
+
+    <link href="~/css/jquery-ui/jquery-ui.css" rel="stylesheet" />
+    <link href="~/css/jquery-ui/style.css" rel="stylesheet" />
+    <script src="~/lib/jquery-ui/jquery-1.12.4.js"></script>
+    <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+
+    <script>
+        $(function () {
+            $("#tabs").tabs();
+        });
+    </script>
+
+    <div class="modal-dialog modal-lg mt200">
+        <div class="modal-content">
+            <div class="modal-header header-bg">
+                <h4><span class="cm-section-heading"> Template Parameters</span></h4>
+                <button type="button" class="close text-right" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="tabs">
+
+
+                    @{ var inputs = Model.Where(s => s.ParameterType == "input");
+                        if (inputs.Count() > 0)
+                        {
+                            var inputlist = inputs.ToList();
+                            <div class="card-body ">
+                                <div class="text-left ">
+                                    <span class="cm-section-heading">Input Parameters</span>
+                                </div>
+                            </div>
+                            <div id="tabs-Inputs">
+                                <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                                    <tr>
+                                        <th>
+                                            Parameter Name
+
+                                        </th>
+
+                                        <th>
+                                            Parameter Value
+
+                                        </th>
+                                        <th>
+                                            Parameter Data Type
+
+                                        </th>
+
+                                    </tr>
+                                    @foreach (var input in inputlist)
+                                    {
+                                        <tr>
+                                            <td>
+
+                                                @input.Parameter
+                                            </td>
+                                            <td>
+                                                @input.Value
+                                            </td>
+                                            <td>@input.ParameterDataType</td>
+
+
+                                        </tr>
+                                    }
+
+                                </table>
+
+                            </div>
+
+                        } }
+
+
+
+                    @{ var outputs = Model.Where(s => s.ParameterType == "output");
+                        if (outputs.Count() > 0)
+                        {
+                            var outputslist = outputs.ToList();
+                            <div class="card-body ">
+                                <div class="text-left ">
+                                    <span class="cm-section-heading">Output Parameters</span>
+                                </div>
+                            </div>
+                            <div id="tabs-Ouputs">
+                                <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                                    <tr>
+                                        <th>
+                                            Parameter Name
+
+                                        </th>
+
+                                        <th>
+                                            Parameter Value
+
+                                        </th>
+                                        <th>
+                                            Parameter Data Type
+
+                                        </th>
+
+                                    </tr>
+                                    @foreach (var output in outputslist)
+                                    {
+                                        <tr>
+                                            <td>
+
+                                                @output.Parameter
+                                            </td>
+                                            <td>
+                                                @output.Value
+                                            </td>
+                                            <td>@output.ParameterDataType</td>
+
+                                        </tr>
+                                    }
+
+                                </table>
+
+                            </div>
+
+                        } }
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+}
+else
+{
+    <div class="modal-dialog modal-lg mt200">
+        <div class="modal-content">
+            <div class="modal-header header-bg">
+
+                <label> No paramameters associated with this template.</label>
+            </div>
+        </div>
+    </div>
+}

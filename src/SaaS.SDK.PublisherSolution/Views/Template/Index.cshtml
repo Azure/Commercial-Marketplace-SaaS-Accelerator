@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Microsoft.Marketplace.SaasKit.Models;
+@model DeploymentParameterViewModel
+@{
     ViewData["Title"] = "ARM Template";
 }
 
@@ -36,6 +38,9 @@
             </div>
         </div>
     </form>
+</div>
+<div>
+    @{await Html.RenderPartialAsync("ARMTemplates");}
 </div>
 <div>
     @{await Html.RenderPartialAsync("ARMFileParameters");}
