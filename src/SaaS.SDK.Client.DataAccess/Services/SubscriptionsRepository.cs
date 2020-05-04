@@ -413,13 +413,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             parmList = new List<SubscriptionTemplateParametersOutPut>();
 
             parmList = JsonConvert.DeserializeObject<List<SubscriptionTemplateParametersOutPut>>(writer.ToString());
-            //foreach (var parm in parmList)
-            //{
-            //    parm.Value = parm.Value.Replace("${Subscription}", parm.SubscriptionName.Replace(" ", "-").Replace("_", "-"));
-            //    parm.Value = parm.Value.Replace("${Offer}", parm.OfferName.Replace(" ", "-").Replace("_", "-"));
-            //    parm.Value = parm.Value.Replace("${Plan}", parm.PlanId.Replace(" ", "-").Replace("_", "-"));
-            //}
-
             return parmList;
         }
 

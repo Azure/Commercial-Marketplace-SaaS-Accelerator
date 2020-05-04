@@ -79,10 +79,16 @@ namespace Microsoft.Marketplace.SaasKit.Client
             };
             var keyVaultConfig = new KeyVaultConfig()
             {
-                ClientID = Configuration["KeyVaultConfig:ClientID"],
-                ClientSecret = Configuration["KeyVaultConfig:ClientSecret"],
-                TenantID = Configuration["KeyVaultConfig:TenantID"],
-                KeyVaultUrl = Configuration["KeyVaultConfig:KeyVaultUrl"]
+                ClientID = this.Configuration["KeyVaultConfig:ClientID"],
+                ClientSecret = this.Configuration["KeyVaultConfig:ClientSecret"],
+                TenantID = this.Configuration["KeyVaultConfig:TenantID"],
+                KeyVaultUrl = this.Configuration["KeyVaultConfig:KeyVaultUrl"]
+            };
+            var azureBlobConfig = new AzureBlobConfig()
+            {
+                BlobContainer = this.Configuration["AzureBlobConfig:BlobContainer"],
+                BlobConnectionString = this.Configuration["AzureBlobConfig:BlobConnectionString"]
+
             };
             services.AddAuthentication(options =>
             {
@@ -107,6 +113,9 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddSingleton<CloudStorageConfigs>(cloudConfig);
             services.AddSingleton<IAzureKeyVaultClient>(new AzureKeyVaultClient(keyVaultConfig));
+            services.AddSingleton<IAzureBlobFileClient>(new AzureBlobFileClient(azureBlobConfig));
+            services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
+            services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 

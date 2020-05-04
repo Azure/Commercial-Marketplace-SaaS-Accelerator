@@ -25,22 +25,29 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         protected readonly IApplicationConfigRepository applicationConfigRepository;
         protected readonly ISubscriptionLogRepository subscriptionLogRepository;
         protected readonly IAzureKeyVaultClient azureKeyVaultClient;
+        protected readonly IAzureBlobFileClient azureBlobFileClient;
+        protected readonly KeyVaultConfig keyVaultConfig;
+
 
         public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient,
                                                 IApplicationConfigRepository applicationConfigRepository,
                                                 ISubscriptionLogRepository subscriptionLogRepository,
                                                 ISubscriptionsRepository subscriptionsRepository,
-                                                IAzureKeyVaultClient azureKeyVaultClient) : base(new SaasKitContext())
+                                                IAzureKeyVaultClient azureKeyVaultClient,
+                                                IAzureBlobFileClient azureBlobFileClient,
+                                                KeyVaultConfig keyVaultConfig) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
             this.subscriptionsRepository = subscriptionsRepository;
             this.azureKeyVaultClient = azureKeyVaultClient;
-
+            this.azureBlobFileClient = azureBlobFileClient;
+            this.keyVaultConfig = keyVaultConfig;
         }
         public override void Process(Guid subscriptionID)
         {
+            
             Console.WriteLine("ResourceDeploymentStatusHandler Process...");
             Console.WriteLine("Get SubscriptionById");
             var subscription = this.GetSubscriptionById(subscriptionID);
@@ -97,11 +104,11 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                 if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                                 {
                                     var keyvault = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
-                                    secretKey = keyvault.SecureId; //KB: Typo
+                                    secretKey = keyvault.SecureId;
                                 }
                                 else
                                 {
-                                    secretKey = applicationConfigRepository.GetValuefromApplicationConfig("LocalkeyvaultUrl");
+                                    secretKey = string.Format("{0}secrets/HostedsubscriptionCredentials", keyVaultConfig.KeyVaultUrl);
                                 }
 
 
@@ -113,7 +120,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
                                 ARMTemplateDeploymentManager deploy = new ARMTemplateDeploymentManager();
                                 Console.WriteLine("Start Deployment: DeployARMTemplate");
-                                var output = deploy.DeployARMTemplate(armTemplate, parametersList, credenitals).ConfigureAwait(false).GetAwaiter().GetResult();
+                                string armTemplateCOntent = azureBlobFileClient.ReadARMTemplateFromBlob(armTemplate.ArmtempalteName);
+
+                                var output = deploy.DeployARMTemplate(armTemplate, parametersList, credenitals, armTemplateCOntent).ConfigureAwait(false).GetAwaiter().GetResult();
 
                                 string outputstring = JsonConvert.SerializeObject(output.Properties.Outputs);
                                 var outPutList = GenerateParmlist(output);
@@ -170,7 +179,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
             }
         }
-             
+
         public static List<SubscriptionTemplateParameters> GetTemplateParameters(Guid subscriptionID, Guid PlanGuid, SaasKitContext Context, Users userdeatils)
         {
             List<SubscriptionTemplateParameters> _list = new List<SubscriptionTemplateParameters>();

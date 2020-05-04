@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SaaS.SDK.Client.DataAccess.Services
+namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
     public class SubscriptionTemplateParametersRepository : ISubscriptionTemplateParametersRepository
     {

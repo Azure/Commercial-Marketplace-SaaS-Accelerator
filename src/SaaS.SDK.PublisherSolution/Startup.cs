@@ -11,7 +11,9 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -69,12 +71,24 @@ namespace Microsoft.Marketplace.Saas.Web
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"]
             };
-
-            var blobConfig = new BlobStorageConfig
+            var cloudConfig = new CloudStorageConfigs
             {
-                BlobConnectionString = this.Configuration["BlobConnectionString"],
+                AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
+            };
+            var keyVaultConfig = new KeyVaultConfig()
+            {
+                ClientID = this.Configuration["KeyVaultConfig:ClientID"],
+                ClientSecret = this.Configuration["KeyVaultConfig:ClientSecret"],
+                TenantID = this.Configuration["KeyVaultConfig:TenantID"],
+                KeyVaultUrl = this.Configuration["KeyVaultConfig:KeyVaultUrl"]
             };
 
+            var azureBlobConfig = new AzureBlobConfig()
+            {
+                BlobContainer = this.Configuration["AzureBlobConfig:BlobContainer"],
+                BlobConnectionString = this.Configuration["AzureBlobConfig:BlobConnectionString"]
+
+            };
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -97,7 +111,11 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new MeteringApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
-
+            services.AddSingleton<CloudStorageConfigs>(cloudConfig);
+            services.AddSingleton<IAzureKeyVaultClient>(new AzureKeyVaultClient(keyVaultConfig));
+            services.AddSingleton<IAzureBlobFileClient>(new AzureBlobFileClient(azureBlobConfig));
+            services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
+            services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 

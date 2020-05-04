@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
 {
-    public interface IFileUploadClient
+    public interface IAzureBlobFileClient
     {
-        string UploadFile(IFormFile file, string fileName, string fileContantType, Guid referenceid, IApplicationConfigRepository applicationConfigRepository, string StorageConnectionString);
+        string UploadARMTemplateToBlob(IFormFile file, string fileName, string fileContantType, Guid referenceid);
+        string ReadARMTemplateFromBlob(string fileName);
     }
 }

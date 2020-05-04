@@ -38,13 +38,9 @@
 
         private readonly IArmTemplateRepository armTemplateRepository;
 
-        private readonly IFileUploadClient fileUploadClient;
+        private readonly IAzureBlobFileClient azureBlobFileClient;
 
-        private readonly BlobStorageConfig blobConfigs;
-
-        private string blobConnectionString;
-        public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository,
-            IFileUploadClient fileUploadClient, BlobStorageConfig blobConfigs)
+        public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository, IAzureBlobFileClient azureBlobFileClient)
         {
             this.usersRepository = usersRepository;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -52,9 +48,7 @@
             this.userRepository = userRepository;
             this.userService = new UserService(this.userRepository);
             this.armTemplateRepository = armTemplateRepository;
-            this.fileUploadClient = new FileUploadClient(applicationConfigRepository);
-            this.blobConfigs = blobConfigs;
-            blobConnectionString = blobConfigs.BlobConnectionString;
+            this.azureBlobFileClient = azureBlobFileClient;
         }
 
         public IActionResult Index()
@@ -244,18 +238,13 @@
                                 }
                             }
                             childlist.Add(childparms);
-                            //childparms.listparms= grandlist;
-                            //childlist.Add(childparms);
-
-
                         }
                         //}
                         model.DeplParms = childlist;
                         bulkUploadModel.DeploymentParameterViewModel = model;
 
                         await formFile.CopyToAsync(stream);
-                        string blobstorageConnectionString = this.blobConfigs.BlobConnectionString ?? blobConnectionString;
-                        string fileuploadPath = this.fileUploadClient.UploadFile(formFile, filename, fileContantType, ArmtempalteId, applicationConfigRepository, blobstorageConnectionString);
+                        string fileuploadPath = this.azureBlobFileClient.UploadARMTemplateToBlob(formFile, filename, fileContantType, ArmtempalteId);
                         Armtemplates armTemplate = new Armtemplates()
                         {
                             ArmtempalteName = filename,

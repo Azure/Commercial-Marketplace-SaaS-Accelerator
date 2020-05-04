@@ -19,8 +19,8 @@ using System.Linq;
 
 namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
-    public class ARMTemplateDeploymentManager
-    {   
+    public class ARMTemplateDeploymentManager 
+    {
         /// <summary>
         /// Reads a JSON file from the specified path
         /// </summary>
@@ -39,7 +39,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             }
         }
 
-        public async Task<DeploymentExtended> DeployARMTemplate(Armtemplates template, List<SubscriptionTemplateParameters> templateParameters, CredentialsModel credenitals)
+        public async Task<DeploymentExtended> DeployARMTemplate(Armtemplates template, List<SubscriptionTemplateParameters> templateParameters, CredentialsModel credenitals, string armTemplateContent)
         {
             Console.WriteLine("DeployARMTemplate");
             try
@@ -50,11 +50,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 
                 Console.WriteLine("LoginSilentAsync");
                 var serviceCreds = await ApplicationTokenProvider.LoginSilentAsync(tenantId, clientId, clientSecret).ConfigureAwait(false);
-                Console.WriteLine("ReadARMTemplateFromBlob template.ArmtempalteName {0}", template.ArmtempalteName);
-                string armContent = AzureBlobHelper.ReadARMTemplateFromBlob(template.ArmtempalteName);
 
                 // Read the template and parameter file contents
-                JObject templateFileContents = JObject.Parse(armContent);
+                JObject templateFileContents = JObject.Parse(armTemplateContent);
 
                 Console.WriteLine("Get resourceGroupName");
                 var resourceGroupName = templateParameters.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
@@ -98,7 +96,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             }
             return new DeploymentExtended();
         }
-         
+
         /// <summary>
         /// Ensures that a resource group with the specified name exists. If it does not, will attempt to create one.
         /// </summary>
@@ -133,12 +131,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 
                 Console.WriteLine("LoginSilentAsync");
                 var serviceCreds = ApplicationTokenProvider.LoginSilentAsync(tenantId, clientId, clientSecret).ConfigureAwait(false).GetAwaiter().GetResult();
-                //Console.WriteLine("ReadARMTemplateFromBlob template.ArmtempalteName {0}", template.ArmtempalteName);
-                //string armContent = AzureBlobHelper.ReadARMTemplateFromBlob(template.ArmtempalteName);
-
-                //// Read the template and parameter file contents
-                //JObject templateFileContents = JObject.Parse(armContent);
-
                 Console.WriteLine("Get resourceGroupName");
                 var resourceGroupName = templateParameters.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
                 Console.WriteLine("resourceGroupName: {0} ", resourceGroupName);

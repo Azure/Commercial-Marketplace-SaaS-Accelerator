@@ -24,12 +24,14 @@ namespace SaaS.SDK.Provisioning.Webjob
         protected readonly IOfferAttributesRepository offerAttributesRepository;
         protected readonly IEventsRepository eventsRepository;
         protected readonly IAzureKeyVaultClient azureKeyVaultClient;
+        protected readonly IAzureBlobFileClient azureBlobFileClient;
         protected readonly IPlansRepository planRepository;
         protected readonly IOffersRepository offersRepository;
         protected readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
 
         private readonly List<ISubscriptionStatusHandler> activateStatusHandlers;
         private readonly List<ISubscriptionStatusHandler> deactivateStatusHandlers;
+        protected readonly KeyVaultConfig keyVaultConfig;
 
         public Functions(IFulfillmentApiClient fulfillmentApiClient,
                             ISubscriptionsRepository subscriptionRepository,
@@ -42,11 +44,14 @@ namespace SaaS.SDK.Provisioning.Webjob
                             IAzureKeyVaultClient azureKeyVaultClient,
                             IPlansRepository planRepository,
                             IOffersRepository offersRepository,
-                            ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository)
+                            IAzureBlobFileClient azureBlobFileClient,
+                            ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
+                            KeyVaultConfig keyVaultConfig)
         {
             this.fulfillmentApiClient = fulfillmentApiClient;
             this.subscriptionRepository = subscriptionRepository;
             this.azureKeyVaultClient = azureKeyVaultClient;
+            this.azureBlobFileClient = azureBlobFileClient;
             this.applicationConfigrepository = applicationConfigRepository;
             this.emailTemplaterepository = emailTemplaterepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
@@ -56,11 +61,12 @@ namespace SaaS.SDK.Provisioning.Webjob
             this.planRepository = planRepository;
             this.offersRepository = offersRepository;
             this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
+            this.keyVaultConfig = keyVaultConfig;
 
             this.activateStatusHandlers = new List<ISubscriptionStatusHandler>();
             this.deactivateStatusHandlers = new List<ISubscriptionStatusHandler>();
 
-            activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient));
+            activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient, azureBlobFileClient, keyVaultConfig));
             activateStatusHandlers.Add(new PendingActivationStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository, subscriptionTemplateParametersRepository));
             activateStatusHandlers.Add(new PendingFulfillmentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository));
             activateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, planRepository, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository, offersRepository, subscriptionTemplateParametersRepository));

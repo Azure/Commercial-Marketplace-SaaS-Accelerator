@@ -22,18 +22,24 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         protected readonly ISubscriptionLogRepository subscriptionLogRepository;
         protected readonly ISubscriptionsRepository subscriptionsRepository;
         protected readonly IAzureKeyVaultClient azureKeyVaultClient;
+        protected readonly KeyVaultConfig keyVaultConfig;
+        protected readonly ISubscriptionTemplateParametersRepository subscriptionsTemplateRepository;
 
         public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient,
                                             IApplicationConfigRepository applicationConfigRepository,
                                             ISubscriptionLogRepository subscriptionLogRepository,
                                             ISubscriptionsRepository subscriptionsRepository,
-                                            IAzureKeyVaultClient azureKeyVaultClient) : base(new SaasKitContext())
+                                            IAzureKeyVaultClient azureKeyVaultClient,
+                                              KeyVaultConfig keyVaultConfig,
+                                              ISubscriptionTemplateParametersRepository subscriptionsTemplateRepository) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
             this.subscriptionsRepository = subscriptionsRepository;
             this.azureKeyVaultClient = azureKeyVaultClient;
+            this.keyVaultConfig = keyVaultConfig;
+            this.subscriptionsTemplateRepository = subscriptionsTemplateRepository;
 
         }
         public override void Process(Guid subscriptionID)
@@ -50,14 +56,14 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 try
                 {
 
-                    var subscriptionParameters = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
+                    var subscriptionParameters = subscriptionsTemplateRepository.GetSubscriptionTemplateParameters(subscriptionID);
                     if (subscriptionParameters != null)
                     {
                         var parametersList = subscriptionParameters.ToList();
                         if (parametersList.Count() > 0)
                         {
 
-                           this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupPending.ToString(), "Delete Resource Group Begin",  subscription.SubscriptionStatus);
+                            this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupPending.ToString(), "Delete Resource Group Begin", subscription.SubscriptionStatus);
                             this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourcePendign.ToString(), true);
 
                             var resourceGroup = parametersList.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
@@ -66,11 +72,11 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                             if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                             {
                                 var keyvault = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
-                                secretKey = keyvault.SecureId;  //KB: Typo (change db column name)
+                                secretKey = keyvault.SecureId;
                             }
                             else
                             {
-                                secretKey = applicationConfigRepository.GetValuefromApplicationConfig("LocalkeyvaultUrl");
+                                secretKey = string.Format("{0}secrets/HostedsubscriptionCredentials", keyVaultConfig.KeyVaultUrl);
                             }
                             Console.WriteLine("Get DoVault");
                             string secretValue = azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -81,7 +87,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                             ARMTemplateDeploymentManager deploy = new ARMTemplateDeploymentManager();
                             deploy.DeleteResoureGroup(parametersList, credenitals);
 
-                           this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), string.Format("Delete Resource Group: {0} End", resourceGroup),  subscription.SubscriptionStatus.ToString());
+                            this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), string.Format("Delete Resource Group: {0} End", resourceGroup), subscription.SubscriptionStatus.ToString());
 
                             this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourceSuccess.ToString(), true);
 
@@ -102,7 +108,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                   this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(), errorDescriptin,subscription.SubscriptionStatus.ToString());
+                    this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
                     Console.WriteLine(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString(), true);

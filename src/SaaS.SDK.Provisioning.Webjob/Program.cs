@@ -27,7 +27,7 @@ namespace SaaS.SDK.Provisioning.Webjob
         static async Task Main()
         {
             var builder = new HostBuilder();
-            
+
             builder.ConfigureLogging((context, b) =>
             {
                 b.AddConsole();
@@ -40,9 +40,11 @@ namespace SaaS.SDK.Provisioning.Webjob
             });
 
             // Configure Services
-            builder.ConfigureServices((context, s) => { 
-                ConfigureServices(s); 
-                s.BuildServiceProvider(); });
+            builder.ConfigureServices((context, s) =>
+            {
+                ConfigureServices(s);
+                s.BuildServiceProvider();
+            });
 
             var host = builder.Build();
             using (host)
@@ -81,6 +83,10 @@ namespace SaaS.SDK.Provisioning.Webjob
                 TenantId = Configuration["SaaSApiConfiguration:TenantId"]
             };
 
+            var cloudConfig = new CloudStorageConfigs
+            {
+                AzureWebJobsStorage = Configuration["AzureWebJobsStorage"],
+            };
             var keyVaultConfig = new KeyVaultConfig()
             {
                 ClientID = Configuration["KeyVaultConfig:ClientID"],
@@ -88,19 +94,27 @@ namespace SaaS.SDK.Provisioning.Webjob
                 TenantID = Configuration["KeyVaultConfig:TenantID"],
                 KeyVaultUrl = Configuration["KeyVaultConfig:KeyVaultUrl"]
             };
+            var azureBlobConfig = new AzureBlobConfig()
+            {
+                BlobContainer = Configuration["AzureBlobConfig:BlobContainer"],
+                BlobConnectionString = Configuration["AzureBlobConfig:BlobConnectionString"]
+
+            };
 
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
 
             services.AddSingleton<IAzureKeyVaultClient>(new AzureKeyVaultClient(keyVaultConfig));
+            services.AddSingleton<IAzureBlobFileClient>(new AzureBlobFileClient(azureBlobConfig));
             services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
+            services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
 
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             InitializeRepositoryServices(services);
 
-            
+
             #endregion
 
         }
@@ -112,7 +126,7 @@ namespace SaaS.SDK.Provisioning.Webjob
             services.AddScoped<IUsersRepository, UsersRepository>();
             services.AddScoped<ISubscriptionLogRepository, SubscriptionLogRepository>();
             services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
-            
+
             services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
             services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
             services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
@@ -120,6 +134,8 @@ namespace SaaS.SDK.Provisioning.Webjob
             services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
+            services.AddScoped<ISubscriptionTemplateParametersRepository, SubscriptionTemplateParametersRepository>();
+            
 
         }
     }
