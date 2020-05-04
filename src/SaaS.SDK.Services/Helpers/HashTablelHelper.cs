@@ -8,7 +8,7 @@ using System.Text;
 namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
     public static class HashTablelHelper
-    {
+    { 
         public static Hashtable MapCredentials(Dictionary<string, string> credenitals)
         {
             Hashtable hashTable = new Hashtable();

@@ -170,7 +170,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
             }
         }
-
+             
         public static List<SubscriptionTemplateParameters> GetTemplateParameters(Guid subscriptionID, Guid PlanGuid, SaasKitContext Context, Users userdeatils)
         {
             List<SubscriptionTemplateParameters> _list = new List<SubscriptionTemplateParameters>();

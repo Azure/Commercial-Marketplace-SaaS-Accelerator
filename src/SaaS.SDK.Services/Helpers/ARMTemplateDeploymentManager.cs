@@ -98,7 +98,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             }
             return new DeploymentExtended();
         }
-
+         
         /// <summary>
         /// Ensures that a resource group with the specified name exists. If it does not, will attempt to create one.
         /// </summary>

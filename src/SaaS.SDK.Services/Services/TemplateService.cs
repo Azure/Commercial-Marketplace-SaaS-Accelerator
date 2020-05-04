@@ -34,10 +34,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             hashTable.Add("planevent", planEvent);
 
 
-            ExtendedProperties p = new ExtendedProperties();
+            ExtendedProperties properties = new ExtendedProperties();
 
-            VelocityEngine v = new VelocityEngine();
-            v.Init(p);
+            VelocityEngine engine = new VelocityEngine();
+            engine.Init(properties);
 
             VelocityContext context = new VelocityContext(hashTable);
 
@@ -50,7 +50,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             }
 
             StringWriter writer = new StringWriter();
-            v.Evaluate(context, writer, string.Empty, body);
+            engine.Evaluate(context, writer, string.Empty, body);
             return writer.ToString();
         }
     }

@@ -274,35 +274,34 @@ SELECT 'Template','Template',GETDATE(),'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML
 GO
 
 
-
-Create Procedure GetSubscriptionKeyValue(
-@SubscriptionId UniqueIdentifier
-)
-AS
-Begin
-
-Declare @Subscription Varchar(225) 
-Declare @Plan Varchar(225) 
-Declare @PlanGuId UniqueIdentifier
-Declare @Offer Varchar(225) 
-Declare @OfferGuId UniqueIdentifier
-
-set @Subscription = (select  top 1 Name from Subscriptions where AMPSubscriptionId=@SubscriptionId)
-set @Plan = (select  top 1 AMPPlanId from Subscriptions where  AMPSubscriptionId=@SubscriptionId)
-set @PlanGuId = (select  top 1 PlanGUID from Plans where  PlanId=@Plan)
-set @OfferGuId = (select  top 1 OfferID from Plans where  PlanId=@Plan)
-set @Offer = (select  top 1 OfferName from offers where OfferGUId= @OfferGuId)
-
-
-Create Table #Keyvalue (Id Int Identity(1,1),  [Key] Varchar(100), [Value] varchar(100)) 
-Insert into #Keyvalue
-Select 'Subscription' as [Key] , @Subscription as [Value] Union all
-Select 'Plan' as [Key] , @Plan as [Value] Union all
-Select 'Offer' as [Key] , @Offer as [Value] 
-
-Select * from #Keyvalue
-
-END
+CREATE Procedure spGetSubscriptionKeyValue(  
+@SubscriptionId UniqueIdentifier  
+)  
+AS  
+Begin  
+  
+Declare @Subscription Varchar(225)   
+Declare @Plan Varchar(225)   
+Declare @PlanGuId UniqueIdentifier  
+Declare @Offer Varchar(225)   
+Declare @OfferGuId UniqueIdentifier  
+  
+set @Subscription = (select  top 1 Name from Subscriptions where AMPSubscriptionId=@SubscriptionId)  
+set @Plan = (select  top 1 AMPPlanId from Subscriptions where  AMPSubscriptionId=@SubscriptionId)  
+set @PlanGuId = (select  top 1 PlanGUID from Plans where  PlanId=@Plan)  
+set @OfferGuId = (select  top 1 OfferID from Plans where  PlanId=@Plan)  
+set @Offer = (select  top 1 OfferName from offers where OfferGUId= @OfferGuId)  
+  
+  
+Create Table #Keyvalue (Id Int Identity(1,1),  [Key] Varchar(100), [Value] varchar(100))   
+Insert into #Keyvalue  
+Select 'Subscription' as [Key] , @Subscription as [Value] Union all  
+Select 'Plan' as [Key] , @Plan as [Value] Union all  
+Select 'Offer' as [Key] , @Offer as [Value]   
+  
+Select * from #Keyvalue  
+  
+END  
 
 GO
 

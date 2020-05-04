@@ -9,7 +9,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
     public class AzureBlobHelper
-    {
+    { 
         public static string ReadARMTemplateFromBlob(string fileName)
         {
             string blobContainer = "armtemplateblob";
