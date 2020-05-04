@@ -1,4 +1,4 @@
-﻿using Microsoft.Marketplace.Saas.Web.Models;
+﻿using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System;

@@ -19,6 +19,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Client.Services;
     //using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json.Linq;
@@ -46,7 +47,7 @@
         public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository, IArmTemplateParametersRepository armTemplateParametersRepository, IAzureBlobFileClient azureBlobFileClient)
         {
             this.usersRepository = usersRepository;
-            this.applicationConfigRepository = applicationConfigRepository
+            this.applicationConfigRepository = applicationConfigRepository;
             this.knownUsersRepository = knownUsersRepository;
             this.userRepository = userRepository;
             this.userService = new UserService(this.userRepository);
