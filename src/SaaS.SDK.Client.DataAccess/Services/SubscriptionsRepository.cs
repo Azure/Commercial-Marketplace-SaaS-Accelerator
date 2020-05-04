@@ -1,10 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Commons.Collections;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+using Newtonsoft.Json;
+using NVelocity;
+using NVelocity.App;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
@@ -318,6 +324,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             var subscriptionAttributes = Context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, PlanGuid);
 
             var existingdata = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
+            var subscriptionKeyValues = Context.SubscriptionKeyValueOutPut.FromSqlRaw("dbo.spGetSubscriptionKeyValue {0}", subscriptionID);
             if (existingdata != null)
             {
                 var existingdatalist = existingdata.ToList();
@@ -332,8 +339,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                     if (subscriptionAttributes != null)
                     {
                         var beforeReplaceList = subscriptionAttributes.ToList();
-
-                        var subscriptionAttributesList = ReplaceDeploymentparms(beforeReplaceList);
+                        var subscriptionKeyValuesList = subscriptionKeyValues.ToList();
+                        var subscriptionAttributesList = ReplaceDeploymentparms(beforeReplaceList, subscriptionKeyValuesList);
 
 
                         if (subscriptionAttributesList.Count() > 0)
@@ -376,7 +383,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         }
 
 
-        public static List<SubscriptionTemplateParametersOutPut> ReplaceDeploymentparms(List<SubscriptionTemplateParametersOutPut> parmList)
+        public static List<SubscriptionTemplateParametersOutPut> ReplaceDeploymentparms(List<SubscriptionTemplateParametersOutPut> parmList, List<SubscriptionKeyValueOutPut> subscriptionKeyValuesList)
         {
             //KB: Expect subscriptionID to this method
             // Call a stored procedure to return the default set of values as key value pairs
@@ -386,12 +393,32 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             // Use Nvelocity to do the substitution
 
 
-            foreach (var parm in parmList)
+
+            Hashtable hashTable = new Hashtable();
+            foreach (var keys in subscriptionKeyValuesList)
             {
-                parm.Value = parm.Value.Replace("${Subscription}", parm.SubscriptionName.Replace(" ", "-").Replace("_", "-"));
-                parm.Value = parm.Value.Replace("${Offer}", parm.OfferName.Replace(" ", "-").Replace("_", "-"));
-                parm.Value = parm.Value.Replace("${Plan}", parm.PlanId.Replace(" ", "-").Replace("_", "-"));
+                hashTable.Add(keys.Key, keys.Value);
             }
+
+
+            ExtendedProperties properties = new ExtendedProperties();
+
+            VelocityEngine engine = new VelocityEngine();
+            engine.Init(properties);
+
+            VelocityContext context = new VelocityContext(hashTable);
+            StringWriter writer = new StringWriter();
+            engine.Evaluate(context, writer, string.Empty, JsonConvert.SerializeObject(parmList));
+
+            parmList = new List<SubscriptionTemplateParametersOutPut>();
+
+            parmList = JsonConvert.DeserializeObject<List<SubscriptionTemplateParametersOutPut>>(writer.ToString());
+            //foreach (var parm in parmList)
+            //{
+            //    parm.Value = parm.Value.Replace("${Subscription}", parm.SubscriptionName.Replace(" ", "-").Replace("_", "-"));
+            //    parm.Value = parm.Value.Replace("${Offer}", parm.OfferName.Replace(" ", "-").Replace("_", "-"));
+            //    parm.Value = parm.Value.Replace("${Plan}", parm.PlanId.Replace(" ", "-").Replace("_", "-"));
+            //}
 
             return parmList;
         }
