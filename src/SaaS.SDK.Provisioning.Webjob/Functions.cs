@@ -72,7 +72,7 @@ namespace SaaS.SDK.Provisioning.Webjob
             activateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, planRepository, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository, offersRepository, subscriptionTemplateParametersRepository));
 
 
-            deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient));
+            deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient,keyVaultConfig,subscriptionTemplateParametersRepository));
             deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository));
             deactivateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, planRepository, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository, offersRepository, subscriptionTemplateParametersRepository));
         }

@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.PublisherSolution"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.Provisioning.Webjob", "SaaS.SDK.Provisioning.Webjob\SaaS.SDK.Provisioning.Webjob.csproj", "{FC5A71BC-9C72-4944-B103-1C17CB9E5124}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.Services", "SaaS.SDK.Services\SaaS.SDK.Services.csproj", "{B5C169DF-D848-4762-AAB9-B022F1E79466}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.Provisioning.Services", "SaaS.SDK.Services\SaaS.SDK.Provisioning.Services.csproj", "{B5C169DF-D848-4762-AAB9-B022F1E79466}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

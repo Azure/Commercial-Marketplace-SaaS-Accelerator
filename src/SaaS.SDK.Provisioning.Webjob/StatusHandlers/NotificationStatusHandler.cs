@@ -140,7 +140,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
             }
             EmailHelper emial = new EmailHelper(this.applicationConfigRepository, this.SubscriptionRepository, this.emailTemplateRepository, this.planEventsMappingRepository, this.eventsRepository);
-            emial.SendEmail(subscriptionDetail, emailStatusKey, SubscriptionStatusEnumExtension.PendingActivation, "");
+            //emial.SendEmail(subscriptionDetail, emailStatusKey, SubscriptionStatusEnumExtension.PendingActivation, "");
 
         }
 

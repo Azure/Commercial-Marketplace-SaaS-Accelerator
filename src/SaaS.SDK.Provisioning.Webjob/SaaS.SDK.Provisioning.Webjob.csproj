@@ -17,7 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj" />
     <ProjectReference Include="..\SaaS.SDK.Client\SaaS.SDK.Client.csproj" />
-    <ProjectReference Include="..\SaaS.SDK.Services\SaaS.SDK.Services.csproj" />
+    <ProjectReference Include="..\SaaS.SDK.Services\SaaS.SDK.Provisioning.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
