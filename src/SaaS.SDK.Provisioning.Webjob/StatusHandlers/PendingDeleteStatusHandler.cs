@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
@@ -24,6 +25,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         protected readonly IVaultService azureKeyVaultClient;
         protected readonly KeyVaultConfig keyVaultConfig;
         protected readonly ISubscriptionTemplateParametersRepository subscriptionsTemplateRepository;
+        protected readonly ILogger<PendingDeleteStatusHandler> logger;
+        protected readonly ARMTemplateDeploymentManager aRMTemplateDeploymentManager;
 
         public PendingDeleteStatusHandler(IFulfillmentApiClient fulfillApiClient,
                                             IApplicationConfigRepository applicationConfigRepository,
@@ -31,7 +34,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                             ISubscriptionsRepository subscriptionsRepository,
                                             IVaultService azureKeyVaultClient,
                                               KeyVaultConfig keyVaultConfig,
-                                              ISubscriptionTemplateParametersRepository subscriptionsTemplateRepository) : base(new SaasKitContext())
+                                              ISubscriptionTemplateParametersRepository subscriptionsTemplateRepository,
+                                              ILogger<PendingDeleteStatusHandler> logger,
+                                              ARMTemplateDeploymentManager aRMTemplateDeploymentManager) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -40,15 +45,17 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             this.azureKeyVaultClient = azureKeyVaultClient;
             this.keyVaultConfig = keyVaultConfig;
             this.subscriptionsTemplateRepository = subscriptionsTemplateRepository;
+            this.logger = logger;
+            this.aRMTemplateDeploymentManager = aRMTemplateDeploymentManager;
 
         }
         public override void Process(Guid subscriptionID)
         {
-            Console.WriteLine("Get GetSubscriptionById");
+            this.logger.LogInformation("Get GetSubscriptionById");
             var subscription = this.GetSubscriptionById(subscriptionID);
-            Console.WriteLine("Get PlanById");
+            this.logger.LogInformation("Get PlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
-            Console.WriteLine("Get User");
+            this.logger.LogInformation("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
 
             if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString())
@@ -67,7 +74,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                             this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourcePendign.ToString(), true);
 
                             var resourceGroup = parametersList.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
-                            Console.WriteLine("Get SubscriptionKeyValut");
+                            this.logger.LogInformation("Get SubscriptionKeyValut");
                             string secretKey = "";
                             if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                             {
@@ -78,14 +85,13 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                             {
                                 secretKey = string.Format("{0}secrets/HostedsubscriptionCredentials", keyVaultConfig.KeyVaultUrl);
                             }
-                            Console.WriteLine("Get DoVault");
+                            this.logger.LogInformation("Get DoVault");
                             string secretValue = azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
 
                             var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
-                            Console.WriteLine("SecretValue : {0}", secretValue);
-
-                            ARMTemplateDeploymentManager deploy = new ARMTemplateDeploymentManager();
-                            deploy.DeleteResoureGroup(parametersList, credenitals);
+                            this.logger.LogInformation("SecretValue : {0}", secretValue);
+                                                        
+                            this.aRMTemplateDeploymentManager.DeleteResoureGroup(parametersList, credenitals);
 
                             this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), string.Format("Delete Resource Group: {0} End", resourceGroup), subscription.SubscriptionStatus.ToString());
 
@@ -109,7 +115,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
                     this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
-                    Console.WriteLine(errorDescriptin);
+                    this.logger.LogInformation(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString(), true);
 

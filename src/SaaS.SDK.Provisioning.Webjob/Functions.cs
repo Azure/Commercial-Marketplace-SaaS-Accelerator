@@ -34,6 +34,7 @@ namespace SaaS.SDK.Provisioning.Webjob
         private readonly List<ISubscriptionStatusHandler> deactivateStatusHandlers;
         protected readonly KeyVaultConfig keyVaultConfig;
         protected readonly EmailHelper emailHelper;
+        protected readonly ILoggerFactory loggerFactory;
 
         public Functions(IFulfillmentApiClient fulfillmentApiClient,
                             ISubscriptionsRepository subscriptionRepository,
@@ -50,7 +51,8 @@ namespace SaaS.SDK.Provisioning.Webjob
                             ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
                             KeyVaultConfig keyVaultConfig,
                             IEmailService emialService,
-                            EmailHelper emailHelper)
+                            EmailHelper emailHelper,
+                            ILoggerFactory loggerFactory)
         {
             this.fulfillmentApiClient = fulfillmentApiClient;
             this.subscriptionRepository = subscriptionRepository;
@@ -68,17 +70,20 @@ namespace SaaS.SDK.Provisioning.Webjob
             this.keyVaultConfig = keyVaultConfig;
             this.emialService = emialService;
             this.emailHelper = emailHelper;
+            this.loggerFactory = loggerFactory;
 
             this.activateStatusHandlers = new List<ISubscriptionStatusHandler>();
             this.deactivateStatusHandlers = new List<ISubscriptionStatusHandler>();
 
-            activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient, azureBlobFileClient, keyVaultConfig));
+            var armTemplateDeploymentManager = new ARMTemplateDeploymentManager(this.loggerFactory.CreateLogger<ARMTemplateDeploymentManager>());
+
+            activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient, azureBlobFileClient, keyVaultConfig, this.loggerFactory.CreateLogger<ResourceDeploymentStatusHandler>(), armTemplateDeploymentManager));
             activateStatusHandlers.Add(new PendingActivationStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository, subscriptionTemplateParametersRepository));
             activateStatusHandlers.Add(new PendingFulfillmentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository));
             activateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, planRepository, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository, offersRepository, subscriptionTemplateParametersRepository, emialService, emailHelper));
 
-
-            deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient, keyVaultConfig, subscriptionTemplateParametersRepository));
+            
+            deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient, keyVaultConfig, subscriptionTemplateParametersRepository,this.loggerFactory.CreateLogger< PendingDeleteStatusHandler>(), armTemplateDeploymentManager));
             deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository));
             deactivateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, planRepository, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository, offersRepository, subscriptionTemplateParametersRepository, emialService, emailHelper));
         }

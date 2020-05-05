@@ -141,8 +141,6 @@ namespace SaaS.SDK.Provisioning.Webjob
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<ISubscriptionTemplateParametersRepository, SubscriptionTemplateParametersRepository>();
-            
-
         }
     }
 }
