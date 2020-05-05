@@ -39,265 +39,199 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             this.planEventsMappingRepository = planEventsMappingRepository;
         }
 
-        public void PrepareEmailContent(SubscriptionResultExtension Subscription, string planEvent = "success", SubscriptionStatusEnumExtension oldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart, string newValue = null)
+        public EmailContentModel PrepareEmailContent(SubscriptionResultExtension Subscription, string planEvent = "success", SubscriptionStatusEnumExtension oldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart, string newValue = null)
+        {
+            EmailContentModel emailContent = new EmailContentModel();
+            string body = ProcessTemplate(Subscription, planEvent, oldValue, newValue);
+            int eventID = this.eventsRepository.GetEventID(Subscription.EventName);
+            var emailTemplateData = emailTemplateRepository.GetEmailTemplateOnStatus(Subscription.SubscriptionStatus.ToString());
+            string Subject = string.Empty;
+            bool smtpSsl = true;
+
+            bool CustomerToCopy = false;
+            bool isActive = false;
+            string toReceipents = string.Empty;
+            string ccReceipents = string.Empty;
+            string bccReceipents = string.Empty;
+
+
+            /* 
+            Cases
+             * Activate - Success  
+             * Activate - Failure
+             * Unsubscribe - Success 
+             * Unsubscribe - Failure
+            Conditions:
+            Is Active in Plan Event Mapping 
+            Is Email Enabled for Subscribtio status in App config
+          
+            Copy to customer.
+
+            If to email is null then don't pull CC and checkfor bcc
+
+             */
+
+
+            var eventMappings = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+            if (eventMappings != null)
+            {
+                CustomerToCopy = eventMappings.CopyToCustomer ?? false;
+                isActive = eventMappings.Isactive;
+            }
+            toReceipents = Subscription.CustomerEmailAddress;
+
+            if (planEvent.ToLower() == "success")
+            {
+                var successEventData = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+
+                if (string.IsNullOrEmpty(toReceipents))
+                {
+                    throw new Exception(" Error while sending an email, please check the configuration. ");
+                }
+
+
+                if (successEventData != null)
+                {
+                    toReceipents = successEventData.SuccessStateEmails;
+                }
+
+                if (emailTemplateData != null)
+                {
+                    if (!string.IsNullOrEmpty(toReceipents) && !string.IsNullOrEmpty(emailTemplateData.Cc))
+                    {
+                        ccReceipents = emailTemplateData.Cc;
+                    }
+                    if (!string.IsNullOrEmpty(emailTemplateData.Bcc))
+                    {
+
+                        bccReceipents = emailTemplateData.Bcc;
+
+                    }
+                }
+            }
+
+            if (planEvent.ToLower() == "failure")
+            {
+                var failureStateEmails = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+                if (string.IsNullOrEmpty(toReceipents))
+                {
+                    throw new Exception(" Error while sending an email, please check the configuration. ");
+                }
+
+                if (failureStateEmails != null)
+                {
+                    toReceipents = failureStateEmails.FailureStateEmails;
+                }
+                if (emailTemplateData != null)
+                {
+                    if (!string.IsNullOrEmpty(toReceipents) && !string.IsNullOrEmpty(emailTemplateData.Cc))
+                    {
+
+                        ccReceipents = emailTemplateData.Cc;
+                    }
+
+                    if (string.IsNullOrEmpty(emailTemplateData.Bcc))
+                    {
+                        bccReceipents = emailTemplateData.Bcc;
+                    }
+                }
+            }
+
+            if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
+            {
+                Subject = "Pending Activation";
+            }
+            else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
+            {
+                Subject = "Subscription Activation";
+            }
+            else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
+            {
+                Subject = "Unsubscription";
+            }
+            else if (Subscription.SubscriptionStatus.ToString() == "DeploymentFailed")
+            {
+                Subject = "Deployment Failed";
+            }
+            else if (Subscription.SubscriptionStatus.ToString() == "ActivationFailed")
+            {
+                Subject = "Activation Failed";
+            }
+            else if (Subscription.SubscriptionStatus.ToString() == "UnsubscribeFailed")
+            {
+                Subject = "Unsubscribe Failed";
+            }
+            else if (Subscription.SubscriptionStatus.ToString() == "DeleteResourceFailed")
+            {
+                Subject = "Delete Resource Failed";
+            }
+
+
+
+            return emailContent;
+
+        }
+
+
+
+        public string ProcessTemplate(SubscriptionResultExtension Subscription, string planEvent, SubscriptionStatusEnumExtension oldValue, string newValue)
         {
 
-        //    string Subject = "";
-        //    string body = ProcessTemplate(Subscription, emailTemplateRepository, applicationConfigRepository, planEvent, oldValue, newValue);
-        //    //TemplateService.ProcessTemplate(Subscription, emailTemplateRepository, applicationConfigRepository, planEvent, oldValue, newValue);
-        //    //mail.Body = body;
-
-        //    bool smtpSsl = true;
-        //    int eventID = this.eventsRepository.GetEventID(Subscription.EventName);
-
-        //    string toReceipents = string.Empty;
-        //    bool CustomerToCopy = false;
-        //    bool isActive = false;
-        //    var eventrep = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
-        //    if (eventrep != null)
-        //    {
-        //        CustomerToCopy = eventrep.CopyToCustomer ?? false;
-        //        isActive = eventrep.Isactive;
-        //    }
-
-        //    if (isActive)
-        //    {
-        //        if (CustomerToCopy && planEvent.ToLower() == "success")
-        //        {
-        //            toReceipents = Subscription.CustomerEmailAddress;
-        //            if (string.IsNullOrEmpty(toReceipents))
-        //            {
-        //                throw new Exception(" Error while sending an email, please check the configuration. ");
-        //            }
-        //            if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
-        //            {
-        //                Subject = "Pending Activation";
-        //            }
-        //            else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
-        //            {
-        //                Subject = "Subscription Activation";
-        //            }
-        //            else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
-        //            {
-        //                Subject = "Unsubscription";
-        //            }
-        //            //mail.Subject = Subject;
-        //            //mail.To.Add(toReceipents);
-        //            //SmtpClient copy = new SmtpClient();
-        //            //copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
-        //            //copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
-        //            //copy.UseDefaultCredentials = false;
-        //            //copy.Credentials = new NetworkCredential(
-        //            //    username, password);
-        //            //copy.EnableSsl = smtpSsl;
-        //            //copy.Send(mail);
-        //        }
-
-        //        if (CustomerToCopy && planEvent.ToLower() == "failure" && isActive)
-        //        {
-        //            toReceipents = Subscription.CustomerEmailAddress;
-        //            if (string.IsNullOrEmpty(toReceipents))
-        //            {
-        //                throw new Exception(" Error while sending an email, please check the configuration. ");
-        //            }
-        //            if (Subscription.SubscriptionStatus.ToString() == "DeploymentFailed")
-        //            {
-        //                Subject = "Deployment Failed";
-        //            }
-        //            else if (Subscription.SubscriptionStatus.ToString() == "ActivationFailed")
-        //            {
-        //                Subject = "Activation Failed";
-        //            }
-        //            else if (Subscription.SubscriptionStatus.ToString() == "UnsubscribeFailed")
-        //            {
-        //                Subject = "Unsubscribe Failed";
-        //            }
-        //            else if (Subscription.SubscriptionStatus.ToString() == "DeleteResourceFailed")
-        //            {
-        //                Subject = "Delete Resource Failed";
-        //            }
-        //            //mail.Subject = Subject;
-        //            //mail.To.Add(toReceipents);
-        //            //SmtpClient copy = new SmtpClient();
-        //            //copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
-        //            //copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
-        //            //copy.UseDefaultCredentials = false;
-        //            //copy.Credentials = new NetworkCredential(
-        //            //    username, password);
-        //            //copy.EnableSsl = smtpSsl;
-        //            //copy.Send(mail);
-        //        }
+            string parameter = string.Empty;
+            string value = string.Empty;
+            string parameterType = string.Empty;
 
 
+            string body = string.Empty;
+            EmailTemplate templateDetails = emailTemplateRepository.GetEmailTemplateOnStatus("Template");
 
-        //        if (planEvent.ToLower() == "success")
-        //        {
-        //            toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).SuccessStateEmails
-        //          );
-        //            if (string.IsNullOrEmpty(toReceipents))
-        //            {
-        //                throw new Exception(" Error while sending an email, please check the configuration. ");
-        //            }
-        //            if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
-        //            {
-        //                Subject = "Pending Activation";
-        //            }
-        //            else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
-        //            {
-        //                Subject = "Subscription Activation";
-        //            }
-        //            else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
-        //            {
-        //                Subject = "Unsubscription";
-        //            }
-
-        //            if (!string.IsNullOrEmpty(toReceipents))
-        //            {
-        //                string[] ToEmails = toReceipents.Split(';');
-
-        //                foreach (string Multimailid in ToEmails)
-        //                {
-        //                    to = Multimailid;
-        //                }
-
-        //                if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SubscriptionStatus.ToString())))
-        //                {
-        //                    string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SubscriptionStatus.ToString())).Split(';');
-        //                    foreach (string Multimailid in CcEmails)
-        //                    {
-        //                        CC = Multimailid));
-        //                    }
-        //                }
-        //            }
-
-        //            if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(Subscription.SubscriptionStatus.ToString())))
-        //            {
-        //                string[] BccEmails = (emailTemplateRepository.GetBccRecipients(Subscription.SubscriptionStatus.ToString())).Split(';');
-        //                foreach (string Multimailid in BccEmails)
-        //                {
-        //                    mail.Bcc.Add(new MailAddress(Multimailid));
-        //                }
-        //            }
-
-        //        }
-
-        //        if (planEvent.ToLower() == "failure")
-        //        {
-        //            toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).FailureStateEmails
-        //            );
-        //            if (string.IsNullOrEmpty(toReceipents))
-        //            {
-        //                throw new Exception(" Error while sending an email, please check the configuration. ");
-        //            }
-        //            if (Subscription.SubscriptionStatus.ToString() == "DeploymentFailed")
-        //            {
-        //                Subject = "Deployment Failed";
-        //            }
-        //            else if (Subscription.SubscriptionStatus.ToString() == "ActivationFailed")
-        //            {
-        //                Subject = "Activation Failed";
-        //            }
-        //            else if (Subscription.SubscriptionStatus.ToString() == "UnsubscribeFailed")
-        //            {
-        //                Subject = "Unsubscribe Failed";
-        //            }
-        //            else if (Subscription.SubscriptionStatus.ToString() == "DeleteResourceFailed")
-        //            {
-        //                Subject = "Delete Resource Failed";
-        //            }
-        //            mail.Subject = Subject;
-        //            if (!string.IsNullOrEmpty(toReceipents))
-        //            {
-        //                string[] ToEmails = toReceipents.Split(';');
-
-        //                foreach (string Multimailid in ToEmails)
-        //                {
-        //                    mail.To.Add(new MailAddress(Multimailid));
-        //                }
-
-        //                if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(planEvent)))
-        //                {
-        //                    string[] CcEmails = (emailTemplateRepository.GetCCRecipients(planEvent)).Split(';');
-        //                    foreach (string Multimailid in CcEmails)
-        //                    {
-        //                        mail.CC.Add(new MailAddress(Multimailid));
-        //                    }
-        //                }
-        //            }
-
-        //            if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(planEvent)))
-        //            {
-        //                string[] BccEmails = (emailTemplateRepository.GetBccRecipients(planEvent)).Split(';');
-        //                foreach (string Multimailid in BccEmails)
-        //                {
-        //                    mail.Bcc.Add(new MailAddress(Multimailid));
-        //                }
-        //            }
-        //        }
+            string applicationName = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationName");
+            Hashtable hashTable = new Hashtable();
+            hashTable.Add("ApplicationName", applicationName);
+            hashTable.Add("CustomerEmailAddress", Subscription.CustomerEmailAddress);
+            hashTable.Add("CustomerName", Subscription.CustomerName);
+            hashTable.Add("Id", Subscription.Id);
+            hashTable.Add("SubscriptionName", Subscription.Name);
+            hashTable.Add("SaasSubscriptionStatus", Subscription.SubscriptionStatus);
+            hashTable.Add("oldValue", oldValue);
+            hashTable.Add("newValue", newValue);
+            hashTable.Add("planevent", planEvent);
 
 
-        //    }
-        //}
+            ExtendedProperties p = new ExtendedProperties();
 
+            VelocityEngine v = new VelocityEngine();
+            v.Init(p);
 
-        //public static string ProcessTemplate(SubscriptionResultExtension Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository, string planEvent, SubscriptionStatusEnumExtension oldValue, string newValue)
-        //{
-
-        //    string parameter = string.Empty;
-        //    string value = string.Empty;
-        //    string parameterType = string.Empty;
-
-
-        //    string body = string.Empty;
-        //    EmailTemplate templateDetails = emailTemplateRepository.GetEmailTemplateOnStatus("Template");
-
-        //    string applicationName = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationName");
-        //    Hashtable hashTable = new Hashtable();
-        //    hashTable.Add("ApplicationName", applicationName);
-        //    hashTable.Add("CustomerEmailAddress", Subscription.CustomerEmailAddress);
-        //    hashTable.Add("CustomerName", Subscription.CustomerName);
-        //    hashTable.Add("Id", Subscription.Id);
-        //    hashTable.Add("SubscriptionName", Subscription.Name);
-        //    hashTable.Add("SaasSubscriptionStatus", Subscription.SubscriptionStatus);
-        //    hashTable.Add("oldValue", oldValue);
-        //    hashTable.Add("newValue", newValue);
-        //    hashTable.Add("planevent", planEvent);
-
-
-        //    ExtendedProperties p = new ExtendedProperties();
-
-        //    VelocityEngine v = new VelocityEngine();
-        //    v.Init(p);
-
-        //    VelocityContext context = new VelocityContext(hashTable);
-        //    IList list;
-        //    IList arminputlist;
-        //    IList armoutputlist;
-        //    if (Subscription.SubscriptionParameters != null && Subscription.SubscriptionParameters.Count > 0)
-        //    {
-        //        list = Subscription.SubscriptionParameters.Where(s => s.Type.ToLower() == "input").ToList();
-        //        if (list.Count > 0)
-        //            context.Put("parms", list);
-        //    }
-        //    if (Subscription.ARMTemplateParameters != null && Subscription.ARMTemplateParameters.Count > 0)
-        //    {
-        //        arminputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input"
-        //        /*&& s.EventsName == "Active"*/
-        //        ).ToList();
-        //        if (arminputlist.Count > 0)
-        //            context.Put("arminputparms", arminputlist);
-        //    }
-        //    if (Subscription.ARMTemplateParameters != null && Subscription.ARMTemplateParameters.Count > 0)
-        //    {
-        //        armoutputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output"
-        //        /*&& s.EventsName == "Active"*/
-        //        ).ToList();
-        //        if (armoutputlist.Count > 0)
-        //            context.Put("armoutputparms", armoutputlist);
-        //    }
-        //    StringWriter writer = new StringWriter();
-        //    v.Evaluate(context, writer, string.Empty, body);
-        //    return writer.ToString();
+            VelocityContext context = new VelocityContext(hashTable);
+            IList list;
+            IList arminputlist;
+            IList armoutputlist;
+            if (Subscription.SubscriptionParameters != null && Subscription.SubscriptionParameters.Count > 0)
+            {
+                list = Subscription.SubscriptionParameters.Where(s => s.Type.ToLower() == "input").ToList();
+                if (list.Count > 0)
+                    context.Put("parms", list);
+            }
+            if (Subscription.ARMTemplateParameters != null && Subscription.ARMTemplateParameters.Count > 0)
+            {
+                arminputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input"
+                /*&& s.EventsName == "Active"*/
+                ).ToList();
+                if (arminputlist.Count > 0)
+                    context.Put("arminputparms", arminputlist);
+            }
+            if (Subscription.ARMTemplateParameters != null && Subscription.ARMTemplateParameters.Count > 0)
+            {
+                armoutputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output"
+                /*&& s.EventsName == "Active"*/
+                ).ToList();
+                if (armoutputlist.Count > 0)
+                    context.Put("armoutputparms", armoutputlist);
+            }
+            StringWriter writer = new StringWriter();
+            v.Evaluate(context, writer, string.Empty, body);
+            return writer.ToString();
         }
     }
 }

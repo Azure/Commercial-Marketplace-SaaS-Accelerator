@@ -28,7 +28,7 @@ namespace SaaS.SDK.Provisioning.Webjob
         protected readonly IPlansRepository planRepository;
         protected readonly IOffersRepository offersRepository;
         protected readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
-
+        protected readonly IEmailService emialService;
         private readonly List<ISubscriptionStatusHandler> activateStatusHandlers;
         private readonly List<ISubscriptionStatusHandler> deactivateStatusHandlers;
         protected readonly KeyVaultConfig keyVaultConfig;
@@ -46,7 +46,8 @@ namespace SaaS.SDK.Provisioning.Webjob
                             IOffersRepository offersRepository,
                             IAzureBlobFileClient azureBlobFileClient,
                             ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
-                            KeyVaultConfig keyVaultConfig)
+                            KeyVaultConfig keyVaultConfig,
+                            IEmailService emialService)
         {
             this.fulfillmentApiClient = fulfillmentApiClient;
             this.subscriptionRepository = subscriptionRepository;
@@ -62,6 +63,7 @@ namespace SaaS.SDK.Provisioning.Webjob
             this.offersRepository = offersRepository;
             this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
             this.keyVaultConfig = keyVaultConfig;
+            this.emialService = emialService;
 
             this.activateStatusHandlers = new List<ISubscriptionStatusHandler>();
             this.deactivateStatusHandlers = new List<ISubscriptionStatusHandler>();
@@ -69,12 +71,12 @@ namespace SaaS.SDK.Provisioning.Webjob
             activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient, azureBlobFileClient, keyVaultConfig));
             activateStatusHandlers.Add(new PendingActivationStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository, subscriptionTemplateParametersRepository));
             activateStatusHandlers.Add(new PendingFulfillmentStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository));
-            activateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, planRepository, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository, offersRepository, subscriptionTemplateParametersRepository));
+            activateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, planRepository, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository, offersRepository, subscriptionTemplateParametersRepository, emialService));
 
 
-            deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient,keyVaultConfig,subscriptionTemplateParametersRepository));
+            deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionLogRepository, subscriptionRepository, azureKeyVaultClient, keyVaultConfig, subscriptionTemplateParametersRepository));
             deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(fulfillmentApiClient, applicationConfigrepository, subscriptionRepository, subscriptionLogRepository));
-            deactivateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, planRepository, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository, offersRepository, subscriptionTemplateParametersRepository));
+            deactivateStatusHandlers.Add(new NotificationStatusHandler(fulfillmentApiClient, planRepository, applicationConfigrepository, emailTemplaterepository, planEventsMappingRepository, offerAttributesRepository, eventsRepository, subscriptionRepository, offersRepository, subscriptionTemplateParametersRepository, emialService));
         }
 
         public void ProcessQueueMessage([QueueTrigger("saas-provisioning-queue")] string message,
