@@ -1,12 +1,12 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class AuditLogRepository : IAuditLogRepository
     {
         /// <summary>
@@ -57,8 +57,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <summary>
         /// Gets this instance.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns>List of subscription audit logs</returns>        
         public IEnumerable<SubscriptionAuditLogs> Get()
         {
             return context.SubscriptionAuditLogs;
@@ -68,8 +67,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// Gets the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns>Subscription Audit log by id</returns>        
         public SubscriptionAuditLogs Get(int id)
         {
             return context.SubscriptionAuditLogs.Where(s => s.Id == id).FirstOrDefault();

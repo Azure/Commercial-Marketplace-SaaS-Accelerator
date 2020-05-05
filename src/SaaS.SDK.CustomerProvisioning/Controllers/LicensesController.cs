@@ -59,7 +59,7 @@
         /// </returns>
         public IActionResult Index()
         {
-            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
             {
                 this.TempData["ShowLicensesMenu"] = true;
             }

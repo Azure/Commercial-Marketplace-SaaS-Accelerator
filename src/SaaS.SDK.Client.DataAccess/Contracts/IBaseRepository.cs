@@ -1,12 +1,37 @@
-﻿using System.Collections.Generic;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
-    public interface IBaseRepository<TEnt> where TEnt : class
+    using System.Collections.Generic;
+
+    /// <summary>
+    /// Base repository for managing entities.
+    /// </summary>
+    /// <typeparam name="TEntity">The type of the ent.</typeparam>
+    public interface IBaseRepository<TEntity> where TEntity : class
     {
-        IEnumerable<TEnt> Get();
-        TEnt Get(int id);
-        int Add(TEnt entities);
-        void Remove(TEnt entity);
+        /// <summary>
+        /// Gets all the records 
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<TEntity> Get();
+
+        /// <summary>
+        /// Gets the record for the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>Entity for the given identifier</returns>
+        TEntity Get(int id);
+
+        /// <summary>
+        /// Adds the specified entities.
+        /// </summary>
+        /// <param name="entities">The entities.</param>
+        /// <returns>Internal identifier after saving the entity</returns>
+        int Add(TEntity entities);
+
+        /// <summary>
+        /// Removes the specified entity.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        void Remove(TEntity entity);
     }
 }

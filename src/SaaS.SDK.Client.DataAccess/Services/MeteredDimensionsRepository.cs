@@ -17,7 +17,7 @@
         /// <summary>
         /// The context
         /// </summary>
-        private readonly SaasKitContext Context;
+        private readonly SaasKitContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlansRepository" /> class.
@@ -25,7 +25,7 @@
         /// <param name="context">The context.</param>
         public MeteredDimensionsRepository(SaasKitContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
         /// <summary>
@@ -43,7 +43,7 @@
             {
                 if (disposing)
                 {
-                    Context.Dispose();
+                    context.Dispose();
                 }
             }
             this.disposed = true;
@@ -64,7 +64,7 @@
         /// <returns></returns>
         public IEnumerable<MeteredDimensions> Get()
         {
-            return Context.MeteredDimensions.Include(s => s.Plan);
+            return context.MeteredDimensions.Include(s => s.Plan);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@
         /// <returns></returns>
         public MeteredDimensions Get(int id)
         {
-            return Context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Id == id).FirstOrDefault();
+            return context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Id == id).FirstOrDefault();
         }
 
         /// <summary>
@@ -86,19 +86,19 @@
         {
             if (dimensionDetails != null && !string.IsNullOrEmpty(dimensionDetails.Dimension))
             {
-                var existingDimension = Context.MeteredDimensions.Where(s => s.Dimension == dimensionDetails.Dimension).FirstOrDefault();
+                var existingDimension = context.MeteredDimensions.Where(s => s.Dimension == dimensionDetails.Dimension).FirstOrDefault();
                 if (existingDimension != null)
                 {
                     existingDimension.Description = dimensionDetails.Description;
 
-                    Context.MeteredDimensions.Update(existingDimension);
-                    Context.SaveChanges();
+                    context.MeteredDimensions.Update(existingDimension);
+                    context.SaveChanges();
                     return existingDimension.Id;
                 }
                 else
                 {
-                    Context.MeteredDimensions.Add(dimensionDetails);
-                    Context.SaveChanges();
+                    context.MeteredDimensions.Add(dimensionDetails);
+                    context.SaveChanges();
                     return dimensionDetails.Id;
                 }
             }
@@ -111,8 +111,8 @@
         /// <param name="dimensionDetails">The dimension details.</param>
         public void Remove(MeteredDimensions dimensionDetails)
         {
-            Context.MeteredDimensions.Remove(dimensionDetails);
-            Context.SaveChanges();
+            context.MeteredDimensions.Remove(dimensionDetails);
+            context.SaveChanges();
         }
 
         /// <summary>
@@ -120,9 +120,9 @@
         /// </summary>
         /// <param name="planId">The plan identifier.</param>
         /// <returns></returns>
-        public List<MeteredDimensions> GetDimensionsFromPlanId(string planId)
+        public List<MeteredDimensions> GetDimensionsByPlanId(string planId)
         {
-            return Context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Plan != null && s.Plan.PlanId == planId).ToList();
+            return context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Plan != null && s.Plan.PlanId == planId).ToList();
         }
     }
 }

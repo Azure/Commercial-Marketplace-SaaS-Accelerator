@@ -1,29 +1,80 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using System;
+    using System.Collections.Generic;
+
+    /// <summary>
+    /// Repository to access plans
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IBaseRepository{Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Plans}" />
     public interface IPlansRepository : IDisposable, IBaseRepository<Plans>
     {
-        Plans GetPlanDetailByPlanId(string planId);
+        /// <summary>
+        /// Gets the by identifier.
+        /// </summary>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns>Plan detail for the friendly identifier</returns>
+        Plans GetById(string planId);
 
-        Plans GetPlanDetailByPlanGuId(Guid planGuId);
+        /// <summary>
+        /// Gets the by internal reference.
+        /// </summary>
+        /// <param name="planGuId">The plan gu identifier.</param>
+        /// <returns>Plan detail for the internal reference (GUID) </returns>
+        Plans GetByInternalReference(Guid planGuId);
 
-        IEnumerable<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid OfferId);
+        /// <summary>
+        /// Gets the plan attributes.
+        /// </summary>
+        /// <param name="planGuId">The plan gu identifier.</param>
+        /// <param name="OfferId">The offer identifier.</param>
+        /// <returns></returns>
+        IEnumerable<PlanAttributesModel> GetPlanAttributes(Guid planGuId, Guid OfferId);
 
-        IEnumerable<PlanEventsModel> GetPlanEventsByPlanGuId(Guid planGuId, Guid OfferId);
+        /// <summary>
+        /// Gets the events by plan.
+        /// </summary>
+        /// <param name="planGuId">The plan gu identifier.</param>
+        /// <param name="OfferId">The offer identifier.</param>
+        /// <returns>List of event detail by plan in an offer</returns>
+        IEnumerable<PlanEventsModel> GetEventsByPlan(Guid planGuId, Guid OfferId);
+
+        /// <summary>
+        /// Gets the plans by user.
+        /// </summary>
+        /// <returns></returns>
         IEnumerable<Plans> GetPlansByUser();
 
+        /// <summary>
+        /// Adds the plan attributes.
+        /// </summary>
+        /// <param name="attributes">The attributes.</param>
+        /// <returns>ID of the newly created attribute</returns>
         int? AddPlanAttributes(PlanAttributeMapping attributes);
+
+        /// <summary>
+        /// Add the plan events.
+        /// </summary>
+        /// <param name="events">The events.</param>
+        /// <returns>ID of the newly created event under the plan</returns>
         int? AddPlanEvents(PlanEventsMapping events);
-        List<Plans> GetPlanDetailByOfferId(Guid offerId);
 
-        //int? AddAllPlanAttributesOfOffer(Plans plan, List<DeploymentAttributes> deploymentAttributes);
+        /// <summary>
+        /// Gets the plans by offer identifier.
+        /// </summary>
+        /// <param name="offerId">The offer identifier.</param>
+        /// <returns></returns>
+        List<Plans> GetPlansByOfferId(Guid offerId);
 
+        /// <summary>
+        /// Gets the plan attribute on offer attribute identifier.
+        /// </summary>
+        /// <param name="offerAttributeId">The offer attribute identifier.</param>
+        /// <param name="planGuId">The plan gu identifier.</param>
+        /// <returns></returns>
         PlanAttributeMapping GetPlanAttributeOnOfferAttributeId(int offerAttributeId, Guid planGuId);
-
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Management.ResourceManager.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
 using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
 using Microsoft.Marketplace.SaaS.SDK.Services.Models;
@@ -24,18 +25,22 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         protected readonly ISubscriptionsRepository subscriptionsRepository;
         protected readonly IApplicationConfigRepository applicationConfigRepository;
         protected readonly ISubscriptionLogRepository subscriptionLogRepository;
-        protected readonly IAzureKeyVaultClient azureKeyVaultClient;
-        protected readonly IAzureBlobFileClient azureBlobFileClient;
+        protected readonly IVaultService azureKeyVaultClient;
+        protected readonly IARMTemplateStorageService azureBlobFileClient;
         protected readonly KeyVaultConfig keyVaultConfig;
+        protected readonly ILogger<ResourceDeploymentStatusHandler> logger;
+        protected readonly ARMTemplateDeploymentManager armTemplateDeploymentManager;
 
 
         public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient,
                                                 IApplicationConfigRepository applicationConfigRepository,
                                                 ISubscriptionLogRepository subscriptionLogRepository,
                                                 ISubscriptionsRepository subscriptionsRepository,
-                                                IAzureKeyVaultClient azureKeyVaultClient,
-                                                IAzureBlobFileClient azureBlobFileClient,
-                                                KeyVaultConfig keyVaultConfig) : base(new SaasKitContext())
+                                                IVaultService azureKeyVaultClient,
+                                                IARMTemplateStorageService azureBlobFileClient,
+                                                KeyVaultConfig keyVaultConfig,
+                                                ILogger<ResourceDeploymentStatusHandler> logger,
+                                                ARMTemplateDeploymentManager armTemplateDeploymentManager) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -44,27 +49,30 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             this.azureKeyVaultClient = azureKeyVaultClient;
             this.azureBlobFileClient = azureBlobFileClient;
             this.keyVaultConfig = keyVaultConfig;
+            this.logger = logger;
+            this.armTemplateDeploymentManager = armTemplateDeploymentManager;
         }
+
         public override void Process(Guid subscriptionID)
         {
             
-            Console.WriteLine("ResourceDeploymentStatusHandler Process...");
-            Console.WriteLine("Get SubscriptionById");
+            this.logger.LogInformation("ResourceDeploymentStatusHandler Process...");
+            this.logger.LogInformation("Get SubscriptionById");
             var subscription = this.GetSubscriptionById(subscriptionID);
-            Console.WriteLine("Get PlanById");
+            this.logger.LogInformation("Get PlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
 
-            Console.WriteLine("Get User");
+            this.logger.LogInformation("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
 
-            Console.WriteLine("Get Offers");
+            this.logger.LogInformation("Get Offers");
             //KB: Remove Context and have repository
             var offer = Context.Offers.Where(s => s.OfferGuid == planDetails.OfferId).FirstOrDefault();
-            Console.WriteLine("Get Events");
+            this.logger.LogInformation("Get Events");
             //KB: Remove Context and have repository
             var events = Context.Events.Where(s => s.EventsName == "Activate").FirstOrDefault();
 
-            Console.WriteLine("subscription.SubscriptionStatus: SubscriptionStatus: {0}", subscription.SubscriptionStatus);
+            this.logger.LogInformation("subscription.SubscriptionStatus: SubscriptionStatus: {0}", subscription.SubscriptionStatus);
 
 
 
@@ -72,11 +80,11 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             {
 
                 // Check if arm template is available for the plan in Plan Event Mapping table with isactive=1
-                Console.WriteLine("Get PlanEventsMapping");
+                this.logger.LogInformation("Get PlanEventsMapping");
                 var planEvent = Context.PlanEventsMapping.Where(s => s.PlanId == planDetails.PlanGuid && s.EventId == events.EventsId && s.Isactive == true).FirstOrDefault();
-                Console.WriteLine("Get Armtemplates");
+                this.logger.LogInformation("Get Armtemplates");
                 var armTemplate = Context.Armtemplates.Where(s => s.ArmtempalteId == planEvent.ArmtemplateId).FirstOrDefault();
-                Console.WriteLine("Get GetTemplateParameters");
+                this.logger.LogInformation("Get GetTemplateParameters");
                 var attributelsit = GetTemplateParameters(subscriptionID, planDetails.PlanGuid, Context, userdeatils);
 
 
@@ -86,20 +94,20 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                     {
                         if (attributelsit != null)
                         {
-                            Console.WriteLine("Get attributelsit");
+                            this.logger.LogInformation("Get attributelsit");
                             var parametersList = attributelsit.Where(s => s.ParameterType.ToLower() == "input" && s.EventsName == "Activate").ToList();
 
-                            Console.WriteLine("Attributelsit : {0}", JsonConvert.SerializeObject(parametersList));
+                            this.logger.LogInformation("Attributelsit : {0}", JsonConvert.SerializeObject(parametersList));
                             if (parametersList.Count() > 0)
                             {
 
-                                Console.WriteLine("UpdateWebJobSubscriptionStatus");
+                                this.logger.LogInformation("UpdateWebJobSubscriptionStatus");
 
-                                this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(), "Start Deployment", subscription.SubscriptionStatus);
+                                this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(), "Start Deployment", subscription.SubscriptionStatus);
 
                                 this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentPending.ToString(), true);
 
-                                Console.WriteLine("Get SubscriptionKeyValut");
+                                this.logger.LogInformation("Get SubscriptionKeyValut");
                                 string secretKey = "";
                                 if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                                 {
@@ -112,17 +120,17 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                 }
 
 
-                                Console.WriteLine("Get DoVault");
+                                this.logger.LogInformation("Get DoVault");
                                 string secretValue = azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
 
                                 var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
-                                Console.WriteLine("SecretValue : {0}", secretValue);
+                                this.logger.LogInformation("SecretValue : {0}", secretValue);
 
-                                ARMTemplateDeploymentManager deploy = new ARMTemplateDeploymentManager();
-                                Console.WriteLine("Start Deployment: DeployARMTemplate");
-                                string armTemplateCOntent = azureBlobFileClient.ReadARMTemplateFromBlob(armTemplate.ArmtempalteName);
+                                
+                                this.logger.LogInformation("Start Deployment: DeployARMTemplate");
+                                string armTemplateCOntent = azureBlobFileClient.GetARMTemplateContentAsString(armTemplate.ArmtempalteName);
 
-                                var output = deploy.DeployARMTemplate(armTemplate, parametersList, credenitals, armTemplateCOntent).ConfigureAwait(false).GetAwaiter().GetResult();
+                                var output = this.armTemplateDeploymentManager.DeployARMTemplate(armTemplate, parametersList, credenitals, armTemplateCOntent).ConfigureAwait(false).GetAwaiter().GetResult();
 
                                 string outputstring = JsonConvert.SerializeObject(output.Properties.Outputs);
                                 var outPutList = GenerateParmlist(output);
@@ -133,7 +141,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
                                 }
 
-                                Console.WriteLine(outputstring);
+                                this.logger.LogInformation(outputstring);
 
 
                                 this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString(), true);
@@ -149,7 +157,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                 };
                                 this.subscriptionLogRepository.Add(auditLog);
 
-                                this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString());
+                                this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString());
                             }
                         }
                     }
@@ -160,8 +168,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 {
                     //Change status to  ARMTemplateDeploymentFailure
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
-                    Console.WriteLine(errorDescriptin);
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
+                    this.logger.LogInformation(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentFailed.ToString(), true);
 

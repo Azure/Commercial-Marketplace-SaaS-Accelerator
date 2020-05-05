@@ -12,10 +12,10 @@
     public interface IMeteredDimensionsRepository : IDisposable, IBaseRepository<MeteredDimensions>
     {
         /// <summary>
-        /// Gets the dimensions from plan identifier.
+        /// Gets the dimensions for the plan (by the identifier)
         /// </summary>
         /// <param name="planId">The plan identifier.</param>
-        /// <returns></returns>
-        List<MeteredDimensions> GetDimensionsFromPlanId(string planId);
+        /// <returns>List of metered dimensions for the plan</returns>
+        List<MeteredDimensions> GetDimensionsByPlanId(string planId);
     }
 }

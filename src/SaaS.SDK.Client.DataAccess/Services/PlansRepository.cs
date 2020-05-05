@@ -18,8 +18,11 @@
         /// <summary>
         /// The context
         /// </summary>
-        private readonly SaasKitContext Context;
+        private readonly SaasKitContext context;
 
+        /// <summary>
+        /// The application configuration repository
+        /// </summary>
         private readonly IApplicationConfigRepository applicationConfigRepository;
 
         /// <summary>
@@ -28,7 +31,7 @@
         /// <param name="context">The context.</param>
         public PlansRepository(SaasKitContext context, IApplicationConfigRepository applicationConfigRepository)
         {
-            Context = context;
+            this.context = context;
             this.applicationConfigRepository = applicationConfigRepository;
         }
 
@@ -37,13 +40,14 @@
         /// </summary>
         private bool disposed = false;
 
+
         /// <summary>
-        /// Gets this instance.
+        /// Gets all the records
         /// </summary>
         /// <returns></returns>
         public IEnumerable<Plans> Get()
         {
-            return Context.Plans;
+            return context.Plans;
         }
 
         /// <summary>
@@ -53,7 +57,7 @@
         /// <returns></returns>
         public Plans Get(int id)
         {
-            return Context.Plans.Where(s => s.Id == id).FirstOrDefault();
+            return context.Plans.Where(s => s.Id == id).FirstOrDefault();
         }
 
         /// <summary>
@@ -65,21 +69,21 @@
         {
             if (planDetails != null && !string.IsNullOrEmpty(planDetails.PlanId))
             {
-                var existingPlan = Context.Plans.Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
+                var existingPlan = context.Plans.Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
                 if (existingPlan != null)
                 {
                     existingPlan.PlanId = planDetails.PlanId;
                     existingPlan.Description = planDetails.Description;
                     existingPlan.DisplayName = planDetails.DisplayName;
                     existingPlan.OfferId = planDetails.OfferId;
-                    Context.Plans.Update(existingPlan);
-                    Context.SaveChanges();
+                    context.Plans.Update(existingPlan);
+                    context.SaveChanges();
                     return existingPlan.Id;
                 }
                 else
                 {
-                    Context.Plans.Add(planDetails);
-                    Context.SaveChanges();
+                    context.Plans.Add(planDetails);
+                    context.SaveChanges();
                     return planDetails.Id;
                 }
             }
@@ -91,14 +95,18 @@
         /// </summary>
         /// <param name="planId">The plan identifier.</param>
         /// <returns></returns>
-        public Plans GetPlanDetailByPlanId(string planId)
+        public Plans GetById(string planId)
         {
-            return Context.Plans.Where(s => s.PlanId == planId).FirstOrDefault();
+            return context.Plans.Where(s => s.PlanId == planId).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Gets the plans by user.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Plans> GetPlansByUser()
         {
-            var getAllPlans = this.Context.Plans;
+            var getAllPlans = this.context.Plans;
             return getAllPlans;
         }
 
@@ -107,9 +115,9 @@
         /// </summary>
         /// <param name="planId">The plan identifier.</param>
         /// <returns></returns>
-        public Plans GetPlanDetailByPlanGuId(Guid planGuId)
+        public Plans GetByInternalReference(Guid planGuId)
         {
-            return Context.Plans.Where(s => s.PlanGuid == planGuId).FirstOrDefault();
+            return context.Plans.Where(s => s.PlanGuid == planGuId).FirstOrDefault();
         }
 
         /// <summary>
@@ -117,22 +125,35 @@
         /// </summary>
         /// <param name="planId">The plan identifier.</param>
         /// <returns></returns>
-        public List<Plans> GetPlanDetailByOfferId(Guid offerId)
+        public List<Plans> GetPlansByOfferId(Guid offerId)
         {
-            return Context.Plans.Where(s => s.OfferId == offerId).ToList();
+            return context.Plans.Where(s => s.OfferId == offerId).ToList();
         }
 
+        /// <summary>
+        /// Gets the plan attribute on offer attribute identifier.
+        /// </summary>
+        /// <param name="offerAttributeId">The offer attribute identifier.</param>
+        /// <param name="planGuId">The plan gu identifier.</param>
+        /// <returns></returns>
         public PlanAttributeMapping GetPlanAttributeOnOfferAttributeId(int offerAttributeId, Guid planGuId)
         {
-            var planAttribute = Context.PlanAttributeMapping.Where(s => s.OfferAttributeId == offerAttributeId && s.PlanId == planGuId).FirstOrDefault();
+            var planAttribute = context.PlanAttributeMapping.Where(s => s.OfferAttributeId == offerAttributeId && s.PlanId == planGuId).FirstOrDefault();
             return planAttribute;
 
         }
-        public IEnumerable<PlanAttributesModel> GetPlanAttributesByPlanGuId(Guid planGuId, Guid offerId)
+
+        /// <summary>
+        /// Gets the plan attributes.
+        /// </summary>
+        /// <param name="planGuId">The plan gu identifier.</param>
+        /// <param name="offerId">The offer identifier.</param>
+        /// <returns></returns>
+        public IEnumerable<PlanAttributesModel> GetPlanAttributes(Guid planGuId, Guid offerId)
         {
             try
             {
-                var offerAttributescCall = Context.PlanAttributeOutput.FromSqlRaw("dbo.spGetOfferParameters {0}", planGuId);
+                var offerAttributescCall = context.PlanAttributeOutput.FromSqlRaw("dbo.spGetOfferParameters {0}", planGuId);
                 var offerAttributes = offerAttributescCall.ToList();
 
                 List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
@@ -155,20 +176,22 @@
             }
             catch (Exception ex)
             {
-                string error = ex.Message;
+                throw ex;
             }
             return new List<PlanAttributesModel>();
         }
 
-        public IEnumerable<PlanEventsModel> GetPlanEventsByPlanGuId(Guid planGuId, Guid offerId)
-        {
-            //return Context.PlanEventsMapping.Where(s => s.PlanId == planGuId);
-
-
+        /// <summary>
+        /// Gets the events by plan.
+        /// </summary>
+        /// <param name="planGuId">The plan gu identifier.</param>
+        /// <param name="offerId">The offer identifier.</param>
+        /// <returns></returns>
+        public IEnumerable<PlanEventsModel> GetEventsByPlan(Guid planGuId, Guid offerId)
+        {            
             try
             {
-
-                var allEvents = Context.PlanEventsOutPut.FromSqlRaw("dbo.spGetPlanEvents {0}", planGuId).ToList();
+                var allEvents = context.PlanEventsOutPut.FromSqlRaw("dbo.spGetPlanEvents {0}", planGuId).ToList();
 
                 List<PlanEventsModel> eventsList = new List<PlanEventsModel>();
 
@@ -190,7 +213,7 @@
                         {
                             eventsList.Add(planEvent);
                         }
-                        else if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported")))
+                        else if (Convert.ToBoolean(applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
                         {
                             eventsList.Add(planEvent);
                         }
@@ -200,17 +223,21 @@
             }
             catch (Exception ex)
             {
-                string error = ex.Message;
+                throw ex;
             }
             return new List<PlanEventsModel>();
         }
 
-
+        /// <summary>
+        /// Adds the plan attributes.
+        /// </summary>
+        /// <param name="planAttributes">The plan attributes.</param>
+        /// <returns></returns>
         public int? AddPlanAttributes(PlanAttributeMapping planAttributes)
         {
             if (planAttributes != null)
             {
-                var existingPlanAttribute = Context.PlanAttributeMapping.Where(s => s.PlanAttributeId ==
+                var existingPlanAttribute = context.PlanAttributeMapping.Where(s => s.PlanAttributeId ==
                 planAttributes.PlanAttributeId).FirstOrDefault();
                 if (existingPlanAttribute != null)
                 {
@@ -221,14 +248,14 @@
                     existingPlanAttribute.PlanAttributeId = planAttributes.PlanAttributeId;
                     existingPlanAttribute.CreateDate = DateTime.Now;
 
-                    Context.PlanAttributeMapping.Update(existingPlanAttribute);
-                    Context.SaveChanges();
+                    context.PlanAttributeMapping.Update(existingPlanAttribute);
+                    context.SaveChanges();
                     return existingPlanAttribute.PlanAttributeId;
                 }
                 else
                 {
-                    Context.PlanAttributeMapping.Add(planAttributes);
-                    Context.SaveChanges();
+                    context.PlanAttributeMapping.Add(planAttributes);
+                    context.SaveChanges();
                     return planAttributes.PlanAttributeId;
                 }
             }
@@ -236,11 +263,16 @@
             return null;
         }
 
+        /// <summary>
+        /// Adds the plan events.
+        /// </summary>
+        /// <param name="planEvents">The plan events.</param>
+        /// <returns></returns>
         public int? AddPlanEvents(PlanEventsMapping planEvents)
         {
             if (planEvents != null)
             {
-                var existingPlanEvents = Context.PlanEventsMapping.Where(s => s.Id ==
+                var existingPlanEvents = context.PlanEventsMapping.Where(s => s.Id ==
                 planEvents.Id).FirstOrDefault();
                 if (existingPlanEvents != null)
                 {
@@ -254,14 +286,14 @@
                     existingPlanEvents.CreateDate = DateTime.Now;
                     existingPlanEvents.CopyToCustomer = planEvents.CopyToCustomer;
                     existingPlanEvents.ArmtemplateId = planEvents.ArmtemplateId;
-                    Context.PlanEventsMapping.Update(existingPlanEvents);
-                    Context.SaveChanges();
+                    context.PlanEventsMapping.Update(existingPlanEvents);
+                    context.SaveChanges();
                     return existingPlanEvents.Id;
                 }
                 else
                 {
-                    Context.PlanEventsMapping.Add(planEvents);
-                    Context.SaveChanges();
+                    context.PlanEventsMapping.Add(planEvents);
+                    context.SaveChanges();
                     return planEvents.Id;
                 }
             }
@@ -276,11 +308,11 @@
         /// <param name="planDetails">The plan details.</param>
         public void Remove(Plans planDetails)
         {
-            var existingPlan = Context.Plans.Where(s => s.Id == planDetails.Id).FirstOrDefault();
+            var existingPlan = context.Plans.Where(s => s.Id == planDetails.Id).FirstOrDefault();
             if (existingPlan != null)
             {
-                Context.Plans.Remove(existingPlan);
-                Context.SaveChanges();
+                context.Plans.Remove(existingPlan);
+                context.SaveChanges();
             }
         }
 
@@ -294,7 +326,7 @@
             {
                 if (disposing)
                 {
-                    Context.Dispose();
+                    context.Dispose();
                 }
             }
             this.disposed = true;

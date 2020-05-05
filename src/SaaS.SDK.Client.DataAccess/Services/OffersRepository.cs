@@ -7,13 +7,24 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    /// <summary>
+    /// Repository to access offers
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IOffersRepository" />
     public class OffersRepository : IOffersRepository
     {
-        private readonly SaasKitContext Context;
+        /// <summary>
+        /// The context
+        /// </summary>
+        private readonly SaasKitContext context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OffersRepository"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
         public OffersRepository(SaasKitContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
         /// <summary>
@@ -22,12 +33,14 @@
         private bool disposed = false;
 
         /// <summary>
-        /// Gets this instance.
+        /// Gets all offers
         /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Offers> Get()
+        /// <returns>
+        /// List of offers
+        /// </returns>
+        public IEnumerable<Offers> GetAll()
         {
-            return Context.Offers;
+            return context.Offers;
         }
 
         /// <summary>
@@ -37,32 +50,31 @@
         /// <returns></returns>
         public Offers Get(int id)
         {
-            return Context.Offers.Where(s => s.Id == id).FirstOrDefault();
+            return context.Offers.Where(s => s.Id == id).FirstOrDefault();
         }
 
-
         /// <summary>
-        /// Adds the specified Offer details.
+        /// Adds the specified offer details.
         /// </summary>
-        /// <param name="offerDetails">The Offers details.</param>
+        /// <param name="offerDetails">The offer details.</param>
         /// <returns></returns>
         public Guid Add(Offers offerDetails)
         {
             if (offerDetails != null)
             {
-                var existingOffer = Context.Offers.Where(s => s.OfferId == offerDetails.OfferId).FirstOrDefault();
+                var existingOffer = context.Offers.Where(s => s.OfferId == offerDetails.OfferId).FirstOrDefault();
                 if (existingOffer != null)
                 {
                     existingOffer.OfferId = offerDetails.OfferId;
                     existingOffer.OfferName = offerDetails.OfferName;
-                    Context.Offers.Update(existingOffer);
-                    Context.SaveChanges();
+                    context.Offers.Update(existingOffer);
+                    context.SaveChanges();
                     return existingOffer.OfferGuid;
                 }
                 else
                 {
-                    Context.Offers.Add(offerDetails);
-                    Context.SaveChanges();
+                    context.Offers.Add(offerDetails);
+                    context.SaveChanges();
                     return offerDetails.OfferGuid;
                 }
             }
@@ -70,18 +82,25 @@
         }
 
         /// <summary>
-        /// Gets the plan detail by plan identifier.
+        /// Gets the offer by identifier.
         /// </summary>
-        /// <param name="planId">The plan identifier.</param>
-        /// <returns></returns>
-        public Offers GetOfferDetailByOfferId(Guid offerGuId)
+        /// <param name="offerGuId">The offer identifier.</param>
+        /// <returns>Offer by the given identifier</returns>
+        public Offers GetOfferById(Guid offerGuId)
         {
-            return Context.Offers.Where(s => s.OfferGuid == offerGuId).FirstOrDefault();
+            return context.Offers.Where(s => s.OfferGuid == offerGuId).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Gets the offers by user.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <returns>
+        /// List of offers by user
+        /// </returns>
         public IEnumerable<Offers> GetOffersByUser(int userId)
         {
-            var getAllOffers = this.Context.Offers.Where(s => s.UserId == userId);
+            var getAllOffers = this.context.Offers.Where(s => s.UserId == userId);
             return getAllOffers;
         }
 
@@ -90,9 +109,9 @@
         /// </summary>
         /// <param name="planId">The plan identifier.</param>
         /// <returns></returns>
-        public Offers GetOfferDetailById(int Id)
+        public Offers GetOfferByInternalId(int Id)
         {
-            return Context.Offers.Where(s => s.Id == Id).FirstOrDefault();
+            return context.Offers.Where(s => s.Id == Id).FirstOrDefault();
         }
 
         /// <summary>
@@ -101,11 +120,11 @@
         /// <param name="offerDetails">The offer details.</param>
         public void Remove(Offers offerDetails)
         {
-            var existingOffers = Context.Offers.Where(s => s.Id == offerDetails.Id).FirstOrDefault();
+            var existingOffers = context.Offers.Where(s => s.Id == offerDetails.Id).FirstOrDefault();
             if (existingOffers != null)
             {
-                Context.Offers.Remove(existingOffers);
-                Context.SaveChanges();
+                context.Offers.Remove(existingOffers);
+                context.SaveChanges();
             }
         }
 
@@ -119,7 +138,7 @@
             {
                 if (disposing)
                 {
-                    Context.Dispose();
+                    context.Dispose();
                 }
             }
             this.disposed = true;
@@ -131,7 +150,6 @@
         public void Dispose()
         {
             Dispose(true);
-
             GC.SuppressFinalize(this);
         }
     }

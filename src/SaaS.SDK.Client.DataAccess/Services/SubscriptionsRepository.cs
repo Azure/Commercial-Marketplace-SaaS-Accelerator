@@ -21,10 +21,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// The disposed
         /// </summary>
         private bool disposed = false;
+
         /// <summary>
         /// The context
         /// </summary>
-        private readonly SaasKitContext Context;
+        private readonly SaasKitContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionsRepository" /> class.
@@ -32,7 +33,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="context">The context.</param>
         public SubscriptionsRepository(SaasKitContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
         /// <summary>
@@ -42,23 +43,23 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <returns></returns>
         public int Add(Subscriptions subscriptionDetails)
         {
-            try
+
+            var existingSubscriptions = context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionDetails.AmpsubscriptionId).FirstOrDefault();
+            if (existingSubscriptions != null)
             {
-                var existingSubscriptions = Context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionDetails.AmpsubscriptionId).FirstOrDefault();
-                if (existingSubscriptions != null)
-                {
-                    existingSubscriptions.SubscriptionStatus = subscriptionDetails.SubscriptionStatus;
-                    existingSubscriptions.AmpplanId = subscriptionDetails.AmpplanId;
-                    existingSubscriptions.Ampquantity = subscriptionDetails.Ampquantity;
-                    Context.Subscriptions.Update(existingSubscriptions);
-                    Context.SaveChanges();
-                    return existingSubscriptions.Id;
-                }
-                else
-                    Context.Subscriptions.Add(subscriptionDetails);
-                Context.SaveChanges();
+                existingSubscriptions.SubscriptionStatus = subscriptionDetails.SubscriptionStatus;
+                existingSubscriptions.AmpplanId = subscriptionDetails.AmpplanId;
+                existingSubscriptions.Ampquantity = subscriptionDetails.Ampquantity;
+                context.Subscriptions.Update(existingSubscriptions);
+                context.SaveChanges();
+                return existingSubscriptions.Id;
             }
-            catch (Exception) { }
+            else
+            {
+                context.Subscriptions.Add(subscriptionDetails);
+            }
+            context.SaveChanges();
+
             return subscriptionDetails.Id;
         }
 
@@ -70,18 +71,14 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="isActive">if set to <c>true</c> [is active].</param>
         public void UpdateStatusForSubscription(Guid subscriptionId, string subscriptionStatus, bool isActive)
         {
-            try
+            var existingSubscription = context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+            if (existingSubscription != null)
             {
-                var existingSubscription = Context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
-                if (existingSubscription != null)
-                {
-                    existingSubscription.IsActive = isActive;
-                    existingSubscription.SubscriptionStatus = subscriptionStatus;
-                    Context.Subscriptions.Update(existingSubscription);
-                }
-                Context.SaveChanges();
+                existingSubscription.IsActive = isActive;
+                existingSubscription.SubscriptionStatus = subscriptionStatus;
+                context.Subscriptions.Update(existingSubscription);
             }
-            catch (Exception) { }
+            context.SaveChanges();
         }
 
         /// <summary>
@@ -91,17 +88,13 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="planId">The plan identifier.</param>
         public void UpdatePlanForSubscription(Guid subscriptionId, string planId)
         {
-            try
+            var existingSubscription = context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+            if (existingSubscription != null)
             {
-                var existingSubscription = Context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
-                if (existingSubscription != null)
-                {
-                    existingSubscription.AmpplanId = planId;
-                    Context.Subscriptions.Update(existingSubscription);
-                }
-                Context.SaveChanges();
+                existingSubscription.AmpplanId = planId;
+                context.Subscriptions.Update(existingSubscription);
             }
-            catch (Exception) { }
+            context.SaveChanges();
         }
 
         /// <summary>
@@ -111,17 +104,13 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="quantity">The Quantity.</param>
         public void UpdateQuantityForSubscription(Guid subscriptionId, int quantity)
         {
-            try
+            var existingSubscription = context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+            if (existingSubscription != null)
             {
-                var existingSubscription = Context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
-                if (existingSubscription != null)
-                {
-                    existingSubscription.Ampquantity = quantity;
-                    Context.Subscriptions.Update(existingSubscription);
-                }
-                Context.SaveChanges();
+                existingSubscription.Ampquantity = quantity;
+                context.Subscriptions.Update(existingSubscription);
             }
-            catch (Exception) { }
+            context.SaveChanges();
         }
 
         /// <summary>
@@ -130,7 +119,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <returns></returns>
         public IEnumerable<Subscriptions> Get()
         {
-            return Context.Subscriptions.Include(s => s.User).OrderByDescending(s => s.CreateDate);
+            return context.Subscriptions.Include(s => s.User).OrderByDescending(s => s.CreateDate);
         }
 
         /// <summary>
@@ -141,7 +130,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <exception cref="NotImplementedException"></exception>
         public Subscriptions Get(int id)
         {
-            return Context.Subscriptions.Where(s => s.Id == id).FirstOrDefault();
+            return context.Subscriptions.Where(s => s.Id == id).FirstOrDefault();
         }
 
         /// <summary>
@@ -156,30 +145,18 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             if (subscriptionId == default)
             {
                 if (!isIncludeDeactvated)
-                    return Context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.IsActive == true);
+                    return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.IsActive == true);
                 else
-                    return Context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress);
+                    return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress);
             }
             else
             {
                 if (!isIncludeDeactvated)
-                    return Context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.AmpsubscriptionId == subscriptionId && s.IsActive == true);
+                    return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.AmpsubscriptionId == subscriptionId && s.IsActive == true);
                 else
-                    return Context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.AmpsubscriptionId == subscriptionId);
+                    return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.AmpsubscriptionId == subscriptionId);
             }
         }
-
-        //public Subscriptions GetSubscriptionsBySubscriptionId(Guid subscriptionId, bool isIncludeDeactvated = false)
-        //{
-        //    if (subscriptionId != default)
-        //    {
-        //        if (!isIncludeDeactvated)
-        //            return Context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId && s.IsActive == true).FirstOrDefault();
-        //        else
-        //            return Context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
-        //    }
-        //    return new Subscriptions();
-        //}
 
         /// <summary>
         /// Gets the subscriptions by ScheduleId
@@ -192,9 +169,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             if (subscriptionId != default)
             {
                 if (!isIncludeDeactvated)
-                    return Context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId && s.IsActive == true).FirstOrDefault();
+                    return context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId && s.IsActive == true).FirstOrDefault();
                 else
-                    return Context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+                    return context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
             }
             return null;
         }
@@ -209,20 +186,26 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         {
             if (subscriptionId != default)
             {
-                var subscriptionParameters = Context.SubscriptionParametersOutput.FromSqlRaw("dbo.spGetSubscriptionParameters {0},{1}", subscriptionId, planId).ToList();
+                var subscriptionParameters = context.SubscriptionParametersOutput.FromSqlRaw("dbo.spGetSubscriptionParameters {0},{1}", subscriptionId, planId).ToList();
                 return subscriptionParameters.ToList();
             }
             return new List<SubscriptionParametersOutput>();
         }
 
-        public void AddSubscriptionKeyValutSecret(Guid subscriptionId, string keyVaultSecret, int userId)
+        /// <summary>
+        /// Saves the deployment credentials.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="keyVaultSecret">The key vault secret.</param>
+        /// <param name="userId">The user identifier.</param>
+        public void SaveDeploymentCredentials(Guid subscriptionId, string keyVaultSecret, int userId)
         {
-            var existingKey = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
+            var existingKey = context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
             if (existingKey != null)
             {
                 existingKey.SecureId = keyVaultSecret;
                 existingKey.SubscriptionId = subscriptionId;
-                Context.SubscriptionKeyValut.Update(existingKey);
+                context.SubscriptionKeyValut.Update(existingKey);
             }
             else
             {
@@ -234,14 +217,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                     UserId = userId
                 };
 
-                Context.SubscriptionKeyValut.Add(subscriptionKeyValut);
-                Context.SaveChanges();
-
-
+                context.SubscriptionKeyValut.Add(subscriptionKeyValut);
+                context.SaveChanges();
             }
-
-
         }
+
         /// <summary>
         /// Updates the plan for subscription.
         /// </summary>
@@ -249,91 +229,89 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="planId">The plan identifier.</param>
         public void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput)
         {
-            try
+
+            var existingSubscriptionparameter = context.SubscriptionAttributeValues.Where(s => s.Id == subscriptionParametersOutput.Id).FirstOrDefault();
+            if (existingSubscriptionparameter != null)
             {
-                var existingSubscriptionparameter = Context.SubscriptionAttributeValues.Where(s => s.Id == subscriptionParametersOutput.Id).FirstOrDefault();
-                if (existingSubscriptionparameter != null)
-                {
-                    existingSubscriptionparameter.OfferId = subscriptionParametersOutput.OfferId;
-                    Context.SubscriptionAttributeValues.Update(existingSubscriptionparameter);
-                    Context.SaveChanges();
-                }
-                else
-                {
-                    SubscriptionAttributeValues newAttributeValue = new SubscriptionAttributeValues();
-                    newAttributeValue.OfferId = subscriptionParametersOutput.OfferId;
-                    newAttributeValue.PlanAttributeId = subscriptionParametersOutput.PlanAttributeId;
-                    newAttributeValue.Value = subscriptionParametersOutput.Value;
-                    newAttributeValue.SubscriptionId = subscriptionParametersOutput.SubscriptionId;
-                    newAttributeValue.CreateDate = subscriptionParametersOutput.CreateDate;
-                    newAttributeValue.UserId = subscriptionParametersOutput.UserId;
-                    newAttributeValue.PlanId = subscriptionParametersOutput.PlanId;
-                    Context.SubscriptionAttributeValues.Add(newAttributeValue);
-                    Context.SaveChanges();
-                }
+                existingSubscriptionparameter.OfferId = subscriptionParametersOutput.OfferId;
+                context.SubscriptionAttributeValues.Update(existingSubscriptionparameter);
+                context.SaveChanges();
             }
-            catch (Exception) { }
+            else
+            {
+                SubscriptionAttributeValues newAttributeValue = new SubscriptionAttributeValues();
+                newAttributeValue.OfferId = subscriptionParametersOutput.OfferId;
+                newAttributeValue.PlanAttributeId = subscriptionParametersOutput.PlanAttributeId;
+                newAttributeValue.Value = subscriptionParametersOutput.Value;
+                newAttributeValue.SubscriptionId = subscriptionParametersOutput.SubscriptionId;
+                newAttributeValue.CreateDate = subscriptionParametersOutput.CreateDate;
+                newAttributeValue.UserId = subscriptionParametersOutput.UserId;
+                newAttributeValue.PlanId = subscriptionParametersOutput.PlanId;
+                context.SubscriptionAttributeValues.Add(newAttributeValue);
+                context.SaveChanges();
+            }
         }
 
+        /// <summary>
+        /// Gets the subscription template parameter.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns></returns>
         public IEnumerable<SubscriptionTemplateParametersModel> GetSubscriptionTemplateParameter(Guid subscriptionId, Guid planId)
         {
-            try
+            var subscriptionTemplateParams = context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionId, planId);
+            var subscriptionTemplateParameters = subscriptionTemplateParams.ToList();
+
+            List<SubscriptionTemplateParametersModel> attributesList = new List<SubscriptionTemplateParametersModel>();
+
+            if (subscriptionTemplateParameters != null && subscriptionTemplateParameters.Count() > 0)
             {
-                var subscriptionTemplateParams = Context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionId, planId);
-                var subscriptionTemplateParameters = subscriptionTemplateParams.ToList();
-
-                List<SubscriptionTemplateParametersModel> attributesList = new List<SubscriptionTemplateParametersModel>();
-
-                if (subscriptionTemplateParameters != null && subscriptionTemplateParameters.Count() > 0)
+                foreach (var parms in subscriptionTemplateParameters)
                 {
-                    foreach (var parms in subscriptionTemplateParameters)
-                    {
-                        SubscriptionTemplateParametersModel subscriptionparms = new SubscriptionTemplateParametersModel();
-                        subscriptionparms.Id = parms.Id ?? 0;
-                        subscriptionparms.PlanId = parms.OfferName;
-                        subscriptionparms.OfferGuid = parms.OfferGuid;
-                        subscriptionparms.PlanGuid = parms.PlanGuid;
-                        subscriptionparms.PlanId = parms.PlanId;
-                        subscriptionparms.ArmtemplateId = parms.ArmtemplateId;
-                        subscriptionparms.Parameter = parms.Parameter;
-                        subscriptionparms.ParameterDataType = parms.ParameterDataType;
-                        subscriptionparms.Value = parms.Value;
-                        subscriptionparms.ParameterType = parms.ParameterType;
-                        subscriptionparms.EventId = parms.EventId;
-                        subscriptionparms.EventsName = parms.EventsName;
-                        subscriptionparms.AmpsubscriptionId = parms.AmpsubscriptionId;
-                        subscriptionparms.SubscriptionStatus = parms.SubscriptionStatus;
-                        subscriptionparms.SubscriptionName = parms.SubscriptionName;
+                    SubscriptionTemplateParametersModel subscriptionparms = new SubscriptionTemplateParametersModel();
+                    subscriptionparms.Id = parms.Id ?? 0;
+                    subscriptionparms.PlanId = parms.OfferName;
+                    subscriptionparms.OfferGuid = parms.OfferGuid;
+                    subscriptionparms.PlanGuid = parms.PlanGuid;
+                    subscriptionparms.PlanId = parms.PlanId;
+                    subscriptionparms.ArmtemplateId = parms.ArmtemplateId;
+                    subscriptionparms.Parameter = parms.Parameter;
+                    subscriptionparms.ParameterDataType = parms.ParameterDataType;
+                    subscriptionparms.Value = parms.Value;
+                    subscriptionparms.ParameterType = parms.ParameterType;
+                    subscriptionparms.EventId = parms.EventId;
+                    subscriptionparms.EventsName = parms.EventsName;
+                    subscriptionparms.AmpsubscriptionId = parms.AmpsubscriptionId;
+                    subscriptionparms.SubscriptionStatus = parms.SubscriptionStatus;
+                    subscriptionparms.SubscriptionName = parms.SubscriptionName;
 
-                        attributesList.Add(subscriptionparms);
-                    }
+                    attributesList.Add(subscriptionparms);
                 }
-                return attributesList;
             }
-            catch (Exception ex)
-            {
-                string error = ex.Message;
-            }
-            return null;
+            return attributesList;
         }
 
-
+        /// <summary>
+        /// Gets the subscription template parameter by identifier.
+        /// </summary>
+        /// <param name="subscriptionID">The subscription identifier.</param>
+        /// <param name="PlanGuid">The plan unique identifier.</param>
+        /// <returns></returns>
         public List<SubscriptionTemplateParameters> GetSubscriptionTemplateParameterById(Guid subscriptionID, Guid PlanGuid)
         {
             List<SubscriptionTemplateParameters> _list = new List<SubscriptionTemplateParameters>();
-            var subscriptionAttributes = Context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, PlanGuid);
+            var subscriptionAttributes = context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, PlanGuid);
 
-            var existingdata = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
-            var subscriptionKeyValues = Context.SubscriptionKeyValueOutPut.FromSqlRaw("dbo.spGetSubscriptionKeyValue {0}", subscriptionID);
+            var existingdata = context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
+            var subscriptionKeyValues = context.SubscriptionKeyValueOutPut.FromSqlRaw("dbo.spGetSubscriptionKeyValue {0}", subscriptionID);
             if (existingdata != null)
             {
                 var existingdatalist = existingdata.ToList();
                 if (existingdatalist.Count() > 0)
                 {
                     return existingdatalist;
-
                 }
-
                 else
                 {
                     if (subscriptionAttributes != null)
@@ -341,7 +319,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                         var beforeReplaceList = subscriptionAttributes.ToList();
                         var subscriptionKeyValuesList = subscriptionKeyValues.ToList();
                         var subscriptionAttributesList = ReplaceDeploymentparms(beforeReplaceList, subscriptionKeyValuesList);
-
 
                         if (subscriptionAttributesList.Count() > 0)
                         {
@@ -365,41 +342,31 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                                     SubscriptionName = attr.SubscriptionName,
                                     CreateDate = DateTime.Now
                                 };
-                                Context.SubscriptionTemplateParameters.Add(parm);
-                                Context.SaveChanges();
+                                context.SubscriptionTemplateParameters.Add(parm);
+                                context.SaveChanges();
                                 _list.Add(parm);
                             }
 
                         }
-
-
                     }
-
                 }
-
-
             }
             return _list;
         }
 
-
+        /// <summary>
+        /// Replaces the deploymentparms.
+        /// </summary>
+        /// <param name="parmList">The parm list.</param>
+        /// <param name="subscriptionKeyValuesList">The subscription key values list.</param>
+        /// <returns></returns>
         public static List<SubscriptionTemplateParametersOutPut> ReplaceDeploymentparms(List<SubscriptionTemplateParametersOutPut> parmList, List<SubscriptionKeyValueOutPut> subscriptionKeyValuesList)
         {
-            //KB: Expect subscriptionID to this method
-            // Call a stored procedure to return the default set of values as key value pairs
-            /* foreach param
-             *  Apply nvelocity and take the processed value.
-             */
-            // Use Nvelocity to do the substitution
-
-
-
             Hashtable hashTable = new Hashtable();
             foreach (var keys in subscriptionKeyValuesList)
             {
                 hashTable.Add(keys.Key, keys.Value);
             }
-
 
             ExtendedProperties properties = new ExtendedProperties();
 
@@ -409,8 +376,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             VelocityContext context = new VelocityContext(hashTable);
             StringWriter writer = new StringWriter();
             engine.Evaluate(context, writer, string.Empty, JsonConvert.SerializeObject(parmList));
-
-            parmList = new List<SubscriptionTemplateParametersOutPut>();
 
             parmList = JsonConvert.DeserializeObject<List<SubscriptionTemplateParametersOutPut>>(writer.ToString());
             return parmList;
@@ -423,8 +388,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <exception cref="NotImplementedException"></exception>
         public void Remove(Subscriptions entity)
         {
-            Context.Subscriptions.Remove(entity);
-            Context.SaveChanges();
+            context.Subscriptions.Remove(entity);
+            context.SaveChanges();
         }
 
         /// <summary>
@@ -437,7 +402,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             {
                 if (disposing)
                 {
-                    Context.Dispose();
+                    context.Dispose();
                 }
             }
             this.disposed = true;

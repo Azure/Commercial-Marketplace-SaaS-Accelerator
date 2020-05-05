@@ -82,7 +82,7 @@
             this.logger.LogInformation("Plans Controller / OfferDetails:  offerGuId");
             try
             {
-                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
                 {
                     this.TempData["ShowPlansMenu"] = true;
                 }
@@ -116,7 +116,7 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
-                var armTemplates = armTemplateRepository.Get().ToList();
+                var armTemplates = armTemplateRepository.GetAll().ToList();
                 ViewBag.ARMTempleate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
                 return this.PartialView(plans);
             }

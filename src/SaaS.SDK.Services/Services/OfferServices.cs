@@ -23,7 +23,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         public List<OffersModel> GetOffers()
         {
             List<OffersModel> offersList = new List<OffersModel>();
-            var allOfferData = this.OfferRepository.Get();
+            var allOfferData = this.OfferRepository.GetAll();
             foreach (var item in allOfferData)
             {
                 OffersModel Offers = new OffersModel();
@@ -40,7 +40,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 
         public OffersViewModel GetOfferOnId(Guid offerGuId)
         {
-            var offer = this.OfferRepository.GetOfferDetailByOfferId(offerGuId);
+            var offer = this.OfferRepository.GetOfferById(offerGuId);
             OffersViewModel offerModel = new OffersViewModel()
             {
                 Id = offer.Id,

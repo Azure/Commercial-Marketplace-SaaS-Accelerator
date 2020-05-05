@@ -1,30 +1,21 @@
-﻿
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using Microsoft.Marketplace.SaasKit.Models;
-using Microsoft.Marketplace.SaasKit.Services;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-using System;
-//using SendGrid;
-//using SendGrid.Helpers.Mail;
-using System.Net;
-using System.Net.Mail;
-using Commons.Collections;
-using NVelocity.App;
-using System.Collections;
-using NVelocity;
-using System.IO;
-using System.Linq;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
+    using Commons.Collections;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using NVelocity;
+    using NVelocity.App;
+    using System;
+    using System.Collections;
+    using System.IO;
+    using System.Linq;
+
     public class EmailHelper
     {
 
         private readonly IApplicationConfigRepository applicationConfigRepository;
         private readonly ISubscriptionsRepository subscriptionsRepository;
-        //private readonly ISubscriptionLogRepository subscriptionLogRepository;
         private readonly IEmailTemplateRepository emailTemplateRepository;
         private readonly IEventsRepository eventsRepository;
         private readonly IPlanEventsMappingRepository planEventsMappingRepository;
@@ -33,7 +24,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
         {
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionsRepository = subscriptionsRepository;
-            //this.subscriptionLogRepository = subscriptionLogRepository;
             this.emailTemplateRepository = emailTemplateRepository;
             this.eventsRepository = eventsRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
@@ -43,8 +33,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
         {
             EmailContentModel emailContent = new EmailContentModel();
             string body = ProcessTemplate(Subscription, planEvent, oldValue, newValue);
-            int eventID = this.eventsRepository.GetEventID(Subscription.EventName);
-            var emailTemplateData = emailTemplateRepository.GetEmailTemplateOnStatus(Subscription.SubscriptionStatus.ToString());
+            int eventID = this.eventsRepository.GetByName(Subscription.EventName);
+            var emailTemplateData = emailTemplateRepository.GetTemplateForStatus(Subscription.SubscriptionStatus.ToString());
             string Subject = string.Empty;
 
             bool CopyToCustomer = false;
@@ -53,12 +43,12 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             string ccReceipents = string.Empty;
             string bccReceipents = string.Empty;
 
-            string FromMail = this.applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
-            string password = applicationConfigRepository.GetValuefromApplicationConfig("SMTPPassword");
-            string username = applicationConfigRepository.GetValuefromApplicationConfig("SMTPUserName");
-            bool smtpSsl = bool.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPSslEnabled"));
-            int port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
-            string smtpHost = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+            string FromMail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
+            string password = applicationConfigRepository.GetValueByName("SMTPPassword");
+            string username = applicationConfigRepository.GetValueByName("SMTPUserName");
+            bool smtpSsl = bool.Parse(applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
+            int port = int.Parse(applicationConfigRepository.GetValueByName("SMTPPort"));
+            string smtpHost = applicationConfigRepository.GetValueByName("SMTPHost");
             /* 
             Cases
              * Activate - Success  
@@ -75,8 +65,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 
              */
 
-
-            var eventMappings = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+            var eventMappings = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, eventID);
             if (eventMappings != null)
             {
                 CopyToCustomer = eventMappings.CopyToCustomer ?? false;
@@ -86,7 +75,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 
             if (planEvent.ToLower() == "success")
             {
-                var successEventData = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+                var successEventData = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, eventID);
 
                 if (string.IsNullOrEmpty(toReceipents))
                 {
@@ -116,7 +105,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 
             if (planEvent.ToLower() == "failure")
             {
-                var failureStateEmails = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+                var failureStateEmails = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, eventID);
                 if (string.IsNullOrEmpty(toReceipents))
                 {
                     throw new Exception(" Error while sending an email, please check the configuration. ");
@@ -188,8 +177,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 
         }
 
-
-
         public string ProcessTemplate(SubscriptionResultExtension Subscription, string planEvent, SubscriptionStatusEnumExtension oldValue, string newValue)
         {
 
@@ -199,9 +186,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 
 
             string body = string.Empty;
-            EmailTemplate templateDetails = emailTemplateRepository.GetEmailTemplateOnStatus("Template");
+            EmailTemplate templateDetails = emailTemplateRepository.GetTemplateForStatus("Template");
 
-            string applicationName = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationName");
+            string applicationName = applicationConfigRepository.GetValueByName("ApplicationName");
             Hashtable hashTable = new Hashtable();
             hashTable.Add("ApplicationName", applicationName);
             hashTable.Add("CustomerEmailAddress", Subscription.CustomerEmailAddress);

@@ -23,7 +23,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         public List<ARMTemplateViewModel> GetARMTemplates()
         {
             List<ARMTemplateViewModel> armTemplateList = new List<ARMTemplateViewModel>();
-            var allTemplates = this.armTemplateRepository.Get();
+            var allTemplates = this.armTemplateRepository.GetAll();
             foreach (var item in allTemplates)
             {
                 ARMTemplateViewModel armTemplate = new ARMTemplateViewModel();

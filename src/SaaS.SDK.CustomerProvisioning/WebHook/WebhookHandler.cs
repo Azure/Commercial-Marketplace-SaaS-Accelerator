@@ -127,11 +127,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.WebHook
         /// <param name="payload">The payload.</param>
         public async Task UnsubscribedAsync(WebhookPayload payload)
         {
-            var oldValue = subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
-
+            var oldValue = subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);            
             subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Unsubscribed.ToString(), false);
             applicationLogService.AddApplicationLog("Offer Successfully UnSubscribed.");
-
+            
             if (oldValue != null)
             {
                 SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
@@ -145,6 +144,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.WebHook
                 };
                 SubscriptionsLogRepository.Add(auditLog);
             }
+
+            //KB: Email notification missing.
+            //Trigger the webjob so that the notifications can get processed. Set the current status as Unsubscribed.
             await Task.CompletedTask;
         }
     }
