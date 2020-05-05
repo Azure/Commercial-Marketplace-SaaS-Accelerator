@@ -9,7 +9,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         public string FromEmail { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
-        public string Port { get; set; }
+        public int Port { get; set; }
         public bool SSL { get; set; }
         public string Subject { get; set; }
         public string SMTPHost { get; set; }
@@ -19,6 +19,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         public string BCCEmails { get; set; }
         public string CustomerEmail { get; set; }
         public bool CopyToCustomer { get; set; }
+        public bool IsActive { get; set; }
 
 
 

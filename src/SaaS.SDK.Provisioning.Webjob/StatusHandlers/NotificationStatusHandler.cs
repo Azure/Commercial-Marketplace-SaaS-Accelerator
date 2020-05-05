@@ -155,6 +155,11 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             bool isEmailEnabledForPendingActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValuefromApplicationConfig("IsEmailEnabledForPendingActivation"));
             bool isEmailEnabledForSubscriptionActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValuefromApplicationConfig("IsEmailEnabledForSubscriptionActivation"));
 
+
+
+            //var applicationConfigs = this.applicationConfigRepository.GetValuefromApplicationConfig();
+
+
             bool triggerEmail = false;
             if (planEvents.Isactive == true)
             {
@@ -168,11 +173,17 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 }
 
             }
-            var emailContent = this.emailHelper.PrepareEmailContent();
+            var emailContent = this.emailHelper.PrepareEmailContent(subscriptionDetail, planEvent, subscriptionDetail.SubscriptionStatus, subscriptionDetail.SubscriptionStatus.ToString());
 
             if (triggerEmail)
             {
-                this.emailService.SendEmail("", "", "", "");
+                this.emailService.SendEmail(emailContent);
+
+                if (emailContent.CopyToCustomer && !string.IsNullOrEmpty(subscriptionDetail.CustomerEmailAddress))
+                {
+                    emailContent.ToEmails = subscriptionDetail.CustomerEmailAddress;
+                    this.emailService.SendEmail(emailContent);
+                }
             }
 
             //emial.SendEmail(subscriptionDetail, emailStatusKey, SubscriptionStatusEnumExtension.PendingActivation, "");

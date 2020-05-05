@@ -1,4 +1,5 @@
 ﻿using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using System;
 using System.Collections.Generic;
@@ -17,30 +18,39 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             this.applicationConfigRepository = applicationConfigRepository;
 
         }
-        public void SendEmail(string to, string cc, string bcc, string body)
+        public void SendEmail(EmailContentModel emailContent)
         {
-
-
-            //var applicationConfigs = this.applicationConfigRepository.GetValuefromApplicationConfig();
             MailMessage mail = new MailMessage();
-            string FromMail = this.applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
-            string password = applicationConfigRepository.GetValuefromApplicationConfig("SMTPPassword");
-            string username = applicationConfigRepository.GetValuefromApplicationConfig("SMTPUserName");
-            string Subject = string.Empty;
-            bool smtpSsl = bool.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPSslEnabled"));
-            mail.From = new MailAddress(FromMail);
-            mail.IsBodyHtml = true;
+            if (!string.IsNullOrEmpty(emailContent.ToEmails) || !string.IsNullOrEmpty(emailContent.BCCEmails))
+            {
 
-            SmtpClient smtp = new SmtpClient();
-            smtp.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
-            smtp.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new NetworkCredential(
-                username, password);
-            smtp.EnableSsl = smtpSsl;
-            smtp.Send(mail);
+                mail.From = new MailAddress(emailContent.FromEmail);
+                mail.IsBodyHtml = true;
 
+                string[] toEmails = (emailContent.ToEmails).Split(';');
+                foreach (string Multimailid in toEmails)
+                {
+                    mail.To.Add(new MailAddress(Multimailid));
+                }
 
+                if (!string.IsNullOrEmpty(emailContent.BCCEmails))
+                {
+                    string[] bccEmails = (emailContent.BCCEmails).Split(';');
+                    foreach (string Multimailid in toEmails)
+                    {
+                        mail.Bcc.Add(new MailAddress(Multimailid));
+                    }
+                }
+                SmtpClient smtp = new SmtpClient();
+                smtp.Host = emailContent.SMTPHost;
+                smtp.Port = emailContent.Port;
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = new NetworkCredential(
+                    emailContent.UserName, emailContent.Password);
+                smtp.EnableSsl = emailContent.SSL;
+                smtp.Send(mail);
+
+            }
 
         }
     }

@@ -355,12 +355,12 @@
 
 
                 }
-                if (operation == "Deactivte")
+                if (operation == "Deactivate")
                 {
 
                     this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
                     queueObject.SubscriptionID = subscriptionId;
-                    queueObject.TriggerEvent = "Deactivte";
+                    queueObject.TriggerEvent = "Deactivate";
                     queueObject.UserId = userDetails.UserId;
                     queueObject.PortalName = "Admin";
                 }
