@@ -32,7 +32,7 @@ namespace  Microsoft.Marketplace.SaaS.SDK.Services.Services
                 LogDetail = logMessage
             };
 
-            ApplicationLogRepository.AddApplicationLogs(newLog);
+            ApplicationLogRepository.AddLog(newLog);
         }
     }
 }

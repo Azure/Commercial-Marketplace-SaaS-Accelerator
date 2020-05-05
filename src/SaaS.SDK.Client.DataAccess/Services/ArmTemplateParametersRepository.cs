@@ -16,12 +16,12 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         {
             Context = context;
         }
-        public IEnumerable<ArmtemplateParameters> Get()
+        public IEnumerable<ArmtemplateParameters> GetAll()
         {
             return Context.ArmtemplateParameters;
         }
 
-        public IEnumerable<ArmtemplateParameters> GetArmtemplatesByID(Guid ArmTemplateID)
+        public IEnumerable<ArmtemplateParameters> GetById(Guid ArmTemplateID)
         {
             return Context.ArmtemplateParameters.Where(s => s.ArmtemplateId == ArmTemplateID);
         }

@@ -54,7 +54,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// Adds the application logs.
         /// </summary>
         /// <param name="logDetail">The log detail.</param>
-        public void AddApplicationLogs(ApplicationLog logDetail)
+        public void AddLog(ApplicationLog logDetail)
         {
             context.ApplicationLog.Add(logDetail);
             context.SaveChanges();

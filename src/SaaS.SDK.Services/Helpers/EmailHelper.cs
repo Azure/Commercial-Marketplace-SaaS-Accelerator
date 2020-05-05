@@ -185,7 +185,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             string body = string.Empty;
             EmailTemplate templateDetails = emailTemplateRepository.GetEmailTemplateOnStatus("Template");
 
-            string applicationName = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationName");
+            string applicationName = applicationConfigRepository.GetValueByName("ApplicationName");
             Hashtable hashTable = new Hashtable();
             hashTable.Add("ApplicationName", applicationName);
             hashTable.Add("CustomerEmailAddress", Subscription.CustomerEmailAddress);

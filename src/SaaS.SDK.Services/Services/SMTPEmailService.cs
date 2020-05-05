@@ -23,17 +23,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 
             //var applicationConfigs = this.applicationConfigRepository.GetValuefromApplicationConfig();
             MailMessage mail = new MailMessage();
-            string FromMail = this.applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
-            string password = applicationConfigRepository.GetValuefromApplicationConfig("SMTPPassword");
-            string username = applicationConfigRepository.GetValuefromApplicationConfig("SMTPUserName");
+            string FromMail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
+            string password = applicationConfigRepository.GetValueByName("SMTPPassword");
+            string username = applicationConfigRepository.GetValueByName("SMTPUserName");
             string Subject = string.Empty;
-            bool smtpSsl = bool.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPSslEnabled"));
+            bool smtpSsl = bool.Parse(applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
             mail.From = new MailAddress(FromMail);
             mail.IsBodyHtml = true;
 
             SmtpClient smtp = new SmtpClient();
-            smtp.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
-            smtp.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+            smtp.Host = applicationConfigRepository.GetValueByName("SMTPHost");
+            smtp.Port = int.Parse(applicationConfigRepository.GetValueByName("SMTPPort"));
             smtp.UseDefaultCredentials = false;
             smtp.Credentials = new NetworkCredential(
                 username, password);

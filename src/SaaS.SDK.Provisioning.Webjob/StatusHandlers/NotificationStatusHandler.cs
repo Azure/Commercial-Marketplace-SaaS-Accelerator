@@ -151,9 +151,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
             var planEvents = this.planEventsMappingRepository.GetPlanEventsMappingEmails(planDetails.PlanGuid, eventId);
 
-            bool isEmailEnabledForUnsubscription = Convert.ToBoolean(this.applicationConfigRepository.GetValuefromApplicationConfig("IsEmailEnabledForUnsubscription"));
-            bool isEmailEnabledForPendingActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValuefromApplicationConfig("IsEmailEnabledForPendingActivation"));
-            bool isEmailEnabledForSubscriptionActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValuefromApplicationConfig("IsEmailEnabledForSubscriptionActivation"));
+            bool isEmailEnabledForUnsubscription = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForUnsubscription"));
+            bool isEmailEnabledForPendingActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForPendingActivation"));
+            bool isEmailEnabledForSubscriptionActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForSubscriptionActivation"));
 
             bool triggerEmail = false;
             if (planEvents.Isactive == true)

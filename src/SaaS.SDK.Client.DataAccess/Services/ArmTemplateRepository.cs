@@ -27,7 +27,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// Gets this instance.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Armtemplates> Get()
+        public IEnumerable<Armtemplates> GetAll()
         {
             return Context.Armtemplates;
         }
@@ -47,7 +47,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         /// <param name="offerDetails">The Offers details.</param>
         /// <returns></returns>
-        public Guid? Add(Armtemplates templateDetails)
+        public Guid? Save(Armtemplates templateDetails)
         {
             if (templateDetails != null && !string.IsNullOrEmpty(templateDetails.ArmtempalteName))
             {
@@ -63,7 +63,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         /// <param name="offerDetails">The Offers details.</param>
         /// <returns></returns>
-        public Guid? AddTemplateParameters(ArmtemplateParameters templateParms)
+        public Guid? SaveParameters(ArmtemplateParameters templateParms)
         {
             if (templateParms != null && !string.IsNullOrEmpty(templateParms.Parameter))
             {

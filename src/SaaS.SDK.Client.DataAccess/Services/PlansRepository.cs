@@ -190,7 +190,7 @@
                         {
                             eventsList.Add(planEvent);
                         }
-                        else if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported")))
+                        else if (Convert.ToBoolean(applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
                         {
                             eventsList.Add(planEvent);
                         }

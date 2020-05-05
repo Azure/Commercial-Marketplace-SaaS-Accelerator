@@ -264,7 +264,7 @@
                             UserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress),
                             ArmtempalteId = ArmtempalteId
                         };
-                        model.ArmtempalteId = this.armTemplateRepository.Add(armTemplate) ?? ArmtempalteId;
+                        model.ArmtempalteId = this.armTemplateRepository.Save(armTemplate) ?? ArmtempalteId;
                     }
                 }
                 else
@@ -305,7 +305,7 @@
                         CreateDate = DateTime.Now,
                         UserId = currentUserDetail.UserId
                     };
-                    this.armTemplateRepository.AddTemplateParameters(armtemplateParameters);
+                    this.armTemplateRepository.SaveParameters(armtemplateParameters);
                 }
 
             }
@@ -316,14 +316,14 @@
         {
             try
             {
-                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
                 {
                     this.TempData["ShowLicensesMenu"] = true;
                 }
                 if (User.Identity.IsAuthenticated)
                 {
                     List<ArmtemplateParameters> armTemplateParms = new List<ArmtemplateParameters>();
-                    armTemplateParms = this.armTemplateParametersRepository.GetArmtemplatesByID(armtemplateId).ToList();
+                    armTemplateParms = this.armTemplateParametersRepository.GetById(armtemplateId).ToList();
                     return this.View(armTemplateParms);
                 }
                 else

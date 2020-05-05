@@ -17,7 +17,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             Context = context;
         }
 
-        public string GetValuefromApplicationConfig(string Name)
+        public string GetValueByName(string Name)
         {
             return Context.ApplicationConfiguration.Where(s => s.Name == Name).FirstOrDefault().Value;
         }
@@ -26,7 +26,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// Gets the value from application configuration.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<ApplicationConfiguration> GetValuefromApplicationConfig()
+        public IEnumerable<ApplicationConfiguration> GetAll()
         {
             return Context.ApplicationConfiguration;
         }

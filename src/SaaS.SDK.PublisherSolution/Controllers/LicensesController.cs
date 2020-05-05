@@ -56,7 +56,7 @@
         /// <returns>return All subscription</returns>
         public IActionResult Index()
         {
-            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
             {
                 this.TempData["ShowLicensesMenu"] = true;
             }
@@ -88,7 +88,7 @@
         /// <returns>return Active Subscription</returns>
         public JsonResult UpdateActiveSubscription(int id, int subscriptionId)
         {
-            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
             {
                 this.TempData["ShowLicensesMenu"] = true;
             }
@@ -128,7 +128,7 @@
         [HttpPost]
         public IActionResult AddLicenseDetail(SubscriptionLicensesViewModel subscriptionLicenses)
         {
-            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
             {
                 this.TempData["ShowLicensesMenu"] = true;
             }
