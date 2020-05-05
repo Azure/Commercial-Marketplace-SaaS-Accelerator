@@ -23,6 +23,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public int? UserId { get; set; }
         public string Name { get; set; }
         public int Ampquantity { get; set; }
+        public string PurchaserEmail { get; set; }
+        public Guid? PurchaserTenantId { get; set; }
 
         public virtual Users User { get; set; }
         public virtual ICollection<MeteredAuditLogs> MeteredAuditLogs { get; set; }

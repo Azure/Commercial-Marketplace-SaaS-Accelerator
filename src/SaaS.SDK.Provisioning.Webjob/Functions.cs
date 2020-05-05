@@ -86,12 +86,12 @@ namespace SaaS.SDK.Provisioning.Webjob
             {
                 logger.LogInformation($"{message} and FulfillmentClient is null : ${fulfillmentApiClient == null}");
 
-                //SubscriptionProcessQueueModel delete = new SubscriptionProcessQueueModel()
-                //{
-                //    SubscriptionID = Guid.Parse("92badc23-5cac-8404-7c97-52b1bc8e02ff"),
-                //    TriggerEvent = "Unsubscribe"
-                //};
-                //message = JsonConvert.SerializeObject(delete);
+                SubscriptionProcessQueueModel delete = new SubscriptionProcessQueueModel()
+                {
+                    SubscriptionID = Guid.Parse("25A8379E-E87E-DDDF-C337-259F4FADB09D"),
+                    TriggerEvent = "Activate"
+                };
+                message = JsonConvert.SerializeObject(delete);
 
                 // Do process
                 var model = JsonConvert.DeserializeObject<SubscriptionProcessQueueModel>(message);

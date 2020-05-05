@@ -1,0 +1,153 @@
+﻿@using Microsoft.Marketplace.SaasKit.Models;
+@model Microsoft.Marketplace.SaaS.SDK.Services.Models.DeploymentParameterViewModel
+<!DOCTYPE html>
+
+<html>
+<head>
+    @*<meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="~/css/jquery-ui/jquery-ui.css" rel="stylesheet" />
+        <link href="~/css/jquery-ui/style.css" rel="stylesheet" />
+        <script src="~/lib/jquery-ui/jquery-1.12.4.js"></script>
+        <script src="~/lib/jquery-ui/jquery-ui.js"></script>*@
+</head>
+<body>
+
+
+    @*<script>
+            $(function () {
+                $("#tabs").tabs();
+            });
+        </script>*@
+    <div>
+        <form id="TemplateForm" method="post">
+            @if (Model.FileName == null || Model.FileName == "")
+            {
+                <div class="table-responsive mt20">
+                    <div id="tabinput">
+                        <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                            <tr>
+                                <th>
+                                    ARM Template
+                                </th>
+                                <th>Action</th>
+                            </tr>
+
+                            @for (int i = 0; i < Model.ARMParms.Count(); i++)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(model => model.ARMParms[i].ArmtempalteName)</td>
+                                    <td class="text-left  cm-ellipsis">
+                                        <div class="nav-item dropdown">
+                                            <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                            <div class="dropdown-menu" aria-labelledby="dropdown01">
+                                                <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewarmtemplateparamsById('@Model.ARMParms[i].ArmtempalteId')">Deployment Parameters</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+
+                </div>
+            }
+            <div class="modal fade" id="myModal" role="dialog"></div>
+        </form>
+    </div>
+</body>
+</html>
+<script>
+
+    $(document).ready(function () {
+        $(".output").attr("disabled", "disabled");
+        //$("#taboutput").hide();
+    })
+    //$("#btnoutput").click(function () {
+
+
+    //    $("#taboutput").show();
+    //    $("#tabinput").hide();
+
+
+    //})
+    //$("#btninput").click(function () {
+
+
+    //    $("#taboutput").hide();
+    //    $("#tabinput").show();
+
+
+    //})
+
+
+    function saveArmTemplateParameters() {
+        if (validate()) {
+            var formobject = $('#TemplateForm').serialize();
+            $.ajax({
+                url: 'Template/SaveTemplateParameters',
+                type: 'POST',
+                data: formobject,
+                cache: false,
+                success: function (result) {
+                    successconfirmDialog();
+                    $('#myModal').html("");
+                },
+                Error:
+                    function (result) {
+                        errorconfirmDialog();
+                        $('#myModal').html(result);
+                    }
+            });
+        } else {
+            swal({
+                title: "Required",
+                text: "Please fill all required values",
+                icon: "warning"
+            })
+
+        }
+    }
+    function successconfirmDialog() {
+        swal({
+            title: "Saved",
+            text: "ARMTemplate parameters saved successfully.",
+            icon: "success",
+            timer: 1000
+        })
+    }
+    function errorconfirmDialog() {
+        swal({
+            title: "Error",
+            text: "An error has occured, please check the log.",
+            icon: "error",
+            timer: 1000
+        })
+    }
+
+    function validate() {
+        var valid = true;
+        $('.input').each(function () {
+            if ($(this).val() == "") //check loginc here
+                return valid = false;
+        });
+        return valid;
+    }
+
+    function ViewarmtemplateparamsById(armTemplateId) {
+        $.ajax({
+            type: "Get",
+            url: "Template/ArmTemplateParmeters",
+            data: { armTemplateId: armTemplateId },
+            contentType: "application/json; charset=utf-8",
+            datatype: "json",
+            success: function (data) {
+                $('#myModal').html(data);
+                $('#myModal').modal();
+            },
+            error: function () {
+                alert("Content load failed.");
+            }
+        });
+    }
+</script>

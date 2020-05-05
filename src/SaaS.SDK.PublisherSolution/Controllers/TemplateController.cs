@@ -19,6 +19,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Client.Services;
     //using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json.Linq;
@@ -39,8 +40,11 @@
         private readonly IArmTemplateRepository armTemplateRepository;
 
         private readonly IAzureBlobFileClient azureBlobFileClient;
+        private ArmTemplateService armTemplateService;
 
-        public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository, IAzureBlobFileClient azureBlobFileClient)
+        private readonly IArmTemplateParametersRepository armTemplateParametersRepository;
+
+        public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository, IArmTemplateParametersRepository armTemplateParametersRepository, IAzureBlobFileClient azureBlobFileClient)
         {
             this.usersRepository = usersRepository;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -48,12 +52,18 @@
             this.userRepository = userRepository;
             this.userService = new UserService(this.userRepository);
             this.armTemplateRepository = armTemplateRepository;
+            this.armTemplateService = new ArmTemplateService(this.armTemplateRepository);
+            this.armTemplateParametersRepository = armTemplateParametersRepository;
             this.azureBlobFileClient = azureBlobFileClient;
         }
 
         public IActionResult Index()
         {
             DeploymentParameterViewModel model = new DeploymentParameterViewModel();
+            List<ARMTemplateViewModel> armTemplates = new List<ARMTemplateViewModel>();
+            armTemplates = this.armTemplateService.GetARMTemplates();
+            model.ARMParms = armTemplates;
+            model.FileName = "";
             try
             {
                 bool isKnownUser = knownUsersRepository.GetKnownUserDetail(base.CurrentUserEmailAddress, 1)?.Id > 0;
@@ -299,7 +309,32 @@
                 }
 
             }
-            return PartialView("SuccessMessage");
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult ArmTemplateParmeters(Guid armtemplateId)
+        {
+            try
+            {
+                if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
+                if (User.Identity.IsAuthenticated)
+                {
+                    List<ArmtemplateParameters> armTemplateParms = new List<ArmtemplateParameters>();
+                    armTemplateParms = this.armTemplateParametersRepository.GetArmtemplatesByID(armtemplateId).ToList();
+                    return this.View(armTemplateParms);
+                }
+                else
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                return View("Error", ex);
+            }
         }
 
     }

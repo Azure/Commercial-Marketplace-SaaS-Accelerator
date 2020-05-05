@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Marketplace.SaasKit.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         public Guid? ArmtempalteId { get; set; }
 
         public List<ChindParameterViewModel> DeplParms { get; set; }
+
+        public List<ARMTemplateViewModel> ARMParms { get; set; }
 
     }
 
