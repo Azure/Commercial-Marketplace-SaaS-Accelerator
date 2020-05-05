@@ -46,15 +46,19 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             int eventID = this.eventsRepository.GetEventID(Subscription.EventName);
             var emailTemplateData = emailTemplateRepository.GetEmailTemplateOnStatus(Subscription.SubscriptionStatus.ToString());
             string Subject = string.Empty;
-            bool smtpSsl = true;
 
-            bool CustomerToCopy = false;
+            bool CopyToCustomer = false;
             bool isActive = false;
             string toReceipents = string.Empty;
             string ccReceipents = string.Empty;
             string bccReceipents = string.Empty;
 
-
+            string FromMail = this.applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
+            string password = applicationConfigRepository.GetValuefromApplicationConfig("SMTPPassword");
+            string username = applicationConfigRepository.GetValuefromApplicationConfig("SMTPUserName");
+            bool smtpSsl = bool.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPSslEnabled"));
+            int port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+            string smtpHost = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
             /* 
             Cases
              * Activate - Success  
@@ -75,7 +79,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             var eventMappings = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
             if (eventMappings != null)
             {
-                CustomerToCopy = eventMappings.CopyToCustomer ?? false;
+                CopyToCustomer = eventMappings.CopyToCustomer ?? false;
                 isActive = eventMappings.Isactive;
             }
             toReceipents = Subscription.CustomerEmailAddress;
@@ -166,7 +170,19 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                 Subject = "Delete Resource Failed";
             }
 
-
+            emailContent.BCCEmails = bccReceipents;
+            emailContent.CCEmails = ccReceipents;
+            emailContent.ToEmails = toReceipents;
+            emailContent.Body = body;
+            emailContent.Subject = Subject;
+            emailContent.CopyToCustomer = CopyToCustomer;
+            emailContent.IsActive = isActive;
+            emailContent.FromEmail = FromMail;
+            emailContent.Password = password;
+            emailContent.SSL = smtpSsl;
+            emailContent.UserName = username;
+            emailContent.Port = port;
+            emailContent.SMTPHost = smtpHost;
 
             return emailContent;
 
