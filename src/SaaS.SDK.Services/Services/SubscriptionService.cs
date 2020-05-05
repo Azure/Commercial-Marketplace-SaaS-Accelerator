@@ -162,7 +162,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <returns></returns>
         public SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
         {
-            var existingPlanDetail = this.PlanRepository.GetPlanDetailByPlanId(subscription.AmpplanId);
+            var existingPlanDetail = this.PlanRepository.GetById(subscription.AmpplanId);
 
             SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
             {

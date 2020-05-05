@@ -21,7 +21,7 @@
         /// </summary>
         /// <param name="templateParameters">The template parameters.</param>
         /// <returns></returns>
-        Guid SaveParameters(ArmtemplateParameters templateParameters);
+        Guid? SaveParameters(ArmtemplateParameters templateParameters);
 
         /// <summary>
         /// Gets all ARM Templates

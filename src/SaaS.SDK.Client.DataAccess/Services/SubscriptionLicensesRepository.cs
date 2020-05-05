@@ -23,7 +23,7 @@
         /// <summary>
         /// The context
         /// </summary>
-        private readonly SaasKitContext Context;
+        private readonly SaasKitContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionLicensesRepository" /> class.
@@ -31,7 +31,7 @@
         /// <param name="context">The context.</param>
         public SubscriptionLicensesRepository(SaasKitContext context)
         {
-            this.Context = context;
+            this.context = context;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@
         /// </returns>
         public IEnumerable<SubscriptionLicenses> GetSubscriptionLicensesByUser(int userId, string subscriptionStatus)
         {
-            var getAllSubscriptionlicenses = this.Context.SubscriptionLicenses.Include(s => s.Subscription).Where(s => s.Subscription.UserId == userId
+            var getAllSubscriptionlicenses = this.context.SubscriptionLicenses.Include(s => s.Subscription).Where(s => s.Subscription.UserId == userId
                                                 && s.Subscription.SubscriptionStatus == subscriptionStatus && s.IsActive == true);
             return getAllSubscriptionlicenses;
         }
@@ -57,7 +57,7 @@
         /// </returns>
         public IEnumerable<SubscriptionLicenses> GetLicensesForSubscriptions(string subscriptionStatus)
         {
-            var getAllSubscriptionlicenses = this.Context.SubscriptionLicenses.Include(s => s.Subscription).Where(s => s.Subscription.SubscriptionStatus == subscriptionStatus);
+            var getAllSubscriptionlicenses = this.context.SubscriptionLicenses.Include(s => s.Subscription).Where(s => s.Subscription.SubscriptionStatus == subscriptionStatus);
             return getAllSubscriptionlicenses;
         }
 
@@ -70,14 +70,14 @@
         /// </returns>
         public int AssignLicenseToSubscription(SubscriptionLicenses subscription)
         {
-            var existingsubscriptionActive = this.Context.SubscriptionLicenses.Where(s => s.SubscriptionId == subscription.SubscriptionId && s.IsActive == true).FirstOrDefault();
+            var existingsubscriptionActive = this.context.SubscriptionLicenses.Where(s => s.SubscriptionId == subscription.SubscriptionId && s.IsActive == true).FirstOrDefault();
             if (existingsubscriptionActive == null)
             {
-                var existingsubscription = this.Context.SubscriptionLicenses.Where(s => s.Id == subscription.Id).FirstOrDefault();
+                var existingsubscription = this.context.SubscriptionLicenses.Where(s => s.Id == subscription.Id).FirstOrDefault();
                 if (existingsubscription == null)
                 {
-                    this.Context.SubscriptionLicenses.Add(subscription);
-                    this.Context.SaveChanges();
+                    this.context.SubscriptionLicenses.Add(subscription);
+                    this.context.SaveChanges();
                 }
             }
 
@@ -93,12 +93,12 @@
         /// </returns>
         public int UpdateActiveSubscription(SubscriptionLicenses subscription)
         {
-            var existingsubscription = this.Context.SubscriptionLicenses.Where(s => s.Id == subscription.Id).FirstOrDefault();
+            var existingsubscription = this.context.SubscriptionLicenses.Where(s => s.Id == subscription.Id).FirstOrDefault();
             if (existingsubscription != null)
             {
                 existingsubscription.IsActive = !existingsubscription.IsActive;
-                this.Context.SubscriptionLicenses.Update(existingsubscription);
-                this.Context.SaveChanges();
+                this.context.SubscriptionLicenses.Update(existingsubscription);
+                this.context.SaveChanges();
             }
 
             return subscription.Id;
@@ -114,7 +114,7 @@
             {
                 if (disposing)
                 {
-                    this.Context.Dispose();
+                    this.context.Dispose();
                 }
             }
 

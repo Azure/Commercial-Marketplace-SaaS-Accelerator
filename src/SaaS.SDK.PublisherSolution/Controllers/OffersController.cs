@@ -85,8 +85,8 @@
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 OffersData = this.offersService.GetOfferOnId(offerGuId);
 
-                var offerAttributes = this.offersAttributeRepository.GetOfferAttributeDetailByOfferId(offerGuId);
-                var valueTypes = valueTypesRepository.GetValueTypes().ToList();
+                var offerAttributes = this.offersAttributeRepository.GetInputAttributesByOfferId(offerGuId);
+                var valueTypes = valueTypesRepository.GetAll().ToList();
                 ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
                 OffersData.OfferAttributes = new List<OfferAttributesModel>();
                 if (offerAttributes != null)
@@ -169,7 +169,7 @@
                         this.offersAttributeRepository.Add(newOfferAttribute);
                     }
 
-                    var valueTypes = valueTypesRepository.GetValueTypes().ToList();
+                    var valueTypes = valueTypesRepository.GetAll().ToList();
                     ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
                     this.TempData["ShowWelcomeScreen"] = "True";
                 }

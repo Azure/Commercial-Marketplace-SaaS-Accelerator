@@ -182,14 +182,14 @@
                             if (deploymentAttributes != null && deploymentAttributes.Count() > 0)
                             {
                                 var attribures = this.offerAttributesRepository.AddDeploymentAttributes(newOfferId, currentUserId, deploymentAttributes.ToList());
-                                var allPlansOfSubscription = this.planRepository.GetPlanDetailByOfferId(newOfferId);
+                                var allPlansOfSubscription = this.planRepository.GetPlansByOfferId(newOfferId);
 
                                 foreach (var plan in allPlansOfSubscription)
                                 {
                                     var deploymentAttributesofPlan = this.planService.SavePlanDeplymentAttributes(plan, currentUserId);
                                 }
                             }
-                            var currentPlan = this.planRepository.GetPlanDetailByPlanId(newSubscription.PlanId);
+                            var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
                             if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
@@ -292,7 +292,7 @@
                     subscriptionDetail.Subscriptions = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, default, true).ToList();
                     foreach (var subscription in subscriptionDetail.Subscriptions)
                     {
-                        Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscription.PlanId);
+                        Plans PlanDetail = this.planRepository.GetById(subscription.PlanId);
                         subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         subscription.IsPerUserPlan = PlanDetail.IsPerUser.HasValue ? PlanDetail.IsPerUser.Value : false;
                     }
@@ -459,7 +459,7 @@
                     this.TempData["ShowWelcomeScreen"] = false;
 
                     subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
-                    var planDetails = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
+                    var planDetails = this.planRepository.GetById(subscriptionDetail.PlanId);
                     var subscriptionParmaeters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
                     var inputParanetrs = subscriptionParmaeters.Where(s => s.Type.ToLower() == "input");
                     if (inputParanetrs != null && inputParanetrs.ToList().Count() > 0)
@@ -644,7 +644,7 @@
                     var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
-                    var planDetails = this.planRepository.GetPlanDetailByPlanId(planId);
+                    var planDetails = this.planRepository.GetById(planId);
                     this.TempData["ShowWelcomeScreen"] = false;
                     subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                     subscriptionDetail.ShowWelcomeScreen = false;
@@ -689,7 +689,7 @@
                     SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
                     this.logger.LogInformation("GetPartnerSubscription");
                     var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-                    Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(oldValue.PlanId);
+                    Plans PlanDetail = this.planRepository.GetById(oldValue.PlanId);
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     if (operation == "Activate")
@@ -715,7 +715,7 @@
                                         parms.Add(parm.DisplayName, parm.Value.Trim());
                                     }
                                     string azureKeyValtSecret = this.keyVaultClient.WriteKeyAsync(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
-                                    this.subscriptionRepository.AddSubscriptionKeyValutSecret(subscriptionId, azureKeyValtSecret, currentUserId);
+                                    this.subscriptionRepository.SaveDeploymentCredentials(subscriptionId, azureKeyValtSecret, currentUserId);
                                 }
                             }
                             if (Convert.ToBoolean(applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))

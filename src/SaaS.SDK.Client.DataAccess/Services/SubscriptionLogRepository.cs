@@ -13,7 +13,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <summary>
         /// The context
         /// </summary>
-        public SaasKitContext Context = new SaasKitContext();
+        public SaasKitContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionLogRepository"/> class.
@@ -21,7 +21,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="context">The context.</param>
         public SubscriptionLogRepository(SaasKitContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
         /// <summary>
@@ -31,14 +31,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <returns></returns>
         public int Add(SubscriptionAuditLogs subscriptionLogs)
         {
-            try
-            {
-                Context.SubscriptionAuditLogs.Add(subscriptionLogs);
-                Context.SaveChanges();
-                return subscriptionLogs.Id;
-            }
-            catch (Exception) { }
-            return 0;
+            context.SubscriptionAuditLogs.Add(subscriptionLogs);
+            context.SaveChanges();
+            return subscriptionLogs.Id;
         }
 
         /// <summary>
@@ -47,7 +42,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <returns></returns>
         public IEnumerable<SubscriptionAuditLogs> Get()
         {
-            return Context.SubscriptionAuditLogs.Include(s => s.Subscription);
+            return context.SubscriptionAuditLogs.Include(s => s.Subscription);
         }
 
         /// <summary>
@@ -57,7 +52,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <returns></returns>
         public IEnumerable<SubscriptionAuditLogs> GetSubscriptionBySubscriptionId(Guid subscriptionId)
         {
-            return Context.SubscriptionAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.AmpsubscriptionId == subscriptionId);
+            return context.SubscriptionAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.AmpsubscriptionId == subscriptionId);
         }
 
         /// <summary>
@@ -67,7 +62,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <returns></returns>
         public SubscriptionAuditLogs Get(int id)
         {
-            return Context.SubscriptionAuditLogs.Where(s => s.Id == id).FirstOrDefault();
+            return context.SubscriptionAuditLogs.Where(s => s.Id == id).FirstOrDefault();
         }
 
         /// <summary>
@@ -76,45 +71,49 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="entity">The entity.</param>
         public void Remove(SubscriptionAuditLogs entity)
         {
-            Context.SubscriptionAuditLogs.Remove(entity);
-            Context.SaveChanges();
+            context.SubscriptionAuditLogs.Remove(entity);
+            context.SaveChanges();
         }
 
-
-        public void AddWebJobSubscriptionStatus(Guid subscriptionID, Guid? ArmtempalteId, string deploymentStatus, string errorDescription, string subscriptionStatus)
+        /// <summary>
+        /// Logs the status during provisioning.
+        /// </summary>
+        /// <param name="subscriptionID">The subscription identifier.</param>
+        /// <param name="armtemplateId">The armtempalte identifier.</param>
+        /// <param name="deploymentStatus">The deployment status.</param>
+        /// <param name="errorDescription">The error description.</param>
+        /// <param name="subscriptionStatus">The subscription status.</param>
+        public void LogStatusDuringProvisioning(Guid subscriptionID, Guid? armtemplateId, string deploymentStatus, string errorDescription, string subscriptionStatus)
         {
-            var subscription = Context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionID).FirstOrDefault();
-            var existingWebJobStatus = Context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+            var subscription = context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionID).FirstOrDefault();
+            var existingWebJobStatus = context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
             if (existingWebJobStatus == null)
             {
                 WebJobSubscriptionStatus status = new WebJobSubscriptionStatus()
                 {
                     SubscriptionId = subscriptionID,
-                    ArmtemplateId = ArmtempalteId,
+                    ArmtemplateId = armtemplateId,
                     SubscriptionStatus = subscriptionStatus,
                     DeploymentStatus = deploymentStatus,
                     Description = errorDescription,
                     InsertDate = DateTime.Now
                 };
-                Context.WebJobSubscriptionStatus.Add(status);
-                Context.SaveChanges();
+                context.WebJobSubscriptionStatus.Add(status);
+                context.SaveChanges();
             }
             else
             {
                 existingWebJobStatus.SubscriptionId = subscriptionID;
-                if (ArmtempalteId != default)
+                if (armtemplateId != default)
                 {
-                    existingWebJobStatus.ArmtemplateId = ArmtempalteId;
+                    existingWebJobStatus.ArmtemplateId = armtemplateId;
                 }
                 existingWebJobStatus.SubscriptionStatus = subscription.SubscriptionStatus;
                 existingWebJobStatus.DeploymentStatus = deploymentStatus;
                 existingWebJobStatus.Description = errorDescription;
-                Context.WebJobSubscriptionStatus.Update(existingWebJobStatus);
-                Context.SaveChanges();
-
+                context.WebJobSubscriptionStatus.Update(existingWebJobStatus);
+                context.SaveChanges();
             }
-
         }
-
     }
 }

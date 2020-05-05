@@ -1,10 +1,9 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     ///  SubscriptionsRepository Interface
     /// </summary>
@@ -51,10 +50,34 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// <param name="quantity">The quantity identifier.</param>
         void UpdateQuantityForSubscription(Guid subscriptionId, int quantity);
 
-        void AddSubscriptionKeyValutSecret(Guid subscriptionId, string keyVaultSecret,int userId);
+        /// <summary>
+        /// Saves the deployment credentials.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="keyVaultSecret">The key vault secret.</param>
+        /// <param name="userId">The user identifier.</param>
+        void SaveDeploymentCredentials(Guid subscriptionId, string keyVaultSecret,int userId);
 
+        /// <summary>
+        /// Gets the subscriptions parameters by identifier.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns>List of parameters related to the subscription</returns>
         List<SubscriptionParametersOutput> GetSubscriptionsParametersById(Guid subscriptionId, Guid planId);
+
+        /// <summary>
+        /// Adds the subscription parameters.
+        /// </summary>
+        /// <param name="subscriptionParametersOutput">The subscription parameters output.</param>
         void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput);
+
+        /// <summary>
+        /// Gets the subscription template parameter by identifier.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns>List of resource deployment parameters related to the subscription</returns>
         List<SubscriptionTemplateParameters> GetSubscriptionTemplateParameterById(Guid subscriptionId, Guid planId);
     }
 }

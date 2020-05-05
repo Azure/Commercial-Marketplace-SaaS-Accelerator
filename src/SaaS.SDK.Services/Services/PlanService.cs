@@ -45,10 +45,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 
         public PlansModel GetPlanDetailByPlanGuId(Guid planGuId)
         {
-            var existingPlan = this.plansRepository.GetPlanDetailByPlanGuId(planGuId);
-            var planAttributes = this.plansRepository.GetPlanAttributesByPlanGuId(planGuId, existingPlan.OfferId);
-            var planEvents = this.plansRepository.GetPlanEventsByPlanGuId(planGuId, existingPlan.OfferId);
-            var offerDetails = this.offerRepository.GetOfferDetailByOfferId(existingPlan.OfferId);
+            var existingPlan = this.plansRepository.GetByInternalReference(planGuId);
+            var planAttributes = this.plansRepository.GetPlanAttributes(planGuId, existingPlan.OfferId);
+            var planEvents = this.plansRepository.GetEventsByPlan(planGuId, existingPlan.OfferId);
+            var offerDetails = this.offerRepository.GetOfferById(existingPlan.OfferId);
             //var offerAttributes = this.offerAttributeRepository.GetOfferAttributeDetailByOfferId();
             //var activeAttribute = offerAttributes.Where(s => s.Isactive == true);
 
@@ -103,7 +103,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 
         public int? UpadtePlanDeployToCustomerSubscription(PlansModel plan)
         {
-            var existingPlan = this.plansRepository.GetPlanDetailByPlanGuId(plan.PlanGUID);
+            var existingPlan = this.plansRepository.GetByInternalReference(plan.PlanGUID);
             existingPlan.DeployToCustomerSubscription = plan.DeployToCustomerSubscription;
             this.plansRepository.Add(existingPlan);
             return null;
@@ -150,7 +150,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         }
         public int? SavePlanDeplymentAttributes(Plans plan, int currentUserId)
         {
-            var offerAttributes = this.offerAttributesRepository.GetAllOfferAttributeDetailByOfferId(plan.OfferId);
+            var offerAttributes = this.offerAttributesRepository.GetAllOfferAttributesByOfferId(plan.OfferId);            
             var deploymentAttributes = offerAttributes.ToList().Where(s => s.Type.ToLower() == "deployment").ToList();
             foreach (var offerAttribute in deploymentAttributes)
             {

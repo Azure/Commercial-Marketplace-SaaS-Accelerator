@@ -56,14 +56,14 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 try
                 {
 
-                    var subscriptionParameters = subscriptionsTemplateRepository.GetSubscriptionTemplateParameters(subscriptionID);
+                    var subscriptionParameters = subscriptionsTemplateRepository.GetTemplateParametersBySubscriptionId(subscriptionID);
                     if (subscriptionParameters != null)
                     {
                         var parametersList = subscriptionParameters.ToList();
                         if (parametersList.Count() > 0)
                         {
 
-                            this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupPending.ToString(), "Delete Resource Group Begin", subscription.SubscriptionStatus);
+                            this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupPending.ToString(), "Delete Resource Group Begin", subscription.SubscriptionStatus);
                             this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourcePendign.ToString(), true);
 
                             var resourceGroup = parametersList.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
@@ -87,7 +87,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                             ARMTemplateDeploymentManager deploy = new ARMTemplateDeploymentManager();
                             deploy.DeleteResoureGroup(parametersList, credenitals);
 
-                            this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), string.Format("Delete Resource Group: {0} End", resourceGroup), subscription.SubscriptionStatus.ToString());
+                            this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), string.Format("Delete Resource Group: {0} End", resourceGroup), subscription.SubscriptionStatus.ToString());
 
                             this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourceSuccess.ToString(), true);
 
@@ -108,7 +108,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
                     Console.WriteLine(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString(), true);

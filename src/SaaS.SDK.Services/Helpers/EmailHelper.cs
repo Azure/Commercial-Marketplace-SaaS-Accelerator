@@ -43,8 +43,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
         {
             EmailContentModel emailContent = new EmailContentModel();
             string body = ProcessTemplate(Subscription, planEvent, oldValue, newValue);
-            int eventID = this.eventsRepository.GetEventID(Subscription.EventName);
-            var emailTemplateData = emailTemplateRepository.GetEmailTemplateOnStatus(Subscription.SubscriptionStatus.ToString());
+            int eventID = this.eventsRepository.GetByName(Subscription.EventName);
+            var emailTemplateData = emailTemplateRepository.GetTemplateForStatus(Subscription.SubscriptionStatus.ToString());
             string Subject = string.Empty;
 
             bool CopyToCustomer = false;
@@ -53,12 +53,12 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             string ccReceipents = string.Empty;
             string bccReceipents = string.Empty;
 
-            string FromMail = this.applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
-            string password = applicationConfigRepository.GetValuefromApplicationConfig("SMTPPassword");
-            string username = applicationConfigRepository.GetValuefromApplicationConfig("SMTPUserName");
-            bool smtpSsl = bool.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPSslEnabled"));
-            int port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
-            string smtpHost = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+            string FromMail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
+            string password = applicationConfigRepository.GetValueByName("SMTPPassword");
+            string username = applicationConfigRepository.GetValueByName("SMTPUserName");
+            bool smtpSsl = bool.Parse(applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
+            int port = int.Parse(applicationConfigRepository.GetValueByName("SMTPPort"));
+            string smtpHost = applicationConfigRepository.GetValueByName("SMTPHost");
             /* 
             Cases
              * Activate - Success  
@@ -76,7 +76,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
              */
 
 
-            var eventMappings = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+            var eventMappings = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, eventID);
             if (eventMappings != null)
             {
                 CopyToCustomer = eventMappings.CopyToCustomer ?? false;
@@ -86,7 +86,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 
             if (planEvent.ToLower() == "success")
             {
-                var successEventData = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+                var successEventData = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, eventID);
 
                 if (string.IsNullOrEmpty(toReceipents))
                 {
@@ -116,7 +116,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 
             if (planEvent.ToLower() == "failure")
             {
-                var failureStateEmails = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+                var failureStateEmails = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, eventID);
                 if (string.IsNullOrEmpty(toReceipents))
                 {
                     throw new Exception(" Error while sending an email, please check the configuration. ");
@@ -199,7 +199,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 
 
             string body = string.Empty;
-            EmailTemplate templateDetails = emailTemplateRepository.GetEmailTemplateOnStatus("Template");
+            EmailTemplate templateDetails = emailTemplateRepository.GetTemplateForStatus("Template");
 
             string applicationName = applicationConfigRepository.GetValueByName("ApplicationName");
             Hashtable hashTable = new Hashtable();

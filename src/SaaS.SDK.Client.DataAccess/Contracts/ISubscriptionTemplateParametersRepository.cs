@@ -1,13 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using System;
+    using System.Collections.Generic;
+
+    /// <summary>
+    /// Repository to access ARM template parameters associated with SaaS subscription
+    /// </summary>
     public interface ISubscriptionTemplateParametersRepository
     {
-        IEnumerable<SubscriptionTemplateParameters> GetSubscriptionTemplateParameters(Guid SubscriptionID);
+        /// <summary>
+        /// Gets the template parameters by subscription identifier.
+        /// </summary>
+        /// <param name="SubscriptionID">The subscription identifier.</param>
+        /// <returns>List of ARM template parameters associated with the SaaS subscription</returns>
+        IEnumerable<SubscriptionTemplateParameters> GetTemplateParametersBySubscriptionId(Guid SubscriptionID);
     }
 }

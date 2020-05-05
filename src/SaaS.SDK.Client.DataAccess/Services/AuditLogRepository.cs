@@ -57,8 +57,7 @@
         /// <summary>
         /// Gets this instance.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns>List of subscription audit logs</returns>        
         public IEnumerable<SubscriptionAuditLogs> Get()
         {
             return context.SubscriptionAuditLogs;
@@ -68,8 +67,7 @@
         /// Gets the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns>Subscription Audit log by id</returns>        
         public SubscriptionAuditLogs Get(int id)
         {
             return context.SubscriptionAuditLogs.Where(s => s.Id == id).FirstOrDefault();

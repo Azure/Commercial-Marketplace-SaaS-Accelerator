@@ -74,11 +74,11 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             Console.WriteLine("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
             Console.WriteLine("Get Offers");
-            var offer = this.offersRepository.GetOfferDetailByOfferId(planDetails.OfferId);
+            var offer = this.offersRepository.GetOfferById(planDetails.OfferId);
             Console.WriteLine("Get Events");
-            var events = this.eventsRepository.GetEventID("Activate");
+            var events = this.eventsRepository.GetByName("Activate");
 
-            var subscriptionTemplateParameters = this.subscriptionTemplateParametersRepository.GetSubscriptionTemplateParameters(subscription.AmpsubscriptionId);
+            var subscriptionTemplateParameters = this.subscriptionTemplateParametersRepository.GetTemplateParametersBySubscriptionId(subscription.AmpsubscriptionId);
             List<SubscriptionTemplateParametersModel> subscriptionTemplateParametersList = new List<SubscriptionTemplateParametersModel>();
             if (subscriptionTemplateParameters != null)
             {
@@ -147,9 +147,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
             }
 
-            int eventId = this.eventsRepository.GetEventID(planEvent);
+            int eventId = this.eventsRepository.GetByName(planEvent);
 
-            var planEvents = this.planEventsMappingRepository.GetPlanEventsMappingEmails(planDetails.PlanGuid, eventId);
+            var planEvents = this.planEventsMappingRepository.GetPlanEvent(planDetails.PlanGuid, eventId);
 
             bool isEmailEnabledForUnsubscription = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForUnsubscription"));
             bool isEmailEnabledForPendingActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForPendingActivation"));

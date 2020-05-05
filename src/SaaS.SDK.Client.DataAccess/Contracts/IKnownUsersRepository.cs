@@ -1,8 +1,8 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using System;
+
     /// <summary>
     /// Known User Repository
     /// </summary>
@@ -15,7 +15,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// </summary>
         /// <param name="emailAddress">The email address.</param>
         /// <param name="roleId">The role identifier.</param>
-        /// <returns></returns>
+        /// <returns>An instance of KnownUser</returns>
         KnownUsers GetKnownUserDetail(string emailAddress, int roleId);
     }
 }

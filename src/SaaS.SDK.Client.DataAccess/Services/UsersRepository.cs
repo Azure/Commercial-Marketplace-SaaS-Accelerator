@@ -7,12 +7,16 @@ using System.Linq;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    /// <summary>
+    /// Repository to access users
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IUsersRepository" />
     public class UsersRepository : IUsersRepository
     {
         /// <summary>
         /// The context
         /// </summary>
-        private readonly SaasKitContext Context;
+        private readonly SaasKitContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UsersRepository"/> class.
@@ -20,7 +24,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="context">The context.</param>
         public UsersRepository(SaasKitContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
         /// <summary>
@@ -32,32 +36,29 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// Gets this instance.
         /// </summary>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
         public IEnumerable<Users> Get()
         {
-            return Context.Users;
+            return context.Users;
         }
 
         /// <summary>
         /// Gets the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns></returns>        
         public Users Get(int id)
         {
-            return Context.Users.Where(s => s.UserId == id).FirstOrDefault();
+            return context.Users.Where(s => s.UserId == id).FirstOrDefault();
         }
 
         /// <summary>
         /// Removes the specified entity.
         /// </summary>
-        /// <param name="userDetail">The entity.</param>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <param name="userDetail">The entity.</param>        
         public void Remove(Users userDetail)
         {
-            Context.Users.Remove(userDetail);
-            Context.SaveChanges();
+            context.Users.Remove(userDetail);
+            context.SaveChanges();
         }
 
         /// <summary>
@@ -67,18 +68,18 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <returns></returns>
         public int Add(Users userDetail)
         {
-            var existingUser = Context.Users.Where(s => s.EmailAddress == userDetail.EmailAddress).FirstOrDefault();
+            var existingUser = context.Users.Where(s => s.EmailAddress == userDetail.EmailAddress).FirstOrDefault();
             if (existingUser != null)
             {
                 existingUser.FullName = userDetail.FullName;
-                Context.Users.Update(existingUser);
+                context.Users.Update(existingUser);
                 return existingUser.UserId;
             }
             else
             {
-                Context.Users.Add(userDetail);
+                context.Users.Add(userDetail);
             }
-            Context.SaveChanges();
+            context.SaveChanges();
             return userDetail.UserId;
         }
 
@@ -89,7 +90,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <returns></returns>
         public Users GetPartnerDetailFromEmail(string emailAddress)
         {
-            return Context.Users.Where(s => s.EmailAddress == emailAddress).FirstOrDefault();
+            return context.Users.Where(s => s.EmailAddress == emailAddress).FirstOrDefault();
         }
 
         /// <summary>
@@ -102,7 +103,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             {
                 if (disposing)
                 {
-                    Context.Dispose();
+                    context.Dispose();
                 }
             }
             this.disposed = true;
@@ -114,7 +115,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         public void Dispose()
         {
             Dispose(true);
-
             GC.SuppressFinalize(this);
         }
     }

@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+
     public class KnownUsersRepository : IKnownUsersRepository
     {
         /// <summary>
         /// The context
         /// </summary>
-        private readonly SaasKitContext Context;
+        private readonly SaasKitContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="KnownUsersRepository"/> class.
@@ -22,7 +21,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="context">The context.</param>
         public KnownUsersRepository(SaasKitContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
         /// <summary>
@@ -30,17 +29,15 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         private bool disposed = false;
 
-
         /// <summary>
         /// Gets the known user detail.
         /// </summary>
         /// <param name="emailAddress">The email address.</param>
         /// <param name="roleId">The role identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns>User detail by email and role</returns>        
         public KnownUsers GetKnownUserDetail(string emailAddress, int roleId)
         {
-            return Context.KnownUsers.Where(s => s.UserEmail == emailAddress && s.RoleId == roleId).FirstOrDefault();
+            return context.KnownUsers.Where(s => s.UserEmail == emailAddress && s.RoleId == roleId).FirstOrDefault();
         }
 
         /// <summary>
@@ -95,7 +92,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             {
                 if (disposing)
                 {
-                    Context.Dispose();
+                    context.Dispose();
                 }
             }
             this.disposed = true;
@@ -110,7 +107,5 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 
             GC.SuppressFinalize(this);
         }
-
-
     }
 }

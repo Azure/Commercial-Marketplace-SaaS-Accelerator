@@ -95,7 +95,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
                                 Console.WriteLine("UpdateWebJobSubscriptionStatus");
 
-                                this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(), "Start Deployment", subscription.SubscriptionStatus);
+                                this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(), "Start Deployment", subscription.SubscriptionStatus);
 
                                 this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentPending.ToString(), true);
 
@@ -149,7 +149,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                 };
                                 this.subscriptionLogRepository.Add(auditLog);
 
-                                this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString());
+                                this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString());
                             }
                         }
                     }
@@ -160,7 +160,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                 {
                     //Change status to  ARMTemplateDeploymentFailure
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    this.subscriptionLogRepository.AddWebJobSubscriptionStatus(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
                     Console.WriteLine(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentFailed.ToString(), true);

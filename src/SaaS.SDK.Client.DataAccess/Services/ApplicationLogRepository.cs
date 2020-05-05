@@ -1,13 +1,19 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using System;
+
+    /// <summary>
+    /// Repository to access application logs
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IApplicationLogRepository" />
     public class ApplicationLogRepository : IApplicationLogRepository
     {
-        /// <summary>The context</summary>
+        /// <summary>
+        /// The context
+        /// </summary>
         private readonly SaasKitContext context;
 
         /// <summary>

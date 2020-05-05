@@ -8,13 +8,24 @@
     using System.Linq;
     using System.Text;
 
+    /// <summary>
+    /// Repository to access offer attributes
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IOfferAttributesRepository" />
     public class OfferAttributesRepository : IOfferAttributesRepository
     {
-        private readonly SaasKitContext Context;
+        /// <summary>
+        /// The context
+        /// </summary>
+        private readonly SaasKitContext context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OfferAttributesRepository"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
         public OfferAttributesRepository(SaasKitContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
         /// <summary>
@@ -25,12 +36,12 @@
         /// <summary>
         /// Gets this instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Id of the newly added offer attribute</returns>
         public int? Add(OfferAttributes offerAttributes)
         {
             if (offerAttributes != null)
             {
-                var existingOfferAttribute = Context.OfferAttributes.Where(s => s.Id ==
+                var existingOfferAttribute = context.OfferAttributes.Where(s => s.Id ==
                 offerAttributes.Id).FirstOrDefault();
                 if (existingOfferAttribute != null)
                 {
@@ -50,14 +61,14 @@
                     existingOfferAttribute.IsRequired = offerAttributes.IsRequired;
                     existingOfferAttribute.IsDelete = offerAttributes.IsDelete;
 
-                    Context.OfferAttributes.Update(existingOfferAttribute);
-                    Context.SaveChanges();
+                    context.OfferAttributes.Update(existingOfferAttribute);
+                    context.SaveChanges();
                     return existingOfferAttribute.Id;
                 }
                 else
                 {
-                    Context.OfferAttributes.Add(offerAttributes);
-                    Context.SaveChanges();
+                    context.OfferAttributes.Add(offerAttributes);
+                    context.SaveChanges();
                     return offerAttributes.Id;
                 }
             }
@@ -65,12 +76,26 @@
             return null;
         }
 
+        /// <summary>
+        /// Gets the deployment parameters.
+        /// </summary>
+        /// <returns>
+        /// List of deployment parameters across offers
+        /// </returns>
         public IEnumerable<DeploymentAttributes> GetDeploymentParameters()
         {
 
-            var deploymentAttributes = Context.DeploymentAttributes;
+            var deploymentAttributes = context.DeploymentAttributes;
             return deploymentAttributes;
         }
+
+        /// <summary>
+        /// Adds the deployment attributes.
+        /// </summary>
+        /// <param name="offerId">The offer identifier.</param>
+        /// <param name="curretnUserId">The curretn user identifier.</param>
+        /// <param name="deploymentAttributes">The deployment attributes.</param>
+        /// <returns></returns>
         public int? AddDeploymentAttributes(Guid offerId, int curretnUserId, List<DeploymentAttributes> deploymentAttributes)
         {
 
@@ -78,7 +103,7 @@
             {
                 foreach (var attribute in deploymentAttributes)
                 {
-                    var existingOfferAttribute = Context.OfferAttributes.Where(s => s.ParameterId == attribute.ParameterId
+                    var existingOfferAttribute = context.OfferAttributes.Where(s => s.ParameterId == attribute.ParameterId
                     && s.OfferId == offerId).FirstOrDefault();
                     if (existingOfferAttribute != null)
                     {
@@ -98,8 +123,8 @@
                         existingOfferAttribute.IsRequired = attribute.IsRequired;
                         existingOfferAttribute.IsDelete = attribute.IsDelete;
 
-                        Context.OfferAttributes.Update(existingOfferAttribute);
-                        Context.SaveChanges();
+                        context.OfferAttributes.Update(existingOfferAttribute);
+                        context.SaveChanges();
 
                     }
                     else
@@ -123,52 +148,57 @@
                         newAttribute.IsDelete = attribute.IsDelete;
                         newAttribute.CreateDate = DateTime.Now;
                         newAttribute.UserId = curretnUserId;
-                        Context.OfferAttributes.Add(newAttribute);
-                        Context.SaveChanges();
-
+                        context.OfferAttributes.Add(newAttribute);
+                        context.SaveChanges();
                     }
                 }
 
             }
             return null;
         }
-        public IEnumerable<OfferAttributes> Get()
-        {
-            return Context.OfferAttributes.Where(s => s.IsDelete != true && s.Type.ToLower() == "input");
-        }
-        public IEnumerable<OfferAttributes> GetOfferAttributeDetailByOfferId(Guid offerGuId)
-        {
-            return Context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true) && s.Type.ToLower() == "input");
-        }
 
-        public IEnumerable<OfferAttributes> GetAllOfferAttributeDetailByOfferId(Guid offerGuId)
+        /// <summary>
+        /// Gets all offer attributes across offers
+        /// </summary>
+        /// <returns>
+        /// List of offer attributes across offers
+        /// </returns>
+        public IEnumerable<OfferAttributes> GetAll()
         {
-            return Context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true));
+            return context.OfferAttributes.Where(s => s.IsDelete != true && s.Type.ToLower() == "input");
         }
 
-        //IEnumerable<Offers> GetOffersByUser(int userId);
-
-        public OfferAttributes Get(int Id)
+        /// <summary>
+        /// Gets the input attributes by offer identifier.
+        /// </summary>
+        /// <param name="offerGuId">The offer gu identifier.</param>
+        /// <returns></returns>
+        public IEnumerable<OfferAttributes> GetInputAttributesByOfferId(Guid offerGuId)
         {
-            return Context.OfferAttributes.Where(s => s.Id == Id && s.IsDelete != true && s.Type.ToLower() == "input").FirstOrDefault();
+            return context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true) && s.Type.ToLower() == "input");
         }
 
-        ///// <summary>
-        ///// Removes the specified plan details.
-        ///// </summary>
-        ///// <param name="offerDetails">The offer details.</param>
-        //public void Remove(List<OfferAttributes> offerAttributes)
-        //{
-        //    foreach (var offerAttribute in offerAttributes)
-        //    {
-        //        var existingOffersAttribute = Context.OfferAttributes.Where(s => s.Id == offerAttribute.Id).FirstOrDefault();
-        //        if (existingOffersAttribute != null)
-        //        {
-        //            Context.OfferAttributes.Remove(existingOffersAttribute);
-        //            Context.SaveChanges();
-        //        }
-        //    }
-        //}
+        /// <summary>
+        /// Gets all offer attributes by offer identifier ( includes deployment and input attributes )
+        /// </summary>
+        /// <param name="offerGuId">The offer identifier.</param>
+        /// <returns>
+        /// List of offer attributes
+        /// </returns>
+        public IEnumerable<OfferAttributes> GetAllOfferAttributesByOfferId(Guid offerGuId)
+        {
+            return context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true));
+        }
+
+        /// <summary>
+        /// Gets the by identifier.
+        /// </summary>
+        /// <param name="Id">The identifier.</param>
+        /// <returns></returns>
+        public OfferAttributes GetById(int Id)
+        {
+            return context.OfferAttributes.Where(s => s.Id == Id && s.IsDelete != true && s.Type.ToLower() == "input").FirstOrDefault();
+        }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
@@ -180,7 +210,7 @@
             {
                 if (disposing)
                 {
-                    Context.Dispose();
+                    context.Dispose();
                 }
             }
             this.disposed = true;

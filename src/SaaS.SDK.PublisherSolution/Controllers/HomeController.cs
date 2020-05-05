@@ -185,7 +185,7 @@
                     foreach (var subscription in allSubscriptionDetails)
                     {
                         SubscriptionResultExtension subscritpionDetail = this.subscriptionService.PrepareSubscriptionResponse(subscription);
-                        Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscritpionDetail.PlanId);
+                        Plans PlanDetail = this.planRepository.GetById(subscritpionDetail.PlanId);
                         subscritpionDetail.IsPerUserPlan = PlanDetail.IsPerUser.HasValue ? PlanDetail.IsPerUser.Value : false;
                         subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
@@ -320,7 +320,7 @@
 
                     this.TempData["ShowWelcomeScreen"] = false;
                     var oldValue = this.subscriptionService.GetPartnerSubscriptions(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-                    var plandetails = this.planRepository.GetPlanDetailByPlanId(oldValue.PlanId);
+                    var plandetails = this.planRepository.GetById(oldValue.PlanId);
                     subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                     subscriptionDetail.ShowWelcomeScreen = false;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
@@ -430,7 +430,7 @@
                 if (User.Identity.IsAuthenticated)
                 {
                     var subscriptionDetail = subscriptionRepo.Get(subscriptionId);
-                    var allDimensionsList = dimensionsRepository.GetDimensionsFromPlanId(subscriptionDetail.AmpplanId);
+                    var allDimensionsList = dimensionsRepository.GetDimensionsByPlanId(subscriptionDetail.AmpplanId);
                     SubscriptionUsageViewModel usageViewModel = new SubscriptionUsageViewModel();
                     usageViewModel.SubscriptionDetail = subscriptionDetail;
                     usageViewModel.MeteredAuditLogs = new List<MeteredAuditLogs>();

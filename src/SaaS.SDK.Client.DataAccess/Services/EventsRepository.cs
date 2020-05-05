@@ -1,29 +1,42 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using System;
+    using System.Linq;
+
+    /// <summary>
+    /// Repository to access events
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IEventsRepository" />
     public class EventsRepository : IEventsRepository
     {
-        private readonly SaasKitContext Context;
+        /// <summary>
+        /// The context
+        /// </summary>
+        private readonly SaasKitContext context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EventsRepository"/> class.
+        /// </summary>
+        /// <param name="context">The context.</param>
         public EventsRepository(SaasKitContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
-        public int GetEventID(String Name)
+        /// <summary>
+        /// Gets the name of the by.
+        /// </summary>
+        /// <param name="Name">The name.</param>
+        /// <returns>Event id by name</returns>
+        public int GetByName(String Name)
         {
-            var results = Context.Events.Where(s => s.EventsName == Name);
+            var results = context.Events.Where(s => s.EventsName == Name);
             if (results.Count() == 0)
                 return 0;
             else
-                return Context.Events.Where(s => s.EventsName == Name).FirstOrDefault().EventsId;
+                return context.Events.Where(s => s.EventsName == Name).FirstOrDefault().EventsId;
         }
     }
 }
