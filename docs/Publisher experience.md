@@ -109,7 +109,7 @@ If the Field is filled with ${Subscription} the value will be replaced with Subs
 
 | Code | Replaced With|
 -----------------------
-| ${Subscription} |  ‘Subscription Name’ |
+| [$${Subscription}] |  ‘Subscription Name’ |
 
 | ${Plan} |  ‘Plan Name’ |
 
@@ -323,8 +323,60 @@ The service tracks the requests sent and the response received from the marketpl
 The license management feature in the SaaS metering service allows the Publisher to assign licenses to the active subscriptions. 
 The intent here is to illustrate how the assignment can be done via the interface and how the customer user can consume this detail via the **SaaS Provisioning** application
 	
-	
-	
+## Azure Key Vault 
+Create Azure Key Vault:
+
+Log on to [Azure](https://portal.azure.com)
+- Click **Create a resource** in the left menu
+![Create resource](./images/key-vault-create-resource.png)
+- In the search box type **Key Vault** 
+![Vault Button](./images/key-vault-button.png)
+- resource will be shown in the search result
+- Click on the **key vault**
+![Key Vault Home](./images/key-vault-main-page.png)
+- In the key vault pane click on the **create** button
+- Select the **Basic** tab 
+![Basic Info](./images/key-vault-basic-page.png)
+- Select a **Subscription** and **Resource Group**
+![Vault Details](./images/key-vault-name-details.png)
+- Under the Instance details pane fill the following Key vault name 
+  - Region
+  - Pricing tier
+  - Soft delete: Enabled
+  - Retention period (days)
+  - Purge protection: Disabled
+- Click on Review + Create
+- If the details pass all the validations, create button will be shown up.
+- Click on create
+![ Validate ame](./images/key-vault-name-validation.png)
+- Once the key vault is created, go the resource and copy Subscription Id and DNS Name.
+![Create Key Vault](./images/key-vault-url.png)
+
+#### Azure App Registration
+- Now Register the app in azure active directory.
+- Go to home page of [Azure](https://portal.azure.com)
+- Click **Azure Active Directory** in the left menu
+- Click **App Registrations** in the menu on the left
+- Click on **New Registration**
+![AD App Register](./images/key-vault-ad-app-new.png)
+- Give a name to the app and click on **Register**.
+![Ad app](./images/key-vault-ad-app-name.png)
+- After registering the app, in the left menu click on **Certificate & secret**
+![Key Certificate](./images/key-vault-ad-app-create-secret.png)
+- Click on **+ New client Secret**
+![New Secret](./images/key-vault-ad-app-new-secret-secret.png)
+- Give a name to the secret and copy the auto generated **secret value** (keep the secret safe as it cannot be retrieved again).
+- Now click on the Overview of the app and copy **Application (client) ID** and **Dictionary (Tenant) ID**.
+![App Secrets](./images/key-vault-ad-app-appId-secret.png)
+- All the gathered values should be added to the application config of the Saas application.
+
+
+
+
+
+
+
+
 	
 	
 	
