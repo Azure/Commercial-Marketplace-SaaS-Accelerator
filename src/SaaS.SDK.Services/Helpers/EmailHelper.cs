@@ -1,30 +1,21 @@
-﻿
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using Microsoft.Marketplace.SaasKit.Models;
-using Microsoft.Marketplace.SaasKit.Services;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-using System;
-//using SendGrid;
-//using SendGrid.Helpers.Mail;
-using System.Net;
-using System.Net.Mail;
-using Commons.Collections;
-using NVelocity.App;
-using System.Collections;
-using NVelocity;
-using System.IO;
-using System.Linq;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
+    using Commons.Collections;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using NVelocity;
+    using NVelocity.App;
+    using System;
+    using System.Collections;
+    using System.IO;
+    using System.Linq;
+
     public class EmailHelper
     {
 
         private readonly IApplicationConfigRepository applicationConfigRepository;
         private readonly ISubscriptionsRepository subscriptionsRepository;
-        //private readonly ISubscriptionLogRepository subscriptionLogRepository;
         private readonly IEmailTemplateRepository emailTemplateRepository;
         private readonly IEventsRepository eventsRepository;
         private readonly IPlanEventsMappingRepository planEventsMappingRepository;
@@ -33,7 +24,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
         {
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionsRepository = subscriptionsRepository;
-            //this.subscriptionLogRepository = subscriptionLogRepository;
             this.emailTemplateRepository = emailTemplateRepository;
             this.eventsRepository = eventsRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
@@ -74,7 +64,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             If to email is null then don't pull CC and checkfor bcc
 
              */
-
 
             var eventMappings = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, eventID);
             if (eventMappings != null)
@@ -187,8 +176,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             return emailContent;
 
         }
-
-
 
         public string ProcessTemplate(SubscriptionResultExtension Subscription, string planEvent, SubscriptionStatusEnumExtension oldValue, string newValue)
         {

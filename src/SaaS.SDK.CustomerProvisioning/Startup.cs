@@ -53,6 +53,12 @@ namespace Microsoft.Marketplace.SaasKit.Client
         /// <param name="services">The services<see cref="IServiceCollection"/></param>
         public void ConfigureServices(IServiceCollection services)
         {
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddConsole();
+            });
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -112,8 +118,8 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddSingleton<CloudStorageConfigs>(cloudConfig);
-            services.AddSingleton<IAzureKeyVaultClient>(new AzureKeyVaultClient(keyVaultConfig));
-            services.AddSingleton<IAzureBlobFileClient>(new AzureBlobFileClient(azureBlobConfig));
+            services.AddSingleton<IVaultService>(new AzureKeyVaultClient(keyVaultConfig, loggerFactory.CreateLogger<AzureKeyVaultClient>()));
+            services.AddSingleton<IARMTemplateStorageService>(new AzureBlobFileClient(azureBlobConfig));
             services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
             services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
             services.AddDbContext<SaasKitContext>(options =>

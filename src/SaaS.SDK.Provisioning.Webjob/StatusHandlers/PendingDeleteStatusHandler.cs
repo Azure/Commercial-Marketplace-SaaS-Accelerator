@@ -21,7 +21,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         protected readonly IApplicationConfigRepository applicationConfigRepository;
         protected readonly ISubscriptionLogRepository subscriptionLogRepository;
         protected readonly ISubscriptionsRepository subscriptionsRepository;
-        protected readonly IAzureKeyVaultClient azureKeyVaultClient;
+        protected readonly IVaultService azureKeyVaultClient;
         protected readonly KeyVaultConfig keyVaultConfig;
         protected readonly ISubscriptionTemplateParametersRepository subscriptionsTemplateRepository;
 
@@ -29,7 +29,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                             IApplicationConfigRepository applicationConfigRepository,
                                             ISubscriptionLogRepository subscriptionLogRepository,
                                             ISubscriptionsRepository subscriptionsRepository,
-                                            IAzureKeyVaultClient azureKeyVaultClient,
+                                            IVaultService azureKeyVaultClient,
                                               KeyVaultConfig keyVaultConfig,
                                               ISubscriptionTemplateParametersRepository subscriptionsTemplateRepository) : base(new SaasKitContext())
         {

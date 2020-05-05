@@ -1,25 +1,42 @@
-﻿using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.KeyVault.Models;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
-    public class AzureKeyVaultClient : IAzureKeyVaultClient
-    {        
-        protected const string CONTENT_TYPE = "AMP-SaaS";        
-        private KeyVaultClient client = null;
-        private KeyVaultConfig keyVaultConfig = null;
+    using Microsoft.Azure.KeyVault;
+    using Microsoft.Azure.KeyVault.Models;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.IdentityModel.Clients.ActiveDirectory;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
 
-        public AzureKeyVaultClient(KeyVaultConfig keyVaultConfig)
+    /// <summary>
+    /// Implementation of vault service to store and get data from Azure keyvault.
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IVaultService" />
+    public class AzureKeyVaultClient : IVaultService
+    {        
+        protected const string CONTENT_TYPE = "AMP-SaaS";                
+        private KeyVaultConfig keyVaultConfig;
+        protected ILogger<AzureKeyVaultClient> logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AzureKeyVaultClient"/> class.
+        /// </summary>
+        /// <param name="keyVaultConfig">The key vault configuration.</param>
+        public AzureKeyVaultClient(KeyVaultConfig keyVaultConfig,
+                                    ILogger<AzureKeyVaultClient> logger)
         {
             this.keyVaultConfig = keyVaultConfig;
+            this.logger = logger;
         }
 
+        /// <summary>
+        /// Writes the key asynchronous.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="val">The value.</param>
+        /// <returns></returns>
         public async Task<string> WriteKeyAsync(string key, string val)
         {
             SecretAttributes attribs = new SecretAttributes
@@ -35,22 +52,36 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             string contentType = CONTENT_TYPE;
             try
             {
-                client = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetAccessToken));
+                var client = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetAccessToken));
                 SecretBundle bundle = await client.SetSecretAsync(keyVaultConfig.KeyVaultUrl, Name, Value, tags, contentType, attribs);
                 return bundle.SecretIdentifier.ToString();
             }
             catch (Exception ex)
             {
+                this.logger.LogError(ex, "Error while writing to key vault");
                 return ex.Message;
             }
         }
+
+        /// <summary>
+        /// Gets the key asynchronous.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns></returns>
         public async Task<string> GetKeyAsync(string key)
         {
-            client = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetAccessToken));
+            var client = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetAccessToken));
             SecretBundle secret = await client.GetSecretAsync(key);
             return secret.Value;
         }
 
+        /// <summary>
+        /// Gets the access token.
+        /// </summary>
+        /// <param name="authority">The authority.</param>
+        /// <param name="resource">The resource.</param>
+        /// <param name="scope">The scope.</param>
+        /// <returns></returns>
         protected async Task<string> GetAccessToken(string authority, string resource, string scope)
         {
             authority = string.Format("https://login.windows.net/{0}", keyVaultConfig.TenantID);
@@ -61,10 +92,15 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             return result.AccessToken;
         }
 
+        /// <summary>
+        /// Validates the user parameters.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <returns></returns>
         public bool ValidateUserParameters(IDictionary<string, string> dictionary)
         {
-            string authority = "";
-            string resource = "";
+            string authority = string.Empty;
+            string resource = string.Empty;
             string clientId = dictionary["Service Principal ID"];
             string clientSecret = dictionary["Client Secret"];
             string tenantId = dictionary["Tenant ID"];
@@ -75,6 +111,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             KeyVaultClient kvc = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetAccessToken));
             var authContext = new AuthenticationContext(authority);
             ClientCredential clientCred = new ClientCredential(clientId, clientSecret);
+
             try
             {
                 AuthenticationResult result = authContext.AcquireTokenAsync(resource, clientCred).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -90,6 +127,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             }
             catch (Exception ex)
             {
+                this.logger.LogError(ex, "Error while validating deployment parameters");
                 return false;
             }
         }

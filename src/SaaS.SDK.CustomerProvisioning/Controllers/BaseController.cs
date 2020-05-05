@@ -29,7 +29,10 @@
         /// </value>
         public string CurrentUserEmailAddress
         {
-            get { return (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0) ? this.HttpContext.User.Claims.Where(s => s.Type == WebConstants.CLAIM_EMAILADDRESS).FirstOrDefault().Value : string.Empty; }
+            get
+            {
+                return (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0) ? this.HttpContext.User.Claims.Where(s => s.Type == WebConstants.CLAIM_EMAILADDRESS).FirstOrDefault().Value : string.Empty;
+            }
         }
 
         /// <summary>
@@ -40,7 +43,10 @@
         /// </value>
         public string CurrentUserName
         {
-            get { return (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0) ? this.HttpContext.User.Claims.Where(s => s.Type == WebConstants.CLAIM_NAME).FirstOrDefault().Value : string.Empty; }
+            get
+            {
+                return (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0) ? this.HttpContext.User.Claims.Where(s => s.Type == WebConstants.CLAIM_NAME).FirstOrDefault().Value : string.Empty;
+            }
         }
 
         /// <summary>

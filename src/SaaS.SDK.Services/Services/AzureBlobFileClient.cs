@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
-    public class AzureBlobFileClient : IAzureBlobFileClient
+    public class AzureBlobFileClient : IARMTemplateStorageService
     {
         private AzureBlobConfig azureBlobConfig = null;
         public AzureBlobFileClient(AzureBlobConfig azureBlobConfig)
@@ -18,7 +18,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             this.azureBlobConfig = azureBlobConfig;
         }
 
-        public string UploadARMTemplateToBlob(IFormFile file, string fileName, string fileContantType, Guid referenceid)
+        public string SaveARMTemplate(IFormFile file, string fileName, string fileContantType, Guid referenceid)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             }
         }
 
-        public string ReadARMTemplateFromBlob(string fileName)
+        public string GetARMTemplateContentAsString(string fileName)
         {
 
             // Setup the connection to the storage account

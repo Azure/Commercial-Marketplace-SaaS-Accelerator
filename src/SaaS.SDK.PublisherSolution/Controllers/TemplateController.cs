@@ -39,12 +39,12 @@
 
         private readonly IArmTemplateRepository armTemplateRepository;
 
-        private readonly IAzureBlobFileClient azureBlobFileClient;
+        private readonly IARMTemplateStorageService azureBlobFileClient;
         private ArmTemplateService armTemplateService;
 
         private readonly IArmTemplateParametersRepository armTemplateParametersRepository;
 
-        public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository, IArmTemplateParametersRepository armTemplateParametersRepository, IAzureBlobFileClient azureBlobFileClient)
+        public TemplateController(IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IKnownUsersRepository knownUsersRepository, IUsersRepository userRepository, IArmTemplateRepository armTemplateRepository, IArmTemplateParametersRepository armTemplateParametersRepository, IARMTemplateStorageService azureBlobFileClient)
         {
             this.usersRepository = usersRepository;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -254,7 +254,7 @@
                         bulkUploadModel.DeploymentParameterViewModel = model;
 
                         await formFile.CopyToAsync(stream);
-                        string fileuploadPath = this.azureBlobFileClient.UploadARMTemplateToBlob(formFile, filename, fileContantType, ArmtempalteId);
+                        string fileuploadPath = this.azureBlobFileClient.SaveARMTemplate(formFile, filename, fileContantType, ArmtempalteId);
                         Armtemplates armTemplate = new Armtemplates()
                         {
                             ArmtempalteName = filename,

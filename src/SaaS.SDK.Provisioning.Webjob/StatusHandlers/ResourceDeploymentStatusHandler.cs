@@ -24,8 +24,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         protected readonly ISubscriptionsRepository subscriptionsRepository;
         protected readonly IApplicationConfigRepository applicationConfigRepository;
         protected readonly ISubscriptionLogRepository subscriptionLogRepository;
-        protected readonly IAzureKeyVaultClient azureKeyVaultClient;
-        protected readonly IAzureBlobFileClient azureBlobFileClient;
+        protected readonly IVaultService azureKeyVaultClient;
+        protected readonly IARMTemplateStorageService azureBlobFileClient;
         protected readonly KeyVaultConfig keyVaultConfig;
 
 
@@ -33,8 +33,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                                 IApplicationConfigRepository applicationConfigRepository,
                                                 ISubscriptionLogRepository subscriptionLogRepository,
                                                 ISubscriptionsRepository subscriptionsRepository,
-                                                IAzureKeyVaultClient azureKeyVaultClient,
-                                                IAzureBlobFileClient azureBlobFileClient,
+                                                IVaultService azureKeyVaultClient,
+                                                IARMTemplateStorageService azureBlobFileClient,
                                                 KeyVaultConfig keyVaultConfig) : base(new SaasKitContext())
         {
             this.fulfillApiclient = fulfillApiClient;
@@ -120,7 +120,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 
                                 ARMTemplateDeploymentManager deploy = new ARMTemplateDeploymentManager();
                                 Console.WriteLine("Start Deployment: DeployARMTemplate");
-                                string armTemplateCOntent = azureBlobFileClient.ReadARMTemplateFromBlob(armTemplate.ArmtempalteName);
+                                string armTemplateCOntent = azureBlobFileClient.GetARMTemplateContentAsString(armTemplate.ArmtempalteName);
 
                                 var output = deploy.DeployARMTemplate(armTemplate, parametersList, credenitals, armTemplateCOntent).ConfigureAwait(false).GetAwaiter().GetResult();
 

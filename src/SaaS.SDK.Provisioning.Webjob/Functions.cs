@@ -24,8 +24,8 @@ namespace SaaS.SDK.Provisioning.Webjob
         protected readonly IPlanEventsMappingRepository planEventsMappingRepository;
         protected readonly IOfferAttributesRepository offerAttributesRepository;
         protected readonly IEventsRepository eventsRepository;
-        protected readonly IAzureKeyVaultClient azureKeyVaultClient;
-        protected readonly IAzureBlobFileClient azureBlobFileClient;
+        protected readonly IVaultService azureKeyVaultClient;
+        protected readonly IARMTemplateStorageService azureBlobFileClient;
         protected readonly IPlansRepository planRepository;
         protected readonly IOffersRepository offersRepository;
         protected readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
@@ -43,10 +43,10 @@ namespace SaaS.SDK.Provisioning.Webjob
                             IPlanEventsMappingRepository planEventsMappingRepository,
                             IOfferAttributesRepository offerAttributesRepository,
                             IEventsRepository eventsRepository,
-                            IAzureKeyVaultClient azureKeyVaultClient,
+                            IVaultService azureKeyVaultClient,
                             IPlansRepository planRepository,
                             IOffersRepository offersRepository,
-                            IAzureBlobFileClient azureBlobFileClient,
+                            IARMTemplateStorageService azureBlobFileClient,
                             ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
                             KeyVaultConfig keyVaultConfig,
                             IEmailService emialService,

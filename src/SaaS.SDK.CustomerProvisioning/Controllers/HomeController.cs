@@ -88,7 +88,7 @@
         private readonly IEventsRepository eventsRepository;
         private readonly CloudStorageConfigs cloudConfigs;
 
-        private readonly IAzureKeyVaultClient keyVaultClient;
+        private readonly IVaultService keyVaultClient;
 
         private string azureWebJobsStorage;
 
@@ -101,7 +101,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, CloudStorageConfigs cloudConfigs, IAzureKeyVaultClient keyVaultClient)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, CloudStorageConfigs cloudConfigs, IVaultService keyVaultClient)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -423,9 +423,6 @@
         }
         #endregion
 
-
-
-
         #region Operation Methods
 
         public IActionResult ProcessMessage()
@@ -660,130 +657,5 @@
                 return View("Error", ex);
             }
         }
-
-
-        #region Old subscription Operation
-
-        /// <summary>
-        /// Subscriptions the operation.
-        /// </summary>
-        /// <param name="subscriptionId">The subscription identifier.</param>
-        /// <param name="planId">The plan identifier.</param>
-        /// <param name="operation">The operation.</param>
-        /// <returns>Subscriptions operation</returns>
-        [HttpPost]
-        public IActionResult SubscriptionOperation(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation)
-        {
-            this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId), JsonConvert.SerializeObject(operation));
-            try
-            {
-                if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                {
-                    this.TempData["ShowLicensesMenu"] = true;
-                }
-                var userDetails = this.userRepository.GetPartnerDetailFromEmail(CurrentUserEmailAddress);
-                SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
-
-                if (subscriptionId != default)
-                {
-                    SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
-                    this.logger.LogInformation("GetPartnerSubscription");
-                    var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-                    Plans PlanDetail = this.planRepository.GetById(oldValue.PlanId);
-                    this.logger.LogInformation("GetUserIdFromEmailAddress");
-                    var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                    if (operation == "Activate")
-                    {
-                        try
-                        {
-                            this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionResultExtension.SubscriptionParameters));
-                            if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
-                            {
-                                var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input");
-                                if (inputParms != null)
-                                {
-                                    var inputParmsList = inputParms.ToList();
-                                    this.subscriptionService.AddSubscriptionParameters(inputParmsList, currentUserId);
-                                }
-                                var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment");
-                                if (deploymentParms != null && PlanDetail.DeployToCustomerSubscription == true)
-                                {
-                                    var deploymentParmslist = deploymentParms.ToList();
-                                    IDictionary<string, string> parms = new Dictionary<string, string>();
-                                    foreach (var parm in deploymentParmslist)
-                                    {
-                                        parms.Add(parm.DisplayName, parm.Value.Trim());
-                                    }
-                                    string azureKeyValtSecret = this.keyVaultClient.WriteKeyAsync(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
-                                    this.subscriptionRepository.SaveDeploymentCredentials(subscriptionId, azureKeyValtSecret, currentUserId);
-                                }
-                            }
-                            if (Convert.ToBoolean(applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
-                            {
-                                this.logger.LogInformation("UpdateStateOfSubscription PendingActivation: SubscriptionId: {0} ", subscriptionId);
-
-                                this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
-                            }
-
-                            queueObject.SubscriptionID = subscriptionId;
-                            queueObject.TriggerEvent = "Activate";
-                            queueObject.UserId = userDetails.UserId;
-                            queueObject.PortalName = "Client";
-                        }
-                        catch (FulfillmentException fex)
-                        {
-                            this.logger.LogInformation(fex.Message);
-                            //EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository, "failure", oldValue.SubscriptionStatus, "Activate");
-                        }
-                    }
-
-                    if (operation == "Deactivate")
-                    {
-                        this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
-                        queueObject.SubscriptionID = subscriptionId;
-                        queueObject.TriggerEvent = "Deactivate";
-                        queueObject.UserId = userDetails.UserId;
-                        queueObject.PortalName = "Client";
-                        this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
-                    }
-                    var newValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
-
-                    if (oldValue != null)
-                    {
-                        SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                        {
-                            Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
-                            SubscriptionId = oldValue.SubscribeId,
-                            NewValue = newValue.SubscriptionStatus.ToString(),
-                            OldValue = oldValue.SubscriptionStatus.ToString(),
-                            CreateBy = currentUserId,
-                            CreateDate = DateTime.Now
-                        };
-                        this.subscriptionLogRepository.Add(auditLog);
-                    }
-                }
-                string queueMessage = JsonConvert.SerializeObject(queueObject);
-                string StorageConnectionString = this.cloudConfigs.AzureWebJobsStorage ?? azureWebJobsStorage;
-                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(StorageConnectionString);
-                //// Create the queue client.
-                CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-                CloudQueue queue = queueClient.GetQueueReference("saas-provisioning-queue");
-                ////Create the queue if it doesn't already exist
-                queue.CreateIfNotExistsAsync();
-                //// Create a message and add it to the queue.
-                CloudQueueMessage message = new CloudQueueMessage(queueMessage);
-                queue.AddMessageAsync(message);
-
-                return this.RedirectToAction(nameof(this.ProcessMessage));
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error", ex);
-            }
-        }
-
-
-        #endregion
     }
 }
