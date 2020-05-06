@@ -1,5 +1,6 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using System;
 
     /// <summary>
@@ -12,6 +13,6 @@
         /// </summary>
         /// <param name="name">The name of the event</param>
         /// <returns>ID of the event by name</returns>
-        int GetByName(String name);
+        Events GetByName(String name);
     }
 }

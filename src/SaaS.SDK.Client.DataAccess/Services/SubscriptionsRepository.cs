@@ -41,7 +41,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         /// <param name="subscriptionDetails">The subscription details.</param>
         /// <returns></returns>
-        public int Add(Subscriptions subscriptionDetails)
+        public int Save(Subscriptions subscriptionDetails)
         {
 
             var existingSubscriptions = context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionDetails.AmpsubscriptionId).FirstOrDefault();
@@ -164,7 +164,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="isIncludeDeactvated">if set to <c>true</c> [is include deactvated].</param>
         /// <returns></returns>
-        public Subscriptions GetSubscriptionsByScheduleId(Guid subscriptionId, bool isIncludeDeactvated = false)
+        public Subscriptions GetById(Guid subscriptionId, bool isIncludeDeactvated = false)
         {
             if (subscriptionId != default)
             {
@@ -392,6 +392,15 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             context.SaveChanges();
         }
 
+        /// <summary>
+        /// Gets the deployment configuration.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns></returns>
+        public SubscriptionKeyValut GetDeploymentConfig(Guid subscriptionId)
+        {
+            return context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
+        }
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>

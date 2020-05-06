@@ -1,13 +1,15 @@
-﻿using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    /// <summary>
+    /// Service to manage plans
+    /// </summary>
     public class PlanService
     {
         /// <summary>
@@ -15,15 +17,33 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// </summary>
         public IPlansRepository plansRepository;
 
+        /// <summary>
+        /// The offer attributes repository
+        /// </summary>
         public IOfferAttributesRepository offerAttributesRepository;
 
+        /// <summary>
+        /// The offer repository
+        /// </summary>
         public IOffersRepository offerRepository;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PlanService"/> class.
+        /// </summary>
+        /// <param name="plansRepository">The plans repository.</param>
+        /// <param name="offerAttributesRepository">The offer attributes repository.</param>
+        /// <param name="offerRepository">The offer repository.</param>
         public PlanService(IPlansRepository plansRepository, IOfferAttributesRepository offerAttributesRepository, IOffersRepository offerRepository)
         {
             this.plansRepository = plansRepository;
             this.offerAttributesRepository = offerAttributesRepository;
             this.offerRepository = offerRepository;
         }
+
+        /// <summary>
+        /// Gets the plans.
+        /// </summary>
+        /// <returns>List of plans</returns>
         public List<PlansModel> GetPlans()
         {
             List<PlansModel> plansList = new List<PlansModel>();
@@ -43,6 +63,11 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             return plansList;
         }
 
+        /// <summary>
+        /// Gets the plan detail by plan gu identifier.
+        /// </summary>
+        /// <param name="planGuId">The plan gu identifier.</param>
+        /// <returns></returns>
         public PlansModel GetPlanDetailByPlanGuId(Guid planGuId)
         {
             var existingPlan = this.plansRepository.GetByInternalReference(planGuId);
@@ -101,14 +126,23 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             return plan;
         }
 
-        public int? UpadtePlanDeployToCustomerSubscription(PlansModel plan)
+        /// <summary>
+        /// Updates the deploy to customer subscription flag.
+        /// </summary>
+        /// <param name="plan">The plan.</param>
+        /// <returns></returns>
+        public void UpdateDeployToCustomerSubscriptionFlag(PlansModel plan)
         {
             var existingPlan = this.plansRepository.GetByInternalReference(plan.PlanGUID);
             existingPlan.DeployToCustomerSubscription = plan.DeployToCustomerSubscription;
-            this.plansRepository.Add(existingPlan);
-            return null;
+            this.plansRepository.Save(existingPlan);            
         }
 
+        /// <summary>
+        /// Saves the plan attributes.
+        /// </summary>
+        /// <param name="planAttributes">The plan attributes.</param>
+        /// <returns></returns>
         public int? SavePlanAttributes(PlanAttributesModel planAttributes)
         {
             if (planAttributes != null)
@@ -121,13 +155,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 attribute.PlanAttributeId = planAttributes.PlanAttributeId;
                 attribute.CreateDate = DateTime.Now;
 
-                var planEventsId = this.plansRepository.AddPlanAttributes(attribute);
+                var planEventsId = this.plansRepository.SavePlanAttributes(attribute);
                 return planEventsId;
             }
             return null;
         }
-
-
+        
+        /// <summary>
+        /// Saves the plan events.
+        /// </summary>
+        /// <param name="planEvents">The plan events.</param>
+        /// <returns></returns>
         public int? SavePlanEvents(PlanEventsModel planEvents)
         {
             if (planEvents != null)
@@ -148,7 +186,14 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             }
             return null;
         }
-        public int? SavePlanDeplymentAttributes(Plans plan, int currentUserId)
+
+        /// <summary>
+        /// Saves the plan deployment attributes.
+        /// </summary>
+        /// <param name="plan">The plan.</param>
+        /// <param name="currentUserId">The current user identifier.</param>
+        /// <returns></returns>
+        public int? SavePlanDeploymentAttributes(Plans plan, int currentUserId)
         {
             var offerAttributes = this.offerAttributesRepository.GetAllOfferAttributesByOfferId(plan.OfferId);            
             var deploymentAttributes = offerAttributes.ToList().Where(s => s.Type.ToLower() == "deployment").ToList();
@@ -175,7 +220,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                     attribute.CreateDate = DateTime.Now;
 
                 }
-                var planEventsId = this.plansRepository.AddPlanAttributes(attribute);
+                var planEventsId = this.plansRepository.SavePlanAttributes(attribute);
             }
             return null;
         }

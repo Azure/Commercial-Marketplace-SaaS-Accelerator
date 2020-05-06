@@ -15,9 +15,20 @@
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IVaultService" />
     public class AzureKeyVaultClient : IVaultService
-    {        
-        protected const string CONTENT_TYPE = "AMP-SaaS";                
+    {
+        /// <summary>
+        /// The content type
+        /// </summary>
+        protected const string CONTENT_TYPE = "AMP-SaaS";
+
+        /// <summary>
+        /// The key vault configuration
+        /// </summary>
         private KeyVaultConfig keyVaultConfig;
+
+        /// <summary>
+        /// The logger
+        /// </summary>
         protected ILogger<AzureKeyVaultClient> logger;
 
         /// <summary>
@@ -58,7 +69,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "Error while writing to key vault");
+                this.logger?.LogError(ex, "Error while writing to key vault");
                 return ex.Message;
             }
         }
@@ -127,7 +138,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, "Error while validating deployment parameters");
+                this.logger?.LogError(ex, "Error while validating deployment parameters");
                 return false;
             }
         }

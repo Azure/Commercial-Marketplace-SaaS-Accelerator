@@ -26,7 +26,7 @@
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="isIncludeDeactvated">if set to <c>true</c> [is include deactvated].</param>
         /// <returns></returns>
-        Subscriptions GetSubscriptionsByScheduleId(Guid subscriptionId, bool isIncludeDeactvated = false);
+        Subscriptions GetById(Guid subscriptionId, bool isIncludeDeactvated = false);
 
         /// <summary>
         /// Updates the status for subscription.
@@ -79,5 +79,12 @@
         /// <param name="planId">The plan identifier.</param>
         /// <returns>List of resource deployment parameters related to the subscription</returns>
         List<SubscriptionTemplateParameters> GetSubscriptionTemplateParameterById(Guid subscriptionId, Guid planId);
+
+        /// <summary>
+        /// Gets the deployment configuration.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns></returns>
+        SubscriptionKeyValut GetDeploymentConfig(Guid subscriptionId);
     }
 }

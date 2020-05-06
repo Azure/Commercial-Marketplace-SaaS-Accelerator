@@ -26,7 +26,7 @@
         /// </summary>
         /// <param name="entities">The entities.</param>
         /// <returns>Internal identifier after saving the entity</returns>
-        int Add(TEntity entities);
+        int Save(TEntity entities);
 
         /// <summary>
         /// Removes the specified entity.

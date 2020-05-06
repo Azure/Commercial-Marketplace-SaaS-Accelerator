@@ -83,7 +83,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.WebHook
                     CreateBy = null,
                     CreateDate = DateTime.Now
                 };
-                SubscriptionsLogRepository.Add(auditLog);
+                SubscriptionsLogRepository.Save(auditLog);
             }
             await Task.CompletedTask;
         }
@@ -142,7 +142,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.WebHook
                     CreateBy = null,
                     CreateDate = DateTime.Now
                 };
-                SubscriptionsLogRepository.Add(auditLog);
+                SubscriptionsLogRepository.Save(auditLog);
             }
 
             //KB: Email notification missing.

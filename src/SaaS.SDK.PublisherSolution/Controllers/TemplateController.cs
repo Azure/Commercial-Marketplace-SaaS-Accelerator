@@ -24,7 +24,7 @@
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json.Linq;
 
-    [ServiceFilter(typeof(KnownUser))]
+    [ServiceFilter(typeof(KnownUserAttribute))]
     public class TemplateController : BaseController
     {
         private readonly IUsersRepository usersRepository;

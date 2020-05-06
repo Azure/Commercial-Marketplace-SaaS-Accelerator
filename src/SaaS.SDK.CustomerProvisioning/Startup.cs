@@ -119,7 +119,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddSingleton<CloudStorageConfigs>(cloudConfig);
             services.AddSingleton<IVaultService>(new AzureKeyVaultClient(keyVaultConfig, loggerFactory.CreateLogger<AzureKeyVaultClient>()));
-            services.AddSingleton<IARMTemplateStorageService>(new AzureBlobFileClient(azureBlobConfig));
+            services.AddSingleton<IARMTemplateStorageService>(new AzureBlobStorageService(azureBlobConfig));
             services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
             services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
             services.AddDbContext<SaasKitContext>(options =>

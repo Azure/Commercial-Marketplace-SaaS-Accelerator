@@ -1,31 +1,64 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using System;
+    using System.Linq;
+
+    /// <summary>
+    /// Utility class to convert json values to .net types.
+    /// </summary>
+    /// <seealso cref="Newtonsoft.Json.JsonConverter" />
     public class JsonARMPropertiesConverter : JsonConverter
     {
-        private readonly Type[] _types;
+        /// <summary>
+        /// The types
+        /// </summary>
+        private readonly Type[] types;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonARMPropertiesConverter"/> class.
+        /// </summary>
+        /// <param name="types">The types.</param>
         public JsonARMPropertiesConverter(params Type[] types)
         {
-            _types = types;
+            this.types = types;
         }
 
+        /// <summary>
+        /// Determines whether this instance can convert the specified object type.
+        /// </summary>
+        /// <param name="objectType">Type of the object.</param>
+        /// <returns>
+        /// <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
+        /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            return _types.Any(t => t == objectType);
+            return types.Any(t => t == objectType);
         }
 
+        /// <summary>
+        /// Reads the JSON representation of the object.
+        /// </summary>
+        /// <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>
+        /// <param name="objectType">Type of the object.</param>
+        /// <param name="existingValue">The existing value of object being read.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        /// <returns>
+        /// The object value.
+        /// </returns>
+        /// <exception cref="NotImplementedException"></exception>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Writes the JSON representation of the object.
+        /// </summary>
+        /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             JToken t = JToken.FromObject(value);
@@ -44,6 +77,12 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             output.WriteTo(writer);
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="T:Newtonsoft.Json.JsonConverter" /> can read JSON.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this <see cref="T:Newtonsoft.Json.JsonConverter" /> can read JSON; otherwise, <c>false</c>.
+        /// </value>
         public override bool CanRead
         {
             get { return false; }

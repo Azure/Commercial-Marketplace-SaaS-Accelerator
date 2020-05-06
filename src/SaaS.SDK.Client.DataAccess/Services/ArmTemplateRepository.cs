@@ -46,9 +46,9 @@
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
-        public Armtemplates Get(Guid ArmtempalteId)
+        public Armtemplates GetById(Guid armTemplateId)
         {
-            return context.Armtemplates.Where(s => s.ArmtempalteId == ArmtempalteId).FirstOrDefault();
+            return context.Armtemplates.Where(s => s.ArmtempalteId == armTemplateId).FirstOrDefault();
         }
 
         /// <summary>

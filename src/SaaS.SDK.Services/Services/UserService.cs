@@ -1,16 +1,16 @@
-﻿using System;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-
-namespace  Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿namespace  Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
+    using System;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+
     public class UserService
     {
         /// <summary>
         /// The user repository
         /// </summary>
-        public IUsersRepository UserRepository;
+        public IUsersRepository userRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserService"/> class.
@@ -18,7 +18,7 @@ namespace  Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <param name="userRepository">The user repository.</param>
         public UserService(IUsersRepository userRepository)
         {
-            UserRepository = userRepository;
+            this.userRepository = userRepository;
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace  Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// </summary>
         /// <param name="partnerDetailViewModel">The partner detail view model.</param>
         /// <returns></returns>
-        public int AddPartnerDetail(PartnerDetailViewModel partnerDetailViewModel)
+        public int AddUser(PartnerDetailViewModel partnerDetailViewModel)
         {
             if (!string.IsNullOrEmpty(partnerDetailViewModel.EmailAddress))
             {
@@ -37,7 +37,7 @@ namespace  Microsoft.Marketplace.SaaS.SDK.Services.Services
                     FullName = partnerDetailViewModel.FullName,
                     CreatedDate = DateTime.Now
                 };
-                return UserRepository.Add(newPartnerDetail);
+                return userRepository.Save(newPartnerDetail);
             }
             return 0;
         }
@@ -50,7 +50,7 @@ namespace  Microsoft.Marketplace.SaaS.SDK.Services.Services
         public int GetUserIdFromEmailAddress(string partnerEmail)
         {
             if (!string.IsNullOrEmpty(partnerEmail))
-                return UserRepository.GetPartnerDetailFromEmail(partnerEmail).UserId;
+                return userRepository.GetPartnerDetailFromEmail(partnerEmail).UserId;
             return 0;
         }
     }

@@ -15,7 +15,7 @@
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
-    [ServiceFilter(typeof(KnownUser))]
+    [ServiceFilter(typeof(KnownUserAttribute))]
     public class OffersController : BaseController
     {
         private readonly IUsersRepository usersRepository;

@@ -1,37 +1,99 @@
-﻿using Microsoft.Azure.Management.ResourceManager.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using Microsoft.Marketplace.SaasKit.Contracts;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
+﻿namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
+    using Microsoft.Azure.Management.ResourceManager.Models;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Contracts;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
+    /// <summary>
+    /// Status handler to handle the subscription in PendingDeployment status.
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers.AbstractSubscriptionStatusHandler" />
     public class ResourceDeploymentStatusHandler : AbstractSubscriptionStatusHandler
     {
+        /// <summary>
+        /// The fulfillment apiclient
+        /// </summary>
+        protected readonly IFulfillmentApiClient fulfillmentApiclient;
 
-        protected readonly IFulfillmentApiClient fulfillApiclient;
-        protected readonly ISubscriptionsRepository subscriptionsRepository;
+        /// <summary>
+        /// The application configuration repository
+        /// </summary>
         protected readonly IApplicationConfigRepository applicationConfigRepository;
+
+        /// <summary>
+        /// The subscription log repository
+        /// </summary>
         protected readonly ISubscriptionLogRepository subscriptionLogRepository;
+
+        /// <summary>
+        /// The azure key vault client
+        /// </summary>
         protected readonly IVaultService azureKeyVaultClient;
+
+        /// <summary>
+        /// The azure BLOB file client
+        /// </summary>
         protected readonly IARMTemplateStorageService azureBlobFileClient;
+
+        /// <summary>
+        /// The key vault configuration
+        /// </summary>
         protected readonly KeyVaultConfig keyVaultConfig;
+
+        /// <summary>
+        /// The logger
+        /// </summary>
         protected readonly ILogger<ResourceDeploymentStatusHandler> logger;
+
+        /// <summary>
+        /// The arm template deployment manager
+        /// </summary>
         protected readonly ARMTemplateDeploymentManager armTemplateDeploymentManager;
 
+        /// <summary>
+        /// The offers repository
+        /// </summary>
+        protected readonly IOffersRepository offersRepository;
 
+        /// <summary>
+        /// The arm template repository
+        /// </summary>
+        protected readonly IArmTemplateRepository armTemplateRepository;
+
+        /// <summary>
+        /// The plan events mapping repository
+        /// </summary>
+        protected readonly IPlanEventsMappingRepository planEventsMappingRepository;
+
+        /// <summary>
+        /// The events repository
+        /// </summary>
+        protected readonly IEventsRepository eventsRepository;
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceDeploymentStatusHandler"/> class.
+        /// </summary>
+        /// <param name="fulfillApiClient">The fulfill API client.</param>
+        /// <param name="applicationConfigRepository">The application configuration repository.</param>
+        /// <param name="subscriptionLogRepository">The subscription log repository.</param>
+        /// <param name="subscriptionsRepository">The subscriptions repository.</param>
+        /// <param name="azureKeyVaultClient">The azure key vault client.</param>
+        /// <param name="azureBlobFileClient">The azure BLOB file client.</param>
+        /// <param name="keyVaultConfig">The key vault configuration.</param>
+        /// <param name="logger">The logger.</param>
+        /// <param name="armTemplateDeploymentManager">The arm template deployment manager.</param>
         public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient,
                                                 IApplicationConfigRepository applicationConfigRepository,
                                                 ISubscriptionLogRepository subscriptionLogRepository,
@@ -39,13 +101,22 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                                 IVaultService azureKeyVaultClient,
                                                 IARMTemplateStorageService azureBlobFileClient,
                                                 KeyVaultConfig keyVaultConfig,
+                                                IPlansRepository plansRepository,
+                                                IUsersRepository usersRepository,
+                                                IOffersRepository offersRepository,
+                                                IArmTemplateRepository armTemplateRepository,
+                                                IPlanEventsMappingRepository planEventsMappingRepository,
+                                                IEventsRepository eventsRepository,
                                                 ILogger<ResourceDeploymentStatusHandler> logger,
-                                                ARMTemplateDeploymentManager armTemplateDeploymentManager) : base(new SaasKitContext())
+                                                ARMTemplateDeploymentManager armTemplateDeploymentManager) : base(subscriptionsRepository, plansRepository, usersRepository)
         {
-            this.fulfillApiclient = fulfillApiClient;
+            this.fulfillmentApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
-            this.subscriptionsRepository = subscriptionsRepository;
+            this.offersRepository = offersRepository;
+            this.armTemplateRepository = armTemplateRepository;
+            this.planEventsMappingRepository = planEventsMappingRepository;
+            this.eventsRepository = eventsRepository;
             this.azureKeyVaultClient = azureKeyVaultClient;
             this.azureBlobFileClient = azureBlobFileClient;
             this.keyVaultConfig = keyVaultConfig;
@@ -53,9 +124,12 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             this.armTemplateDeploymentManager = armTemplateDeploymentManager;
         }
 
+        /// <summary>
+        /// Processes the specified subscription identifier.
+        /// </summary>
+        /// <param name="subscriptionID">The subscription identifier.</param>
         public override void Process(Guid subscriptionID)
         {
-            
             this.logger.LogInformation("ResourceDeploymentStatusHandler Process...");
             this.logger.LogInformation("Get SubscriptionById");
             var subscription = this.GetSubscriptionById(subscriptionID);
@@ -66,27 +140,26 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             var userdeatils = this.GetUserById(subscription.UserId);
 
             this.logger.LogInformation("Get Offers");
-            //KB: Remove Context and have repository
-            var offer = Context.Offers.Where(s => s.OfferGuid == planDetails.OfferId).FirstOrDefault();
+            
+            var offer = offersRepository.GetOfferById(planDetails.OfferId);
             this.logger.LogInformation("Get Events");
-            //KB: Remove Context and have repository
-            var events = Context.Events.Where(s => s.EventsName == "Activate").FirstOrDefault();
+
+            var events = this.eventsRepository.GetByName("Activate"); //Context.Events.Where(s => s.EventsName == "Activate").FirstOrDefault();
 
             this.logger.LogInformation("subscription.SubscriptionStatus: SubscriptionStatus: {0}", subscription.SubscriptionStatus);
-
-
 
             if (SubscriptionStatusEnumExtension.PendingActivation.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
             {
 
                 // Check if arm template is available for the plan in Plan Event Mapping table with isactive=1
                 this.logger.LogInformation("Get PlanEventsMapping");
-                var planEvent = Context.PlanEventsMapping.Where(s => s.PlanId == planDetails.PlanGuid && s.EventId == events.EventsId && s.Isactive == true).FirstOrDefault();
+                var planEvent = planEventsMappingRepository.GetPlanEvent(planDetails.PlanGuid, events.EventsId);
+                //Context.PlanEventsMapping.Where(s => s.PlanId == planDetails.PlanGuid && s.EventId == events.EventsId && s.Isactive == true).FirstOrDefault();
                 this.logger.LogInformation("Get Armtemplates");
-                var armTemplate = Context.Armtemplates.Where(s => s.ArmtempalteId == planEvent.ArmtemplateId).FirstOrDefault();
+                var armTemplate = armTemplateRepository.GetById(planEvent.ArmtemplateId);
+                //Context.Armtemplates.Where(s => s.ArmtempalteId == planEvent.ArmtemplateId).FirstOrDefault();
                 this.logger.LogInformation("Get GetTemplateParameters");
                 var attributelsit = GetTemplateParameters(subscriptionID, planDetails.PlanGuid, Context, userdeatils);
-
 
                 try
                 {
@@ -111,7 +184,8 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                 string secretKey = "";
                                 if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                                 {
-                                    var keyvault = Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+                                    var keyvault = this.subscriptionsRepository.GetDeploymentConfig(subscriptionID); 
+                                    // Context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
                                     secretKey = keyvault.SecureId;
                                 }
                                 else
@@ -119,14 +193,13 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                     secretKey = string.Format("{0}secrets/HostedsubscriptionCredentials", keyVaultConfig.KeyVaultUrl);
                                 }
 
-
                                 this.logger.LogInformation("Get DoVault");
                                 string secretValue = azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
 
                                 var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
                                 this.logger.LogInformation("SecretValue : {0}", secretValue);
 
-                                
+
                                 this.logger.LogInformation("Start Deployment: DeployARMTemplate");
                                 string armTemplateCOntent = azureBlobFileClient.GetARMTemplateContentAsString(armTemplate.ArmtempalteName);
 
@@ -155,7 +228,7 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                                     CreateBy = userdeatils.UserId,
                                     CreateDate = DateTime.Now
                                 };
-                                this.subscriptionLogRepository.Add(auditLog);
+                                this.subscriptionLogRepository.Save(auditLog);
 
                                 this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString());
                             }
@@ -163,7 +236,6 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                     }
 
                 }
-                //KB: Remove empty lines
                 catch (Exception ex)
                 {
                     //Change status to  ARMTemplateDeploymentFailure
@@ -182,18 +254,26 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
-                    this.subscriptionLogRepository.Add(auditLog);
+                    this.subscriptionLogRepository.Save(auditLog);
                 }
 
             }
         }
 
-        public static List<SubscriptionTemplateParameters> GetTemplateParameters(Guid subscriptionID, Guid PlanGuid, SaasKitContext Context, Users userdeatils)
+        /// <summary>
+        /// Gets the template parameters.
+        /// </summary>
+        /// <param name="subscriptionID">The subscription identifier.</param>
+        /// <param name="PlanGuid">The plan unique identifier.</param>
+        /// <param name="Context">The context.</param>
+        /// <param name="userdeatils">The userdeatils.</param>
+        /// <returns></returns>
+        public List<SubscriptionTemplateParameters> GetTemplateParameters(Guid subscriptionID, Guid PlanGuid, Users userdeatils)
         {
             List<SubscriptionTemplateParameters> _list = new List<SubscriptionTemplateParameters>();
             var subscriptionAttributes = Context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, PlanGuid);
 
-            var existingdata = Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
+            var existingdata = this.subscription //Context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
             if (existingdata != null)
             {
                 var existingdatalist = existingdata.ToList();
@@ -337,4 +417,3 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
         }
     }
 }
-

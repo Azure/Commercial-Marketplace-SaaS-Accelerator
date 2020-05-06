@@ -148,7 +148,7 @@
                     {
                         this.TempData["ShowLicensesMenu"] = true;
                     }
-                    var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
+                    var userId = this.userService.AddUser(GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
                     this.logger.LogInformation("User authenticated successfully");
@@ -186,12 +186,12 @@
 
                                 foreach (var plan in allPlansOfSubscription)
                                 {
-                                    var deploymentAttributesofPlan = this.planService.SavePlanDeplymentAttributes(plan, currentUserId);
+                                    var deploymentAttributesofPlan = this.planService.SavePlanDeploymentAttributes(plan, currentUserId);
                                 }
                             }
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                            var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
+                            var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
                             if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                             {
                                 SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
@@ -203,7 +203,7 @@
                                     CreateBy = currentUserId,
                                     CreateDate = DateTime.Now
                                 };
-                                this.subscriptionLogRepository.Add(auditLog);
+                                this.subscriptionLogRepository.Save(auditLog);
                             }
                             subscriptionExtension = this.subscriptionService.GetSubscriptionsBySubscriptionId(newSubscription.SubscriptionId);
                             subscriptionExtension.ShowWelcomeScreen = false;
@@ -450,7 +450,7 @@
                 SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
                 if (User.Identity.IsAuthenticated)
                 {
-                    var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
+                    var userId = this.userService.AddUser(GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
                     this.TempData["ShowWelcomeScreen"] = false;
@@ -535,7 +535,7 @@
                                     CreateBy = currentUserId,
                                     CreateDate = DateTime.Now
                                 };
-                                this.subscriptionLogRepository.Add(auditLog);
+                                this.subscriptionLogRepository.Save(auditLog);
                             }
                         }
                     }
@@ -605,7 +605,7 @@
                                     CreateBy = currentUserId,
                                     CreateDate = DateTime.Now
                                 };
-                                this.subscriptionLogRepository.Add(auditLog);
+                                this.subscriptionLogRepository.Save(auditLog);
                             }
                         }
                     }
@@ -638,7 +638,7 @@
 
                 if (User.Identity.IsAuthenticated)
                 {
-                    var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
+                    var userId = this.userService.AddUser(GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
                     var planDetails = this.planRepository.GetById(planId);

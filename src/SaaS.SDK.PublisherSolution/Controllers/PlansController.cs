@@ -15,7 +15,7 @@
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
-    [ServiceFilter(typeof(KnownUser))]
+    [ServiceFilter(typeof(KnownUserAttribute))]
     /// <summary>
     /// Licenses Controller
     /// </summary>
@@ -141,7 +141,7 @@
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 if (plans != null)
                 {
-                    this.plansService.UpadtePlanDeployToCustomerSubscription(plans);
+                    this.plansService.UpdateDeployToCustomerSubscriptionFlag(plans);
                     if (plans.PlanAttributes != null)
                     {
                         var inputAtttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();

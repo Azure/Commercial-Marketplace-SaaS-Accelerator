@@ -53,7 +53,7 @@
         /// </summary>
         /// <param name="attributes">The attributes.</param>
         /// <returns>ID of the newly created attribute</returns>
-        int? AddPlanAttributes(PlanAttributeMapping attributes);
+        int? SavePlanAttributes(PlanAttributeMapping attributes);
 
         /// <summary>
         /// Add the plan events.

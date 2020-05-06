@@ -13,14 +13,27 @@
 
     public class EmailHelper
     {
-
         private readonly IApplicationConfigRepository applicationConfigRepository;
         private readonly ISubscriptionsRepository subscriptionsRepository;
         private readonly IEmailTemplateRepository emailTemplateRepository;
         private readonly IEventsRepository eventsRepository;
         private readonly IPlanEventsMappingRepository planEventsMappingRepository;
 
-        public EmailHelper(IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EmailHelper"/> class.
+        /// </summary>
+        /// <param name="applicationConfigRepository">The application configuration repository.</param>
+        /// <param name="subscriptionsRepository">The subscriptions repository.</param>
+        /// <param name="emailTemplateRepository">The email template repository.</param>
+        /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
+        /// <param name="eventsRepository">The events repository.</param>
+        public EmailHelper(
+                            IApplicationConfigRepository applicationConfigRepository, 
+                            ISubscriptionsRepository subscriptionsRepository, 
+                            IEmailTemplateRepository emailTemplateRepository, 
+                            IPlanEventsMappingRepository planEventsMappingRepository, 
+                            IEventsRepository eventsRepository
+                            )
         {
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionsRepository = subscriptionsRepository;
@@ -29,11 +42,28 @@
             this.planEventsMappingRepository = planEventsMappingRepository;
         }
 
-        public EmailContentModel PrepareEmailContent(SubscriptionResultExtension Subscription, string planEvent = "success", SubscriptionStatusEnumExtension oldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart, string newValue = null)
+        /// <summary>
+        /// Prepares the content of the email.
+        /// </summary>
+        /// <param name="Subscription">The subscription.</param>
+        /// <param name="planEvent">The plan event.</param>
+        /// <param name="oldValue">The old value.</param>
+        /// <param name="newValue">The new value.</param>
+        /// <returns></returns>
+        /// <exception cref="Exception">
+        /// Error while sending an email, please check the configuration.
+        /// or
+        /// Error while sending an email, please check the configuration.
+        /// </exception>
+        public EmailContentModel PrepareEmailContent(
+                                                        SubscriptionResultExtension Subscription, 
+                                                        string planEvent = "success", 
+                                                        SubscriptionStatusEnumExtension oldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart, 
+                                                        string newValue = null)
         {
             EmailContentModel emailContent = new EmailContentModel();
             string body = ProcessTemplate(Subscription, planEvent, oldValue, newValue);
-            int eventID = this.eventsRepository.GetByName(Subscription.EventName);
+            var subscriptionEvent = this.eventsRepository.GetByName(Subscription.EventName);
             var emailTemplateData = emailTemplateRepository.GetTemplateForStatus(Subscription.SubscriptionStatus.ToString());
             string Subject = string.Empty;
 
@@ -65,7 +95,7 @@
 
              */
 
-            var eventMappings = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, eventID);
+            var eventMappings = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, subscriptionEvent.EventsId);
             if (eventMappings != null)
             {
                 CopyToCustomer = eventMappings.CopyToCustomer ?? false;
@@ -75,7 +105,7 @@
 
             if (planEvent.ToLower() == "success")
             {
-                var successEventData = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, eventID);
+                var successEventData = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, subscriptionEvent.EventsId);
 
                 if (string.IsNullOrEmpty(toReceipents))
                 {
@@ -105,7 +135,7 @@
 
             if (planEvent.ToLower() == "failure")
             {
-                var failureStateEmails = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, eventID);
+                var failureStateEmails = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, subscriptionEvent.EventsId);
                 if (string.IsNullOrEmpty(toReceipents))
                 {
                     throw new Exception(" Error while sending an email, please check the configuration. ");
@@ -177,13 +207,20 @@
 
         }
 
+        /// <summary>
+        /// Processes the template.
+        /// </summary>
+        /// <param name="Subscription">The subscription.</param>
+        /// <param name="planEvent">The plan event.</param>
+        /// <param name="oldValue">The old value.</param>
+        /// <param name="newValue">The new value.</param>
+        /// <returns></returns>
         public string ProcessTemplate(SubscriptionResultExtension Subscription, string planEvent, SubscriptionStatusEnumExtension oldValue, string newValue)
         {
 
             string parameter = string.Empty;
             string value = string.Empty;
             string parameterType = string.Empty;
-
 
             string body = string.Empty;
             EmailTemplate templateDetails = emailTemplateRepository.GetTemplateForStatus("Template");
@@ -199,8 +236,7 @@
             hashTable.Add("oldValue", oldValue);
             hashTable.Add("newValue", newValue);
             hashTable.Add("planevent", planEvent);
-
-
+            
             ExtendedProperties p = new ExtendedProperties();
 
             VelocityEngine v = new VelocityEngine();

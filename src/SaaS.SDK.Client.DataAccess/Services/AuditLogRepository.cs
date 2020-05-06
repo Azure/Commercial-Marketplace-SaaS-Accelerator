@@ -79,7 +79,7 @@
         /// <param name="entity">The entity.</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public int Add(SubscriptionAuditLogs entity)
+        public int Save(SubscriptionAuditLogs entity)
         {
             context.SubscriptionAuditLogs.Add(entity);
             context.SaveChanges();

@@ -1,46 +1,83 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Contracts;
-using Microsoft.Marketplace.SaasKit.Models;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaasKit.Provisioning.Webjob;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using Newtonsoft.Json;
-using System.Linq;
-using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
-
-namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
+﻿namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Contracts;
+    using Newtonsoft.Json;
+    using System;
 
-    class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
+    /// <summary>
+    /// Status handler to handle the subscriptions that are in PendingActivation status.
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers.AbstractSubscriptionStatusHandler" />
+    public class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
     {
+        /// <summary>
+        /// The fulfillment apiclient
+        /// </summary>
+        protected readonly IFulfillmentApiClient fulfillmentApiClient;
 
-        readonly IFulfillmentApiClient fulfillApiclient;
-        readonly IApplicationConfigRepository applicationConfigRepository;
-        readonly ISubscriptionsRepository subscriptionsRepository;
-        readonly ISubscriptionLogRepository subscriptionLogRepository;
-        readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
-        public PendingActivationStatusHandler(IFulfillmentApiClient fulfillApiClient, IApplicationConfigRepository applicationConfigRepository, ISubscriptionsRepository subscriptionsRepository, ISubscriptionLogRepository subscriptionLogRepository,
-            ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository) : base(new SaasKitContext())
+        /// <summary>
+        /// The application configuration repository
+        /// </summary>
+        protected readonly IApplicationConfigRepository applicationConfigRepository;
+
+        /// <summary>
+        /// The subscription log repository
+        /// </summary>
+        protected readonly ISubscriptionLogRepository subscriptionLogRepository;
+
+        /// <summary>
+        /// The subscription template parameters repository
+        /// </summary>
+        protected readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
+
+        /// <summary>
+        /// The logger
+        /// </summary>
+        protected readonly ILogger<PendingActivationStatusHandler> logger;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PendingActivationStatusHandler"/> class.
+        /// </summary>
+        /// <param name="fulfillApiClient">The fulfill API client.</param>
+        /// <param name="applicationConfigRepository">The application configuration repository.</param>
+        /// <param name="subscriptionsRepository">The subscriptions repository.</param>
+        /// <param name="subscriptionLogRepository">The subscription log repository.</param>
+        /// <param name="subscriptionTemplateParametersRepository">The subscription template parameters repository.</param>
+        /// <param name="plansRepository">The plans repository.</param>
+        /// <param name="usersRepository">The users repository.</param>
+        /// <param name="logger">The logger.</param>
+        public PendingActivationStatusHandler(
+                                                IFulfillmentApiClient fulfillApiClient, 
+                                                IApplicationConfigRepository applicationConfigRepository, 
+                                                ISubscriptionsRepository subscriptionsRepository, 
+                                                ISubscriptionLogRepository subscriptionLogRepository,
+                                                ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
+                                                IPlansRepository plansRepository,
+                                                IUsersRepository usersRepository,
+                                                ILogger<PendingActivationStatusHandler> logger) : base(subscriptionsRepository,plansRepository, usersRepository)
         {
-            this.fulfillApiclient = fulfillApiClient;
-            this.applicationConfigRepository = applicationConfigRepository;
-            this.subscriptionsRepository = subscriptionsRepository;
+            this.fulfillmentApiClient = fulfillApiClient;
+            this.applicationConfigRepository = applicationConfigRepository;            
             this.subscriptionLogRepository = subscriptionLogRepository;
             this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
-
-
+            this.logger = logger;
         }
+
+        /// <summary>
+        /// Processes the specified subscription identifier.
+        /// </summary>
+        /// <param name="subscriptionID">The subscription identifier.</param>
         public override void Process(Guid subscriptionID)
         {
-            Console.WriteLine("PendingActivationStatusHandler {0}", subscriptionID);
+            this.logger?.LogInformation("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
-            Console.WriteLine("Get User");
+            this.logger?.LogInformation("Get User");
 
-            Console.WriteLine("subscription : {0}", JsonConvert.SerializeObject(subscription));
+            this.logger?.LogInformation("subscription : {0}", JsonConvert.SerializeObject(subscription));
 
             var userdeatils = this.GetUserById(subscription.UserId);
 
@@ -49,12 +86,11 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
             {
                 try
                 {
-                    Console.WriteLine("Get attributelsit");
+                    this.logger?.LogInformation("Get attributelsit");
 
-                    var subscriptionData = this.fulfillApiclient.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
+                    var subscriptionData = this.fulfillmentApiClient.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                    //Console.WriteLine("subscriptionData : {0}", JsonConvert.SerializeObject(subscriptionData));
-                    Console.WriteLine("UpdateWebJobSubscriptionStatus");
+                    this.logger?.LogInformation("UpdateWebJobSubscriptionStatus");
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.Subscribed.ToString(), true);
 
@@ -67,18 +103,17 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
-                    this.subscriptionLogRepository.Add(auditLog);
+                    this.subscriptionLogRepository.Save(auditLog);
                 }
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, SubscriptionStatusEnumExtension.ActivationFailed.ToString());
-                    Console.WriteLine(errorDescriptin);
+                    this.logger?.LogInformation(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.ActivationFailed.ToString(), true);
-
-                    // Activation Failure SubscriptionStatusEnumExtension.ActivationFailed
-
+                    
+                    // Set the status as ActivationFailed.
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
@@ -88,14 +123,9 @@ namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
                         CreateBy = userdeatils.UserId,
                         CreateDate = DateTime.Now
                     };
-                    this.subscriptionLogRepository.Add(auditLog);
-
-
-                    //Call Email helper with ActivationFailed
+                    this.subscriptionLogRepository.Save(auditLog);
                 }
-
             }
         }
-
     }
 }

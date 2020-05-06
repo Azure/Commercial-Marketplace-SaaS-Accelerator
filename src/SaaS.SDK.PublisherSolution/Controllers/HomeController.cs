@@ -26,7 +26,7 @@
     using Microsoft.Marketplace.SaasKit.Configurations;
     using Microsoft.Extensions.Options;
 
-    [ServiceFilter(typeof(KnownUser))]
+    [ServiceFilter(typeof(KnownUserAttribute))]
     /// <summary>
     /// Home Controller
     /// </summary>
@@ -147,7 +147,7 @@
             this.logger.LogInformation("Home Controller / Index ");
             try
             {
-                var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
+                var userId = this.userService.AddUser(GetCurrentUserDetail());
                 if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
                 {
                     this.TempData["ShowLicensesMenu"] = true;
@@ -283,7 +283,7 @@
 
             if (User.Identity.IsAuthenticated)
             {
-                var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
+                var userId = this.userService.AddUser(GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                 this.subscriptionService = new SubscriptionService(this.subscriptionRepo, this.planRepository, userId);
                 this.logger.LogInformation("User authenticate successfully & GetSubscriptionByIdAsync  SubscriptionID :{0}", JsonConvert.SerializeObject(subscriptionId));
@@ -313,7 +313,7 @@
 
                 if (User.Identity.IsAuthenticated)
                 {
-                    var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
+                    var userId = this.userService.AddUser(GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
                     this.logger.LogInformation("GetSubscriptionByIdAsync SubscriptionID :{0} :: planID:{1}:: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(operation));
@@ -375,7 +375,7 @@
                     CreateBy = userDetails.UserId,
                     CreateDate = DateTime.Now
                 };
-                this.subscriptionLogRepository.Add(auditLog);
+                this.subscriptionLogRepository.Save(auditLog);
 
                 string queueMessage = JsonConvert.SerializeObject(queueObject);
                 string StorageConnectionString = this.options.Value.FulFillmentAPIBaseURL;
@@ -503,7 +503,7 @@
                         CreatedBy = currentUserDetail == null ? 0 : currentUserDetail.UserId,
                         CreatedDate = DateTime.Now
                     };
-                    subscriptionUsageLogsRepository.Add(newMeteredAuditLog);
+                    subscriptionUsageLogsRepository.Save(newMeteredAuditLog);
                 }
             }
             catch (Exception ex)
@@ -630,7 +630,7 @@
                                     CreateBy = currentUserId,
                                     CreateDate = DateTime.Now
                                 };
-                                this.subscriptionLogRepository.Add(auditLog);
+                                this.subscriptionLogRepository.Save(auditLog);
                             }
                         }
                     }

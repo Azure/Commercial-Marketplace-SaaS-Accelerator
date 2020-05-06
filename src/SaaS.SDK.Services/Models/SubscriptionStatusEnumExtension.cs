@@ -43,7 +43,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         DeploymentPending,
         DeploymentSuccessful,
         DeploymentFailed,
-        DeleteResourcePendign,
+        DeleteResourcePending,
         DeleteResourceSuccess,
         DeleteResourceFailed
     }

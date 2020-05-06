@@ -65,7 +65,7 @@
         /// </summary>
         /// <param name="planDetails">The plan details.</param>
         /// <returns></returns>
-        public int Add(Plans planDetails)
+        public int Save(Plans planDetails)
         {
             if (planDetails != null && !string.IsNullOrEmpty(planDetails.PlanId))
             {
@@ -224,8 +224,7 @@
             catch (Exception ex)
             {
                 throw ex;
-            }
-            return new List<PlanEventsModel>();
+            }            
         }
 
         /// <summary>
@@ -233,7 +232,7 @@
         /// </summary>
         /// <param name="planAttributes">The plan attributes.</param>
         /// <returns></returns>
-        public int? AddPlanAttributes(PlanAttributeMapping planAttributes)
+        public int? SavePlanAttributes(PlanAttributeMapping planAttributes)
         {
             if (planAttributes != null)
             {

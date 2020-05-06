@@ -1,27 +1,26 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using SaasKitModels = Microsoft.Marketplace.SaasKit.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Marketplace.SaasKit.Models;
-//using Microsoft.Marketplace.SaasKit.Client.Models;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Newtonsoft.Json;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Models;
+    using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using SaasKitModels = Microsoft.Marketplace.SaasKit.Models;
+
     public class SubscriptionService
     {
         /// <summary>
         /// The subscription repository
         /// </summary>
-        public ISubscriptionsRepository SubscriptionRepository;
+        public ISubscriptionsRepository subscriptionRepository;
 
         /// <summary>
         /// The plan repository
         /// </summary>
-        public IPlansRepository PlanRepository;
+        public IPlansRepository planRepository;
 
         /// <summary>
         /// The plan repository
@@ -31,7 +30,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <summary>
         /// The current user identifier
         /// </summary>
-        public int CurrentUserId;
+        public int currentUserId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionService" /> class.
@@ -41,33 +40,33 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <param name="currentUserId">The current user identifier.</param>
         public SubscriptionService(ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, int currentUserId = 0)
         {
-            SubscriptionRepository = subscriptionRepo;
-            PlanRepository = planRepository;
-            CurrentUserId = currentUserId;
+            subscriptionRepository = subscriptionRepo;
+            this.planRepository = planRepository;
+            this.currentUserId = currentUserId;
         }
 
         /// <summary>
         /// Adds/Update partner subscriptions.
         /// </summary>
         /// <param name="subscriptionDetail">The subscription detail.</param>
-        public int AddUpdatePartnerSubscriptions(SaasKitModels.SubscriptionResult subscriptionDetail)
+        public int AddOrUpdatePartnerSubscriptions(SaasKitModels.SubscriptionResult subscriptionDetail)
         {
-            var isActive = GetSubscriptionStateFromStatus(Convert.ToString(subscriptionDetail.SaasSubscriptionStatus));
+            var isActive = IsSubscriptionDeleted(Convert.ToString(subscriptionDetail.SaasSubscriptionStatus));
             Subscriptions newSubscription = new Subscriptions()
             {
                 Id = 0,
                 AmpplanId = subscriptionDetail.PlanId,
                 Ampquantity = subscriptionDetail.Quantity,
                 AmpsubscriptionId = subscriptionDetail.Id,
-                CreateBy = CurrentUserId,
+                CreateBy = currentUserId,
                 CreateDate = DateTime.Now,
                 IsActive = isActive,
                 ModifyDate = DateTime.Now,
                 Name = subscriptionDetail.Name,
                 SubscriptionStatus = Convert.ToString(subscriptionDetail.SaasSubscriptionStatus),
-                UserId = CurrentUserId,
+                UserId = currentUserId,
             };
-            return SubscriptionRepository.Add(newSubscription);
+            return subscriptionRepository.Save(newSubscription);
         }
 
         /// <summary>
@@ -78,42 +77,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <param name="isActivate">if set to <c>true</c> [is activate].</param>
         public void UpdateStateOfSubscription(Guid subscriptionId, string status, bool isActivate)
         {
-            SubscriptionRepository.UpdateStatusForSubscription(subscriptionId, status, isActivate);
+            subscriptionRepository.UpdateStatusForSubscription(subscriptionId, status, isActivate);
         }
-
-        ///// <summary>
-        ///// Gets the subscriptions for subscription identifier.
-        ///// </summary>
-        ///// <param name="subscriptionId">The subscription identifier.</param>
-        ///// <param name="includeUnsubscribed">if set to <c>true</c> [include unsubscribed].</param>
-        ///// <returns></returns>
-        //public SubscriptionResult GetSubscriptionsForSubscriptionId(Guid subscriptionId, bool includeUnsubscribed = false)
-        //{
-        //    var subscriptionDetail = SubscriptionRepository.GetSubscriptionsByScheduleId(subscriptionId);
-        //    if (subscriptionDetail != null)
-        //    {
-        //        SubscriptionResult subscritpionDetail = PrepareSubscriptionResponse(subscriptionDetail);
-        //        if (subscritpionDetail != null)
-        //            return subscritpionDetail;
-        //    }
-        //    return new SubscriptionResult();
-        //}
-
+                
         /// <summary>
         /// Subscriptions state from status.
         /// </summary>
         /// <param name="status">The status.</param>
         /// <returns></returns>
-        public bool GetSubscriptionStateFromStatus(string status)
+        public bool IsSubscriptionDeleted(string status)
         {
-            if (!string.IsNullOrEmpty(status))
-            {
-                if (Convert.ToString(SubscriptionStatusEnum.Unsubscribed) == status)
-                    return false;
-                else
-                    return true;
-            }
-            return false;
+            return SubscriptionStatusEnum.Unsubscribed.ToString().Equals(status, StringComparison.InvariantCultureIgnoreCase);            
         }
 
         /// <summary>
@@ -126,7 +100,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         public List<SubscriptionResultExtension> GetPartnerSubscription(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
         {
             List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
-            var allSubscriptionsForEmail = SubscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
+            var allSubscriptionsForEmail = subscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
 
             foreach (var subscription in allSubscriptionsForEmail)
             {
@@ -145,7 +119,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <returns></returns>
         public SubscriptionResultExtension GetSubscriptionsBySubscriptionId(Guid subscriptionId, bool includeUnsubscribed = false)
         {
-            var subscriptionDetail = SubscriptionRepository.GetSubscriptionsByScheduleId(subscriptionId, includeUnsubscribed);
+            var subscriptionDetail = subscriptionRepository.GetById(subscriptionId, includeUnsubscribed);
             if (subscriptionDetail != null)
             {
                 SubscriptionResultExtension subscritpionDetail = PrepareSubscriptionResponse(subscriptionDetail);
@@ -162,7 +136,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <returns></returns>
         public SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
         {
-            var existingPlanDetail = this.PlanRepository.GetById(subscription.AmpplanId);
+            var existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
 
             SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
             {
@@ -191,7 +165,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         public List<SubscriptionResult> GetPartnerSubscriptions(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
         {
             List<SubscriptionResult> allSubscriptions = new List<SubscriptionResult>();
-            var allSubscriptionsForEmail = SubscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
+            var allSubscriptionsForEmail = subscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
 
             foreach (var subscription in allSubscriptionsForEmail)
             {
@@ -203,33 +177,16 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             return allSubscriptions;
         }
 
-
+        /// <summary>
+        /// Gets the subscription status.
+        /// </summary>
+        /// <param name="subscriptionStatus">The subscription status.</param>
+        /// <returns></returns>
         public SubscriptionStatusEnumExtension GetSubscriptionStatus(string subscriptionStatus)
         {
-            if (!string.IsNullOrEmpty(subscriptionStatus))
-            {
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.NotStarted)) return SubscriptionStatusEnumExtension.NotStarted;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingFulfillmentStart)) return SubscriptionStatusEnumExtension.PendingFulfillmentStart;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.Subscribed)) return SubscriptionStatusEnumExtension.Subscribed;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.Unsubscribed)) return SubscriptionStatusEnumExtension.Unsubscribed;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingActivation)) return SubscriptionStatusEnumExtension.PendingActivation;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.PendingUnsubscribe)) return SubscriptionStatusEnumExtension.PendingUnsubscribe;
-
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.ActivationFailed)) return SubscriptionStatusEnumExtension.ActivationFailed;
-
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.UnsubscribeFailed)) return SubscriptionStatusEnumExtension.UnsubscribeFailed;
-
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeploymentPending)) return SubscriptionStatusEnumExtension.DeploymentPending;
-
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeploymentSuccessful)) return SubscriptionStatusEnumExtension.DeploymentSuccessful;
-
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeploymentFailed)) return SubscriptionStatusEnumExtension.DeploymentFailed;
-
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeleteResourcePendign)) return SubscriptionStatusEnumExtension.DeleteResourcePendign;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeleteResourceFailed)) return SubscriptionStatusEnumExtension.DeleteResourceFailed;
-                if (subscriptionStatus.Trim() == Convert.ToString(SubscriptionStatusEnumExtension.DeleteResourceSuccess)) return SubscriptionStatusEnumExtension.DeleteResourceSuccess;
-            }
-            return SubscriptionStatusEnumExtension.NotStarted;
+            var status = SubscriptionStatusEnumExtension.NotStarted;
+            Enum.TryParse(subscriptionStatus, out status);
+            return status;            
         }
 
         /// <summary>
@@ -238,11 +195,12 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="planId">The plan identifier.</param>
         /// <returns></returns>
-        public bool UpdateSubscriptionPlan(Guid subscriptionId, string planId)
+        public void UpdateSubscriptionPlan(Guid subscriptionId, string planId)
         {
-            if (subscriptionId != default && !string.IsNullOrEmpty(planId))
-                SubscriptionRepository.UpdatePlanForSubscription(subscriptionId, planId);
-            return false;
+            if (subscriptionId != default && !string.IsNullOrWhiteSpace(planId))
+            {
+                subscriptionRepository.UpdatePlanForSubscription(subscriptionId, planId);                
+            }            
         }
 
         /// <summary>
@@ -251,11 +209,11 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="quantity">The quantity identifier.</param>
         /// <returns></returns>
-        public bool UpdateSubscriptionQuantity(Guid subscriptionId, int quantity)
+        public void UpdateSubscriptionQuantity(Guid subscriptionId, int quantity)
         {
             if (subscriptionId != default && quantity > 0)
-                SubscriptionRepository.UpdateQuantityForSubscription(subscriptionId, quantity);
-            return false;
+                subscriptionRepository.UpdateQuantityForSubscription(subscriptionId, quantity);
+            
         }
 
         /// <summary>
@@ -266,7 +224,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         {
             foreach (var planDetail in allPlanDetail)
             {
-                PlanRepository.Add(new Plans
+                planRepository.Save(new Plans
                 {
                     PlanId = planDetail.PlanId,
                     DisplayName = planDetail.PlanId,
@@ -283,7 +241,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <returns></returns>
         public List<SaasKitModels.PlanDetailResult> GetAllSubscriptionPlans()
         {
-            var allPlans = PlanRepository.Get();
+            var allPlans = planRepository.Get();
 
             return (from plan in allPlans
                     select new SaasKitModels.PlanDetailResult()
@@ -303,8 +261,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         {
             List<SubscriptionParametersModel> subscriptionParametersList = new List<SubscriptionParametersModel>();
 
-            var subscriptionParameters = SubscriptionRepository.GetSubscriptionsParametersById(subscriptionId, planId);
-
+            var subscriptionParameters = subscriptionRepository.GetSubscriptionsParametersById(subscriptionId, planId);
 
             var serializedSubscription = JsonConvert.SerializeObject(subscriptionParameters);
             subscriptionParametersList = JsonConvert.DeserializeObject<List<SubscriptionParametersModel>>(serializedSubscription);
@@ -320,7 +277,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         {
             foreach (var parameters in subscriptionParameters)
             {
-                SubscriptionRepository.AddSubscriptionParameters(new SubscriptionParametersOutput
+                subscriptionRepository.AddSubscriptionParameters(new SubscriptionParametersOutput
                 {
                     Id = parameters.Id,
                     PlanId = parameters.PlanId,
@@ -336,7 +293,5 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 }); ;
             }
         }
-
-
     }
 }

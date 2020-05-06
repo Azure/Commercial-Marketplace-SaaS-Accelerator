@@ -1,23 +1,35 @@
-﻿using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Mail;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using System.Net;
+    using System.Net.Mail;
+
+    /// <summary>
+    /// Service to send emails using SMTP settings
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IEmailService" />
     public class SMTPEmailService : IEmailService
     {
+        /// <summary>
+        /// The application configuration repository
+        /// </summary>
         private readonly IApplicationConfigRepository applicationConfigRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SMTPEmailService"/> class.
+        /// </summary>
+        /// <param name="applicationConfigRepository">The application configuration repository.</param>
         public SMTPEmailService(IApplicationConfigRepository applicationConfigRepository)
         {
             this.applicationConfigRepository = applicationConfigRepository;
-
         }
+
+        /// <summary>
+        /// Sends the email.
+        /// </summary>
+        /// <param name="emailContent">Content of the email.</param>
         public void SendEmail(EmailContentModel emailContent)
         {
             MailMessage mail = new MailMessage();
@@ -49,9 +61,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                     emailContent.UserName, emailContent.Password);
                 smtp.EnableSsl = emailContent.SSL;
                 smtp.Send(mail);
-
             }
-
         }
     }
 }

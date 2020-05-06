@@ -3,7 +3,7 @@
     /// <summary>
     /// WebConstants
     /// </summary>
-    public class WebConstants
+    public class ClaimConstants
     {
         /// <summary>
         /// Defines the CLAIM_EMAILADDRESS

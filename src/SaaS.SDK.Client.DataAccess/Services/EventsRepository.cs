@@ -2,6 +2,7 @@
 {
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using System;
     using System.Linq;
 
@@ -28,15 +29,12 @@
         /// <summary>
         /// Gets the name of the by.
         /// </summary>
-        /// <param name="Name">The name.</param>
+        /// <param name="name">The name.</param>
         /// <returns>Event id by name</returns>
-        public int GetByName(String Name)
+        public Events GetByName(String name)
         {
-            var results = context.Events.Where(s => s.EventsName == Name);
-            if (results.Count() == 0)
-                return 0;
-            else
-                return context.Events.Where(s => s.EventsName == Name).FirstOrDefault().EventsId;
+            var results = context.Events.Where(s => s.EventsName == name);            
+            return context.Events.Where(s => s.EventsName == name).FirstOrDefault();
         }
     }
 }

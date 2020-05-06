@@ -82,7 +82,7 @@
         /// </summary>
         /// <param name="dimensionDetails">The dimension details.</param>
         /// <returns></returns>
-        public int Add(MeteredDimensions dimensionDetails)
+        public int Save(MeteredDimensions dimensionDetails)
         {
             if (dimensionDetails != null && !string.IsNullOrEmpty(dimensionDetails.Dimension))
             {

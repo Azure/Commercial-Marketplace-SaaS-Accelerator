@@ -120,7 +120,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddSingleton<CloudStorageConfigs>(cloudConfig);
             services.AddSingleton<IVaultService>(new AzureKeyVaultClient(keyVaultConfig, loggerFactory.CreateLogger<AzureKeyVaultClient>()));
-            services.AddSingleton<IARMTemplateStorageService>(new AzureBlobFileClient(azureBlobConfig));
+            services.AddSingleton<IARMTemplateStorageService>(new AzureBlobStorageService(azureBlobConfig));
             services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
             services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
             services.AddDbContext<SaasKitContext>(options =>
@@ -160,7 +160,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<IArmTemplateParametersRepository, ArmTemplateParametersRepository>();
-            services.AddScoped<KnownUser>();
+            services.AddScoped<KnownUserAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

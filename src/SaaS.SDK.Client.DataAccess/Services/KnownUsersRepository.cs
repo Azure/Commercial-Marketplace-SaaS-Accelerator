@@ -67,7 +67,7 @@
         /// <param name="entities">The entities.</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public int Add(KnownUsers entities)
+        public int Save(KnownUsers entities)
         {
             throw new NotImplementedException();
         }

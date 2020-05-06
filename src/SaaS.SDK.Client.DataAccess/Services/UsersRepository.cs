@@ -66,7 +66,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         /// <param name="userDetail">The user detail.</param>
         /// <returns></returns>
-        public int Add(Users userDetail)
+        public int Save(Users userDetail)
         {
             var existingUser = context.Users.Where(s => s.EmailAddress == userDetail.EmailAddress).FirstOrDefault();
             if (existingUser != null)

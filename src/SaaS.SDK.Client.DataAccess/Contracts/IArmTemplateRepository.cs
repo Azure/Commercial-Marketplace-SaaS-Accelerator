@@ -28,5 +28,12 @@
         /// </summary>
         /// <returns>List of ARM Templates</returns>
         IEnumerable<Armtemplates> GetAll();
+
+        /// <summary>
+        /// Gets the by identifier.
+        /// </summary>
+        /// <param name="armTemplateId">The arm template identifier.</param>
+        /// <returns></returns>
+        Armtemplates GetById(Guid armTemplateId);
     }
 }

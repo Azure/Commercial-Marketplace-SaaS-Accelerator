@@ -1,29 +1,37 @@
-﻿//using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using System;
+    using System.Collections.Generic;
+
+    /// <summary>
+    /// Service to enable operations over offers
+    /// </summary>
     public class OfferServices
     {
         /// <summary>
-        /// The plan repository
+        /// The offer repository
         /// </summary>
-        public IOffersRepository OfferRepository;
+        public IOffersRepository offerRepository;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OfferServices"/> class.
+        /// </summary>
+        /// <param name="offerRepo">The offer repo.</param>
         public OfferServices(IOffersRepository offerRepo)
         {
-            OfferRepository = offerRepo;
+            offerRepository = offerRepo;
         }
 
+        /// <summary>
+        /// Gets the offers.
+        /// </summary>
+        /// <returns></returns>
         public List<OffersModel> GetOffers()
         {
             List<OffersModel> offersList = new List<OffersModel>();
-            var allOfferData = this.OfferRepository.GetAll();
+            var allOfferData = this.offerRepository.GetAll();
             foreach (var item in allOfferData)
             {
                 OffersModel Offers = new OffersModel();
@@ -38,9 +46,14 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             return offersList;
         }
 
+        /// <summary>
+        /// Gets the offer on identifier.
+        /// </summary>
+        /// <param name="offerGuId">The offer gu identifier.</param>
+        /// <returns></returns>
         public OffersViewModel GetOfferOnId(Guid offerGuId)
         {
-            var offer = this.OfferRepository.GetOfferById(offerGuId);
+            var offer = this.offerRepository.GetOfferById(offerGuId);
             OffersViewModel offerModel = new OffersViewModel()
             {
                 Id = offer.Id,
@@ -50,6 +63,5 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             };
             return offerModel;
         }
-
     }
 }

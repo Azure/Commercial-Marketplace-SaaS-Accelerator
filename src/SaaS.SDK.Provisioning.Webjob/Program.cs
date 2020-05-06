@@ -111,7 +111,7 @@ namespace SaaS.SDK.Provisioning.Webjob
             services.AddSingleton<SaaSApiClientConfiguration>(config);
 
             services.AddSingleton<IVaultService>(new AzureKeyVaultClient(keyVaultConfig, loggerFactory.CreateLogger<AzureKeyVaultClient>()));
-            services.AddSingleton<IARMTemplateStorageService>(new AzureBlobFileClient(azureBlobConfig));
+            services.AddSingleton<IARMTemplateStorageService>(new AzureBlobStorageService(azureBlobConfig));
             services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
             services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
 

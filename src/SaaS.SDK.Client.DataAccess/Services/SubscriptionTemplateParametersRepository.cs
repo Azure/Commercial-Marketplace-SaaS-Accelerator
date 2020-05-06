@@ -38,5 +38,29 @@
             else
                 return context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == SubscriptionID);
         }
+
+        /// <summary>
+        /// Saves the specified subscription template parameters.
+        /// </summary>
+        /// <param name="subscriptionTemplateParameters">The subscription template parameters.</param>
+        /// <returns></returns>
+        public int Save(SubscriptionTemplateParameters subscriptionTemplateParameters)
+        {
+            var existingRecord = context.SubscriptionTemplateParameters.Where(x => x.Id == subscriptionTemplateParameters.Id).FirstOrDefault();
+            if(existingRecord == null)
+            {
+                context.SubscriptionTemplateParameters.Add(subscriptionTemplateParameters);
+            }
+            else
+            {
+                existingRecord.Parameter = subscriptionTemplateParameters.Parameter;
+                existingRecord.ParameterDataType = subscriptionTemplateParameters.ParameterDataType;
+                existingRecord.Value = subscriptionTemplateParameters.Value;
+                existingRecord.ParameterType = subscriptionTemplateParameters.ParameterType;                
+            }
+            context.SaveChanges();
+
+            return subscriptionTemplateParameters.Id;
+        }
     }
 }

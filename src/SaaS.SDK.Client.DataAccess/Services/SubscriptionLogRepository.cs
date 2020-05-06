@@ -29,7 +29,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         /// <param name="subscriptionLogs">The subscription logs.</param>
         /// <returns></returns>
-        public int Add(SubscriptionAuditLogs subscriptionLogs)
+        public int Save(SubscriptionAuditLogs subscriptionLogs)
         {
             context.SubscriptionAuditLogs.Add(subscriptionLogs);
             context.SaveChanges();

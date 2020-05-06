@@ -29,7 +29,7 @@
         /// </summary>
         /// <param name="meteredAuditLogs">The metered audit logs.</param>
         /// <returns></returns>
-        public int Add(MeteredAuditLogs meteredAuditLogs)
+        public int Save(MeteredAuditLogs meteredAuditLogs)
         {
             context.MeteredAuditLogs.Add(meteredAuditLogs);
             context.SaveChanges();
