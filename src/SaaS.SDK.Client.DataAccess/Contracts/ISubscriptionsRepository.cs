@@ -73,14 +73,6 @@
         void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput);
 
         /// <summary>
-        /// Gets the subscription template parameter by identifier.
-        /// </summary>
-        /// <param name="subscriptionId">The subscription identifier.</param>
-        /// <param name="planId">The plan identifier.</param>
-        /// <returns>List of resource deployment parameters related to the subscription</returns>
-        List<SubscriptionTemplateParameters> GetSubscriptionTemplateParameterById(Guid subscriptionId, Guid planId);
-
-        /// <summary>
         /// Gets the deployment configuration.
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>

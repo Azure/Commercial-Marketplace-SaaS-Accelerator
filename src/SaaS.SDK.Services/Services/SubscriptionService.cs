@@ -1,10 +1,12 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
+    using Microsoft.Azure.Management.ResourceManager.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -79,7 +81,7 @@
         {
             subscriptionRepository.UpdateStatusForSubscription(subscriptionId, status, isActivate);
         }
-                
+
         /// <summary>
         /// Subscriptions state from status.
         /// </summary>
@@ -87,7 +89,7 @@
         /// <returns></returns>
         public bool IsSubscriptionDeleted(string status)
         {
-            return SubscriptionStatusEnum.Unsubscribed.ToString().Equals(status, StringComparison.InvariantCultureIgnoreCase);            
+            return SubscriptionStatusEnum.Unsubscribed.ToString().Equals(status, StringComparison.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -186,7 +188,7 @@
         {
             var status = SubscriptionStatusEnumExtension.NotStarted;
             Enum.TryParse(subscriptionStatus, out status);
-            return status;            
+            return status;
         }
 
         /// <summary>
@@ -199,8 +201,8 @@
         {
             if (subscriptionId != default && !string.IsNullOrWhiteSpace(planId))
             {
-                subscriptionRepository.UpdatePlanForSubscription(subscriptionId, planId);                
-            }            
+                subscriptionRepository.UpdatePlanForSubscription(subscriptionId, planId);
+            }
         }
 
         /// <summary>
@@ -213,7 +215,7 @@
         {
             if (subscriptionId != default && quantity > 0)
                 subscriptionRepository.UpdateQuantityForSubscription(subscriptionId, quantity);
-            
+
         }
 
         /// <summary>
@@ -293,5 +295,52 @@
                 }); ;
             }
         }
+
+
+        public List<SubscriptionTemplateParameters> GenerateParmlistFromResponse(DeploymentExtended outputstring)
+        {
+            List<SubscriptionTemplateParameters> childlist = new List<SubscriptionTemplateParameters>();
+
+            JObject templateOutputs = (JObject)outputstring.Properties.Outputs;
+
+
+            foreach (JToken child in templateOutputs.Children())
+            {
+                SubscriptionTemplateParameters childparms = new SubscriptionTemplateParameters();
+                childparms = new SubscriptionTemplateParameters();
+                childparms.ParameterType = "output";
+                var paramName = (child as JProperty).Name;
+                childparms.Parameter = paramName;
+                object paramValue = string.Empty;
+
+                foreach (JToken grandChild in child)
+                {
+                    foreach (JToken grandGrandChild in grandChild)
+                    {
+                        var property = grandGrandChild as JProperty;
+
+                        if (property != null && property.Name == "value")
+                        {
+                            var type = property.Value.GetType();
+
+                            if (type == typeof(JValue) || type == typeof(JArray) ||
+                            property.Value.Type == JTokenType.Object ||
+                            property.Value.Type == JTokenType.Date)
+                            {
+                                paramValue = property.Value;
+                                if (paramValue != null)
+                                {
+                                    childparms.Value = paramValue.ToString();
+                                }
+                            }
+
+                        }
+                    }
+                }
+                childlist.Add(childparms);
+            }
+            return childlist;
+        }
+
     }
 }
