@@ -36,7 +36,7 @@
         public virtual DbSet<SubscriptionAttributeValues> SubscriptionAttributeValues { get; set; }
         public virtual DbSet<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
         public virtual DbSet<SubscriptionKeyValueOutPut> SubscriptionKeyValueOutPut { get; set; }
-        public virtual DbSet<SubscriptionKeyValut> SubscriptionKeyValut { get; set; }
+        public virtual DbSet<SubscriptionKeyVault> SubscriptionKeyVault { get; set; }
         public virtual DbSet<SubscriptionLicenses> SubscriptionLicenses { get; set; }
         public virtual DbSet<SubscriptionParametersOutput> SubscriptionParametersOutput { get; set; }
         public virtual DbSet<SubscriptionTemplateParameters> SubscriptionTemplateParameters { get; set; }
@@ -444,7 +444,7 @@
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<SubscriptionKeyValut>(entity =>
+            modelBuilder.Entity<SubscriptionKeyVault>(entity =>
             {
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
             });

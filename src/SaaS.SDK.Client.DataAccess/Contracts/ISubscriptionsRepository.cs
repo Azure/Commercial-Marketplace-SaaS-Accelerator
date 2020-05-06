@@ -77,6 +77,6 @@
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns></returns>
-        SubscriptionKeyValut GetDeploymentConfig(Guid subscriptionId);
+        SubscriptionKeyVault GetDeploymentConfig(Guid subscriptionId);
     }
 }

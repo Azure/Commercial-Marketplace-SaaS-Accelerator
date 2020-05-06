@@ -28,10 +28,10 @@
         /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
         /// <param name="eventsRepository">The events repository.</param>
         public EmailHelper(
-                            IApplicationConfigRepository applicationConfigRepository, 
-                            ISubscriptionsRepository subscriptionsRepository, 
-                            IEmailTemplateRepository emailTemplateRepository, 
-                            IPlanEventsMappingRepository planEventsMappingRepository, 
+                            IApplicationConfigRepository applicationConfigRepository,
+                            ISubscriptionsRepository subscriptionsRepository,
+                            IEmailTemplateRepository emailTemplateRepository,
+                            IPlanEventsMappingRepository planEventsMappingRepository,
                             IEventsRepository eventsRepository
                             )
         {
@@ -56,13 +56,13 @@
         /// Error while sending an email, please check the configuration.
         /// </exception>
         public EmailContentModel PrepareEmailContent(
-                                                        SubscriptionResultExtension Subscription, 
-                                                        string planEvent = "success", 
-                                                        SubscriptionStatusEnumExtension oldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart, 
+                                                        SubscriptionResultExtension Subscription,
+                                                        string processStatus = "success",
+                                                        SubscriptionStatusEnumExtension oldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart,
                                                         string newValue = null)
         {
             EmailContentModel emailContent = new EmailContentModel();
-            string body = ProcessTemplate(Subscription, planEvent, oldValue, newValue);
+            string body = ProcessTemplate(Subscription, processStatus, oldValue, newValue);
             var subscriptionEvent = this.eventsRepository.GetByName(Subscription.EventName);
             var emailTemplateData = emailTemplateRepository.GetTemplateForStatus(Subscription.SubscriptionStatus.ToString());
             string Subject = string.Empty;
@@ -96,26 +96,24 @@
              */
 
             var eventMappings = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, subscriptionEvent.EventsId);
-            if (eventMappings != null)
-            {
-                CopyToCustomer = eventMappings.CopyToCustomer ?? false;
-                isActive = eventMappings.Isactive;
-            }
-            toReceipents = Subscription.CustomerEmailAddress;
+            //if (eventMappings != null)
+            //{
+            //    CopyToCustomer = eventMappings.CopyToCustomer ?? false;
+            //    isActive = eventMappings.Isactive;
+            //}
+            //
 
-            if (planEvent.ToLower() == "success")
+            if (processStatus.ToLower() == "success")
             {
                 var successEventData = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, subscriptionEvent.EventsId);
-
-                if (string.IsNullOrEmpty(toReceipents))
-                {
-                    throw new Exception(" Error while sending an email, please check the configuration. ");
-                }
-
 
                 if (successEventData != null)
                 {
                     toReceipents = successEventData.SuccessStateEmails;
+                }
+                if (string.IsNullOrEmpty(toReceipents))
+                {
+                    throw new Exception(" Error while sending an email, please check the configuration. ");
                 }
 
                 if (emailTemplateData != null)
@@ -133,18 +131,20 @@
                 }
             }
 
-            if (planEvent.ToLower() == "failure")
+            if (processStatus.ToLower() == "failure")
             {
                 var failureStateEmails = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, subscriptionEvent.EventsId);
-                if (string.IsNullOrEmpty(toReceipents))
-                {
-                    throw new Exception(" Error while sending an email, please check the configuration. ");
-                }
 
                 if (failureStateEmails != null)
                 {
                     toReceipents = failureStateEmails.FailureStateEmails;
                 }
+                if (string.IsNullOrEmpty(toReceipents))
+                {
+                    throw new Exception(" Error while sending an email, please check the configuration. ");
+                }
+
+
                 if (emailTemplateData != null)
                 {
                     if (!string.IsNullOrEmpty(toReceipents) && !string.IsNullOrEmpty(emailTemplateData.Cc))
@@ -215,7 +215,7 @@
         /// <param name="oldValue">The old value.</param>
         /// <param name="newValue">The new value.</param>
         /// <returns></returns>
-        public string ProcessTemplate(SubscriptionResultExtension Subscription, string planEvent, SubscriptionStatusEnumExtension oldValue, string newValue)
+        public string ProcessTemplate(SubscriptionResultExtension Subscription, string processStatus, SubscriptionStatusEnumExtension oldValue, string newValue)
         {
 
             string parameter = string.Empty;
@@ -224,7 +224,7 @@
 
             string body = string.Empty;
             EmailTemplate templateDetails = emailTemplateRepository.GetTemplateForStatus("Template");
-
+            body = templateDetails.TemplateBody;
             string applicationName = applicationConfigRepository.GetValueByName("ApplicationName");
             Hashtable hashTable = new Hashtable();
             hashTable.Add("ApplicationName", applicationName);
@@ -235,8 +235,8 @@
             hashTable.Add("SaasSubscriptionStatus", Subscription.SubscriptionStatus);
             hashTable.Add("oldValue", oldValue);
             hashTable.Add("newValue", newValue);
-            hashTable.Add("planevent", planEvent);
-            
+            hashTable.Add("planevent", processStatus);
+
             ExtendedProperties p = new ExtendedProperties();
 
             VelocityEngine v = new VelocityEngine();

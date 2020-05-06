@@ -143,6 +143,7 @@
             this.logger.LogInformation("ResourceDeploymentStatusHandler Process...");
             this.logger.LogInformation("Get SubscriptionById");
             var subscription = this.GetSubscriptionById(subscriptionID);
+            this.logger?.LogInformation("Result subscription : {0}", JsonConvert.SerializeObject(subscription.AmpplanId));
             this.logger.LogInformation("Get PlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
 
@@ -158,14 +159,14 @@
 
             this.logger.LogInformation("subscription.SubscriptionStatus: SubscriptionStatus: {0}", subscription.SubscriptionStatus);
 
-            if (SubscriptionStatusEnumExtension.PendingActivation.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
+            if (SubscriptionStatusEnumExtension.PendingActivation.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase) && planDetails.DeployToCustomerSubscription == true)
             {
 
                 // Check if arm template is available for the plan in Plan Event Mapping table with isactive=1
                 this.logger.LogInformation("Get PlanEventsMapping");
                 var planEvent = planEventsMappingRepository.GetPlanEvent(planDetails.PlanGuid, events.EventsId);
                 this.logger.LogInformation("Get Armtemplates");
-                if (planEvent.Isactive == true)
+                if (planEvent != null && planEvent.Isactive == true)
                 {
                     var armTemplate = armTemplateRepository.GetById(planEvent.ArmtemplateId);
                     this.logger.LogInformation("Get GetTemplateParameters");
@@ -190,12 +191,12 @@
 
                                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentPending.ToString(), true);
 
-                                    this.logger.LogInformation("Get SubscriptionKeyValut");
+                                    this.logger.LogInformation("Get SubscriptionKeyVault");
                                     string secretKey = "";
                                     if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                                     {
                                         var keyvault = this.subscriptionsRepository.GetDeploymentConfig(subscriptionID);
-                                       
+
                                         secretKey = keyvault.SecureId;
                                     }
                                     else

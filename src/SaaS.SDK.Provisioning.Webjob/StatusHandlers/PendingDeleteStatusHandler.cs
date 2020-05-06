@@ -122,7 +122,7 @@
                             this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourcePending.ToString(), true);
 
                             var resourceGroup = parametersList.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
-                            this.logger?.LogInformation("Get SubscriptionKeyValut");
+                            this.logger?.LogInformation("Get SubscriptionKeyVault");
                             string secretKey = "";
                             if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                             {

@@ -38,6 +38,8 @@
 
                 mail.From = new MailAddress(emailContent.FromEmail);
                 mail.IsBodyHtml = true;
+                mail.Subject = emailContent.Subject;
+                mail.Body = emailContent.Body;
 
                 string[] toEmails = (emailContent.ToEmails).Split(';');
                 foreach (string Multimailid in toEmails)

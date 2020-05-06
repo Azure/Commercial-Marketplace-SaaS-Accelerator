@@ -200,16 +200,16 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="userId">The user identifier.</param>
         public void SaveDeploymentCredentials(Guid subscriptionId, string keyVaultSecret, int userId)
         {
-            var existingKey = context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
+            var existingKey = context.SubscriptionKeyVault.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
             if (existingKey != null)
             {
                 existingKey.SecureId = keyVaultSecret;
                 existingKey.SubscriptionId = subscriptionId;
-                context.SubscriptionKeyValut.Update(existingKey);
+                context.SubscriptionKeyVault.Update(existingKey);
             }
             else
             {
-                SubscriptionKeyValut subscriptionKeyValut = new SubscriptionKeyValut()
+                SubscriptionKeyVault SubscriptionKeyVault = new SubscriptionKeyVault()
                 {
                     SubscriptionId = subscriptionId,
                     SecureId = keyVaultSecret,
@@ -217,7 +217,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                     UserId = userId
                 };
 
-                context.SubscriptionKeyValut.Add(subscriptionKeyValut);
+                context.SubscriptionKeyVault.Add(SubscriptionKeyVault);
                 context.SaveChanges();
             }
         }
@@ -269,9 +269,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns></returns>
-        public SubscriptionKeyValut GetDeploymentConfig(Guid subscriptionId)
+        public SubscriptionKeyVault GetDeploymentConfig(Guid subscriptionId)
         {
-            return context.SubscriptionKeyValut.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
+            return context.SubscriptionKeyVault.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
         }
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.

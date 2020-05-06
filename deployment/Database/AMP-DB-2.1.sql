@@ -887,7 +887,7 @@ SELECT 'Template','Template',GETDATE(),'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML
                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateBody">
                               <tr>
                                  <td valign="top" class="bodyContent">
-                                    <h1 style="display: block;  margin-left: auto;  margin-right: auto;  width: 75%;">Welcome to ${ApplicationName}!</h1>                         #if(${planevent} == "failure")
+                                    <h1 style="display: block;  margin-left: auto;  margin-right: auto;  width: 75%;">Welcome to ${ApplicationName}!</h1>                         #if(${processStatus} == "failure")
                                      <p>Your request for the subscription has been failed.</p>    
                     #elseif(${SaasSubscriptionStatus} == "PendingActivation")
                                     <p>A request for purchase with the following details is awaiting your action for activation.                                       </p>
@@ -1058,7 +1058,7 @@ Update EmailTemplate set TemplateBody = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTM
                               <tr>
                                  <td valign="top" class="bodyContent">
                                     <h1 style="display: block;  margin-left: auto;  margin-right: auto;  width: 75%;">Welcome to ${ApplicationName}!</h1>
-                                    #if(${planevent} == "failure")                                       
+                                    #if(${processStatus} == "failure")                                       
                                     <p>Your request for the subscription has been failed.</p>
                                     #elseif(${SaasSubscriptionStatus} == "PendingActivation")                                      
                                     <p>A request for purchase with the following details is awaiting your action for activation.                                       </p>
