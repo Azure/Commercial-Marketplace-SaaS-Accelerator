@@ -842,7 +842,7 @@ RowID int  NOT NULL
 
 GO
 
-CREATE TABLE SubscriptionKeyValut
+CREATE TABLE SubscriptionKeyVault
 (
 Id Int Identity(1,1) Primary Key,
 SubscriptionId UniqueIdentifier,
