@@ -100,6 +100,8 @@
 
         private readonly IOptions<SaaSApiClientConfiguration> options;
 
+        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
@@ -112,7 +114,8 @@
         /// <param name="SubscriptionUsageLogsRepository">The subscription usage logs repository.</param>
         public HomeController(IUsersRepository UsersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository SubscriptionRepo,
                                 IPlansRepository PlanRepository, ISubscriptionUsageLogsRepository SubscriptionUsageLogsRepository,
-                                    IMeteredDimensionsRepository DimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options)
+                                    IMeteredDimensionsRepository DimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options,
+                                    ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository)
         {
             this.apiClient = apiClient;
             subscriptionRepo = SubscriptionRepo;
@@ -136,6 +139,7 @@
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.eventsRepository = eventsRepository;
             this.options = options;
+            this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
         }
 
         /// <summary>
@@ -261,7 +265,7 @@
                 if (User.Identity.IsAuthenticated)
                 {
                     List<SubscriptionTemplateParameters> subscriptionTemplateParms = new List<SubscriptionTemplateParameters>();
-                    subscriptionTemplateParms = this.subscriptionRepository.GetSubscriptionTemplateParameterById(subscriptionId, planId).ToList();
+                    subscriptionTemplateParms = this.subscriptionTemplateParametersRepository.GetById(subscriptionId, planId).ToList();
                     return this.View(subscriptionTemplateParms);
                 }
                 else

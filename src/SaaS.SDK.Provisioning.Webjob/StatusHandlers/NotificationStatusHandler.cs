@@ -134,7 +134,7 @@
             this.offersRepository = offersRepository;
             this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
             this.emailService = emailService;
-            this.emailHelper = emailHelper;
+            this.emailHelper = new EmailHelper(applicationConfigRepository,subscriptionRepository,emailTemplateRepository,planEventsMappingRepository,eventsRepository);
             this.logger = logger;
         }
 
@@ -200,7 +200,7 @@
              *  Unsubscribed
              *  UnsubscribeFailed
              */
-            string eventStatus = "Activate";
+            string planEventName = "Activate";
 
             if (
              subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed.ToString() ||
@@ -208,12 +208,12 @@
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString()
                 )
             {
-                eventStatus = "Unsubscribe";
+                planEventName = "Unsubscribe";
 
             }
-            subscriptionDetail.EventName = eventStatus;
+            subscriptionDetail.EventName = planEventName;
 
-            string planEvent = "success";
+            string processStatus = "success";
             if (
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeploymentFailed.ToString() ||
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed.ToString() ||
@@ -221,11 +221,11 @@
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString()
                 )
             {
-                planEvent = "failure";
+                processStatus = "failure";
 
             }
 
-            int? eventId = this.eventsRepository.GetByName(planEvent)?.EventsId;
+            int? eventId = this.eventsRepository.GetByName(planEventName)?.EventsId;
 
             var planEvents = this.planEventsMappingRepository.GetPlanEvent(planDetails.PlanGuid, eventId.GetValueOrDefault());
 
@@ -236,17 +236,17 @@
             bool triggerEmail = false;
             if (planEvents.Isactive == true)
             {
-                if (eventStatus == "Activate" && (isEmailEnabledForPendingActivation || isEmailEnabledForSubscriptionActivation))
+                if (planEventName == "Activate" && (isEmailEnabledForPendingActivation || isEmailEnabledForSubscriptionActivation))
                 {
                     triggerEmail = true;
                 }
-                if (eventStatus == "Unsubscribe" && isEmailEnabledForUnsubscription)
+                if (planEventName == "Unsubscribe" && isEmailEnabledForUnsubscription)
                 {
                     triggerEmail = true;
                 }
 
             }
-            var emailContent = this.emailHelper.PrepareEmailContent(subscriptionDetail, planEvent, subscriptionDetail.SubscriptionStatus, subscriptionDetail.SubscriptionStatus.ToString());
+            var emailContent = this.emailHelper.PrepareEmailContent(subscriptionDetail, processStatus, subscriptionDetail.SubscriptionStatus, subscriptionDetail.SubscriptionStatus.ToString());
 
             if (triggerEmail)
             {

@@ -4,7 +4,6 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Contracts;
@@ -123,7 +122,7 @@
                             this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourcePending.ToString(), true);
 
                             var resourceGroup = parametersList.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
-                            this.logger?.LogInformation("Get SubscriptionKeyValut");
+                            this.logger?.LogInformation("Get SubscriptionKeyVault");
                             string secretKey = "";
                             if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                             {

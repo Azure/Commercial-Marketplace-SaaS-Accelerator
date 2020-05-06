@@ -22,5 +22,21 @@
         /// <param name="subscriptionTemplateParameters">The subscription template parameters.</param>
         /// <returns></returns>
         int Save(SubscriptionTemplateParameters subscriptionTemplateParameters);
+       
+        /// <summary>
+        /// Gets the subscription template parameter by identifier.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns>List of resource deployment parameters related to the subscription</returns>
+        List<SubscriptionTemplateParameters> GetById(Guid subscriptionId, Guid planId);
+
+        /// <summary>
+        /// Update subscription template parameter by identifier. 
+        /// </summary>
+        /// <param name="parms"></param>
+        /// <param name="subscriptionID"></param>
+        void Update(List<SubscriptionTemplateParameters> parms, Guid subscriptionID);
+
     }
 }

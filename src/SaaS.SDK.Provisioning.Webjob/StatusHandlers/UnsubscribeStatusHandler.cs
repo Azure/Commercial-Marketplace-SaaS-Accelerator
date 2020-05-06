@@ -62,7 +62,7 @@
         {
             this.logger?.LogInformation("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
-            this.logger?.LogInformation("subscription : {0}", JsonConvert.SerializeObject(subscription));
+            this.logger?.LogInformation("Result subscription : {0}", JsonConvert.SerializeObject(subscription.AmpplanId));
             
             this.logger?.LogInformation("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);

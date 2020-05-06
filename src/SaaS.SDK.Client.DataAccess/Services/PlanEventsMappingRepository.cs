@@ -33,7 +33,7 @@
         public PlanEventsMapping GetPlanEvent(Guid PlanID, int eventID)
         {
             var results = context.PlanEventsMapping.Where(s => s.PlanId == PlanID && s.EventId == eventID);
-            if (results.Count() == 0)
+            if (results == null || results.ToList().Count() == 0)
                 return null;
             else
                 return context.PlanEventsMapping.Where(s => s.PlanId == PlanID && s.EventId == eventID).FirstOrDefault();

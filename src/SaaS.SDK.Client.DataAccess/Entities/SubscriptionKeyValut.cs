@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
 {
-    public partial class SubscriptionKeyValut
+    public partial class SubscriptionKeyVault
     {
         public int Id { get; set; }
         public Guid? SubscriptionId { get; set; }

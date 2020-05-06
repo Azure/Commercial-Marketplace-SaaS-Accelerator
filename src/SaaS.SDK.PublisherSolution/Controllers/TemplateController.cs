@@ -9,7 +9,6 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
-    //using Microsoft.Marketplace.Saas.Client.Services;
     using Microsoft.Marketplace.Saas.Web.Controllers;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
@@ -19,8 +18,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Client.Services;
-    //using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json.Linq;
 

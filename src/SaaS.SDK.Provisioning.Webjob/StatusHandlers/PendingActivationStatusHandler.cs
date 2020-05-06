@@ -75,10 +75,8 @@
         {
             this.logger?.LogInformation("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
+            this.logger?.LogInformation("Result subscription : {0}", JsonConvert.SerializeObject(subscription.AmpplanId));
             this.logger?.LogInformation("Get User");
-
-            this.logger?.LogInformation("subscription : {0}", JsonConvert.SerializeObject(subscription));
-
             var userdeatils = this.GetUserById(subscription.UserId);
 
             if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString() ||
