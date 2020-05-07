@@ -1,20 +1,10 @@
- [Subscriptions](#Subscriptions)
-     * [Activate](#activate)
-     * [Change plan](#change-plan)
-     * [Unsubscribe](#unsubscribe)
-     * [Change quantity](#change-quantity)
-     * [View activity log](#view-activity-log)
-     * [Go to SaaS application](#Go-to-SaaS-application)
-     * [SaaS metering service](#SaaS-metering-service)
-     * [Emit usage events](#Emit-usage-events)
-     * [License Manager](#license-manager)
+# Customer experience
 
 
 ## Overview
-The Customer web application showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. 
-The application also provides feasibility to capture information from customer.
+The Customer provisioning web application provides the landing page for the customers who purchase the transactable SaaS offer.
 
-## Offers
+## Purchase SaaS offer
 SaaS offers that is published in Azure Market Place can be extracted and managed form the portal.
 	
 Log on to [Azure](https://portal.azure.com) 
@@ -48,13 +38,14 @@ Log on to [Azure](https://portal.azure.com)
 
 ## Landing Page
 - Based on the Deployment requirement **Deploy to cusotmer subscription** the custom fields in the landing page will be shown.
-- User need to fill the fields like below which will help in deploying app in the subscription.
+- User needs to fill the fields like below which will help in deploying app in the subscription.
    - *Tenant Id*
    - *Subscription Id*
    - *Client ID*
    - *Client Secret*
    ![Landing page](./images/subscription-landingpage.png) 
 - If there is no Deployment to customers subscription, no additional fields will be displayed, usercan makea request to activat the subscription. 
+
 ### Subscription
 - All the subscriptions purchased by the customer will be availabe under the subscriptions screen.
 - The status of each subscription will be availbe in the list.
@@ -153,8 +144,6 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 ![Per user pricing](./images/per-user-plan-pricing.png)
 
 > The AMP SDK sample application calls the following AMP SDK API methods in the background.
-
-
 
 
 ### View activity log

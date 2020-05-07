@@ -33,9 +33,10 @@ The SDK provides the components required for the implementations of the billing 
 - **Customer provisioning sample web application** showcases how to register, provision, and activate the customer subscription. Implemented using ASP.Net Core 3.1, it uses the SaaS Client library and Data Access Library to to invoke and persists interactions with the fulfillment APIs. In addition, it provides interfaces for a customer to manage their subscriptions and plans. 
 - **Publisher sample web application** showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. 
 - **Client Data Access library** demonstrates how to persist the Plans, Subscriptions, and transactions with the fulfillment and Metered APIs.
+- **Client Services** contains the services used by the Customer provisioning and Publisher solution to orchestrate calls to the API / database.
+- **Provisioning webjob** implements the  background job in processing the requests from the Customer Provisioning and the Publisher portals and moves the subscriptions through relevant statuses.
 
 The sample and the SDK in this repository cover the components that comprise the highlighted area in this architecture diagram:
-
 
 ![Usecase](./images/UseCaseSaaSAPIs.png)
 
@@ -77,7 +78,6 @@ Follow the below steps to create a web application resource in an Azure subscrip
 - Fill out the details for the new **App Service**
 ![AllServices](./images/AddNewAppservice.PNG)
 
-
 	- Select Subscription
     - Enter Name  of the instance 
 	- Select RunTime stack - **.Net Core 3.1(LTS)**
@@ -100,14 +100,121 @@ Follow the below steps to create a web application resource in an Azure subscrip
 
 - Create another Web App for the marketplace provisioning service.
 
-## Marketplace Provisioning Service
+## Set up storage account for queues and blob storage
+- Log on to [Azure](https://portal.azure.com)
+- Click **Create a resource** in the left menu
 
-The marketplace provisioning service serves as an intermediary between Azure and the target SaaS application. In a real scenario, the intermediary would initiate the provisioning of the SaaS application and activate the subscription against the SaaS offer being purchased.
+![Create resource](./images/key-vault-create-resource.png)
+- Type **storage account** in the search box in the top bar
+- Click the item labelled **Storage account - blob, file, table, queue** in the results to navigate to the **Storage Account** creation page
+- Click **Create** button to initiate the creation of a storage account
 
-In this example, the sample client application allows the user to:
+![Create storage account](./images/storage-account-create.png)
+- Fill out the details in the **Basics** tab 
+  - Select a **Subscription** and **Resource Group**
+![Basic Info](./images/storage-account-basic-info.png)
+
+- Fill out the **Instance Details** section by providing the values for the following fields as illustrated in the below image
+   
+![Basic Details](./images/storage-account-basic-info-details.png)
+
+- Click **Review + Create**
+- **Create** button appears after the validation of the input is complete
+- Click **Create** to create the storage account
+![ Validate Storage Account](./images/storage-account-basic-info-validate.png)
+
+### Create queue
+
+- After creating the **Storage Account**, navigate to the resource and search for **Queue**
+![Queues](./images/storage-account-queue-menu.png)
+- Click **Queues** from the menu in the left
+- Click **Add Queue** button in the top bar
+- In the pane that opens, provide the name of the queue as **saas-provisioning-queue**
+- > Note: The name of the queue is important and should read **saas-provisioning-queue** as the webjob monitors the storage account for messages in a queue named **saas-provisioning-queue**
+
+![Queue name](./images/storage-account-queue-add.png)
+- Navigate to the **Storage Account**, click **Access Keys** item in the left menu
+- Copy the value in the field labelled **Connection string** as shown in the below image
+
+![Storage account connection string](./images/storage-account-queue-connection-string.png)
+- The connection string is going to be used as the value for the keys **AzureWebJobsStorage** and **AzureBlobConfig** > **BlobConnectionString** in appSettings.json / Azure application configuration
+
+### Create Blob storage
+
+- Azure blob storage is used to hold the ARM template files
+- Navigate to the **Storage Account** that was created earlier
+- Click **Containers** in the **Blob service** section in the left menu
+- Click **+ Container** button in the top bar
+- Give the container a name and set the access level as **Private (no anonymous access)** 
+
+![Blob container](./images/storage-account-blob-container.png)
+
+- The name of the container should be set as value for the key **AzureBlobConfig** > **BlobContainer** in appSettings.json / Azure application configuration
+
+## Set up key vault
+
+- Log on to [Azure](https://portal.azure.com)
+- Search for **Key vaults** in the search box in the top bar
+- Click **Key vaults**
+- Click **+ Add** to add a new key vault
+- Fill out the **Basics** using the below image as a reference
+
+![Key vault basic details](./images/key-vault-name-details.png)
+
+- Click **Review + Create**  to trigger the validation of the input detail
+
+![Key vault basic details validation successful](./images/key-vault-name-validation.png)
+
+- Click **Create** to create the key vault
+
+## Grant key vault access to an Azure AD application
+
+- Log on to [Azure](https://portal.azure.com)
+- Click **Azure Active Directory** in the left menu
+- Click **App registrations** in the left menu
+- Click **+ New registration** button in the top bar
+- Provide a name to the application and click **Create**
+
+![New AD app](./images/key-vault-ad-app-registration.png)
+- Grab the **Application ID** and the **Tenant ID** values from the **Overview** section
+
+![AD App details](./images/key-vault-ad-app-details.png)
+- Click **Certificates & secrets** 
+- Click **+ New client secret** to generate a new secret
+![Secret](./images/key-vault-ad-app-create-secret.png)
+- Give a name to the secret and copy the secret value to a text file. The secret, AD Application ID and the tenant ID 
+- Click **API permissions** 
+- Click **+ Add permission**
+- Select **Azure Key Vault** from the list under **Microsoft APIs**
+![Azure Key Vault API permission](./images/key-vault-ad-app-api-permissions.png)
+
+- Select the **user_impersonation** permission and click **Add permissions**
+![Delegated app permissions](./images/key-vault-ad-app-delegated-permissions.png)
+
+- Now, navigate to the key vault that we created in an earlier step
+- Click **Access policies** menu item on the left
+- Click **+ Add access policy**
+- Open the dropdown - **key permissions** and **Select all**
+- Open the dropdown - **secret permissions** and **Select all**
+- Click the field next to **Select principal** and search for the AD app that was just created
+- Select the AD app from the search results and Click **Select**
+
+![Key vault access policy](./images/key-vault-ad-app-access-policy-to-app.png)
+- Click **Add** to give the AD app permission to access the key vault
+- Go to the **Overview** and copy the key vault URL ( DNS name)
+![Key vault url](./images/key-vault-url.png)
+
+- The key vault url should be used in the **keyVaultConfig** > **KeyVaultUrl** 
+
+## Customer Provisioning Service
+
+The Customer provisioning service serves as an intermediary between Azure and the target SaaS application. In a real scenario, the intermediary would initiate the provisioning of the SaaS application and activate the subscription against the SaaS offer being purchased. The application would allow the customer to place a request, in case the activation requires a workflow that should be completed by the Publisher.
+
+Assuming that the activation workflow is turned off, the sample client application allows the user to:
 - Activate the subscription ( triggers the start of billing against the SaaS offer).
 - Switch an existing subscription to another plan.
 - Unsubscribe / delete an existing subscription.
+- Change quantity
 
 
 ### Create marketplace offer
@@ -157,7 +264,16 @@ In this section, we will go over the steps to download the latest sources from t
     
     - **SaaSAppUrl** - URL to the SaaS Metering service ( for this example. It should be the link to the SaaS application, in general)
     
-    - **DefaultConnection** - Set the connection string to connect to the database    
+    - **DefaultConnection** - Set the connection string to connect to the database   
+    - **AzureWebJobsStorage** - Connection string to the Azure storage queue. Adding a message to this queue would trigger the **Provisioning webjob** that monitors the queue for messages
+    - **keyVaultConfig** - Contains the credentials to access the key vault. Key vault is used as the storage to keep the sensitive information related to deployment of ARM templates
+        - **ClientID** - Azure AD Application ID that has access to the key vault
+        - **ClientSecret** - Secret for the AD application ID that has access to the key vault
+        - **KeyVaultUrl** - URL to the key vault
+        - **TenantID** - ID of the tenant where the Azure AD application that can access the key vault exists
+    - **AzureBlobConfig**  - Contains the access detail to the Azure blob storage. ARM templates uploaded via the publisher solution are stored in the Azure Blob storage
+      - **BlobContainer** - Name of the container for the blob storage
+      - **BlobConnectionString** - Connection string to the Azure Blob storage 
 
 - Sample **appSettings.json** would look like below:
 
@@ -179,14 +295,25 @@ In this section, we will go over the steps to download the latest sources from t
     "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/api",
     "SignedOutRedirectUri": "<provisioning_or_publisher_web_app_base_path>/Home/Index",
     "TenantId": "<TenantID-of-AD-Application>",
-    "FulFillmentAPIVersion": "2018-09-15",
+    "FulFillmentAPIVersion": "2018-08-31",
     "AdAuthenticationEndPoint": "https://login.microsoftonline.com",
     "SaaSAppUrl" : "<Link-to-SaaS-Application>"
   },
   "connectionStrings" : {
     "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>"
     },
-  "AllowedHosts": "*"
+  "AllowedHosts": "*",
+  "AzureWebJobsStorage": "<Connection String for storage queue. Enqueueing a message to this queue triggers the webjob>",
+  "keyVaultConfig": {
+    "ClientID": "<Azure-AD-Application-ID>",
+    "ClientSecret": "***********",
+    "KeyVaultUrl": "<Url for azure key vault>",
+    "TenantID": "<TenantID-of-AD-Application>"
+  },
+  "AzureBlobConfig": {
+    "BlobContainer": "<Azure storage account container>",
+    "BlobConnectionString": "<Azure storage account  connection string>"
+  }
 }
 
 ```
@@ -212,8 +339,9 @@ In this section, we will go over the steps to download the latest sources from t
   - Switch to the database - **AMPSaaSDB**
   - Run the script - **AMP-DB-1.0.sql** to initalize the database
   - Run the script - **AMP-DB-2.0.sql** to update your existing database to 2.0
+  - Run the script - **AMP-DB-2.1.sql** to update your existing database to 2.1
   - Add entries into KnownUsers table to allow login to **Publisher Portal**   
-  > Note: If you already had created a database using an earlier version of the SDK, you just need to run the **AMP-DB-2.0.sql** 
+  > Note: If you already had created a database using an earlier version of the SDK, you just need to run the scripts with a higher version. 
       
 - Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
 *Note: Make sure that the home page url is listed in the **replyURLs** in the AD application for the authentication against Azure AD to work properly.*
@@ -280,170 +408,10 @@ The **Technical Configuration** section of the Marketplace offer with the values
 |Azure Active Directory Tenant ID | Tenant where the AD application is created and configured to have the redirect URIs as explained above.
 |Azure Active Directory Application ID | ID of the AD application with the redirect URIs configured as explained above
 
-### Purchase the offer
- 
-Assuming that the SaaS offer was published and is available in the known tenants, follow the steps to try out a purchase against your SaaS offer.
-- Log on to [Azure](https://portal.azure.com) 
+### Next steps
+- [Customer purchase experience](./Customer-Experience.md)
+- [Publisher experience](./Publisher-Experience.md)
 
-- Click **All Services** menu option on the left
-
-![AllServices](./images/All-Services.png)
-- Search for resources of type **Software as a Service**.
-- The page enlists all the SaaS offers that were previously purchased.
-![SaaS Subscriptions](./images/CloudSaasOfferList.png)
-- Click **Add** to proceed to purchase a new SaaS offer.
-> If you don't have prior subscriptions against SaaS offers, the list would be blank and you would get an option to **Create Software as a Service** button to help you proceed with the purchase.
-![Create SaaS Subscription](./images/Create-SaaS-resource.png)
-
-- Clicking **Add** ( or **Create Software as a Service**) leads you to a page that lists down SaaS offers available for purchase.
-
-- Search for **Cloud SaaS** and locate our SaaS offer in the listing
-![AMP SDK Sample Offer](./images/Search-Results-SaaS.png)
-
-- Click on the tile to view the details of the offer
-![AMP SDK Sample Offer detail](./images/SaaS-Offer-Detail.png)
-- **Select a software plan** and click **Create**
-- Fill out the form and click **Subscribe**
-![AMP SDK Sample Offer](./images/Subscribe-to-Plan.png)
-- A new resource gets created and appears in the listing
-![SaaS Subscriptions](./images/CloudSaasOfferList.png)
-- Click the text under **Name** to view the details of the resource
-- Click **Configure Account** option in the header bar. You will now be redirected to the SaaS offer landing page offered by the **AMP SDK Sample Client Application** in a new tab / window
-- The landing page presents the details of the offer that was purchased with an option to **Activate** the subscription.
-> In a real scenario, the landing page would collect additional details relevant for provisioning the target SaaS application.
-
-### Activate
-
-The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
-![Information flow between Azure and Provisioning application](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-post-provisioning-api-v2-calls.png)
-
-- On the landing page, review the details presented and click **Activate**
-![SaaS Subscriptions](./images/activate-subscription.png)
-> The AMP SDK sample application calls the following AMP SDK API methods in the background
-
-```csharp
-// Determine the details of the offer using the marketplace token that is available in the URL during the redirect from Azure to the landing page.
-Task<ResolvedSubscriptionResult> ResolveAsync(string marketPlaceAccessToken);
-
-// Activates the subscription to trigger the start of billing 
-Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, string subscriptionPlanID);
-
-```
-
-- Upon successful activation of the subscription, the landing page switches to a view that enlists the subscriptions against the offer. 
-> You can switch to Azure and note that the **Configure Account** button is replaced by **Manage Account** button indicating that the subscription has been materialized.
-
-> **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the application would put the subscription in PendingActivation status and the Fulfillment API to activate the subscription is not called. Publisher has the option to activate the subscription via the action menu in the subscription listing in the Publisher Portal.
-
-### Change plan
-
-The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
-![Update subscription](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-update-api-v2-calls-from-saas-service-a.png)
-- Log on to [AMP SDK sample application]().
-- Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
-- The table on this page enlists all the subscriptions and their status.
-- Click **Change Plan** option in the dropdown menu that appears when the icon under the **Actions** column against any of the active subscriptions is clicked.
-![SaaS Subscriptions](./images/customer-subscriptions.png)
-- A popup appears with a list of plans that you can switch to.
-- Select a desired plan and click **Change Plan**.
-![SaaS Subscriptions](./images/change-plan.png)
-
-> The AMP SDK sample application calls the following AMP SDK API methods in the background
-
-```csharp
-// Initiate the change plan process
-Task<SubscriptionUpdateResult> ChangePlanForSubscriptionAsync(Guid subscriptionId, string subscriptionPlanID);
-
-```
->The operation is asynchronous and the call to **change plan** comes back with an operation location that should be queried for status.
-
-```csharp
-// Get the latest status of the subscription due to an operation / action.
-Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
-```
-
-> **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Change Plan** is disabled for customers. Publisher has the option to change the plan of the subscription via the action menu in the subscription listing in the Publisher Portal.
-
-### Unsubscribe
-
-- Log on to [AMP SDK sample application]().
-- Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
-- The table on this page enlists all the subscriptions and their status.
-- Click **Unsubscribe** against an active subscription.
-![SaaS Subscriptions](./images/unsubscribe.png)
-- Confirm your action to trigger the deletion of the subscription.
-> The AMP SDK sample application calls the following AMP SDK API methods in the background.
-
-```csharp
-// Initiate the delete subscription process
-Task<SubscriptionUpdateResult> DeleteSubscriptionAsync(Guid subscriptionId, string subscriptionPlanID);
-```
-
-> The operation is asynchronous and the call to **change plan** comes back with an operation location that should be queried for status.
-
-```csharp
-// Get the latest status of the subscription due to an operation / action.
-Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
-```
-> **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Unsubscribe** is disabled for customers. Publisher has the option to delete the subscription via the action menu in the subscription listing in the Publisher Portal.
-
-### Change Quantity
-
-- Log on to [AMP SDK sample application]().
-- Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
-- The table on this page enlists all the subscriptions and their status.
-- Click **Change quantity** in the menu as shown in the below picture
-![Change quantity](./images/change-quantity-menu.png)
-
-- Provide the new quantity and click **Change Quantity** to update the quantity on the subscription
-
-![Update quantity](./images/update-quantity-popup.png)
-
-> Note: The update to quantity is applicable if only the subscription is against a Plan that is set to be billed per user
-  
-![Per user pricing](./images/per-user-plan-pricing.png)
-
-> The AMP SDK sample application calls the following AMP SDK API methods in the background.
-
-```csharp
-Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, int? subscriptionQuantity);
-```
-
-> The operation is asynchronous and the call to **change plan** comes back with an operation location that should be queried for status.
-
-```csharp
-// Get the latest status of the subscription due to an operation / action.
-Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
-```
-
-**Update Plan to indicate per user pricing**
-
-Use the following script as an example / template to update the records in **Plans**
-
-```sql
-UPDATE Plans SET IsPerUser = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
-```
-
-The Plan ID is available in the **Plan overview** tab of the offer as shown here:
-
-![Plan ID](./images/plan-id-for-metering.png)
-
-### View activity log
-
-- Log on to [AMP SDK sample application]().
-- Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
-- The table on this page enlists all the subscriptions and their status.
-- Click **Activity Log** to view the log of activity that happened against the subscription.
- ![SaaS Subscriptions](./images/activity-log-menu.png)
- ![SaaS Subscriptions](./images/activity-log-popup.png)
-
-### Go to SaaS application
-
-- Log on to [AMP SDK sample application]().
-- Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
-- The table on this page enlists all the subscriptions and their status.
-- Click **SaaSApp** from options menu under **Actions** to navigate to the target SaaS application.
-![SaaS Subscriptions](./images/saas-app-menu.png)
 
 ## SaaS metering service
 

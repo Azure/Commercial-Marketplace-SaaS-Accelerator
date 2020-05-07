@@ -1,33 +1,22 @@
 # Publisher Experience
 
- * [Overview](#overview)
- 
- *  [Offers](#offers)
-     * [Offer Parameters](#offers-parameters)
- * [Plans](#Plans)
-     * [Plan Parameters](#plan-parameters)
-     * [Plan Events](#plan-events)
- * [ARM Templates](#arm-templates)
- * [Subscriptions](#Subscriptions)
-     * [Activate](#activate)
-     * [Change plan](#change-plan)
-     * [Unsubscribe](#unsubscribe)
-     * [Change quantity](#change-quantity)
-     * [View activity log](#view-activity-log)
-     * [Go to SaaS application](#Go-to-SaaS-application)
-     * [SaaS metering service](#SaaS-metering-service)
-     * [Emit usage events](#Emit-usage-events)
-     * [License Manager](#license-manager)
- * [Azure Web Job Sotrage Connection](#Azure-Web-Job-Sotrage-Connection)
- * [Azure Key Vault](#Azure-Key-Vault)
- * [Azure Blob Storage](#Azure-Blob-Storage)
 
 ## Overview
-The Publisher web application showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. 
-The application also provides feasibility to capture information from customer by defining the parameters in the offer level.
+The Publisher web application is the admin console for the publisher to help:
+- Manage offers - define the input fields that can appear on the landing page for the customer when an offer is purchased
+- Manage ARM templates
+- Manage plans 
+  - control the fields that can appear on the landing page
+  - configure events, email recipients, ARM templates that can be deployed
+  - define if the ARM templates should be deployed to customer subscription or hosted subscription
+- Manage subscriptions
+  - Activate
+  - Emit usage events
+  - Change plan
+  - Unsubscribe
 
-## Offers
-SaaS offers that is published in Azure Market Place can be extracted and managed form the portal.
+## Test purchase to download the offer and plan details
+SaaS offers that is published in Azure Market Place can be extracted and managed from the publisher portal.
 	
 Log on to [Azure](https://portal.azure.com) 
 
@@ -61,7 +50,7 @@ Log on to [Azure](https://portal.azure.com)
 ## Add additional fields in the Landing page
 ### **Offer level fields setup**
 
-- Navigat to the **Offers** screen, the offer that was published will be available here.
+- Navigate to the **Offers** screen, the offer that was published will be available here.
 - Under the **Action**, click on **Edit** to see the offer atttributes screen.
 ![Offer Parameters](./images/offer-parameters.png)
 > Each row in the screen representa a column in the Landing page.
@@ -79,8 +68,8 @@ Log on to [Azure](https://portal.azure.com)
   -  *IsRequired*  : Set if the field is required.
   -  *Remove*      : Remove the item. 
 
-- After adding the all the information, save the details.
-- These fields will be additional filed on offer level.
+- After adding all the information, save the details.
+- These fields will be additional fields at the offer level.
        
 ### **Plan level fields setup**
 
@@ -97,6 +86,7 @@ Log on to [Azure](https://portal.azure.com)
    - *Client ID*
    - *Client Secret*
    ![Landing page](./images/subscription-landingpage.png) 
+
 #### Plan Events
 - Here the ARM template to deploy the application and recipient of the notification email on a plan while activating or unsubscribing will be specified.
 - Only Active records will be considered for Deploying or notifying.
@@ -324,173 +314,4 @@ The service tracks the requests sent and the response received from the marketpl
 ## License Manager
 
 The license management feature in the SaaS metering service allows the Publisher to assign licenses to the active subscriptions. 
-The intent here is to illustrate how the assignment can be done via the interface and how the customer user can consume this detail via the **SaaS Provisioning** application
-	
-## Azure Web Job Sotrage Connection
-Log on to [Azure](https://portal.azure.com)
-- Click **Create a resource** in the left menu
-![Create resource](./images/key-vault-create-resource.png)
-- In the search box type **storage account** 
-- Thae result will show **Storage account - blob, file, table, queue**, click on the result.
-- In the Storage account  Pane click on the **create** button
-![Create storage account](./images/storage-account-create.png)
-- Select the **Basic** tab 
-- Select a **Subscription** and **Resource Group**
-![Basic Info](./images/storage-account-basic-info.png)
-
-![Vault Details](./images/storage-account-basic-info-details.png)
-- Under the Instance details pane fill the following Key vault name 
-  - Storage account name
-  - Location
-  - Performance: standard
-  - Account kind: Storage (general purpose v1)
-  - Replication: Read-access geo-redundant storage (RA-GRS)
-- Click on Review + Create
-- If the details pass all the validations, create button will be shown up.
-- Click on create
-![ Validate ame](./images/storage-account-basic-info-validate.png)
-
-## Azure Key Vault 
-Create Azure Key Vault:
-
-Log on to [Azure](https://portal.azure.com)
-- Click **Create a resource** in the left menu
-![Create resource](./images/key-vault-create-resource.png)
-- In the search box type **Key Vault** 
-![Vault Button](./images/key-vault-button.png)
-- resource will be shown in the search result
-- Click on the **key vault**
-![Key Vault Home](./images/key-vault-main-page.png)
-- In the key vault pane click on the **create** button
-- Select the **Basic** tab 
-![Basic Info](./images/key-vault-basic-page.png)
-- Select a **Subscription** and **Resource Group**
-![Vault Details](./images/key-vault-name-details.png)
-- Under the Instance details pane fill the following Key vault name 
-  - Region
-  - Pricing tier
-  - Soft delete: Enabled
-  - Retention period (days)
-  - Purge protection: Disabled
-- Click on Review + Create
-- If the details pass all the validations, create button will be shown up.
-- Click on create
-![ Validate ame](./images/key-vault-name-validation.png)
-- Once the storage account created, go the resource and search for Queues in left pane.
-![Create queue](./images/storage-account-queue-menu.png)
-- Click on the **Queue** button and give the name for the queue as **saas-provisioning-queue**
-![Create add queue](./images/storage-account-queue-add.png)
-- In the left pane navigate to **Access Keys** and copy **Connection string** under **key1**
-![Create connection string](./images/storage-account-queue-connection-string.png)
-- Navigate to **Properties** and copy **File service**, **Queue service** and **Table service**.
-- Prepare the AzureWebJobsStorage wiht the collected information and place it in application settings.
-"AzureWebJobsStorage": <connection string>;BlobEndpoint=<Blob service>;QueueEndpoint=<Queue service>;TableEndpoint=<Table service>;FileEndpoint=<File service>;
-- EndpointSuffix=core.windows.net is not required in the connection.
-### Azure Blob Storage
-- In the storage account Navigate to **Blob Service**.
-- Select **containers**.
-![Blob Container](./images/storage-account-container.png)
-- Click on **+ Container**.
-- Give a name to the container and set public access level to **Private (no anonymous access)**
-![Create blob container](./images/storage-account-blob-container.png)
-- Click on create.
-- In the left pane navigate to **Access Keys** and copy **Connection string** under **key1**
-- EndpointSuffix=core.windows.net si required in the connection.
-- Place the **BlobContainer** and the **BlobConnectionString** in the application config under **AzureBlobConfig**.
-#### Azure App Registration
-- Now Register the app in azure active directory.
-- Go to home page of [Azure](https://portal.azure.com)
-- Click **Azure Active Directory** in the left menu
-- Click **App Registrations** in the menu on the left
-- Click on **New Registration**
-![AD App Register](./images/key-vault-ad-app-new.png)
-- Give a name to the app and click on **Register**.
-![Ad app](./images/key-vault-ad-app-name.png)
-- After registering the app, in the left menu click on **Certificate & secret**
-![Key Certificate](./images/key-vault-ad-app-create-secret.png)
-- Click on **+ New client Secret**
-![New Secret](./images/key-vault-ad-app-new-secret-secret.png)
-- Give a name to the secret and copy the auto generated **secret value** (keep the secret safe as it cannot be retrieved again).
-- Now click on the Overview of the app and copy **Application (client) ID** and **Dictionary (Tenant) ID**.
-![App Secrets](./images/key-vault-ad-app-appId-secret.png)
-- All the gathered values should be added to the application config of the Saas application.
-
- - **ClientSecret** - Secret from he Azure Active Directory Application
-
-    - **Resource** - Set this to *62d94f6c-d599-489b-a797-3e10e42fbe22*
-
-    - **FulFillmentAPIBaseURL** - https://marketplaceapi.microsoft.com/api
-
-    - **SignedOutRedirectUri** - Set the path to the page the user should be redirected to after signing out from the application
-
-    - **TenantId** - Provide the tenant ID detail that was submitted in the. **Technical configuration** section of your marketplace offer in Partner Center.
-
-    - **FulfillmentApiVersion** - Use 2018-09-15 for mock API and 2018-08-31 for the production version of the fulfilment APIs
-
-    - **AdAuthenticationEndpoint** - https://login.microsoftonline.com
-    
-    - **SaaSAppUrl** - URL to the SaaS Metering service ( for this example. It should be the link to the SaaS application, in general)
-    
-    - **DefaultConnection** - Set the connection string to connect to the database    
-
-- Sample **appSettings.json** would look like below:
-
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft": "Warning",
-      "Microsoft.Hosting.Lifetime": "Information"
-    }
-  },
-   // Comment the sections - SaaSApiConfiguration and Connection strings when deploying to Azure
-  "SaaSApiConfiguration": {
-    "GrantType": "client_credentials",
-    "ClientId": "<Azure-AD-Application-ID>",
-    "ClientSecret": "******",
-    "Resource": "62d94f6c-d599-489b-a797-3e10e42fbe22",
-    "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/api",
-    "SignedOutRedirectUri": "<provisioning_or_publisher_web_app_base_path>/Home/Index",
-    "TenantId": "<TenantID-of-AD-Application>",
-    "FulFillmentAPIVersion": "2018-09-15",
-    "AdAuthenticationEndPoint": "https://login.microsoftonline.com",
-    "SaaSAppUrl" : "<Link-to-SaaS-Application>"
-  },
-  "connectionStrings" : {
-    "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>"
-    },
-  "AllowedHosts": "*",
-  "AzureWebJobsStorage": "<Connection String for webjob queue>",
-  "keyVaultConfig": {
-    "ClientID": "<Azure-AD-Application-ID>",
-    "ClientSecret": "***********",
-    "KeyVaultUrl": "<Url for azure key vault>",
-    "TenantID": "<TenantID-of-AD-Application>"
-  },
-  "AzureBlobConfig": {
-    "BlobContainer": "<Azure storage account container>",
-    "BlobConnectionString": "<Azure storage account  connection string>"
-  }
-
-}
-
-```
-**Note**: When defining the keys in Azure App Service -> Configuration -> App Settings, refer to the below example for correctness:
-
-|Name| Value|
-|--|--|
-|SaaSApiConfiguration__GrantType| client_credentials|_
-
-> **Tip** __(double underscore) should be used to define the config items that appear as nested keys in appSettings.json
-
-
-
-
-
-
-
-	
-	
-	
-	
+The intent here is to illustrate how the assignment can be done via the interface and how the customer user can consume this detail via the **SaaS Provisioning** application	
