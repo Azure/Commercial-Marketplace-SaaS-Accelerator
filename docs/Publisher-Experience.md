@@ -47,70 +47,86 @@ Log on to [Azure](https://portal.azure.com)
 - The landing page presents the details of the offer that was purchased with an option to **Activate** the subscription.
 > In a real scenario, the landing page would collect additional details relevant for provisioning the target SaaS application and any additional custom information from customer if required .
 
-## Add additional fields in the Landing page
-### **Offer level fields setup**
+## Manage Offers
 
-- Navigate to the **Offers** screen, the offer that was published will be available here.
-- Under the **Action**, click on **Edit** to see the offer atttributes screen.
+### Manage offer parameters
+
+- Log on to the **Publisher Portal**
+- Click **Offers** in the menu
+- The page lists down the offer that is associated with the subscription and the plan that was created during the test purchase in the earlier step
+- Click **Edit** under the **Action** column to navigate to the details of the offer and manage offer parameters
+
 ![Offer Parameters](./images/offer-parameters.png)
-> Each row in the screen representa a column in the Landing page.
-- Click on **Add New Row** to add row and fill the detials like 
-  -  *ParameterId* : usually the name of the field without spaces.
-  -  *DisplayName* : Label of the field 
-  -  *Description* : Some information about the fields, this will not be shown on the screen
+
+> Each row in the screen correlates to a field in the form on the Landing page.
+- Click on **Add New Row** to add a new row and fill the details using the below information
+  -  *ParameterId* : Usually the name of the field without spaces.
+  -  *DisplayName* : Label for the field that should appear on the landing page
+  -  *Description* : Description for the field (this will not be shown on the screen and is only for internal purposes)
   -  *ValueTypeId* : Datatype of the field
-  -  *FromList*    : To set the field as a Pick list.
-  -  *ValueList*   : Items of the pick list in "," separated
-  -  *Max*         : Maximum value of the integer field.
-  -  *Min*         : Minimum value of the integer field.
-  -  *DisplaySequence* :Display sequence of the fields
-  -  *IsActive*    : Activate or deactivate the filed.
-  -  *IsRequired*  : Set if the field is required.
-  -  *Remove*      : Remove the item. 
+  -  *FromList*    : Check this box to set the field as a Pick list.
+  -  *ValueList*   : Items of the pick list as comma delimited values
+  -  *Max*         : Maximum value of the integer field
+  -  *Min*         : Minimum value of the integer field
+  -  *DisplaySequence* :Order / sequence in which the field appears along with other fields
+  -  *IsActive*    : Check this box to have the field in effect. Uncheck the box so that the field stops appearing on the landing page
+  -  *IsRequired*  : Check if the input on this field is mandatory
+  -  *Remove*      : Remove the item
 
-- After adding all the information, save the details.
-- These fields will be additional fields at the offer level.
+- Click **Save** after adding the desired number of rows / changes
+- The set of the fields here are the global defaults available for override at the plans that are part of the offer
+
+## Manage ARM templates
+
+- Log on to the **Publisher Portal**
+- Click **ARM templates** in the menu
+- The page lists down the ARM Templates ( if already uploaded ). These are the ARM templates that can be associated to events like activation / unsubscription of a SaaS subscription
+
+![List ARM templates](./images/list-arm-templates.png)
+
+- Click **Add** to upload an ARM template
+- Click **Browse** to browse to the file and click **Upload**
+![Upload ARM template](./images/upload-arm-template.png)
+
+- The page presents the input and output parameters after parsing the template. The ARM template is stored as a file to the Azure blob storage ( refer to [Installation Instructions](./Installation-Instructions.md) for details on the configuration)
+
+![ARM template parameters](./images/arm-template-parameters.png)
+
+- You could define the values for the input parameters and the values support the following keywords. Here is an explanation on the keywords supported and how they get substituted at runtime just before the ARM template is deployed. The substituted values get saved against SaaS subscription as deployment parameters.
+
+| Keyword | Value|
+|---------|------|
+| $\{Subscription} | Name of the subscription (spaces replaced with hyphen)|
+| $\{Plan} | Name of the plan associated with the SaaS subscription (spaces replaced with hyphen) |
+| $\{Offer} | Name of the offer associated with the SaaS subscription (spaces replaced with hyphen) |
+
        
-### **Plan level fields setup**
+## Manage Plans
 
-#### Plan Parameters
-- Navigate to **Plans** screen, the plans registered under the offer will be available here.
-- Under the **Action**, click on **Edit** to see the plan attributes screen.
+- Log on to the **Publisher Portal**
+- Click **Plans** in the menu
+- The page lists down the plans against all the subscriptions created against the SaaS offers
+- Click **Edit** under the **Action** column to navigate to the details of the plan and manage plan parameters and events
+
+### Subscription input parameters
+
+- Click **Parameters** tab to see a list of input parameters that can be configured to appear on the subscription landing page for the customer at the time of purchase
+- Check the box under the column **Enable** to make the field appear on the landing page. Uncheck it to hide the input from appearing on the landing page
 ![Plan Parameters](./images/plan-parameters.png)
->All the active fields created under the offer will be available here.
-- The fields enabled in the plan parameters will be shown on the landing page to capture information form customer.
-- By enabling **Deploy to Customer subscription**, additional fields required to deploy the app in customer subscription will be shown in the landing page.
-- User need to provide the Fields like below which will help in deploying app in the subscription.
-   - *Tenant Id*
-   - *Subscription Id*
-   - *Client ID*
-   - *Client Secret*
-   ![Landing page](./images/subscription-landingpage.png) 
 
-#### Plan Events
-- Here the ARM template to deploy the application and recipient of the notification email on a plan while activating or unsubscribing will be specified.
-- Only Active records will be considered for Deploying or notifying.
-- Copy to customer will send a notification to customer email address.
+- Check the box - **Deploy to customer subscription** if the ARM template associated with the plan should be deployed to the customer subscription during provisioning. Checking this box would lead to additional input fields to show up on the landing page to collect the tenant, subscription, service principal and secret details from the customer.
+
+![Landing page](./images/subscription-landingpage.png) 
+
+### Subscription events   
+
+- Click **Events** tab in the plan detail to see the configuration of ARM templates and the email recipients by events that are relevant in the provisioning of a SaaS subscription
 ![Plan Parameters](./images/plan-events.png)
+- Check the box if an event configuration should ne activated
+- Select an ARM Template in case it has to be deployed as part of processing the event for the SaaS subscription
+- Check the box - **Copy to Customer** to include customer email address in the email notifications relevant to the event
 
-### ARM Templates
-- An ARM Template will help in deploying web apps or database in Azure subscription.
-- The ARM Template can be uploaded form the screen which will be saved to Azure storage account container / blob storage.
-- The Input and Output parameters associated with the template will be shown on the screen after uploading the file.
-- The input parameters should be filled at this time, there is an option of replacing the text in the input field while deploying the template.
-If the Field is filled with ${Subscription} the value will be replaced with Subscription name (saas-offer-subscription)  while deploying.
-
-| Code | Replaced With|
------------------------
-| ${Subscription} |  ‘Subscription Name’ |
-
-| ${Plan} |  ‘Plan Name’ |
-
-| ${ Offer } |  ‘Offer Name’ |
-- The output parameters are disabled in the screen and will be filled after deployment.
-![arm templaate parameters](./images/arm-template-parameters.png)
-
-### Subscription
+### Subscriptions
 - All the subscriptions purchased will be availabe under the subscriptions screen.
 - The status of each subscription will be availbe in the list.
 - From this scree the actions on the subscriptions like Change Plan, Chan Quantity,  Manage Usage, Activate and unsubscribe can be done depending on the status.
@@ -241,19 +257,7 @@ The Plan ID is available in the **Plan overview** tab of the offer as shown here
  ![SaaS Subscriptions](./images/activity-log-menu.png)
  ![SaaS Subscriptions](./images/activity-log-popup.png)
 
-### Go to SaaS application
-
-- Log on to [AMP SDK sample application]().
-- Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
-- The table on this page enlists all the subscriptions and their status.
-- Click **SaaSApp** from options menu under **Actions** to navigate to the target SaaS application.
-![SaaS Subscriptions](./images/saas-app-menu.png)
-
-## SaaS metering service
-
-The **SaaS metering service** is the web application that helps ISVs to look at the subscriptions against the marketplace offer.
-
-![List of subscriptions](./images/subscriptions-manage-usage.png)
+## Metering
 
 For subscriptions against the plans that support metered billing, a button is enabled to post usage events against the subscription.
 
@@ -264,7 +268,7 @@ The usage / consumption is consolidated
 
 ### Emit usage events
 
-The following interface in the **Saas metering service** allows the user to manual report the usage against a selected dimension.
+The following interface in the **Publisher portal** allows the user to manual report the usage against a selected dimension.
 
 > In this example, suppose the SaaS service is offering a notification service that helps its customers send out emails / text. Email and Text are modeled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
 
@@ -311,7 +315,11 @@ Task<MeteringUsageResult> EmitUsageEventAsync(MeteringUsageRequest usageEventReq
 
 The service tracks the requests sent and the response received from the marketplace metering APIs for auditing purposes.
 
-## License Manager
+## Manage Licenses
 
-The license management feature in the SaaS metering service allows the Publisher to assign licenses to the active subscriptions. 
-The intent here is to illustrate how the assignment can be done via the interface and how the customer user can consume this detail via the **SaaS Provisioning** application	
+- Log on to [Publisher portal]()
+- Click **Licenses** menu at the top to view the list of subscriptions and licenses.
+- There is an option to **Revoke** an active license and **Activate** an already revoked license.
+![View Licenses](./images/publisher-add-revoke-license.png)
+- Select a subscription, enter license key detail and hit **Add License** to assign a license.
+![Add License](./images/publisher-add-revoke-license.png)

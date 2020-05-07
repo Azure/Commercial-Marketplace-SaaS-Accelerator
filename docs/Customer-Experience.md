@@ -1,5 +1,16 @@
 # Customer experience
 
+* [Overview](#overview)
+  * [Purchase SaaS offer](#purchase-saas-offer)
+  * [Landing Page](#landing-page)
+    + [Subscription](#subscription)
+    + [Activate](#activate)
+    + [Change plan](#change-plan)
+    + [Unsubscribe](#unsubscribe)
+    + [Change Quantity](#change-quantity)
+    + [View activity log](#view-activity-log)
+    + [View Licenses](#view-licenses)
+  * [Troubleshooting issues](#troubleshooting-issues)
 
 ## Overview
 The Customer provisioning web application provides the landing page for the customers who purchase the transactable SaaS offer.
@@ -37,21 +48,23 @@ Log on to [Azure](https://portal.azure.com)
 > In a real scenario, the landing page would collect additional details relevant for provisioning the target SaaS application and any additional custom information from customer if required .
 
 ## Landing Page
-- Based on the Deployment requirement **Deploy to cusotmer subscription** the custom fields in the landing page will be shown.
+- Customer lands on the page served from the Customer provisioning application that presents the details of the subscription related to the purchase. The landing page might present additional input fields in the form based on the configuration set by the Publisher for the plan. Besides, the fields might comprise the following, in case the Publisher has set the **Deploy to customer subscription** switch turned on.
 - User needs to fill the fields like below which will help in deploying app in the subscription.
    - *Tenant Id*
    - *Subscription Id*
    - *Client ID*
    - *Client Secret*
    ![Landing page](./images/subscription-landingpage.png) 
-- If there is no Deployment to customers subscription, no additional fields will be displayed, usercan makea request to activat the subscription. 
+ - Click **Validate** to validate the deployment parameters
+ - Click **Activate** to either place a request for the publisher to act on ( applicable if activation workflow is turned on or activate the subscription, otherwise)
 
-### Subscription
+### Subscriptions
 - All the subscriptions purchased by the customer will be availabe under the subscriptions screen.
-- The status of each subscription will be availbe in the list.
+- The status of each subscription will be available in the list.
 - From this scree the actions on the subscriptions like Change Plan, Chan Quantity, Activate and unsubscribe can be done depending on the status.
 
 ![SaaS Subscriptions](./images/customer-subscriptions.png)
+
 ### Activate
 
 The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
@@ -154,3 +167,13 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 - Click **Activity Log** to view the log of activity that happened against the subscription.
  ![SaaS Subscriptions](./images/activity-log-menu.png)
  ![SaaS Subscriptions](./images/activity-log-popup.png)
+
+### View Licenses
+
+- Log on to [AMP SDK Sample application]()
+- Click **Licenses** menu at the top to view the list of subscriptions and licenses.
+- Use the **Copy** button to copy the license text to clipboard
+
+![View Licenses](./images/customer-view-licenses.png)
+
+
