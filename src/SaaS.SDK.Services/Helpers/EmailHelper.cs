@@ -95,14 +95,6 @@
 
              */
 
-            var eventMappings = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, subscriptionEvent.EventsId);
-            //if (eventMappings != null)
-            //{
-            //    CopyToCustomer = eventMappings.CopyToCustomer ?? false;
-            //    isActive = eventMappings.Isactive;
-            //}
-            //
-
             if (processStatus.ToLower() == "success")
             {
                 var successEventData = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, subscriptionEvent.EventsId);
