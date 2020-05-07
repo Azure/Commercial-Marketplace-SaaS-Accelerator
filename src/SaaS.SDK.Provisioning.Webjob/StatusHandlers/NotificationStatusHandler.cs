@@ -188,7 +188,9 @@
                 SubscriptionParameters = subscriptionParametersList,
                 ARMTemplateParameters = subscriptionTemplateParametersList
             };
-
+            subscriptionDetail.Purchaser = new Models.PurchaserResult();
+            subscriptionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
+            subscriptionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
 
             /*
              *  KB: Trigger the email when the subscription is in one of the following statuses:

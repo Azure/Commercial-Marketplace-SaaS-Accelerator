@@ -152,7 +152,7 @@
         /// </summary>
         /// <returns></returns>
         public IActionResult Index()
-        {
+       {
             this.logger.LogInformation("Home Controller / Index ");
             try
             {
