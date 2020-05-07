@@ -59,7 +59,7 @@
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.PlanId)
                         </dd>
-                        @if (Model.IsPerUserPlan)
+                        @if (Model.Quantity>0)
                         {
                             <dt class="col-sm-3 p-2 p10">
                                 @Html.DisplayName("Quantity ")
