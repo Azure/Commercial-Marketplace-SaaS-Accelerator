@@ -102,6 +102,7 @@
                 if (successEventData != null)
                 {
                     toReceipents = successEventData.SuccessStateEmails;
+                    CopyToCustomer = Convert.ToBoolean(successEventData.CopyToCustomer);
                 }
                 if (string.IsNullOrEmpty(toReceipents))
                 {
@@ -130,6 +131,7 @@
                 if (failureStateEmails != null)
                 {
                     toReceipents = failureStateEmails.FailureStateEmails;
+                    CopyToCustomer = Convert.ToBoolean(failureStateEmails.CopyToCustomer);
                 }
                 if (string.IsNullOrEmpty(toReceipents))
                 {
