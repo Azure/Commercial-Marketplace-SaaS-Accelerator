@@ -205,7 +205,7 @@
                                 };
                                 this.subscriptionLogRepository.Save(auditLog);
                             }
-                            subscriptionExtension = this.subscriptionService.GetSubscriptionsBySubscriptionId(newSubscription.SubscriptionId);
+                            subscriptionExtension = this.subscriptionService.GetSubscriptionsBySubscriptionId(newSubscription.SubscriptionId,true);
                             subscriptionExtension.ShowWelcomeScreen = false;
                             subscriptionExtension.CustomerEmailAddress = this.CurrentUserEmailAddress;
                             subscriptionExtension.CustomerName = this.CurrentUserName;
@@ -500,7 +500,7 @@
                 {
                     SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
                     this.logger.LogInformation("GetPartnerSubscription");
-                    var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                    var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId,true).FirstOrDefault();
                     Plans PlanDetail = this.planRepository.GetById(oldValue.PlanId);
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
