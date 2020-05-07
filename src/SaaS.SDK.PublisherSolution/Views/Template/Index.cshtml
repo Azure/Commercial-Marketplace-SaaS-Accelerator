@@ -1,47 +1,46 @@
-﻿@using Microsoft.Marketplace.SaasKit.Models;
-@model DeploymentParameterViewModel
-@{
+﻿@{
     ViewData["Title"] = "ARM Template";
 }
+<div id="MainDiv">
+    <div class="container partner-font-family">
 
-<div class="container partner-font-family">
-
-    <form method="post" enctype="multipart/form-data" asp-controller="Template" asp-action="UploadBatchUsage">
-        <div class="">
-            <div class="card-body ">
-                <div class="text-left ">
-                    <span class="cm-section-heading">ARM Template</span>
-                </div>
-                <div class="card-body partner-card-body">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-lg-2 col-md-12">
-                                <p>Select file:</p>
-                            </div>
-                            <div class="col-lg-10 col-md-12">
-                                <input type="file" name="uploadfile" required />
+        <form method="post" enctype="multipart/form-data" asp-controller="Template" asp-action="UploadBatchUsage">
+            <div class="">
+                <div class="card-body ">
+                    <div class="text-left ">
+                        <span class="cm-section-heading">ARM Template</span>
+                    </div>
+                    <div class="card-body partner-card-body">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-2 col-md-12">
+                                    <p>Select file:</p>
+                                </div>
+                                <div class="col-lg-10 col-md-12">
+                                    <input type="file" name="uploadfile" required />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-lg-2 col-md-12"> </div>
-                            <div class="col-lg-10 col-md-12 text-lg-left">
-                                <span class="col-lg-3">
-                                    <input type="submit" class="cm-button-default" value="Upload">
-                                </span>
-                            </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-2 col-md-12"> </div>
+                                <div class="col-lg-10 col-md-12 text-lg-left">
+                                    <span class="col-lg-3">
+                                        <input type="submit" class="cm-button-default" value="Upload">
+                                    </span>
+                                </div>
 
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
-</div>
-<div>
-    @{await Html.RenderPartialAsync("ARMTemplates");}
-</div>
-<div>
-    @{await Html.RenderPartialAsync("ARMFileParameters");}
+        </form>
+    </div>
+    <div>
+        @{await Html.RenderPartialAsync("ARMTemplates");}
+    </div>
+    <div>
+        @{await Html.RenderPartialAsync("ARMFileParameters");}
+    </div>
 </div>

@@ -57,6 +57,7 @@
 
         public IActionResult Index()
         {
+            ModelState.Clear();
             DeploymentParameterViewModel model = new DeploymentParameterViewModel();
             List<ARMTemplateViewModel> armTemplates = new List<ARMTemplateViewModel>();
             armTemplates = this.armTemplateService.GetARMTemplates();
@@ -307,7 +308,7 @@
                 }
 
             }
-            return RedirectToAction(nameof(Index));
+            return PartialView("SuccessMessage");
         }
 
         public IActionResult ArmTemplateParmeters(Guid armtemplateId)

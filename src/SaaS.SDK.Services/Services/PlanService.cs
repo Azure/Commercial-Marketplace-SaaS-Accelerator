@@ -60,6 +60,9 @@
                 Plans.PlanGUID = item.PlanGuid;
                 plansList.Add(Plans);
             }
+            var offerDetails = this.offerRepository.GetAll();
+            plansList.ForEach(x => x.OfferName = offerDetails.Where(s => s.OfferGuid == x.offerID).FirstOrDefault().OfferName);
+
             return plansList;
         }
 
@@ -135,7 +138,7 @@
         {
             var existingPlan = this.plansRepository.GetByInternalReference(plan.PlanGUID);
             existingPlan.DeployToCustomerSubscription = plan.DeployToCustomerSubscription;
-            this.plansRepository.Save(existingPlan);            
+            this.plansRepository.Save(existingPlan);
         }
 
         /// <summary>
@@ -160,7 +163,7 @@
             }
             return null;
         }
-        
+
         /// <summary>
         /// Saves the plan events.
         /// </summary>
@@ -195,7 +198,7 @@
         /// <returns></returns>
         public int? SavePlanDeploymentAttributes(Plans plan, int currentUserId)
         {
-            var offerAttributes = this.offerAttributesRepository.GetAllOfferAttributesByOfferId(plan.OfferId);            
+            var offerAttributes = this.offerAttributesRepository.GetAllOfferAttributesByOfferId(plan.OfferId);
             var deploymentAttributes = offerAttributes.ToList().Where(s => s.Type.ToLower() == "deployment").ToList();
             foreach (var offerAttribute in deploymentAttributes)
             {

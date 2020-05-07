@@ -114,7 +114,7 @@
                                             IPlanEventsMappingRepository planEventsMappingRepository,
                                             IOfferAttributesRepository offerAttributesRepository,
                                             IEventsRepository eventsRepository,
-                                            ISubscriptionsRepository subscriptionRepository,                                            
+                                            ISubscriptionsRepository subscriptionRepository,
                                             IUsersRepository usersRepository,
                                             IOffersRepository offersRepository,
                                             ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
@@ -134,7 +134,7 @@
             this.offersRepository = offersRepository;
             this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
             this.emailService = emailService;
-            this.emailHelper = new EmailHelper(applicationConfigRepository,subscriptionRepository,emailTemplateRepository,planEventsMappingRepository,eventsRepository);
+            this.emailHelper = new EmailHelper(applicationConfigRepository, subscriptionRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository);
             this.logger = logger;
         }
 
@@ -232,11 +232,16 @@
             bool isEmailEnabledForUnsubscription = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForUnsubscription"));
             bool isEmailEnabledForPendingActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForPendingActivation"));
             bool isEmailEnabledForSubscriptionActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForSubscriptionActivation"));
-            
+
             bool triggerEmail = false;
             if (planEvents.Isactive == true)
             {
-                if (planEventName == "Activate" && (isEmailEnabledForPendingActivation || isEmailEnabledForSubscriptionActivation))
+                if (planEventName == "Activate" && isEmailEnabledForPendingActivation && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
+                {
+                    triggerEmail = true;
+                }
+
+                if (planEventName == "Activate" && isEmailEnabledForSubscriptionActivation && subscription.SubscriptionStatus != SubscriptionStatusEnumExtension.PendingActivation.ToString())
                 {
                     triggerEmail = true;
                 }

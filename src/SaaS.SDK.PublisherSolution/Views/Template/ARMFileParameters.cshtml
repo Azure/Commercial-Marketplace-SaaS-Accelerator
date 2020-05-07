@@ -20,7 +20,7 @@
             });
         </script>*@
     <div id="myModal">
-        <form id="TemplateForm" method="post">
+        <form id="TemplateFormParms" method="post">
             @if (Model.FileName != null && Model.FileName != "")
             {
                 <div class="table-responsive mt20">
@@ -183,8 +183,9 @@
 
 
     function saveArmTemplateParameters() {
+        debugger;
         if (validate()) {
-            var formobject = $('#TemplateForm').serialize();
+            var formobject = $('#TemplateFormParms').serialize();
             $.ajax({
                 url: 'Template/SaveTemplateParameters',
                 type: 'POST',
@@ -192,12 +193,12 @@
                 cache: false,
                 success: function (result) {
                     successconfirmDialog();
-                    $('#myModal').html("");
+                    $('#MainDiv').html(result);
                 },
                 Error:
                     function (result) {
                         errorconfirmDialog();
-                        $('#myModal').html(result);
+                        $('#MainDiv').html(result);
                     }
             });
         } else {
