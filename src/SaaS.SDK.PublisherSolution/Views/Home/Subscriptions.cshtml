@@ -73,12 +73,12 @@
                                                             }
                                                             @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
                                                             {
-                                                                <a class="dropdown-item cm-dropdown-option" asp-action="ActivateSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
+                                                                <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
                                                             }
                                                             @if (Model.IsAutomaticProvisioningSupported == true && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                             {
                                                                 <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
-                                                                <a class="dropdown-item cm-dropdown-option" asp-action="DeActivateSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
+                                                                <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
                                                             }
                                                             <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
                                                             <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionParmsById('@subscription.Id')">Deployment Parameters</a>
@@ -115,7 +115,7 @@
     function ViewSubscriptionlogdetailsById(subscriptionId) {
         $.ajax({
             type: "Get",
-            url: "SubscriptionLogDetail",
+            url: "ViewSubscriptionDetail",
             data: { subscriptionId: subscriptionId },
             contentType: "application/json; charset=utf-8",
             datatype: "json",
