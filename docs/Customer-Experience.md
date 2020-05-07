@@ -1,15 +1,15 @@
 # Customer experience
 
-* [Overview](#overview)
+  * [Overview](#overview)
   * [Purchase SaaS offer](#purchase-saas-offer)
   * [Landing Page](#landing-page)
-    + [Subscription](#subscription)
-    + [Activate](#activate)
-    + [Change plan](#change-plan)
-    + [Unsubscribe](#unsubscribe)
-    + [Change Quantity](#change-quantity)
-    + [View activity log](#view-activity-log)
-    + [View Licenses](#view-licenses)
+  * [Subscription](#subscription)
+  * [Activate](#activate)
+  * [Change plan](#change-plan)
+  * [Unsubscribe](#unsubscribe)
+  * [Change Quantity](#change-quantity)
+  * [View activity log](#view-activity-log)
+  * [View Licenses](#view-licenses)
   * [Troubleshooting issues](#troubleshooting-issues)
 
 ## Overview
@@ -58,14 +58,14 @@ Log on to [Azure](https://portal.azure.com)
  - Click **Validate** to validate the deployment parameters
  - Click **Activate** to either place a request for the publisher to act on ( applicable if activation workflow is turned on or activate the subscription, otherwise)
 
-### Subscriptions
+## Subscriptions
 - All the subscriptions purchased by the customer will be availabe under the subscriptions screen.
 - The status of each subscription will be available in the list.
 - From this scree the actions on the subscriptions like Change Plan, Chan Quantity, Activate and unsubscribe can be done depending on the status.
 
 ![SaaS Subscriptions](./images/customer-subscriptions.png)
 
-### Activate
+## Activate
 
 The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 ![Information flow between Azure and Provisioning application](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-post-provisioning-api-v2-calls.png)
@@ -88,7 +88,7 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 
 > **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the application would put the subscription in PendingActivation status and the Fulfillment API to activate the subscription is not called. Publisher has the option to activate the subscription via the action menu in the subscription listing in the Publisher Portal.
 
-### Change plan
+## Change plan
 
 The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 ![Update subscription](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-update-api-v2-calls-from-saas-service-a.png)
@@ -117,7 +117,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 > **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Change Plan** is disabled for customers. Publisher has the option to change the plan of the subscription via the action menu in the subscription listing in the Publisher Portal.
 
-### Unsubscribe
+## Unsubscribe
 
 - Log on to [AMP SDK sample application]().
 - Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
@@ -140,7 +140,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 ```
 > **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Unsubscribe** is disabled for customers. Publisher has the option to delete the subscription via the action menu in the subscription listing in the Publisher Portal.
 
-### Change Quantity
+## Change Quantity
 
 - Log on to [AMP SDK sample application]().
 - Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
@@ -159,7 +159,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 > The AMP SDK sample application calls the following AMP SDK API methods in the background.
 
 
-### View activity log
+## View activity log
 
 - Log on to [AMP SDK sample application]().
 - Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
@@ -168,7 +168,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
  ![SaaS Subscriptions](./images/activity-log-menu.png)
  ![SaaS Subscriptions](./images/activity-log-popup.png)
 
-### View Licenses
+## View Licenses
 
 - Log on to [AMP SDK Sample application]()
 - Click **Licenses** menu at the top to view the list of subscriptions and licenses.

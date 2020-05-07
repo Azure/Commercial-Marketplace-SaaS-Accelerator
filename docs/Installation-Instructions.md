@@ -9,12 +9,14 @@
     + [Create Blob storage](#create-blob-storage)
   * [Set up key vault](#set-up-key-vault)
   * [Grant key vault access to an Azure AD application](#grant-key-vault-access-to-an-azure-ad-application)
+  * [Add the secret to hold the hosted subscription credentials](#add-the-secret-to-hold-the-hosted-subscription-credentials)
   * [Customer Provisioning Service](#customer-provisioning-service)
     + [Create marketplace offer](#create-marketplace-offer)
     + [Set up the sample client application locally](#set-up-the-sample-client-application-locally)
     + [Deploy the application to Azure](#deploy-the-application-to-azure)
       - [Using an ARM template and Azure CLI](#using-an-arm-template-and-azure-cli)
       - [Manual deployment using VS 2019](#manual-deployment-using-vs-2019)
+      - [Deploy webjob](#deploy-webjob)
     + [Landing page and Webhook settings in the Marketplace Offer](#landing-page-and-webhook-settings-in-the-marketplace-offer)
   * [Troubleshooting issues](#troubleshooting-issues)
     + [Next steps](#next-steps)
@@ -199,6 +201,29 @@ Follow the below steps to create a web application resource in an Azure subscrip
 ![Key vault url](./images/key-vault-url.png)
 
 - The key vault url should be used in the **keyVaultConfig** > **KeyVaultUrl** 
+
+## Add the secret to hold the hosted subscription credentials
+
+- Log on to [Azure](https://portal.azure.com)
+- Search for **Key vaults** in the search box in the top bar
+- Click **Key vaults**
+- Locate the key vault that was just created
+- Click **Secrets** from the left menu
+- Click **+Generate/Import** button in the top bar
+- Add the details as shown in the below image
+    - Name : **HostedsubscriptionCredentials**
+    - Value : 
+```json    
+{
+"Tenant ID":"<tenantID>",
+"Subscription ID":"<Azure Subscription ID>",
+"Service Principal ID":"<service principal that has contributor permissions on the Azure subscription>",
+"Client Secret":"<secret of the service principal>"
+} 
+```
+
+![Default secret](./images/keyvault-default-secret.png)
+
 
 ## Customer Provisioning Service
 
@@ -385,6 +410,44 @@ In this section, we will go over the steps to download the latest sources from t
 - Navigate to the  **URL (Instance Name)** to validate the deployment
 
 > Note: The steps to set up the Publisher solution - **SaaS.SDK.PublisherSolution** locally are identical to the steps to set up the marketplace provisioning service.
+
+#### Deploy webjob
+
+- Log on to [Azure](https://portal.azure.com)
+- Click **All Services** in the menu on the left
+- Click **Web App**
+- Click **Create** 
+
+- Fill out the details for the new **Web App**
+![AllServices](./images/AppServiceNew-for-webjobs.png)
+
+	- Select Subscription
+    - Enter Name  of the instance 
+    - Select **Code** for Publish
+	- Select RunTime stack - **.Net Core 3.1(LTS)**
+    - Select Operating System - **Windows** 
+    - Select **Region**
+    - Select  **App Service Plan**  or create a new one    
+    
+- Click **Review + Create** to initiate the creation of the resource
+
+- Go to the details of the resource after it is successfully created. You can use the notification in the top right portion of the menu bar to get a link to the resource
+
+- Click **Overview** to see the details of the resource that is just created
+
+- In the **Overview** tab, click **Get Publish Profile** button in the menu bar to download the publish profile to your local folder
+- Right-click on the **SaaS.SDK.Provisioning.Webjob** project, click **Publish ...**
+- Click **Import Profile ...** to browse and select the publish profile that was downloaded earlier
+- Make sure to set the webjob type to be **Continuous**
+
+![AllServices](./images/webjob-continuous.png)
+
+- Click **Publish** to deploy the web application to Azure App Service
+- Navigate to the web application resource
+- Search for **web job**
+- Click **WebJobs** to see the webjob in the list
+![WebJob](./images/webjob-listing.png)
+
 
 ### Landing page and Webhook settings in the Marketplace Offer
 
