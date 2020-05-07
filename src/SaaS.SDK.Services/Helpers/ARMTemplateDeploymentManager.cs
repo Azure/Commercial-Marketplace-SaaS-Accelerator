@@ -155,7 +155,7 @@
         private void DeleteExistingResourceGroup(ResourceManagementClient resourceManagementClient, string resourceGroupName, string resourceGroupLocation)
         {
             this.logger.LogInformation(string.Format("check if  resource group '{0}' in location '{1}' exists", resourceGroupName, resourceGroupLocation));
-            if (resourceManagementClient.ResourceGroups.CheckExistence(resourceGroupName) != true)
+            if (resourceManagementClient.ResourceGroups.CheckExistence(resourceGroupName) == true)
             {
                 this.logger.LogInformation(string.Format("Delete resource group '{0}' in location '{1}'", resourceGroupName, resourceGroupLocation));
                 var resourceGroup = new ResourceGroup();
