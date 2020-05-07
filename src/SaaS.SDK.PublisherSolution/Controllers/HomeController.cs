@@ -348,7 +348,7 @@
                 var userDetails = this.userRepository.GetPartnerDetailFromEmail(CurrentUserEmailAddress);
                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                 SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
-                if (operation == "Activte")
+                if (operation == "Activate")
                 {
                     this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
 
