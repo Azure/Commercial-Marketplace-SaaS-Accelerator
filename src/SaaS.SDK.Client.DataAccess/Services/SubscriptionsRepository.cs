@@ -142,10 +142,17 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <returns></returns>
         public IEnumerable<Subscriptions> GetSubscriptionsByEmailAddress(string partnerEmailAddress, Guid subscriptionId, bool isIncludeDeactvated = false)
         {
+            if (subscriptionId != default)
+            {
+                return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.AmpsubscriptionId == subscriptionId);
+            }
 
-            return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.AmpsubscriptionId == subscriptionId);
+            else
+            {
+
+                return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress);
+            }
         }
-
         /// <summary>
         /// Gets the subscriptions by ScheduleId
         /// </summary>
