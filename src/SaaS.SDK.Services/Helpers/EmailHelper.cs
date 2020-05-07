@@ -102,6 +102,7 @@
                 if (successEventData != null)
                 {
                     toReceipents = successEventData.SuccessStateEmails;
+                    CopyToCustomer = Convert.ToBoolean(successEventData.CopyToCustomer);
                 }
                 if (string.IsNullOrEmpty(toReceipents))
                 {
@@ -130,6 +131,7 @@
                 if (failureStateEmails != null)
                 {
                     toReceipents = failureStateEmails.FailureStateEmails;
+                    CopyToCustomer = Convert.ToBoolean(failureStateEmails.CopyToCustomer);
                 }
                 if (string.IsNullOrEmpty(toReceipents))
                 {
@@ -228,6 +230,8 @@
             hashTable.Add("oldValue", oldValue);
             hashTable.Add("newValue", newValue);
             hashTable.Add("planevent", processStatus);
+            hashTable.Add("PurchaserEmail", Subscription.Purchaser.EmailId ?? "");
+            hashTable.Add("PurchaserTenant", Convert.ToString(Subscription.Purchaser.TenantId) ?? "");
 
             ExtendedProperties p = new ExtendedProperties();
 

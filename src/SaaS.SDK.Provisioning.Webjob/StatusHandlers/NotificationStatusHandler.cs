@@ -234,7 +234,7 @@
             bool isEmailEnabledForSubscriptionActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForSubscriptionActivation"));
 
             bool triggerEmail = false;
-            if (planEvents.Isactive == true)
+            if (planEvents != null && planEvents.Isactive == true)
             {
                 if (planEventName == "Activate" && isEmailEnabledForPendingActivation && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
                 {
@@ -251,10 +251,12 @@
                 }
 
             }
-            var emailContent = this.emailHelper.PrepareEmailContent(subscriptionDetail, processStatus, subscriptionDetail.SubscriptionStatus, subscriptionDetail.SubscriptionStatus.ToString());
+
 
             if (triggerEmail)
             {
+                var emailContent = this.emailHelper.PrepareEmailContent(subscriptionDetail, processStatus, subscriptionDetail.SubscriptionStatus, subscriptionDetail.SubscriptionStatus.ToString());
+
                 this.emailService.SendEmail(emailContent);
 
                 if (emailContent.CopyToCustomer && !string.IsNullOrEmpty(subscriptionDetail.CustomerEmailAddress))
