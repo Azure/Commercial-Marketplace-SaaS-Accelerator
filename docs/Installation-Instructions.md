@@ -408,97 +408,6 @@ The **Technical Configuration** section of the Marketplace offer with the values
 |Azure Active Directory Tenant ID | Tenant where the AD application is created and configured to have the redirect URIs as explained above.
 |Azure Active Directory Application ID | ID of the AD application with the redirect URIs configured as explained above
 
-### Next steps
-- [Customer purchase experience](./Customer-Experience.md)
-- [Publisher experience](./Publisher-Experience.md)
-
-
-## SaaS metering service
-
-The **SaaS metering service** is the web application that helps ISVs to look at the subscriptions against the marketplace offer.
-
-![List of subscriptions](./images/subscriptions-manage-usage.png)
-
-For subscriptions against the plans that support metered billing, a button is enabled to post usage events against the subscription.
-
-> Only one usage event is accepted for the hour interval. The hour interval starts at minute 0 and ends at minute 59. If more than one usage event is emitted for the same hour interval, any subsequent usage events are dropped as duplicates.
-
-> Usage can be emitted with a delay and the maximum delay allowed between is 24 hours.
-The usage / consumption is consolidated
-
-### Emit usage events
-
-The following interface in the **Saas metering service** allows the user to manual report the usage against a selected dimension.
-
-> In this example, suppose the SaaS service is offering a notification service that helps its customers send out emails / text. Email and Text are modeled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
-
-![Report usage](./images/post-usage-event.png)
-
->Note:
-
- > *  The option - Manage Usage is available against active subscriptions against a plan that supports metering. You are required to manually update the Plan record in the database to indicate that it supports metering. Besides, the meters for the plan should be initialized in the **MeteredDimensions** table
- 
-**Update Plan to indicate support for metering**
-
-Use the following script as an example / template to update the records in **Plans**
-
-```sql
-UPDATE Plans SET IsmeteringSupported = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
-```
-
-The Plan ID is available in the **Plan overview** tab of the offer as shown here:
-
-![Plan ID](./images/plan-id-for-metering.png)
-
-**Initialize meters for plan**
-
-Use the following script as an example / template to initialize meters in **MeteredDimensions** table
-
-```sql
-INSERT INTO MeteredDimensions ( Dimension, PlanId, Description, CreatedDate)
-SELECT '<dimension-as-in-partner-center', '<id-of-the-plan>', '<description>', GETDATE()
-```
-
-The **Dimension** in the above example should be the attribute of a meter in the plan as shown in the below image:
-![Meter dimension](./images/meter-dimension.png)
-
-
-> The SaaS metering service calls the below API to emit usage events
-```csharp
-/// <summary>
-/// Emits the usage event asynchronous.
-/// </summary>
-/// <param name="usageEventRequest">The usage event request.</param>
-/// <returns></returns>
-Task<MeteringUsageResult> EmitUsageEventAsync(MeteringUsageRequest usageEventRequest);
-```
-
-The service tracks the requests sent and the response received from the marketplace metering APIs for auditing purposes.
-
-## License Manager
-
-The license management feature in the SaaS metering service allows the Publisher to assign licenses to the active subscriptions. 
-The intent here is to illustrate how the assignment can be done via the interface and how the customer user can consume this detail via the **SaaS Provisioning** application
-
-### Publisher: Manage Licenses
-
-- Log on to [SaaS Metering Service application]()
-- Click **Licenses** menu at the top to view the list of subscriptions and licenses.
-- There is an option to **Revoke** an active license and **Activate** an already revoked license.
-![View Licenses](./images/publisher-add-revoke-license.png)
-- Select a subscription, enter license key detail and hit **Add License** to assign a license.
-![Add License](./images/publisher-add-revoke-license.png)
-
-
-### Customer: View Licenses
-
-- Log on to [AMP SDK Sample application]()
-- Click **Licenses** menu at the top to view the list of subscriptions and licenses.
-- Use the **Copy** button to copy the license text to clipboard
-
-![View Licenses](./images/customer-view-licenses.png)
-
-
 ## Troubleshooting issues
 
 The Provisioning servie and the Publisher solution are configured to log the activity to console ( when running locally ). The logs are available via **Log Stream** when the applications are running in Azure as app services.
@@ -514,5 +423,6 @@ Logs in Azure can be viewed by following the below steps:
 - You can download the logs from the FTP URL that is available in the **App Service Logs** interface.
 - The credentials to access the FTP location are available in the **Publish Profile** of the web application.
 
-
- 
+### Next steps
+- [Customer purchase experience](./Customer-Experience.md)
+- [Publisher experience](./Publisher-Experience.md) 
