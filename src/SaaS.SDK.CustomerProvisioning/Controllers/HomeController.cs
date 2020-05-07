@@ -560,7 +560,7 @@
 
                         if (operation == "Deactivate")
                         {
-                            this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
+                          
                             queueObject.SubscriptionID = subscriptionId;
                             queueObject.TriggerEvent = "Deactivate";
                             queueObject.UserId = userDetails.UserId;

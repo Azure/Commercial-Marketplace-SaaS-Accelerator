@@ -188,12 +188,12 @@
                     var allPlans = planRepository.Get().ToList();
                     foreach (var subscription in allSubscriptionDetails)
                     {
-                        SubscriptionResultExtension subscritpionDetail = this.subscriptionService.PrepareSubscriptionResponse(subscription);
-                        Plans PlanDetail = this.planRepository.GetById(subscritpionDetail.PlanId);
-                        subscritpionDetail.IsPerUserPlan = PlanDetail.IsPerUser.HasValue ? PlanDetail.IsPerUser.Value : false;
+                        SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
+                        Plans PlanDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
+                        subscriptionDetailExtension.IsPerUserPlan = PlanDetail.IsPerUser.HasValue ? PlanDetail.IsPerUser.Value : false;
                         subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
-                        if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
-                            allSubscriptions.Add(subscritpionDetail);
+                        if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
+                            allSubscriptions.Add(subscriptionDetailExtension);
                     }
                     subscriptionDetail.Subscriptions = allSubscriptions;
 
