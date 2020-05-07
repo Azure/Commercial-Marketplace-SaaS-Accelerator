@@ -230,6 +230,8 @@
             hashTable.Add("oldValue", oldValue);
             hashTable.Add("newValue", newValue);
             hashTable.Add("planevent", processStatus);
+            hashTable.Add("PurchaserEmail", Subscription.Purchaser.EmailId ?? "");
+            hashTable.Add("PurchaserTenant", Convert.ToString(Subscription.Purchaser.TenantId) ?? "");
 
             ExtendedProperties p = new ExtendedProperties();
 

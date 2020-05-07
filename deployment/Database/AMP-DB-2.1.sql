@@ -425,7 +425,8 @@ GO
 
 Insert into Events
 Select 'Activate' , 1, Getdate() UNION ALL
-Select 'Unsubscribe' , 1, Getdate()
+Select 'Unsubscribe' , 1, Getdate() UNION ALL
+Select 'Pending Activation', 1,Getdate()
 
 GO
 

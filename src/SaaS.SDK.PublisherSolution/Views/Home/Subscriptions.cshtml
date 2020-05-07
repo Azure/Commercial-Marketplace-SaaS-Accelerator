@@ -75,7 +75,7 @@
                                                             {
                                                                 <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
                                                             }
-                                                            @if (Model.IsAutomaticProvisioningSupported == true && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
+                                                            @if (Model.IsAutomaticProvisioningSupported == false && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                             {
                                                                 <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
                                                                 <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
