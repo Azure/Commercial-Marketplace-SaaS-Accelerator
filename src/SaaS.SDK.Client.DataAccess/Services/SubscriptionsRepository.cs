@@ -142,20 +142,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <returns></returns>
         public IEnumerable<Subscriptions> GetSubscriptionsByEmailAddress(string partnerEmailAddress, Guid subscriptionId, bool isIncludeDeactvated = false)
         {
-            //if (subscriptionId == default)
-            //{
-            //    if (!isIncludeDeactvated)
-            //        return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.IsActive == true);
-            //    else
-            //        return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress);
-            //}
-            //else
-            //{
-                //if (!isIncludeDeactvated)
-                //    return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.AmpsubscriptionId == subscriptionId && s.IsActive == true);
-                //else
-                    return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.AmpsubscriptionId == subscriptionId);
-            //}
+
+            return context.Subscriptions.Include(s => s.User).Where(s => s.User != null && s.User.EmailAddress == partnerEmailAddress && s.AmpsubscriptionId == subscriptionId);
         }
 
         /// <summary>
@@ -168,10 +156,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         {
             if (subscriptionId != default)
             {
-                //if (!isIncludeDeactvated)
-                //    return context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId && s.IsActive == true).FirstOrDefault();
-                //else
-                    return context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+                return context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
             }
             return null;
         }
@@ -252,7 +237,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             }
         }
 
-       
+
         /// <summary>
         /// Removes the specified entity.
         /// </summary>
