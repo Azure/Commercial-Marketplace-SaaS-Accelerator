@@ -323,7 +323,7 @@
                     this.logger.LogInformation("GetSubscriptionByIdAsync SubscriptionID :{0} :: planID:{1}:: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(operation));
 
                     this.TempData["ShowWelcomeScreen"] = false;
-                    var oldValue = this.subscriptionService.GetPartnerSubscriptions(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                    var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                     var plandetails = this.planRepository.GetById(oldValue.PlanId);
                     subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                     subscriptionDetail.ShowWelcomeScreen = false;
