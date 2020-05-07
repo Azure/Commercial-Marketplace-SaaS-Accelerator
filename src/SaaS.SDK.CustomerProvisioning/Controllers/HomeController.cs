@@ -139,7 +139,6 @@
                             this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail);
                             // GetSubscriptionBy SubscriptionId
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                            subscriptionData.Quantity = 0;
                             var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
                             if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                             {
