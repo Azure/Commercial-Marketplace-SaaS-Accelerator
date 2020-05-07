@@ -11,6 +11,8 @@ The SDK provides the components required for the implementations of the billing 
 - **Customer provisioning sample web application** that showcases how to register, provision, and activate the customer subscription. Implemented using ASP.Net Core 3.1, it uses the SaaS Client library and Data Access Library to to invoke and persists interactions with the fulfillment APIs. In addition, it provides interfaces for a customer to manage their subscriptions and plans. 
 - **Publisher sample web application** that showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. 
 - **Client Data Access library** that demonstrates how to persist the Plans, Subscriptions, and transactions with the fulfillment and Metered APIs.
+- **Client Services** contains the services used by the Customer provisioning and Publisher solution to orchestrate calls to the API / database.
+- **Provisioning webjob** implements the  background job in processing the requests from the Customer Provisioning and the Publisher portals and moves the subscriptions through relevant statuses
 
 
 ### Documentation 
@@ -31,6 +33,8 @@ The source **(src)** directory offers the following components:
 | **Customer provisioning sample web application** | Showcases how to provision a customer (ASP.NET Core 3.1) that uses the SDK to invoke fulfillment APIs in order to manage the subscriptions against the SaaS offer in Azure. |SaaS.SDK.CustomerProvisioning|
 | **Publisher sample web application** | Showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. |SaaS.SDK.PublisherSolution|
 | **Client Data Access library** | Enables to persist the Plans, Subscriptions, and transactions with the fulfillment and Metered APIs. |SaaS.SDK.Client.DataAccess |
+| **Client Services** | Provides the service layer for the web applications | SaaS.SDK.Provisioning.Services|
+| **Provisioning webjob** |  Implements the  background job in processing the requests from the Customer Provisioning and the Publisher portals and moves the subscriptions through relevant statuses | SaaS.SDK.WebJob |
 | **[Unit Tests project](./docs/Microsoft-Marketplace-SaaS-SDK-UnitTest.md)** | Helps validate and test the SDK's codebase. | SaaS.SDK.UnitTest |
 
 
