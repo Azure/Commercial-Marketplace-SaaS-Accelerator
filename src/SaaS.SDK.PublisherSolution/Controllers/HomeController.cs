@@ -102,6 +102,8 @@
 
         private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
 
+        private readonly CloudStorageConfigs cloudConfigs;
+        private string azureWebJobsStorage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
@@ -115,7 +117,8 @@
         public HomeController(IUsersRepository UsersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository SubscriptionRepo,
                                 IPlansRepository PlanRepository, ISubscriptionUsageLogsRepository SubscriptionUsageLogsRepository,
                                     IMeteredDimensionsRepository DimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options,
-                                    ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository)
+                                    ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
+                                     CloudStorageConfigs cloudConfigs)
         {
             this.apiClient = apiClient;
             subscriptionRepo = SubscriptionRepo;
@@ -139,6 +142,8 @@
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.eventsRepository = eventsRepository;
             this.options = options;
+            this.cloudConfigs = cloudConfigs;
+            azureWebJobsStorage = cloudConfigs.AzureWebJobsStorage;
             this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
         }
 
@@ -300,6 +305,10 @@
                 subscriptionDetail.SubscriptionStatus = oldValue.SubscriptionStatus;
                 subscriptionDetail.CustomerEmailAddress = oldValue.CustomerEmailAddress;
                 subscriptionDetail.CustomerName = oldValue.CustomerName;
+                var plandetails = this.planRepository.GetById(oldValue.PlanId);
+                subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
+                subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
+                subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
             }
             return this.View(subscriptionDetail);
         }
@@ -382,7 +391,7 @@
                 this.subscriptionLogRepository.Save(auditLog);
 
                 string queueMessage = JsonConvert.SerializeObject(queueObject);
-                string StorageConnectionString = this.options.Value.FulFillmentAPIBaseURL;
+                string StorageConnectionString = this.cloudConfigs.AzureWebJobsStorage ?? azureWebJobsStorage;
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(StorageConnectionString);
 
                 //// Create the queue client.
@@ -409,7 +418,7 @@
         {
             try
             {
-                return this.View();
+                return this.View("ProcessMessage");
             }
             catch (Exception ex)
             {
@@ -526,7 +535,7 @@
         /// <returns>
         /// The <see cref="IActionResult" />
         /// </returns>
-        public IActionResult SubscriptionDetail(Guid subscriptionId)
+        public IActionResult ViewSubscriptionDetail(Guid subscriptionId)
         {
             this.logger.LogInformation("Home Controller / SubscriptionDetail subscriptionId:{0}", JsonConvert.SerializeObject(subscriptionId));
             try

@@ -163,10 +163,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         {
             if (subscriptionId != default)
             {
-                //if (!isIncludeDeactvated)
-                //    return context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId && s.IsActive == true).FirstOrDefault();
-                //else
-                    return context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+                return context.Subscriptions.Include(s => s.User).Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
             }
             return null;
         }
@@ -247,7 +244,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             }
         }
 
-       
+
         /// <summary>
         /// Removes the specified entity.
         /// </summary>
