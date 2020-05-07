@@ -618,74 +618,78 @@
         public async Task<IActionResult> ChangeSubscriptionPlan(SubscriptionResult subscriptionDetail)
         {
             this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonConvert.SerializeObject(subscriptionDetail));
-            try
+            if (User.Identity.IsAuthenticated)
             {
-                var subscriptionId = new Guid();
-                var planId = string.Empty;
-                if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                try
                 {
-                    this.TempData["ShowLicensesMenu"] = true;
-                }
-                if (subscriptionDetail != null)
-                {
-                    subscriptionId = subscriptionDetail.Id;
-                    planId = subscriptionDetail.PlanId;
-                }
-
-                if (subscriptionId != default && !string.IsNullOrEmpty(planId))
-                {
-                    try
+                    var subscriptionId = new Guid();
+                    var planId = string.Empty;
+                    if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
                     {
-                        var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                        this.TempData["ShowLicensesMenu"] = true;
+                    }
+                    if (subscriptionDetail != null)
+                    {
+                        subscriptionId = subscriptionDetail.Id;
+                        planId = subscriptionDetail.PlanId;
+                    }
 
-                        var jsonResult = await this.apiClient.ChangePlanForSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false);
-
-                        var changePlanOperationStatus = OperationStatusEnum.InProgress;
-                        if (jsonResult != null && jsonResult.OperationId != default)
+                    if (subscriptionId != default && !string.IsNullOrEmpty(planId))
+                    {
+                        try
                         {
-                            while (OperationStatusEnum.InProgress.Equals(changePlanOperationStatus) || OperationStatusEnum.NotStarted.Equals(changePlanOperationStatus))
+                            var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+
+                            var jsonResult = await this.apiClient.ChangePlanForSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false);
+
+                            var changePlanOperationStatus = OperationStatusEnum.InProgress;
+                            if (jsonResult != null && jsonResult.OperationId != default)
                             {
-                                var changePlanOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
-                                changePlanOperationStatus = changePlanOperationResult.Status;
-
-                                this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId));
-                                this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
-                            }
-
-                            var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
-
-                            this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
-                            this.logger.LogInformation("Plan Successfully Changed.");
-                            this.applicationLogService.AddApplicationLog("Plan Successfully Changed.");
-
-                            if (oldValue != null)
-                            {
-                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                while (OperationStatusEnum.InProgress.Equals(changePlanOperationStatus) || OperationStatusEnum.NotStarted.Equals(changePlanOperationStatus))
                                 {
-                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
-                                    SubscriptionId = oldValue.SubscribeId,
-                                    NewValue = planId,
-                                    OldValue = oldValue.PlanId,
-                                    CreateBy = currentUserId,
-                                    CreateDate = DateTime.Now
-                                };
-                                this.subscriptionLogRepository.Save(auditLog);
+                                    var changePlanOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                    changePlanOperationStatus = changePlanOperationResult.Status;
+
+                                    this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId));
+                                    this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
+                                }
+
+                                var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
+
+                                this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
+                                this.logger.LogInformation("Plan Successfully Changed.");
+                                this.applicationLogService.AddApplicationLog("Plan Successfully Changed.");
+
+                                if (oldValue != null)
+                                {
+                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                    {
+                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
+                                        SubscriptionId = oldValue.SubscribeId,
+                                        NewValue = planId,
+                                        OldValue = oldValue.PlanId,
+                                        CreateBy = currentUserId,
+                                        CreateDate = DateTime.Now
+                                    };
+                                    this.subscriptionLogRepository.Save(auditLog);
+                                }
                             }
                         }
+                        catch (FulfillmentException fex)
+                        {
+                            this.TempData["ErrorMsg"] = fex.Message;
+                        }
                     }
-                    catch (FulfillmentException fex)
-                    {
-                        this.TempData["ErrorMsg"] = fex.Message;
-                    }
-                }
 
-                return this.RedirectToAction(nameof(this.Subscriptions));
+                    return this.RedirectToAction(nameof(this.Subscriptions));
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                    return View("Error", ex);
+                }
             }
-            catch (Exception ex)
-            {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error", ex);
-            }
+            return this.RedirectToAction(nameof(this.Index));
         }
 
         /// <summary>
