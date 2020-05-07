@@ -11,6 +11,7 @@ The SQL scripts build on top of each other. When setting up your database, do th
  1. Start with a blank database
  2. Run AMP-DB-1.0.sql
  3. Run AMP-DB-2.0.sql
+ 4. Run AMP-DB-2.1.sql
 
 
 ### Description 
