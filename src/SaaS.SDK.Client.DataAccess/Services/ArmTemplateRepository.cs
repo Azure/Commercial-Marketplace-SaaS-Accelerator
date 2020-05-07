@@ -60,9 +60,19 @@
         {
             if (templateDetails != null && !string.IsNullOrEmpty(templateDetails.ArmtempalteName))
             {
-                context.Armtemplates.Add(templateDetails);
-                context.SaveChanges();
-                return templateDetails.ArmtempalteId;
+                var existingTemplate = context.Armtemplates.Where(s => s.ArmtempalteName == templateDetails.ArmtempalteName).FirstOrDefault();
+                if (existingTemplate != null)
+                {
+                    existingTemplate.TemplateLocation = templateDetails.TemplateLocation;
+                    context.Armtemplates.Update(existingTemplate);
+                    context.SaveChanges();
+                }
+                else
+                {
+                    context.Armtemplates.Add(templateDetails);
+                    context.SaveChanges();
+                    return templateDetails.ArmtempalteId;
+                }
             }
             return null;
         }

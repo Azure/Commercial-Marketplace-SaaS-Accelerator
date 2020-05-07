@@ -161,6 +161,8 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<IArmTemplateParametersRepository, ArmTemplateParametersRepository>();
             services.AddScoped<KnownUserAttribute>();
+            services.AddScoped<IArmTemplateRepository, ArmTemplateRepository>();
+            services.AddScoped<ISubscriptionTemplateParametersRepository, SubscriptionTemplateParametersRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

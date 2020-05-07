@@ -205,7 +205,7 @@
                                 };
                                 this.subscriptionLogRepository.Save(auditLog);
                             }
-                            subscriptionExtension = this.subscriptionService.GetSubscriptionsBySubscriptionId(newSubscription.SubscriptionId);
+                            subscriptionExtension = this.subscriptionService.GetSubscriptionsBySubscriptionId(newSubscription.SubscriptionId, true);
                             subscriptionExtension.ShowWelcomeScreen = false;
                             subscriptionExtension.CustomerEmailAddress = this.CurrentUserEmailAddress;
                             subscriptionExtension.CustomerName = this.CurrentUserName;
@@ -248,28 +248,36 @@
         [HttpPost]
         public IActionResult ValidateUserParameters(SubscriptionResultExtension subscriptionResultExtension)
         {
-            if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
+            if (User.Identity.IsAuthenticated)
             {
-                var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment").ToList();
-                IDictionary<string, string> parms = new Dictionary<string, string>();
-                foreach (var parm in deploymentParms)
+                if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
                 {
-                    parms.Add(parm.DisplayName, parm.Value);
-                }
-                bool isFileSupported = this.keyVaultClient.ValidateUserParameters(parms);
-                if (!isFileSupported)
-                {
-                    return Json(new { status = false, responseText = "Invalid Credentials." });
+                    var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment").ToList();
+                    IDictionary<string, string> parms = new Dictionary<string, string>();
+                    foreach (var parm in deploymentParms)
+                    {
+                        parms.Add(parm.DisplayName, parm.Value);
+                    }
+                    bool isFileSupported = this.keyVaultClient.ValidateUserParameters(parms);
+                    if (!isFileSupported)
+                    {
+                        return Json(new { status = false, responseText = "Invalid Credentials." });
+                    }
+                    else
+                    {
+                        return Json(new { status = true, responseText = "Valid Credentials" });
+                    }
                 }
                 else
                 {
-                    return Json(new { status = true, responseText = "Valid Credentials" });
+                    return Json(new { status = false, responseText = "Enter Valid Credentials" });
                 }
             }
             else
             {
-                return Json(new { status = false, responseText = "Enter Valid Credentials" });
+                return RedirectToAction(nameof(Index));
             }
+
         }
 
         /// <summary>
@@ -487,110 +495,117 @@
         public IActionResult SubscriptionOperation(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation)
         {
             this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId), JsonConvert.SerializeObject(operation));
-            try
+            if (User.Identity.IsAuthenticated)
             {
-                if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                try
                 {
-                    this.TempData["ShowLicensesMenu"] = true;
-                }
-                var userDetails = this.userRepository.GetPartnerDetailFromEmail(CurrentUserEmailAddress);
-                SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
-
-                if (subscriptionId != default)
-                {
-                    SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
-                    this.logger.LogInformation("GetPartnerSubscription");
-                    var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-                    Plans PlanDetail = this.planRepository.GetById(oldValue.PlanId);
-                    this.logger.LogInformation("GetUserIdFromEmailAddress");
-                    var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                    if (operation == "Activate")
+                    if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
                     {
-                        try
+                        this.TempData["ShowLicensesMenu"] = true;
+                    }
+                    var userDetails = this.userRepository.GetPartnerDetailFromEmail(CurrentUserEmailAddress);
+                    SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
+
+                    if (subscriptionId != default)
+                    {
+                        SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+                        this.logger.LogInformation("GetPartnerSubscription");
+                        var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
+                        Plans PlanDetail = this.planRepository.GetById(oldValue.PlanId);
+                        this.logger.LogInformation("GetUserIdFromEmailAddress");
+                        var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                        if (operation == "Activate")
                         {
-                            this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionResultExtension.SubscriptionParameters));
-                            if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
+                            try
                             {
-                                var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input");
-                                if (inputParms != null)
+                                this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionResultExtension.SubscriptionParameters));
+                                if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
                                 {
-                                    var inputParmsList = inputParms.ToList();
-                                    this.subscriptionService.AddSubscriptionParameters(inputParmsList, currentUserId);
-                                }
-                                var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment");
-                                if (deploymentParms != null && PlanDetail.DeployToCustomerSubscription == true)
-                                {
-                                    var deploymentParmslist = deploymentParms.ToList();
-                                    IDictionary<string, string> parms = new Dictionary<string, string>();
-                                    foreach (var parm in deploymentParmslist)
+                                    var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input");
+                                    if (inputParms != null)
                                     {
-                                        parms.Add(parm.DisplayName, parm.Value.Trim());
+                                        var inputParmsList = inputParms.ToList();
+                                        this.subscriptionService.AddSubscriptionParameters(inputParmsList, currentUserId);
                                     }
-                                    string azureKeyValtSecret = this.keyVaultClient.WriteKeyAsync(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
-                                    this.subscriptionRepository.SaveDeploymentCredentials(subscriptionId, azureKeyValtSecret, currentUserId);
+                                    var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment");
+                                    if (deploymentParms != null && PlanDetail.DeployToCustomerSubscription == true)
+                                    {
+                                        var deploymentParmslist = deploymentParms.ToList();
+                                        IDictionary<string, string> parms = new Dictionary<string, string>();
+                                        foreach (var parm in deploymentParmslist)
+                                        {
+                                            parms.Add(parm.DisplayName, parm.Value.Trim());
+                                        }
+                                        string azureKeyValtSecret = this.keyVaultClient.WriteKeyAsync(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
+                                        this.subscriptionRepository.SaveDeploymentCredentials(subscriptionId, azureKeyValtSecret, currentUserId);
+                                    }
                                 }
+                                if (Convert.ToBoolean(applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
+                                {
+                                    this.logger.LogInformation("UpdateStateOfSubscription PendingActivation: SubscriptionId: {0} ", subscriptionId);
+
+                                    this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
+                                }
+
+                                queueObject.SubscriptionID = subscriptionId;
+                                queueObject.TriggerEvent = "Activate";
+                                queueObject.UserId = userDetails.UserId;
+                                queueObject.PortalName = "Client";
                             }
-                            if (Convert.ToBoolean(applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
+                            catch (FulfillmentException fex)
                             {
-                                this.logger.LogInformation("UpdateStateOfSubscription PendingActivation: SubscriptionId: {0} ", subscriptionId);
-
-                                this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
+                                this.logger.LogInformation(fex.Message);
                             }
+                        }
 
+                        if (operation == "Deactivate")
+                        {
+                            this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
                             queueObject.SubscriptionID = subscriptionId;
-                            queueObject.TriggerEvent = "Activate";
+                            queueObject.TriggerEvent = "Deactivate";
                             queueObject.UserId = userDetails.UserId;
                             queueObject.PortalName = "Client";
+                            this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
                         }
-                        catch (FulfillmentException fex)
+                        var newValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
+
+                        if (oldValue != null)
                         {
-                            this.logger.LogInformation(fex.Message);
+                            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                            {
+                                Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                                SubscriptionId = oldValue.SubscribeId,
+                                NewValue = newValue.SubscriptionStatus.ToString(),
+                                OldValue = oldValue.SubscriptionStatus.ToString(),
+                                CreateBy = currentUserId,
+                                CreateDate = DateTime.Now
+                            };
+                            this.subscriptionLogRepository.Save(auditLog);
                         }
                     }
+                    string queueMessage = JsonConvert.SerializeObject(queueObject);
+                    string StorageConnectionString = this.cloudConfigs.AzureWebJobsStorage ?? azureWebJobsStorage;
+                    CloudStorageAccount storageAccount = CloudStorageAccount.Parse(StorageConnectionString);
+                    //// Create the queue client.
+                    CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+                    CloudQueue queue = queueClient.GetQueueReference("saas-provisioning-queue");
+                    ////Create the queue if it doesn't already exist
+                    queue.CreateIfNotExistsAsync();
+                    //// Create a message and add it to the queue.
+                    CloudQueueMessage message = new CloudQueueMessage(queueMessage);
+                    queue.AddMessageAsync(message);
 
-                    if (operation == "Deactivate")
-                    {
-                        this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
-                        queueObject.SubscriptionID = subscriptionId;
-                        queueObject.TriggerEvent = "Deactivate";
-                        queueObject.UserId = userDetails.UserId;
-                        queueObject.PortalName = "Client";
-                        this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
-                    }
-                    var newValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
-
-                    if (oldValue != null)
-                    {
-                        SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                        {
-                            Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
-                            SubscriptionId = oldValue.SubscribeId,
-                            NewValue = newValue.SubscriptionStatus.ToString(),
-                            OldValue = oldValue.SubscriptionStatus.ToString(),
-                            CreateBy = currentUserId,
-                            CreateDate = DateTime.Now
-                        };
-                        this.subscriptionLogRepository.Save(auditLog);
-                    }
+                    return this.RedirectToAction(nameof(this.ProcessMessage));
                 }
-                string queueMessage = JsonConvert.SerializeObject(queueObject);
-                string StorageConnectionString = this.cloudConfigs.AzureWebJobsStorage ?? azureWebJobsStorage;
-                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(StorageConnectionString);
-                //// Create the queue client.
-                CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-                CloudQueue queue = queueClient.GetQueueReference("saas-provisioning-queue");
-                ////Create the queue if it doesn't already exist
-                queue.CreateIfNotExistsAsync();
-                //// Create a message and add it to the queue.
-                CloudQueueMessage message = new CloudQueueMessage(queueMessage);
-                queue.AddMessageAsync(message);
-
-                return this.RedirectToAction(nameof(this.ProcessMessage));
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                    return View("Error", ex);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error", ex);
+                return this.RedirectToAction(nameof(this.Index));
             }
         }
 
@@ -603,74 +618,78 @@
         public async Task<IActionResult> ChangeSubscriptionPlan(SubscriptionResult subscriptionDetail)
         {
             this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonConvert.SerializeObject(subscriptionDetail));
-            try
+            if (User.Identity.IsAuthenticated)
             {
-                var subscriptionId = new Guid();
-                var planId = string.Empty;
-                if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                try
                 {
-                    this.TempData["ShowLicensesMenu"] = true;
-                }
-                if (subscriptionDetail != null)
-                {
-                    subscriptionId = subscriptionDetail.Id;
-                    planId = subscriptionDetail.PlanId;
-                }
-
-                if (subscriptionId != default && !string.IsNullOrEmpty(planId))
-                {
-                    try
+                    var subscriptionId = new Guid();
+                    var planId = string.Empty;
+                    if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
                     {
-                        var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                        this.TempData["ShowLicensesMenu"] = true;
+                    }
+                    if (subscriptionDetail != null)
+                    {
+                        subscriptionId = subscriptionDetail.Id;
+                        planId = subscriptionDetail.PlanId;
+                    }
 
-                        var jsonResult = await this.apiClient.ChangePlanForSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false);
-
-                        var changePlanOperationStatus = OperationStatusEnum.InProgress;
-                        if (jsonResult != null && jsonResult.OperationId != default)
+                    if (subscriptionId != default && !string.IsNullOrEmpty(planId))
+                    {
+                        try
                         {
-                            while (OperationStatusEnum.InProgress.Equals(changePlanOperationStatus) || OperationStatusEnum.NotStarted.Equals(changePlanOperationStatus))
+                            var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+
+                            var jsonResult = await this.apiClient.ChangePlanForSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false);
+
+                            var changePlanOperationStatus = OperationStatusEnum.InProgress;
+                            if (jsonResult != null && jsonResult.OperationId != default)
                             {
-                                var changePlanOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
-                                changePlanOperationStatus = changePlanOperationResult.Status;
-
-                                this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId));
-                                this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
-                            }
-
-                            var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
-
-                            this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
-                            this.logger.LogInformation("Plan Successfully Changed.");
-                            this.applicationLogService.AddApplicationLog("Plan Successfully Changed.");
-
-                            if (oldValue != null)
-                            {
-                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                while (OperationStatusEnum.InProgress.Equals(changePlanOperationStatus) || OperationStatusEnum.NotStarted.Equals(changePlanOperationStatus))
                                 {
-                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
-                                    SubscriptionId = oldValue.SubscribeId,
-                                    NewValue = planId,
-                                    OldValue = oldValue.PlanId,
-                                    CreateBy = currentUserId,
-                                    CreateDate = DateTime.Now
-                                };
-                                this.subscriptionLogRepository.Save(auditLog);
+                                    var changePlanOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                    changePlanOperationStatus = changePlanOperationResult.Status;
+
+                                    this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId));
+                                    this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
+                                }
+
+                                var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
+
+                                this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
+                                this.logger.LogInformation("Plan Successfully Changed.");
+                                this.applicationLogService.AddApplicationLog("Plan Successfully Changed.");
+
+                                if (oldValue != null)
+                                {
+                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                    {
+                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
+                                        SubscriptionId = oldValue.SubscribeId,
+                                        NewValue = planId,
+                                        OldValue = oldValue.PlanId,
+                                        CreateBy = currentUserId,
+                                        CreateDate = DateTime.Now
+                                    };
+                                    this.subscriptionLogRepository.Save(auditLog);
+                                }
                             }
                         }
+                        catch (FulfillmentException fex)
+                        {
+                            this.TempData["ErrorMsg"] = fex.Message;
+                        }
                     }
-                    catch (FulfillmentException fex)
-                    {
-                        this.TempData["ErrorMsg"] = fex.Message;
-                    }
-                }
 
-                return this.RedirectToAction(nameof(this.Subscriptions));
+                    return this.RedirectToAction(nameof(this.Subscriptions));
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                    return View("Error", ex);
+                }
             }
-            catch (Exception ex)
-            {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error", ex);
-            }
+            return this.RedirectToAction(nameof(this.Index));
         }
 
         /// <summary>
@@ -682,65 +701,72 @@
         public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
         {
             this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonConvert.SerializeObject(subscriptionDetail));
-            try
+            if (User.Identity.IsAuthenticated)
             {
-                if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity > 0)
+                try
                 {
-                    try
+                    if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity > 0)
                     {
-                        var subscriptionId = subscriptionDetail.Id;
-                        var quantity = subscriptionDetail.Quantity;
-
-                        var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-
-                        var jsonResult = await this.apiClient.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
-
-                        var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
-                        if (jsonResult != null && jsonResult.OperationId != default)
+                        try
                         {
-                            while (OperationStatusEnum.InProgress.Equals(changeQuantityOperationStatus) || OperationStatusEnum.NotStarted.Equals(changeQuantityOperationStatus))
+                            var subscriptionId = subscriptionDetail.Id;
+                            var quantity = subscriptionDetail.Quantity;
+
+                            var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+
+                            var jsonResult = await this.apiClient.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
+
+                            var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
+                            if (jsonResult != null && jsonResult.OperationId != default)
                             {
-                                var changeQuantityOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
-                                changeQuantityOperationStatus = changeQuantityOperationResult.Status;
-
-                                this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(quantity));
-                                this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId);
-                            }
-
-                            var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
-
-                            this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
-                            this.logger.LogInformation("Quantity Successfully Changed.");
-                            this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.");
-
-                            if (oldValue != null)
-                            {
-                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                while (OperationStatusEnum.InProgress.Equals(changeQuantityOperationStatus) || OperationStatusEnum.NotStarted.Equals(changeQuantityOperationStatus))
                                 {
-                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
-                                    SubscriptionId = oldValue.SubscribeId,
-                                    NewValue = quantity.ToString(),
-                                    OldValue = oldValue.Quantity.ToString(),
-                                    CreateBy = currentUserId,
-                                    CreateDate = DateTime.Now
-                                };
-                                this.subscriptionLogRepository.Save(auditLog);
+                                    var changeQuantityOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                    changeQuantityOperationStatus = changeQuantityOperationResult.Status;
+
+                                    this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(quantity));
+                                    this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId);
+                                }
+
+                                var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
+
+                                this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
+                                this.logger.LogInformation("Quantity Successfully Changed.");
+                                this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.");
+
+                                if (oldValue != null)
+                                {
+                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                    {
+                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
+                                        SubscriptionId = oldValue.SubscribeId,
+                                        NewValue = quantity.ToString(),
+                                        OldValue = oldValue.Quantity.ToString(),
+                                        CreateBy = currentUserId,
+                                        CreateDate = DateTime.Now
+                                    };
+                                    this.subscriptionLogRepository.Save(auditLog);
+                                }
                             }
                         }
+                        catch (FulfillmentException fex)
+                        {
+                            this.TempData["ErrorMsg"] = fex.Message;
+                            this.logger.LogError("Message:{0} :: {1}   ", fex.Message, fex.InnerException);
+                        }
                     }
-                    catch (FulfillmentException fex)
-                    {
-                        this.TempData["ErrorMsg"] = fex.Message;
-                        this.logger.LogError("Message:{0} :: {1}   ", fex.Message, fex.InnerException);
-                    }
-                }
 
-                return this.RedirectToAction(nameof(this.Subscriptions));
+                    return this.RedirectToAction(nameof(this.Subscriptions));
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                    return View("Error", ex);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error", ex);
+                return this.RedirectToAction(nameof(this.Index));
             }
         }
         #endregion
