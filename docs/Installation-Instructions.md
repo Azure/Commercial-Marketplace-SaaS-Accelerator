@@ -9,12 +9,14 @@
     + [Create Blob storage](#create-blob-storage)
   * [Set up key vault](#set-up-key-vault)
   * [Grant key vault access to an Azure AD application](#grant-key-vault-access-to-an-azure-ad-application)
+  * [Add the secret to hold the hosted subscription credentials](#add-the-secret-to-hold-the-hosted-subscription-credentials)
   * [Customer Provisioning Service](#customer-provisioning-service)
     + [Create marketplace offer](#create-marketplace-offer)
     + [Set up the sample client application locally](#set-up-the-sample-client-application-locally)
     + [Deploy the application to Azure](#deploy-the-application-to-azure)
       - [Using an ARM template and Azure CLI](#using-an-arm-template-and-azure-cli)
       - [Manual deployment using VS 2019](#manual-deployment-using-vs-2019)
+      - [Deploy webjob](#deploy-webjob)
     + [Landing page and Webhook settings in the Marketplace Offer](#landing-page-and-webhook-settings-in-the-marketplace-offer)
   * [Troubleshooting issues](#troubleshooting-issues)
     + [Next steps](#next-steps)
@@ -436,10 +438,11 @@ In this section, we will go over the steps to download the latest sources from t
 - In the **Overview** tab, click **Get Publish Profile** button in the menu bar to download the publish profile to your local folder
 - Right-click on the **SaaS.SDK.Provisioning.Webjob** project, click **Publish ...**
 - Click **Import Profile ...** to browse and select the publish profile that was downloaded earlier
+- Make sure to set the webjob type to be **Continuous**
+
+![AllServices](./images/webjob-continuous.png)
+
 - Click **Publish** to deploy the web application to Azure App Service
-
-![AllServices](./images/VSPublishProfile.PNG).
-
 - Navigate to the web application resource
 - Search for **web job**
 - Click **WebJobs** to see the webjob in the list
