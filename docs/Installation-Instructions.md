@@ -200,6 +200,29 @@ Follow the below steps to create a web application resource in an Azure subscrip
 
 - The key vault url should be used in the **keyVaultConfig** > **KeyVaultUrl** 
 
+## Add the secret to hold the hosted subscription credentials
+
+- Log on to [Azure](https://portal.azure.com)
+- Search for **Key vaults** in the search box in the top bar
+- Click **Key vaults**
+- Locate the key vault that was just created
+- Click **Secrets** from the left menu
+- Click **+Generate/Import** button in the top bar
+- Add the details as shown in the below image
+    - Name : **HostedsubscriptionCredentials**
+    - Value : 
+```json    
+{
+"Tenant ID":"<tenantID>",
+"Subscription ID":"<Azure Subscription ID>",
+"Service Principal ID":"<service principal that has contributor permissions on the Azure subscription>",
+"Client Secret":"<secret of the service principal>"
+} 
+```
+
+![Default secret](./images/keyvault-default-secret.png)
+
+
 ## Customer Provisioning Service
 
 The Customer provisioning service serves as an intermediary between Azure and the target SaaS application. In a real scenario, the intermediary would initiate the provisioning of the SaaS application and activate the subscription against the SaaS offer being purchased. The application would allow the customer to place a request, in case the activation requires a workflow that should be completed by the Publisher.
@@ -385,6 +408,43 @@ In this section, we will go over the steps to download the latest sources from t
 - Navigate to the  **URL (Instance Name)** to validate the deployment
 
 > Note: The steps to set up the Publisher solution - **SaaS.SDK.PublisherSolution** locally are identical to the steps to set up the marketplace provisioning service.
+
+#### Deploy webjob
+
+- Log on to [Azure](https://portal.azure.com)
+- Click **All Services** in the menu on the left
+- Click **Web App**
+- Click **Create** 
+
+- Fill out the details for the new **Web App**
+![AllServices](./images/AppServiceNew-for-webjobs.png)
+
+	- Select Subscription
+    - Enter Name  of the instance 
+    - Select **Code** for Publish
+	- Select RunTime stack - **.Net Core 3.1(LTS)**
+    - Select Operating System - **Windows** 
+    - Select **Region**
+    - Select  **App Service Plan**  or create a new one    
+    
+- Click **Review + Create** to initiate the creation of the resource
+
+- Go to the details of the resource after it is successfully created. You can use the notification in the top right portion of the menu bar to get a link to the resource
+
+- Click **Overview** to see the details of the resource that is just created
+
+- In the **Overview** tab, click **Get Publish Profile** button in the menu bar to download the publish profile to your local folder
+- Right-click on the **SaaS.SDK.Provisioning.Webjob** project, click **Publish ...**
+- Click **Import Profile ...** to browse and select the publish profile that was downloaded earlier
+- Click **Publish** to deploy the web application to Azure App Service
+
+![AllServices](./images/VSPublishProfile.PNG).
+
+- Navigate to the web application resource
+- Search for **web job**
+- Click **WebJobs** to see the webjob in the list
+![WebJob](./images/webjob-listing.png)
+
 
 ### Landing page and Webhook settings in the Marketplace Offer
 
