@@ -373,7 +373,7 @@
 
                     this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
                     queueObject.SubscriptionID = subscriptionId;
-                    queueObject.TriggerEvent = "Deactivate";
+                    queueObject.TriggerEvent = "Unsubscribe";
                     queueObject.UserId = userDetails.UserId;
                     queueObject.PortalName = "Admin";
                 }

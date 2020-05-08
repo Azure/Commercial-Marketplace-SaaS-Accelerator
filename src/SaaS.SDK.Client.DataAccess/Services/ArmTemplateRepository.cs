@@ -66,6 +66,7 @@
                     existingTemplate.TemplateLocation = templateDetails.TemplateLocation;
                     context.Armtemplates.Update(existingTemplate);
                     context.SaveChanges();
+                    return existingTemplate.ArmtempalteId;
                 }
                 else
                 {

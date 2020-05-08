@@ -115,7 +115,7 @@
     function ViewSubscriptionlogdetailsById(subscriptionId) {
         $.ajax({
             type: "Get",
-            url: "ViewSubscriptionDetail",
+            url: "SubscriptionLogDetail",
             data: { subscriptionId: subscriptionId },
             contentType: "application/json; charset=utf-8",
             datatype: "json",
@@ -152,7 +152,7 @@
     function ViewSubscriptionDetail(subscriptionId) {
         $.ajax({
             type: "Get",
-            url: "SubscriptionDetail",
+            url: "ViewSubscriptionDetail",
             data: { subscriptionId: subscriptionId },
             contentType: "application/json; charset=utf-8",
             datatype: "json",
