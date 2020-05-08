@@ -78,7 +78,7 @@
             }
             catch (Exception ex)
             {
-                return View("Error", new ErrorViewModel { IsKnownUser = true });
+                return View("Error", ex);
             }
         }
 
