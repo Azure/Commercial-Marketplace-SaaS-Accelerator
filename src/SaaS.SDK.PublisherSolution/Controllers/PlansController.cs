@@ -120,7 +120,7 @@
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
                 var armTemplates = this.armTemplateRepository.GetAll().ToList();
-                this.ViewBag.ARMTempleate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
+                this.ViewBag.ARMTemplate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
                 return this.PartialView(plans);
             }
             catch (Exception ex)
