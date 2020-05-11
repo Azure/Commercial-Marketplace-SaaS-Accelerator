@@ -456,7 +456,11 @@
         /// <summary>
         /// Processes the message.
         /// </summary>
-        /// <returns> Return View.</returns>
+        /// <param name="action">The action.</param>
+        /// <param name="status">The status.</param>
+        /// <returns>
+        /// Return View.
+        /// </returns>
         public IActionResult ProcessMessage(string action,string status)
         {
             try
