@@ -136,7 +136,7 @@
                                                 @*<input type="checkbox" id="PlanEvents_IsEnabled_@i" name="PlanEvents[@i].IsEnabled" value="@Model.PlanEvents[i].IsEnabled" />*@
                                             </td>
                                             <td>
-                                                @Html.DropDownListFor(model => model.PlanEvents[i].ArmtemplateId, ViewBag.ARMTempleate as IEnumerable<SelectListItem>, new { name = "PlanEvents[@i].ArmtemplateId", id = string.Format("PlanEvents_ArmtemplateId_{0}", @i) })
+                                                @Html.DropDownListFor(model => model.PlanEvents[i].ArmtemplateId, ViewBag.ARMTemplate as IEnumerable<SelectListItem>, new { name = "PlanEvents[@i].ArmtemplateId", id = string.Format("PlanEvents_ArmtemplateId_{0}", @i) })
 
                                             </td>
                                             <td><input type="text" style="width:200px;" id="PlanEvents_SuccessStateEmails_@i" name="PlanEvents[@i].SuccessStateEmails" value="@Model.PlanEvents[i].SuccessStateEmails" /></td>

@@ -209,6 +209,8 @@
                         planEvent.FailureStateEmails = events.FailureStateEmails;
                         planEvent.EventsName = events.EventsName;
                         planEvent.EventId = events.EventId;
+                        planEvent.EventId = events.EventId;
+                        planEvent.ArmtemplateId = events.ArmtemplateId;
 
                         planEvent.CopyToCustomer = events.CopyToCustomer ?? false;
                         if (planEvent.EventsName != "Pending Activation")

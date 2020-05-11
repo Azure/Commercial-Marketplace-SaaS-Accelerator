@@ -122,6 +122,7 @@
                     EventName = events.EventsName,
                     EventId = events.EventId,
                     CopyToCustomer = events.CopyToCustomer,
+                    ArmtemplateId = events.ArmtemplateId,
                 };
                 plan.PlanEvents.Add(planEventsModel);
             }

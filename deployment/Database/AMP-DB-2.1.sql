@@ -277,7 +277,8 @@ SuccessStateEmails Varchar(max),
 FailureStateEmails Varchar(max), 
 EventId Int Not NUll,
 EventsName Varchar(225) Not NUll,
-CopyToCustomer Bit 
+CopyToCustomer Bit,
+ArmtemplateId Uniqueidentifier Not Null
 )
 
 go
