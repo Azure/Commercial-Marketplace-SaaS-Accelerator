@@ -432,7 +432,7 @@
                     this.subscriptionLogRepository.Save(auditLog);
 
                     queueObject.SubscriptionID = subscriptionId;
-                    queueObject.TriggerEvent = "Deactivate";
+                    queueObject.TriggerEvent = "Unsubscribe";
                     queueObject.UserId = userDetails.UserId;
                     queueObject.PortalName = "Admin";
                 }

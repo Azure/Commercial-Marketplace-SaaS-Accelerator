@@ -76,8 +76,8 @@
                             for (int i = 0; i < Model.SubscriptionParameters.Count(); i++)
                             {
 
-                                if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
-                                {
+                                    if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
+                                    {
                                     <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
                                         @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
 

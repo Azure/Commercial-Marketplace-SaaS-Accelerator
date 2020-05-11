@@ -457,11 +457,18 @@
         /// Processes the message.
         /// </summary>
         /// <returns> Return View.</returns>
-        public IActionResult ProcessMessage()
+        public IActionResult ProcessMessage(string action,string status)
         {
             try
             {
-                return this.PartialView();
+                if (status.Equals("Activate"))
+                {
+                    return this.PartialView();
+                }
+                else
+                {
+                    return this.View();
+                }
             }
             catch (Exception ex)
             {
@@ -616,7 +623,7 @@
                         if (operation == "Deactivate")
                         {
                             queueObject.SubscriptionID = subscriptionId;
-                            queueObject.TriggerEvent = "Deactivate";
+                            queueObject.TriggerEvent = "Unsubscribe";
                             queueObject.UserId = userDetails.UserId;
                             queueObject.PortalName = "Client";
                             this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
@@ -648,7 +655,7 @@
                     CloudQueueMessage message = new CloudQueueMessage(queueMessage);
                     queue.AddMessageAsync(message);
 
-                    return this.RedirectToAction(nameof(this.ProcessMessage));
+                    return this.RedirectToAction(nameof(this.ProcessMessage), new { action = operation, status = operation });
                 }
                 catch (Exception ex)
                 {

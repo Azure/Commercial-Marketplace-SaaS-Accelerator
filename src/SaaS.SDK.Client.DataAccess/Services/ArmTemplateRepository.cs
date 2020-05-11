@@ -70,6 +70,7 @@
                     existingTemplate.TemplateLocation = templateDetails.TemplateLocation;
                     this.context.Armtemplates.Update(existingTemplate);
                     this.context.SaveChanges();
+                    return existingTemplate.ArmtempalteId;
                 }
                 else
                 {
