@@ -85,6 +85,8 @@
                         CreateDate = DateTime.Now,
                     };
                     this.subscriptionLogRepository.Save(auditLog);
+
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), "Unsubscribe Failed", SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString());
                 }
                 catch (Exception ex)
                 {

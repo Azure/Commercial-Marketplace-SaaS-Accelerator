@@ -96,6 +96,8 @@
                         CreateDate = DateTime.Now,
                     };
                     this.subscriptionLogRepository.Save(auditLog);
+
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Activated", SubscriptionStatusEnumExtension.Subscribed.ToString());
                 }
                 catch (Exception ex)
                 {
