@@ -1,26 +1,25 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using System.Collections.Generic;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
 
     /// <summary>
-    /// Batch Usage Upload Model
+    /// Batch Usage Upload Model.
     /// </summary>
     public class BatchUsageUploadModel
     {
         /// <summary>
-        /// The subscriptionidheader
+        /// The subscriptionidheader.
         /// </summary>
         public const string SUBSCRIPTIONIDHEADER = "subscriptionid";
 
         /// <summary>
-        /// The apitypeheader
+        /// The apitypeheader.
         /// </summary>
         public const string APITYPEHEADER = "apitype";
 
         /// <summary>
-        /// The consumedunitsheader
+        /// The consumedunitsheader.
         /// </summary>
         public const string CONSUMEDUNITSHEADER = "consumedunits";
 
@@ -66,6 +65,12 @@
         /// </value>
         public ResponseModel Response { get; set; }
 
+        /// <summary>
+        /// Gets or sets the deployment parameter view model.
+        /// </summary>
+        /// <value>
+        /// The deployment parameter view model.
+        /// </value>
         public DeploymentParameterViewModel DeploymentParameterViewModel { get; set; }
     }
 }

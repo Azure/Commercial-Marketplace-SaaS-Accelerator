@@ -1,18 +1,18 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     /// <summary>
-    /// Term UnitEnum
+    /// Term UnitEnum.
     /// </summary>
     public enum TermUnitEnum
     {
         /// <summary>
-        /// The Monthly
+        /// The Monthly.
         /// </summary>
         P1M,
 
         /// <summary>
-        /// The Yearly 
+        /// The Yearly.
         /// </summary>
-        P1Y
+        P1Y,
     }
 }

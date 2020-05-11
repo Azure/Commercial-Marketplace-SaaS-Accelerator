@@ -1,31 +1,31 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
-    /// Service to manage plans
+    /// Service to manage plans.
     /// </summary>
     public class PlanService
     {
         /// <summary>
-        /// The plan repository
+        /// The plan repository.
         /// </summary>
-        public IPlansRepository plansRepository;
+        private IPlansRepository plansRepository;
 
         /// <summary>
-        /// The offer attributes repository
+        /// The offer attributes repository.
         /// </summary>
-        public IOfferAttributesRepository offerAttributesRepository;
+        private IOfferAttributesRepository offerAttributesRepository;
 
         /// <summary>
-        /// The offer repository
+        /// The offer repository.
         /// </summary>
-        public IOffersRepository offerRepository;
+        private IOffersRepository offerRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PlanService"/> class.
@@ -43,25 +43,26 @@
         /// <summary>
         /// Gets the plans.
         /// </summary>
-        /// <returns>List of plans</returns>
+        /// <returns>List of plans.</returns>
         public List<PlansModel> GetPlans()
         {
             List<PlansModel> plansList = new List<PlansModel>();
             var allPlansData = this.plansRepository.GetPlansByUser();
             foreach (var item in allPlansData)
             {
-                PlansModel Plans = new PlansModel();
-                Plans.planId = item.PlanId;
-                Plans.DisplayName = item.DisplayName;
-                Plans.Description = item.Description;
-                Plans.IsmeteringSupported = item.IsmeteringSupported;
-                Plans.offerID = item.OfferId;
-                Plans.DeployToCustomerSubscription = item.DeployToCustomerSubscription ?? false;
-                Plans.PlanGUID = item.PlanGuid;
-                plansList.Add(Plans);
+                PlansModel plans = new PlansModel();
+                plans.PlanId = item.PlanId;
+                plans.DisplayName = item.DisplayName;
+                plans.Description = item.Description;
+                plans.IsmeteringSupported = item.IsmeteringSupported;
+                plans.OfferID = item.OfferId;
+                plans.DeployToCustomerSubscription = item.DeployToCustomerSubscription ?? false;
+                plans.PlanGUID = item.PlanGuid;
+                plansList.Add(plans);
             }
+
             var offerDetails = this.offerRepository.GetAll();
-            plansList.ForEach(x => x.OfferName = offerDetails.Where(s => s.OfferGuid == x.offerID).FirstOrDefault().OfferName);
+            plansList.ForEach(x => x.OfferName = offerDetails.Where(s => s.OfferGuid == x.OfferID).FirstOrDefault().OfferName);
 
             return plansList;
         }
@@ -70,27 +71,25 @@
         /// Gets the plan detail by plan gu identifier.
         /// </summary>
         /// <param name="planGuId">The plan gu identifier.</param>
-        /// <returns></returns>
+        /// <returns> Plans.</returns>
         public PlansModel GetPlanDetailByPlanGuId(Guid planGuId)
         {
             var existingPlan = this.plansRepository.GetByInternalReference(planGuId);
             var planAttributes = this.plansRepository.GetPlanAttributes(planGuId, existingPlan.OfferId);
             var planEvents = this.plansRepository.GetEventsByPlan(planGuId, existingPlan.OfferId);
             var offerDetails = this.offerRepository.GetOfferById(existingPlan.OfferId);
-            //var offerAttributes = this.offerAttributeRepository.GetOfferAttributeDetailByOfferId();
-            //var activeAttribute = offerAttributes.Where(s => s.Isactive == true);
 
             PlansModel plan = new PlansModel
             {
                 Id = existingPlan.Id,
-                planId = existingPlan.PlanId,
+                PlanId = existingPlan.PlanId,
                 IsmeteringSupported = existingPlan.IsmeteringSupported,
-                offerID = existingPlan.OfferId,
+                OfferID = existingPlan.OfferId,
                 DisplayName = existingPlan.DisplayName,
                 Description = existingPlan.Description,
                 PlanGUID = existingPlan.PlanGuid,
                 OfferName = offerDetails.OfferName,
-                DeployToCustomerSubscription = existingPlan.DeployToCustomerSubscription ?? false
+                DeployToCustomerSubscription = existingPlan.DeployToCustomerSubscription ?? false,
             };
 
             plan.PlanAttributes = new List<PlanAttributesModel>();
@@ -104,7 +103,7 @@
                     PlanId = existingPlan.PlanGuid,
                     DisplayName = attribute.DisplayName,
                     IsEnabled = attribute.IsEnabled,
-                    Type = attribute.Type
+                    Type = attribute.Type,
                 };
                 plan.PlanAttributes.Add(planAttributesmodel);
             }
@@ -122,10 +121,11 @@
                     FailureStateEmails = events.FailureStateEmails,
                     EventName = events.EventsName,
                     EventId = events.EventId,
-                    CopyToCustomer = events.CopyToCustomer
+                    CopyToCustomer = events.CopyToCustomer,
                 };
                 plan.PlanEvents.Add(planEventsModel);
             }
+
             return plan;
         }
 
@@ -133,7 +133,6 @@
         /// Updates the deploy to customer subscription flag.
         /// </summary>
         /// <param name="plan">The plan.</param>
-        /// <returns></returns>
         public void UpdateDeployToCustomerSubscriptionFlag(PlansModel plan)
         {
             var existingPlan = this.plansRepository.GetByInternalReference(plan.PlanGUID);
@@ -145,7 +144,7 @@
         /// Saves the plan attributes.
         /// </summary>
         /// <param name="planAttributes">The plan attributes.</param>
-        /// <returns></returns>
+        /// <returns> Plan Event Id.</returns>
         public int? SavePlanAttributes(PlanAttributesModel planAttributes)
         {
             if (planAttributes != null)
@@ -161,6 +160,7 @@
                 var planEventsId = this.plansRepository.SavePlanAttributes(attribute);
                 return planEventsId;
             }
+
             return null;
         }
 
@@ -168,7 +168,7 @@
         /// Saves the plan events.
         /// </summary>
         /// <param name="planEvents">The plan events.</param>
-        /// <returns></returns>
+        /// <returns> plan Events Id.</returns>
         public int? SavePlanEvents(PlanEventsModel planEvents)
         {
             if (planEvents != null)
@@ -187,6 +187,7 @@
                 var planEventsId = this.plansRepository.AddPlanEvents(events);
                 return planEventsId;
             }
+
             return null;
         }
 
@@ -195,7 +196,7 @@
         /// </summary>
         /// <param name="plan">The plan.</param>
         /// <param name="currentUserId">The current user identifier.</param>
-        /// <returns></returns>
+        /// <returns> plan Events Id.</returns>
         public int? SavePlanDeploymentAttributes(Plans plan, int currentUserId)
         {
             var offerAttributes = this.offerAttributesRepository.GetAllOfferAttributesByOfferId(plan.OfferId);
@@ -221,10 +222,11 @@
                     attribute.UserId = currentUserId;
                     attribute.PlanAttributeId = 0;
                     attribute.CreateDate = DateTime.Now;
-
                 }
+
                 var planEventsId = this.plansRepository.SavePlanAttributes(attribute);
             }
+
             return null;
         }
     }

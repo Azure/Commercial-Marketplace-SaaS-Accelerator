@@ -1,22 +1,23 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     /// <summary>
-    /// Sets Subscription Operation Status
+    /// Sets Subscription Operation Status.
     /// </summary>
     public class EmailTriggerConfigurationConstants
     {
         /// <summary>
-        /// Is Active Enable
+        /// is Active Enable.
         /// </summary>
         public const string ISEMAILENABLEDFORSUBSCRIPTIONACTIVATION = "IsEmailEnabledForSubscriptionActivation";
 
         /// <summary>
-        ///Is Unsubscribe Email  Enable
+        /// is Unsubscribe Email  Enable.
         /// </summary>
         public const string ISEMAILENABLEDFORUNSUBSCRIPTION = "IsEmailEnabledForUnsubscription";
 
+        /// <summary>
+        /// is email enabled for pending activation.
+        /// </summary>
         public const string ISEMAILENABLEDFORPENDINGACTIVATION = "IsEmailEnabledForPendingActivation";
-
-
     }
 }

@@ -1,85 +1,86 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
     /// <summary>
-    /// Repository to access users
+    /// Repository to access users.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IUsersRepository" />
     public class UsersRepository : IUsersRepository
     {
         /// <summary>
-        /// The context
+        /// The context.
         /// </summary>
         private readonly SaasKitContext context;
 
         /// <summary>
+        /// The disposed.
+        /// </summary>
+        private bool disposed = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="UsersRepository"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The this.context.</param>
         public UsersRepository(SaasKitContext context)
         {
             this.context = context;
         }
 
         /// <summary>
-        /// The disposed
-        /// </summary>
-        private bool disposed = false;
-
-        /// <summary>
         /// Gets this instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns> List of Users.</returns>
         public IEnumerable<Users> Get()
         {
-            return context.Users;
+            return this.context.Users;
         }
 
         /// <summary>
         /// Gets the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <returns></returns>        
+        /// <returns> Users.</returns>
         public Users Get(int id)
         {
-            return context.Users.Where(s => s.UserId == id).FirstOrDefault();
+            return this.context.Users.Where(s => s.UserId == id).FirstOrDefault();
         }
 
         /// <summary>
         /// Removes the specified entity.
         /// </summary>
-        /// <param name="userDetail">The entity.</param>        
+        /// <param name="userDetail">The entity.</param>
         public void Remove(Users userDetail)
         {
-            context.Users.Remove(userDetail);
-            context.SaveChanges();
+            this.context.Users.Remove(userDetail);
+            this.context.SaveChanges();
         }
 
         /// <summary>
         /// Adds the specified user detail.
         /// </summary>
         /// <param name="userDetail">The user detail.</param>
-        /// <returns></returns>
+        /// <returns> User Id.</returns>
         public int Save(Users userDetail)
         {
-            var existingUser = context.Users.Where(s => s.EmailAddress == userDetail.EmailAddress).FirstOrDefault();
+            var existingUser = this.context.Users.Where(s => s.EmailAddress == userDetail.EmailAddress).FirstOrDefault();
             if (existingUser != null)
             {
                 existingUser.FullName = userDetail.FullName;
-                context.Users.Update(existingUser);
+                this.context.Users.Update(existingUser);
                 return existingUser.UserId;
             }
             else
             {
-                context.Users.Add(userDetail);
+                this.context.Users.Add(userDetail);
             }
-            context.SaveChanges();
+
+            this.context.SaveChanges();
             return userDetail.UserId;
         }
 
@@ -87,10 +88,19 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// Gets the partner detail from email.
         /// </summary>
         /// <param name="emailAddress">The email address.</param>
-        /// <returns></returns>
+        /// <returns> user details.</returns>
         public Users GetPartnerDetailFromEmail(string emailAddress)
         {
-            return context.Users.Where(s => s.EmailAddress == emailAddress).FirstOrDefault();
+            return this.context.Users.Where(s => s.EmailAddress == emailAddress).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -103,19 +113,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             {
                 if (disposing)
                 {
-                    context.Dispose();
+                    this.context.Dispose();
                 }
             }
-            this.disposed = true;
-        }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            this.disposed = true;
         }
     }
 }

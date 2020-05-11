@@ -6,7 +6,7 @@
     using Newtonsoft.Json.Converters;
 
     /// <summary>
-    /// Web hook Payload get or set the API Response Data
+    /// Web hook Payload get or set the API Response Data.
     /// </summary>
     public class WebhookPayload
     {
@@ -42,9 +42,10 @@
         /// Gets or sets the operation identifier.
         /// </summary>
         /// <value>
-        /// Operation Id is presented as Id property on the JSON payload
+        /// Operation Id is presented as Id property on the JSON payload.
         /// </value>
-        [JsonProperty(PropertyName = "Id")] public Guid OperationId { get; set; }
+        [JsonProperty(PropertyName = "Id")]
+        public Guid OperationId { get; set; }
 
         /// <summary>
         /// Gets or sets the plan identifier.

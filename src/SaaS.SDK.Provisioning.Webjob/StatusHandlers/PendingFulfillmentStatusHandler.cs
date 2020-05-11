@@ -1,46 +1,49 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
+    using System;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Newtonsoft.Json;
-    using System;
 
     /// <summary>
-    /// Status handler to handle the subscription in PendingFulfillment
+    /// Status handler to handle the subscription in PendingFulfillment.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers.AbstractSubscriptionStatusHandler" />
     public class PendingFulfillmentStatusHandler : AbstractSubscriptionStatusHandler
     {
         /// <summary>
-        /// The fulfillment API client
+        /// The fulfillment API client.
         /// </summary>
-        protected readonly IFulfillmentApiClient fulfillmentApiClient;
+        private readonly IFulfillmentApiClient fulfillmentApiClient;
 
         /// <summary>
-        /// The application configuration repository
+        /// The application configuration repository.
         /// </summary>
-        protected readonly IApplicationConfigRepository applicationConfigRepository;
+        private readonly IApplicationConfigRepository applicationConfigRepository;
 
         /// <summary>
-        /// The subscription log repository
+        /// The subscription log repository.
         /// </summary>
-        protected readonly ISubscriptionLogRepository subscriptionLogRepository;
+        private readonly ISubscriptionLogRepository subscriptionLogRepository;
 
         /// <summary>
-        /// The logger
+        /// The logger.
         /// </summary>
-        protected readonly ILogger<PendingFulfillmentStatusHandler> logger;
+        private readonly ILogger<PendingFulfillmentStatusHandler> logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PendingFulfillmentStatusHandler"/> class.
+        /// Initializes a new instance of the <see cref="PendingFulfillmentStatusHandler" /> class.
         /// </summary>
         /// <param name="fulfillApiClient">The fulfill API client.</param>
         /// <param name="applicationConfigRepository">The application configuration repository.</param>
         /// <param name="subscriptionsRepository">The subscriptions repository.</param>
         /// <param name="subscriptionLogRepository">The subscription log repository.</param>
+        /// <param name="plansRepository">The plans repository.</param>
+        /// <param name="usersRepository">The users repository.</param>
+        /// <param name="logger">The logger.</param>
         public PendingFulfillmentStatusHandler(
                                                 IFulfillmentApiClient fulfillApiClient,
                                                 IApplicationConfigRepository applicationConfigRepository,
@@ -48,11 +51,11 @@
                                                 ISubscriptionLogRepository subscriptionLogRepository,
                                                 IPlansRepository plansRepository,
                                                 IUsersRepository usersRepository,
-                                                ILogger<PendingFulfillmentStatusHandler> logger
-                                                ) : base(subscriptionsRepository, plansRepository, usersRepository)
+                                                ILogger<PendingFulfillmentStatusHandler> logger)
+            : base(subscriptionsRepository, plansRepository, usersRepository)
         {
             this.fulfillmentApiClient = fulfillApiClient;
-            this.applicationConfigRepository = applicationConfigRepository;            
+            this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
             this.logger = logger;
         }
@@ -80,9 +83,9 @@
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
                         NewValue = SubscriptionStatusEnumExtension.PendingActivation.ToString(),
-                        OldValue = subscription.SubscriptionStatus,
+                        OldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart.ToString(),
                         CreateBy = userdetails.UserId,
-                        CreateDate = DateTime.Now
+                        CreateDate = DateTime.Now,
                     };
                     this.subscriptionLogRepository.Save(auditLog);
                 }
@@ -101,7 +104,7 @@
                         NewValue = SubscriptionStatusEnumExtension.PendingActivation.ToString(),
                         OldValue = subscription.SubscriptionStatus,
                         CreateBy = userdetails.UserId,
-                        CreateDate = DateTime.Now
+                        CreateDate = DateTime.Now,
                     };
                     this.subscriptionLogRepository.Save(auditLog);
                 }

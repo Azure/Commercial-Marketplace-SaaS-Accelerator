@@ -3,37 +3,34 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaasKit.Models;
-    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
 
-    [ServiceFilter(typeof(KnownUserAttribute))]
     /// <summary>
-    /// Licenses Controller
+    /// Licenses Controller.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.Saas.Web.Controllers.BaseController" />
+    [ServiceFilter(typeof(KnownUserAttribute))]
     public class PlansController : BaseController
     {
         /// <summary>
-        /// The subscription licenses repository
+        /// The subscription licenses repository.
         /// </summary>
         private readonly ISubscriptionLicensesRepository subscriptionLicensesRepository;
 
         /// <summary>
-        /// The subscription repository
+        /// The subscription repository.
         /// </summary>
         private readonly ISubscriptionsRepository subscriptionRepository;
 
         /// <summary>
-        /// The users repository
+        /// The users repository.
         /// </summary>
         private readonly IUsersRepository usersRepository;
 
@@ -41,24 +38,28 @@
 
         private readonly IPlansRepository plansRepository;
 
-        private PlanService plansService;
+        private readonly IOffersRepository offerRepository;
 
-        private IOffersRepository offerRepository;
+        private readonly IOfferAttributesRepository offerAttributeRepository;
 
-        public IOfferAttributesRepository offerAttributeRepository;
-        public IArmTemplateRepository armTemplateRepository;
+        private readonly IArmTemplateRepository armTemplateRepository;
 
-        /// <summary>
-        /// The logger
-        /// </summary>
         private readonly ILogger<OffersController> logger;
 
+        private PlanService plansService;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="LicensesController"/> class.
+        /// Initializes a new instance of the <see cref="PlansController"/> class.
         /// </summary>
         /// <param name="subscriptionLicenses">The subscription licenses.</param>
         /// <param name="subscriptionRepository">The subscription repository.</param>
         /// <param name="usersRepository">The users repository.</param>
+        /// <param name="applicationConfigRepository">The application configuration repository.</param>
+        /// <param name="plansRepository">The plans repository.</param>
+        /// <param name="offerAttributeRepository">The offer attribute repository.</param>
+        /// <param name="offerRepository">The offer repository.</param>
+        /// <param name="logger">The logger.</param>
+        /// <param name="armTemplateRepository">The arm template repository.</param>
         public PlansController(ISubscriptionLicensesRepository subscriptionLicenses, ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger, IArmTemplateRepository armTemplateRepository)
         {
             this.subscriptionLicensesRepository = subscriptionLicenses;
@@ -76,69 +77,73 @@
         /// <summary>
         /// Indexes this instance.
         /// </summary>
-        /// <returns>return All subscription</returns>
+        /// <returns>return All subscription.</returns>
         public IActionResult Index()
         {
             this.logger.LogInformation("Plans Controller / OfferDetails:  offerGuId");
             try
             {
-                if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
                 {
                     this.TempData["ShowPlansMenu"] = true;
                 }
+
                 List<PlansModel> getAllPlansData = new List<PlansModel>();
                 this.TempData["ShowWelcomeScreen"] = "True";
-                var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-                
-                    getAllPlansData = this.plansService.GetPlans();
-                
+                var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+
+                getAllPlansData = this.plansService.GetPlans();
+
                 return this.View(getAllPlansData);
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return View("Error", ex);
+                return this.View("Error", ex);
             }
         }
-
 
         /// <summary>
         /// Indexes this instance.
         /// </summary>
-        /// <returns>return All subscription</returns>
+        /// <param name="planGuId">The plan gu identifier.</param>
+        /// <returns>
+        /// return All subscription.
+        /// </returns>
         public IActionResult PlanDetails(Guid planGuId)
         {
             this.logger.LogInformation("Plans Controller / PlanDetails:  planGuId {0}", planGuId);
             try
             {
-                //OffersViewModel OffersData = new OffersViewModel();
                 PlansModel plans = new PlansModel();
                 this.TempData["ShowWelcomeScreen"] = "True";
-                var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
-                var armTemplates = armTemplateRepository.GetAll().ToList();
-                ViewBag.ARMTempleate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
+                var armTemplates = this.armTemplateRepository.GetAll().ToList();
+                this.ViewBag.ARMTempleate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
                 return this.PartialView(plans);
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return View("Error", ex);
+                return this.View("Error", ex);
             }
         }
-
 
         /// <summary>
         /// Indexes this instance.
         /// </summary>
-        /// <returns>return All subscription</returns>
+        /// <param name="plans">The plans.</param>
+        /// <returns>
+        /// return All subscription.
+        /// </returns>
         [HttpPost]
         public IActionResult PlanDetails(PlansModel plans)
         {
             this.logger.LogInformation("Plans Controller / PlanDetails:  plans {0}", JsonConvert.SerializeObject(plans));
             try
             {
-                var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 if (plans != null)
                 {
                     this.plansService.UpdateDeployToCustomerSubscriptionFlag(plans);
@@ -151,6 +156,7 @@
                             this.plansService.SavePlanAttributes(attributes);
                         }
                     }
+
                     if (plans.PlanEvents != null)
                     {
                         foreach (var events in plans.PlanEvents)
@@ -160,18 +166,15 @@
                         }
                     }
                 }
-                ModelState.Clear();
-                //return RedirectToAction(nameof(Index));
-                return RedirectToAction(nameof(PlanDetails), new { @planGuId = plans.PlanGUID });
+
+                this.ModelState.Clear();
+                return this.RedirectToAction(nameof(this.PlanDetails), new { @planGuId = plans.PlanGUID });
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
                 return this.PartialView("Error", ex);
             }
-
-
         }
-
     }
 }

@@ -232,6 +232,5 @@
         /// <summary>Gets or sets the name of the customer.</summary>
         /// <value>The name of the customer.</value>
         public string CustomerName { get; set; }
-
     }
 }

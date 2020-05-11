@@ -1,16 +1,19 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
+    using System;
+    using System.Collections;
+    using System.IO;
+    using System.Linq;
     using Commons.Collections;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using NVelocity;
     using NVelocity.App;
-    using System;
-    using System.Collections;
-    using System.IO;
-    using System.Linq;
 
+    /// <summary>
+    /// Email Helper.
+    /// </summary>
     public class EmailHelper
     {
         private readonly IApplicationConfigRepository applicationConfigRepository;
@@ -32,8 +35,7 @@
                             ISubscriptionsRepository subscriptionsRepository,
                             IEmailTemplateRepository emailTemplateRepository,
                             IPlanEventsMappingRepository planEventsMappingRepository,
-                            IEventsRepository eventsRepository
-                            )
+                            IEventsRepository eventsRepository)
         {
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionsRepository = subscriptionsRepository;
@@ -45,65 +47,50 @@
         /// <summary>
         /// Prepares the content of the email.
         /// </summary>
-        /// <param name="Subscription">The subscription.</param>
-        /// <param name="planEvent">The plan event.</param>
+        /// <param name="subscriptionResultExtension">The subscription result extension.</param>
+        /// <param name="processStatus">The process status.</param>
         /// <param name="oldValue">The old value.</param>
         /// <param name="newValue">The new value.</param>
-        /// <returns></returns>
-        /// <exception cref="Exception">
-        /// Error while sending an email, please check the configuration.
+        /// <returns>
+        /// Email Content Model.
+        /// </returns>
+        /// <exception cref="Exception">Error while sending an email, please check the configuration.
         /// or
-        /// Error while sending an email, please check the configuration.
-        /// </exception>
+        /// Error while sending an email, please check the configuration.</exception>
         public EmailContentModel PrepareEmailContent(
-                                                        SubscriptionResultExtension Subscription,
+                                                        SubscriptionResultExtension subscriptionResultExtension,
                                                         string processStatus = "success",
                                                         SubscriptionStatusEnumExtension oldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart,
                                                         string newValue = null)
         {
             EmailContentModel emailContent = new EmailContentModel();
-            string body = ProcessTemplate(Subscription, processStatus, oldValue, newValue);
-            var subscriptionEvent = this.eventsRepository.GetByName(Subscription.EventName);
-            var emailTemplateData = emailTemplateRepository.GetTemplateForStatus(Subscription.SubscriptionStatus.ToString());
-            string Subject = string.Empty;
+            string body = this.ProcessTemplate(subscriptionResultExtension, processStatus, oldValue, newValue);
+            var subscriptionEvent = this.eventsRepository.GetByName(subscriptionResultExtension.EventName);
+            var emailTemplateData = this.emailTemplateRepository.GetTemplateForStatus(subscriptionResultExtension.SubscriptionStatus.ToString());
+            string subject = string.Empty;
 
-            bool CopyToCustomer = false;
+            bool copyToCustomer = false;
             bool isActive = false;
             string toReceipents = string.Empty;
             string ccReceipents = string.Empty;
             string bccReceipents = string.Empty;
 
-            string FromMail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
-            string password = applicationConfigRepository.GetValueByName("SMTPPassword");
-            string username = applicationConfigRepository.GetValueByName("SMTPUserName");
-            bool smtpSsl = bool.Parse(applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
-            int port = int.Parse(applicationConfigRepository.GetValueByName("SMTPPort"));
-            string smtpHost = applicationConfigRepository.GetValueByName("SMTPHost");
-            /* 
-            Cases
-             * Activate - Success  
-             * Activate - Failure
-             * Unsubscribe - Success 
-             * Unsubscribe - Failure
-            Conditions:
-            Is Active in Plan Event Mapping 
-            Is Email Enabled for Subscribtio status in App config
-          
-            Copy to customer.
-
-            If to email is null then don't pull CC and checkfor bcc
-
-             */
-
+            string fromMail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
+            string password = this.applicationConfigRepository.GetValueByName("SMTPPassword");
+            string username = this.applicationConfigRepository.GetValueByName("SMTPUserName");
+            bool smtpSsl = bool.Parse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
+            int port = int.Parse(this.applicationConfigRepository.GetValueByName("SMTPPort"));
+            string smtpHost = this.applicationConfigRepository.GetValueByName("SMTPHost");
             if (processStatus.ToLower() == "success")
             {
-                var successEventData = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, subscriptionEvent.EventsId);
+                var successEventData = this.planEventsMappingRepository.GetPlanEvent(subscriptionResultExtension.GuidPlanId, subscriptionEvent.EventsId);
 
                 if (successEventData != null)
                 {
                     toReceipents = successEventData.SuccessStateEmails;
-                    CopyToCustomer = Convert.ToBoolean(successEventData.CopyToCustomer);
+                    copyToCustomer = Convert.ToBoolean(successEventData.CopyToCustomer);
                 }
+
                 if (string.IsNullOrEmpty(toReceipents))
                 {
                     throw new Exception(" Error while sending an email, please check the configuration. ");
@@ -115,35 +102,33 @@
                     {
                         ccReceipents = emailTemplateData.Cc;
                     }
+
                     if (!string.IsNullOrEmpty(emailTemplateData.Bcc))
                     {
-
                         bccReceipents = emailTemplateData.Bcc;
-
                     }
                 }
             }
 
             if (processStatus.ToLower() == "failure")
             {
-                var failureStateEmails = planEventsMappingRepository.GetPlanEvent(Subscription.GuidPlanId, subscriptionEvent.EventsId);
+                var failureStateEmails = this.planEventsMappingRepository.GetPlanEvent(subscriptionResultExtension.GuidPlanId, subscriptionEvent.EventsId);
 
                 if (failureStateEmails != null)
                 {
                     toReceipents = failureStateEmails.FailureStateEmails;
-                    CopyToCustomer = Convert.ToBoolean(failureStateEmails.CopyToCustomer);
+                    copyToCustomer = Convert.ToBoolean(failureStateEmails.CopyToCustomer);
                 }
+
                 if (string.IsNullOrEmpty(toReceipents))
                 {
                     throw new Exception(" Error while sending an email, please check the configuration. ");
                 }
 
-
                 if (emailTemplateData != null)
                 {
                     if (!string.IsNullOrEmpty(toReceipents) && !string.IsNullOrEmpty(emailTemplateData.Cc))
                     {
-
                         ccReceipents = emailTemplateData.Cc;
                     }
 
@@ -154,43 +139,43 @@
                 }
             }
 
-            if (Subscription.SubscriptionStatus.ToString() == "PendingActivation")
+            if (subscriptionResultExtension.SubscriptionStatus.ToString() == "PendingActivation")
             {
-                Subject = "Pending Activation";
+                subject = "Pending Activation";
             }
-            else if (Subscription.SubscriptionStatus.ToString() == "Subscribed")
+            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "Subscribed")
             {
-                Subject = "Subscription Activation";
+                subject = "Subscription Activation";
             }
-            else if (Subscription.SubscriptionStatus.ToString() == "Unsubscribed")
+            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "Unsubscribed")
             {
-                Subject = "Unsubscription";
+                subject = "Unsubscription";
             }
-            else if (Subscription.SubscriptionStatus.ToString() == "DeploymentFailed")
+            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "DeploymentFailed")
             {
-                Subject = "Deployment Failed";
+                subject = "Deployment Failed";
             }
-            else if (Subscription.SubscriptionStatus.ToString() == "ActivationFailed")
+            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "ActivationFailed")
             {
-                Subject = "Activation Failed";
+                subject = "Activation Failed";
             }
-            else if (Subscription.SubscriptionStatus.ToString() == "UnsubscribeFailed")
+            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "UnsubscribeFailed")
             {
-                Subject = "Unsubscribe Failed";
+                subject = "Unsubscribe Failed";
             }
-            else if (Subscription.SubscriptionStatus.ToString() == "DeleteResourceFailed")
+            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "DeleteResourceFailed")
             {
-                Subject = "Delete Resource Failed";
+                subject = "Delete Resource Failed";
             }
 
             emailContent.BCCEmails = bccReceipents;
             emailContent.CCEmails = ccReceipents;
             emailContent.ToEmails = toReceipents;
             emailContent.Body = body;
-            emailContent.Subject = Subject;
-            emailContent.CopyToCustomer = CopyToCustomer;
+            emailContent.Subject = subject;
+            emailContent.CopyToCustomer = copyToCustomer;
             emailContent.IsActive = isActive;
-            emailContent.FromEmail = FromMail;
+            emailContent.FromEmail = fromMail;
             emailContent.Password = password;
             emailContent.SSL = smtpSsl;
             emailContent.UserName = username;
@@ -198,40 +183,38 @@
             emailContent.SMTPHost = smtpHost;
 
             return emailContent;
-
         }
 
         /// <summary>
         /// Processes the template.
         /// </summary>
-        /// <param name="Subscription">The subscription.</param>
-        /// <param name="planEvent">The plan event.</param>
+        /// <param name="subscription">The subscription.</param>
+        /// <param name="processStatus">The process status.</param>
         /// <param name="oldValue">The old value.</param>
         /// <param name="newValue">The new value.</param>
-        /// <returns></returns>
-        public string ProcessTemplate(SubscriptionResultExtension Subscription, string processStatus, SubscriptionStatusEnumExtension oldValue, string newValue)
+        /// <returns> string.</returns>
+        public string ProcessTemplate(SubscriptionResultExtension subscription, string processStatus, SubscriptionStatusEnumExtension oldValue, string newValue)
         {
-
             string parameter = string.Empty;
             string value = string.Empty;
             string parameterType = string.Empty;
 
             string body = string.Empty;
-            EmailTemplate templateDetails = emailTemplateRepository.GetTemplateForStatus("Template");
+            EmailTemplate templateDetails = this.emailTemplateRepository.GetTemplateForStatus("Template");
             body = templateDetails.TemplateBody;
-            string applicationName = applicationConfigRepository.GetValueByName("ApplicationName");
+            string applicationName = this.applicationConfigRepository.GetValueByName("ApplicationName");
             Hashtable hashTable = new Hashtable();
             hashTable.Add("ApplicationName", applicationName);
-            hashTable.Add("CustomerEmailAddress", Subscription.CustomerEmailAddress);
-            hashTable.Add("CustomerName", Subscription.CustomerName);
-            hashTable.Add("Id", Subscription.Id);
-            hashTable.Add("SubscriptionName", Subscription.Name);
-            hashTable.Add("SaasSubscriptionStatus", Subscription.SubscriptionStatus);
+            hashTable.Add("CustomerEmailAddress", subscription.CustomerEmailAddress);
+            hashTable.Add("CustomerName", subscription.CustomerName);
+            hashTable.Add("Id", subscription.Id);
+            hashTable.Add("SubscriptionName", subscription.Name);
+            hashTable.Add("SaasSubscriptionStatus", subscription.SubscriptionStatus);
             hashTable.Add("oldValue", oldValue);
             hashTable.Add("newValue", newValue);
             hashTable.Add("planevent", processStatus);
-            hashTable.Add("PurchaserEmail", Subscription.Purchaser.EmailId ?? "");
-            hashTable.Add("PurchaserTenant", Convert.ToString(Subscription.Purchaser.TenantId) ?? "");
+            hashTable.Add("PurchaserEmail", subscription.Purchaser.EmailId ?? " ");
+            hashTable.Add("PurchaserTenant", Convert.ToString(subscription.Purchaser.TenantId) ?? " ");
 
             ExtendedProperties p = new ExtendedProperties();
 
@@ -242,28 +225,33 @@
             IList list;
             IList arminputlist;
             IList armoutputlist;
-            if (Subscription.SubscriptionParameters != null && Subscription.SubscriptionParameters.Count > 0)
+            if (subscription.SubscriptionParameters != null && subscription.SubscriptionParameters.Count > 0)
             {
-                list = Subscription.SubscriptionParameters.Where(s => s.Type.ToLower() == "input").ToList();
+                list = subscription.SubscriptionParameters.Where(s => s.Type.ToLower() == "input").ToList();
                 if (list.Count > 0)
+                {
                     context.Put("parms", list);
+                }
             }
-            if (Subscription.ARMTemplateParameters != null && Subscription.ARMTemplateParameters.Count > 0)
+
+            if (subscription.ARMTemplateParameters != null && subscription.ARMTemplateParameters.Count > 0)
             {
-                arminputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input"
-                /*&& s.EventsName == "Active"*/
-                ).ToList();
+                arminputlist = subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input").ToList();
                 if (arminputlist.Count > 0)
+                {
                     context.Put("arminputparms", arminputlist);
+                }
             }
-            if (Subscription.ARMTemplateParameters != null && Subscription.ARMTemplateParameters.Count > 0)
+
+            if (subscription.ARMTemplateParameters != null && subscription.ARMTemplateParameters.Count > 0)
             {
-                armoutputlist = Subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output"
-                /*&& s.EventsName == "Active"*/
-                ).ToList();
+                armoutputlist = subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output").ToList();
                 if (armoutputlist.Count > 0)
+                {
                     context.Put("armoutputparms", armoutputlist);
+                }
             }
+
             StringWriter writer = new StringWriter();
             v.Evaluate(context, writer, string.Empty, body);
             return writer.ToString();

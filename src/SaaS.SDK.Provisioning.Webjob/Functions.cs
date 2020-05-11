@@ -1,5 +1,7 @@
 ﻿namespace SaaS.SDK.Provisioning.Webjob
 {
+    using System;
+    using System.Collections.Generic;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
@@ -9,8 +11,6 @@
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers;
     using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Processor for the trigger from storage queue. Move the subscription through statuses.
@@ -18,116 +18,134 @@
     public class Functions
     {
         /// <summary>
-        /// The fulfillment API client
+        /// The fulfillment API client.
         /// </summary>
-        protected readonly IFulfillmentApiClient fulfillmentApiClient;
+        private readonly IFulfillmentApiClient fulfillmentApiClient;
 
         /// <summary>
-        /// The subscription repository
+        /// The subscription repository.
         /// </summary>
-        protected readonly ISubscriptionsRepository subscriptionRepository;
+        private readonly ISubscriptionsRepository subscriptionRepository;
 
         /// <summary>
-        /// The application configrepository
+        /// The application configrepository.
         /// </summary>
-        protected readonly IApplicationConfigRepository applicationConfigrepository;
+        private readonly IApplicationConfigRepository applicationConfigrepository;
 
         /// <summary>
-        /// The subscription log repository
+        /// The subscription log repository.
         /// </summary>
-        protected readonly ISubscriptionLogRepository subscriptionLogRepository;
+        private readonly ISubscriptionLogRepository subscriptionLogRepository;
 
         /// <summary>
-        /// The email templaterepository
+        /// The email templaterepository.
         /// </summary>
-        protected readonly IEmailTemplateRepository emailTemplaterepository;
+        private readonly IEmailTemplateRepository emailTemplaterepository;
 
         /// <summary>
-        /// The plan events mapping repository
+        /// The plan events mapping repository.
         /// </summary>
-        protected readonly IPlanEventsMappingRepository planEventsMappingRepository;
+        private readonly IPlanEventsMappingRepository planEventsMappingRepository;
 
         /// <summary>
-        /// The offer attributes repository
+        /// The offer attributes repository.
         /// </summary>
-        protected readonly IOfferAttributesRepository offerAttributesRepository;
+        private readonly IOfferAttributesRepository offerAttributesRepository;
 
         /// <summary>
-        /// The events repository
+        /// The events repository.
         /// </summary>
-        protected readonly IEventsRepository eventsRepository;
+        private readonly IEventsRepository eventsRepository;
 
         /// <summary>
-        /// The azure key vault client
+        /// The azure key vault client.
         /// </summary>
-        protected readonly IVaultService azureKeyVaultClient;
+        private readonly IVaultService azureKeyVaultClient;
 
         /// <summary>
-        /// The azure BLOB file client
+        /// The azure BLOB file client.
         /// </summary>
-        protected readonly IARMTemplateStorageService azureBlobFileClient;
+        private readonly IARMTemplateStorageService azureBlobFileClient;
 
         /// <summary>
-        /// The plan repository
+        /// The plan repository.
         /// </summary>
-        protected readonly IPlansRepository planRepository;
+        private readonly IPlansRepository planRepository;
 
         /// <summary>
-        /// The offers repository
+        /// The offers repository.
         /// </summary>
-        protected readonly IOffersRepository offersRepository;
+        private readonly IOffersRepository offersRepository;
 
         /// <summary>
-        /// The users repository
+        /// The users repository.
         /// </summary>
-        protected readonly IUsersRepository usersRepository;
+        private readonly IUsersRepository usersRepository;
 
         /// <summary>
-        /// The subscription template parameters repository
+        /// The subscription template parameters repository.
         /// </summary>
-        protected readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
+        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
 
         /// <summary>
-        /// The emial service
+        /// The emial service.
         /// </summary>
-        protected readonly IEmailService emialService;
+        private readonly IEmailService emialService;
 
         /// <summary>
-        /// The activate status handlers
+        /// The activate status handlers.
         /// </summary>
         private readonly List<ISubscriptionStatusHandler> activateStatusHandlers;
 
         /// <summary>
-        /// The deactivate status handlers
+        /// The deactivate status handlers.
         /// </summary>
         private readonly List<ISubscriptionStatusHandler> deactivateStatusHandlers;
 
         /// <summary>
-        /// The key vault configuration
+        /// The key vault configuration.
         /// </summary>
-        protected readonly KeyVaultConfig keyVaultConfig;
+        private readonly KeyVaultConfig keyVaultConfig;
 
         /// <summary>
-        /// The email helper
+        /// The email helper.
         /// </summary>
-        protected readonly EmailHelper emailHelper;
+        private readonly EmailHelper emailHelper;
 
         /// <summary>
-        /// The arm template deployment manager
+        /// The arm template repository.
         /// </summary>
-        protected readonly ARMTemplateDeploymentManager armTemplateDeploymentManager;
+        private readonly IArmTemplateRepository armTemplateRepository;
 
         /// <summary>
-        /// The arm template repository
+        /// The logger factory.
         /// </summary>
-        protected readonly IArmTemplateRepository armTemplateRepository;
+        private readonly ILoggerFactory loggerFactory;
 
         /// <summary>
-        /// The logger factory
+        /// Initializes a new instance of the <see cref="Functions"/> class.
         /// </summary>
-        protected readonly ILoggerFactory loggerFactory;
-
-        public Functions(IFulfillmentApiClient fulfillmentApiClient,
+        /// <param name="fulfillmentApiClient">The fulfillment API client.</param>
+        /// <param name="subscriptionRepository">The subscription repository.</param>
+        /// <param name="applicationConfigRepository">The application configuration repository.</param>
+        /// <param name="subscriptionLogRepository">The subscription log repository.</param>
+        /// <param name="emailTemplaterepository">The email templaterepository.</param>
+        /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
+        /// <param name="offerAttributesRepository">The offer attributes repository.</param>
+        /// <param name="eventsRepository">The events repository.</param>
+        /// <param name="azureKeyVaultClient">The azure key vault client.</param>
+        /// <param name="planRepository">The plan repository.</param>
+        /// <param name="offersRepository">The offers repository.</param>
+        /// <param name="usersRepository">The users repository.</param>
+        /// <param name="armTemplateRepository">The arm template repository.</param>
+        /// <param name="azureBlobFileClient">The azure BLOB file client.</param>
+        /// <param name="subscriptionTemplateParametersRepository">The subscription template parameters repository.</param>
+        /// <param name="keyVaultConfig">The key vault configuration.</param>
+        /// <param name="emailService">The email service.</param>
+        /// <param name="emailHelper">The email helper.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
+        public Functions(
+                            IFulfillmentApiClient fulfillmentApiClient,
                             ISubscriptionsRepository subscriptionRepository,
                             IApplicationConfigRepository applicationConfigRepository,
                             ISubscriptionLogRepository subscriptionLogRepository,
@@ -172,9 +190,9 @@
 
             var armTemplateDeploymentManager = new ARMTemplateDeploymentManager(this.loggerFactory.CreateLogger<ARMTemplateDeploymentManager>());
 
-            activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(
+            this.activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(
                                                                             fulfillmentApiClient,
-                                                                            applicationConfigrepository,
+                                                                            this.applicationConfigrepository,
                                                                             subscriptionLogRepository,
                                                                             subscriptionRepository,
                                                                             azureKeyVaultClient,
@@ -186,14 +204,12 @@
                                                                             this.armTemplateRepository,
                                                                             this.planEventsMappingRepository,
                                                                             this.eventsRepository,
-                                                                                            this.loggerFactory.CreateLogger<ResourceDeploymentStatusHandler>(),
+                                                                            this.loggerFactory.CreateLogger<ResourceDeploymentStatusHandler>(),
                                                                             armTemplateDeploymentManager,
-                                                                            subscriptionTemplateParametersRepository
-                                                                            ));
+                                                                            subscriptionTemplateParametersRepository));
 
-            activateStatusHandlers.Add(new PendingActivationStatusHandler(
+            this.activateStatusHandlers.Add(new PendingActivationStatusHandler(
                                                                             fulfillmentApiClient,
-                                                                            applicationConfigrepository,
                                                                             subscriptionRepository,
                                                                             subscriptionLogRepository,
                                                                             subscriptionTemplateParametersRepository,
@@ -201,19 +217,19 @@
                                                                             usersRepository,
                                                                             this.loggerFactory.CreateLogger<PendingActivationStatusHandler>()));
 
-            activateStatusHandlers.Add(new PendingFulfillmentStatusHandler(
+            this.activateStatusHandlers.Add(new PendingFulfillmentStatusHandler(
                                                                             fulfillmentApiClient,
-                                                                            applicationConfigrepository,
+                                                                            this.applicationConfigrepository,
                                                                             subscriptionRepository,
                                                                             subscriptionLogRepository,
                                                                             planRepository,
                                                                             usersRepository,
                                                                             this.loggerFactory.CreateLogger<PendingFulfillmentStatusHandler>()));
 
-            activateStatusHandlers.Add(new NotificationStatusHandler(
+            this.activateStatusHandlers.Add(new NotificationStatusHandler(
                                                                         fulfillmentApiClient,
                                                                         planRepository,
-                                                                        applicationConfigrepository,
+                                                                        this.applicationConfigrepository,
                                                                         emailTemplaterepository,
                                                                         planEventsMappingRepository,
                                                                         offerAttributesRepository,
@@ -223,12 +239,11 @@
                                                                         offersRepository,
                                                                         subscriptionTemplateParametersRepository,
                                                                         emailService,
-                                                                        emailHelper,
                                                                         this.loggerFactory.CreateLogger<NotificationStatusHandler>()));
 
-            deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(
+            this.deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(
                                                                             fulfillmentApiClient,
-                                                                            applicationConfigrepository,
+                                                                            this.applicationConfigrepository,
                                                                             subscriptionLogRepository,
                                                                             subscriptionRepository,
                                                                             azureKeyVaultClient,
@@ -239,20 +254,18 @@
                                                                             this.loggerFactory.CreateLogger<PendingDeleteStatusHandler>(),
                                                                             armTemplateDeploymentManager));
 
-            deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(
+            this.deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(
                                                                         fulfillmentApiClient,
-                                                                        applicationConfigrepository,
                                                                         subscriptionRepository,
                                                                         subscriptionLogRepository,
                                                                         planRepository,
                                                                         usersRepository,
-                                                                        this.loggerFactory.CreateLogger<UnsubscribeStatusHandler>()
-                                                                        ));
+                                                                        this.loggerFactory.CreateLogger<UnsubscribeStatusHandler>()));
 
-            deactivateStatusHandlers.Add(new NotificationStatusHandler(
+            this.deactivateStatusHandlers.Add(new NotificationStatusHandler(
                                                                         fulfillmentApiClient,
                                                                         planRepository,
-                                                                        applicationConfigrepository,
+                                                                        this.applicationConfigrepository,
                                                                         emailTemplaterepository,
                                                                         planEventsMappingRepository,
                                                                         offerAttributesRepository,
@@ -262,7 +275,6 @@
                                                                         offersRepository,
                                                                         subscriptionTemplateParametersRepository,
                                                                         emailService,
-                                                                        emailHelper,
                                                                         this.loggerFactory.CreateLogger<NotificationStatusHandler>()));
         }
 
@@ -271,8 +283,7 @@
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="logger">The logger.</param>
-        public void ProcessQueueMessage([QueueTrigger("saas-provisioning-queue")] string message,
-                                                                               Microsoft.Extensions.Logging.ILogger logger)
+        public void ProcessQueueMessage([QueueTrigger("saas-provisioning-queue")] string message, Microsoft.Extensions.Logging.ILogger logger)
         {
             try
             {
@@ -282,14 +293,15 @@
 
                 if ("Activate".Equals(model.TriggerEvent, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    foreach (var subscriptionStatusHandler in activateStatusHandlers)
+                    foreach (var subscriptionStatusHandler in this.activateStatusHandlers)
                     {
                         subscriptionStatusHandler.Process(model.SubscriptionID);
                     }
                 }
+
                 if ("Unsubscribe".Equals(model.TriggerEvent, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    foreach (var subscriptionStatusHandler in deactivateStatusHandlers)
+                    foreach (var subscriptionStatusHandler in this.deactivateStatusHandlers)
                     {
                         subscriptionStatusHandler.Process(model.SubscriptionID);
                     }

@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
+    /// <summary>
+    /// Deployment Status Enum.
+    /// </summary>
     public enum DeploymentStatusEnum
     {
         /// <summary>
@@ -12,23 +11,28 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         ARMTemplateDeploymentPending,
 
         /// <summary>
-        /// The subscribed
+        /// The subscribed.
         /// </summary>
         ARMTemplateDeploymentSuccess,
 
+        /// <summary>
+        /// The arm template deployment failure.
+        /// </summary>
         ARMTemplateDeploymentFailure,
 
         /// <summary>
-        /// The unsubscribed
+        /// The unsubscribed.
         /// </summary>
         DeleteResourceGroupPending,
 
         /// <summary>
-        /// The not started
+        /// The not started.
         /// </summary>
         DeleteResourceGroupSuccess,
 
-        DeleteResourceGroupFailure
-
+        /// <summary>
+        /// The delete resource group failure.
+        /// </summary>
+        DeleteResourceGroupFailure,
     }
 }

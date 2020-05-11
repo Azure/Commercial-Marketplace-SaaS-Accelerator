@@ -3,7 +3,7 @@
     using System;
 
     /// <summary>
-    /// the SubscriptionLogsViewModel
+    /// the SubscriptionLogsViewModel.
     /// </summary>
     public class SubscriptionLogsViewModel
     {

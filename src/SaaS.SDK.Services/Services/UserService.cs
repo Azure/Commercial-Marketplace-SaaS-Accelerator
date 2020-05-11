@@ -1,19 +1,22 @@
-﻿namespace  Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
     using System;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
+    /// <summary>
+    /// Users Service.
+    /// </summary>
     public class UserService
     {
         /// <summary>
-        /// The user repository
+        /// The user repository.
         /// </summary>
-        public IUsersRepository userRepository;
+        private IUsersRepository userRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserService"/> class.
+        /// Initializes a new instance of the <see cref="UserService" /> class.
         /// </summary>
         /// <param name="userRepository">The user repository.</param>
         public UserService(IUsersRepository userRepository)
@@ -25,7 +28,7 @@
         /// Adds the partner detail.
         /// </summary>
         /// <param name="partnerDetailViewModel">The partner detail view model.</param>
-        /// <returns></returns>
+        /// <returns> User id.</returns>
         public int AddUser(PartnerDetailViewModel partnerDetailViewModel)
         {
             if (!string.IsNullOrEmpty(partnerDetailViewModel.EmailAddress))
@@ -35,10 +38,11 @@
                     UserId = partnerDetailViewModel.UserId,
                     EmailAddress = partnerDetailViewModel.EmailAddress,
                     FullName = partnerDetailViewModel.FullName,
-                    CreatedDate = DateTime.Now
+                    CreatedDate = DateTime.Now,
                 };
-                return userRepository.Save(newPartnerDetail);
+                return this.userRepository.Save(newPartnerDetail);
             }
+
             return 0;
         }
 
@@ -46,11 +50,14 @@
         /// Gets the user identifier from email address.
         /// </summary>
         /// <param name="partnerEmail">The partner email.</param>
-        /// <returns></returns>
+        /// <returns>returns user id.</returns>
         public int GetUserIdFromEmailAddress(string partnerEmail)
         {
             if (!string.IsNullOrEmpty(partnerEmail))
-                return userRepository.GetPartnerDetailFromEmail(partnerEmail).UserId;
+            {
+                return this.userRepository.GetPartnerDetailFromEmail(partnerEmail).UserId;
+            }
+
             return 0;
         }
     }

@@ -3,7 +3,7 @@
     using System;
 
     /// <summary>
-    /// Encapsulation for Plan events
+    /// Encapsulation for Plan events.
     /// </summary>
     public class PlanEventsModel
     {

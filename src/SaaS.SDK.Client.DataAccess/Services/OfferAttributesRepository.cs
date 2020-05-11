@@ -1,47 +1,50 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
-    /// Repository to access offer attributes
+    /// Repository to access offer attributes.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IOfferAttributesRepository" />
     public class OfferAttributesRepository : IOfferAttributesRepository
     {
         /// <summary>
-        /// The context
+        /// The this.context.
         /// </summary>
         private readonly SaasKitContext context;
 
         /// <summary>
+        /// The disposed.
+        /// </summary>
+        private bool disposed = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="OfferAttributesRepository"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The this.context.</param>
         public OfferAttributesRepository(SaasKitContext context)
         {
             this.context = context;
         }
 
         /// <summary>
-        /// The disposed
-        /// </summary>
-        private bool disposed = false;
-
-        /// <summary>
         /// Gets this instance.
         /// </summary>
-        /// <returns>Id of the newly added offer attribute</returns>
+        /// <param name="offerAttributes">The offer attributes.</param>
+        /// <returns>
+        /// Id of the newly added offer attribute.
+        /// </returns>
         public int? Add(OfferAttributes offerAttributes)
         {
             if (offerAttributes != null)
             {
-                var existingOfferAttribute = context.OfferAttributes.Where(s => s.Id ==
+                var existingOfferAttribute = this.context.OfferAttributes.Where(s => s.Id ==
                 offerAttributes.Id).FirstOrDefault();
                 if (existingOfferAttribute != null)
                 {
@@ -61,14 +64,14 @@
                     existingOfferAttribute.IsRequired = offerAttributes.IsRequired;
                     existingOfferAttribute.IsDelete = offerAttributes.IsDelete;
 
-                    context.OfferAttributes.Update(existingOfferAttribute);
-                    context.SaveChanges();
+                    this.context.OfferAttributes.Update(existingOfferAttribute);
+                    this.context.SaveChanges();
                     return existingOfferAttribute.Id;
                 }
                 else
                 {
-                    context.OfferAttributes.Add(offerAttributes);
-                    context.SaveChanges();
+                    this.context.OfferAttributes.Add(offerAttributes);
+                    this.context.SaveChanges();
                     return offerAttributes.Id;
                 }
             }
@@ -80,12 +83,11 @@
         /// Gets the deployment parameters.
         /// </summary>
         /// <returns>
-        /// List of deployment parameters across offers
+        /// List of deployment parameters across offers.
         /// </returns>
         public IEnumerable<DeploymentAttributes> GetDeploymentParameters()
         {
-
-            var deploymentAttributes = context.DeploymentAttributes;
+            var deploymentAttributes = this.context.DeploymentAttributes;
             return deploymentAttributes;
         }
 
@@ -95,15 +97,14 @@
         /// <param name="offerId">The offer identifier.</param>
         /// <param name="curretnUserId">The curretn user identifier.</param>
         /// <param name="deploymentAttributes">The deployment attributes.</param>
-        /// <returns></returns>
+        /// <returns> Deployment Attribute.</returns>
         public int? AddDeploymentAttributes(Guid offerId, int curretnUserId, List<DeploymentAttributes> deploymentAttributes)
         {
-
             if (deploymentAttributes != null && deploymentAttributes.Count() > 0)
             {
                 foreach (var attribute in deploymentAttributes)
                 {
-                    var existingOfferAttribute = context.OfferAttributes.Where(s => s.ParameterId == attribute.ParameterId
+                    var existingOfferAttribute = this.context.OfferAttributes.Where(s => s.ParameterId == attribute.ParameterId
                     && s.OfferId == offerId).FirstOrDefault();
                     if (existingOfferAttribute != null)
                     {
@@ -123,9 +124,8 @@
                         existingOfferAttribute.IsRequired = attribute.IsRequired;
                         existingOfferAttribute.IsDelete = attribute.IsDelete;
 
-                        context.OfferAttributes.Update(existingOfferAttribute);
-                        context.SaveChanges();
-
+                        this.context.OfferAttributes.Update(existingOfferAttribute);
+                        this.context.SaveChanges();
                     }
                     else
                     {
@@ -148,56 +148,66 @@
                         newAttribute.IsDelete = attribute.IsDelete;
                         newAttribute.CreateDate = DateTime.Now;
                         newAttribute.UserId = curretnUserId;
-                        context.OfferAttributes.Add(newAttribute);
-                        context.SaveChanges();
+                        this.context.OfferAttributes.Add(newAttribute);
+                        this.context.SaveChanges();
                     }
                 }
-
             }
+
             return null;
         }
 
         /// <summary>
-        /// Gets all offer attributes across offers
+        /// Gets all offer attributes across offers.
         /// </summary>
         /// <returns>
-        /// List of offer attributes across offers
+        /// List of offer attributes across offers.
         /// </returns>
         public IEnumerable<OfferAttributes> GetAll()
         {
-            return context.OfferAttributes.Where(s => s.IsDelete != true && s.Type.ToLower() == "input");
+            return this.context.OfferAttributes.Where(s => s.IsDelete != true && s.Type.ToLower() == "input");
         }
 
         /// <summary>
         /// Gets the input attributes by offer identifier.
         /// </summary>
         /// <param name="offerGuId">The offer gu identifier.</param>
-        /// <returns></returns>
+        /// <returns> list of OfferAttributes.</returns>
         public IEnumerable<OfferAttributes> GetInputAttributesByOfferId(Guid offerGuId)
         {
-            return context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true) && s.Type.ToLower() == "input");
+            return this.context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true) && s.Type.ToLower() == "input");
         }
 
         /// <summary>
-        /// Gets all offer attributes by offer identifier ( includes deployment and input attributes )
+        /// Gets all offer attributes by offer identifier ( includes deployment and input attributes ).
         /// </summary>
         /// <param name="offerGuId">The offer identifier.</param>
         /// <returns>
-        /// List of offer attributes
+        /// List of offer attributes.
         /// </returns>
         public IEnumerable<OfferAttributes> GetAllOfferAttributesByOfferId(Guid offerGuId)
         {
-            return context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true));
+            return this.context.OfferAttributes.Where(s => s.OfferId == offerGuId && (s.IsDelete != true));
         }
 
         /// <summary>
         /// Gets the by identifier.
         /// </summary>
-        /// <param name="Id">The identifier.</param>
-        /// <returns></returns>
-        public OfferAttributes GetById(int Id)
+        /// <param name="id">The identifier.</param>
+        /// <returns> Offer Attributes.</returns>
+        public OfferAttributes GetById(int id)
         {
-            return context.OfferAttributes.Where(s => s.Id == Id && s.IsDelete != true && s.Type.ToLower() == "input").FirstOrDefault();
+            return this.context.OfferAttributes.Where(s => s.Id == id && s.IsDelete != true && s.Type.ToLower() == "input").FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -210,20 +220,11 @@
             {
                 if (disposing)
                 {
-                    context.Dispose();
+                    this.context.Dispose();
                 }
             }
+
             this.disposed = true;
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
         }
     }
 }

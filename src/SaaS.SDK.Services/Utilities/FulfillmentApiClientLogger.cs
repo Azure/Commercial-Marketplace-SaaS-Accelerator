@@ -1,17 +1,20 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Utilities
 {
+    using System;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaasKit.Services;
-    using System;
 
     /// <summary>
-    /// Logger
+    /// Logger.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Contracts.ILogger" />
     public class FulfillmentApiClientLogger : SaasKit.Contracts.ILogger
     {
-        protected readonly ILogger<FulfillmentApiClient> logger;
+        private readonly ILogger<FulfillmentApiClient> logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FulfillmentApiClientLogger"/> class.
+        /// </summary>
         public FulfillmentApiClientLogger()
         {
             var loggerFactory = LoggerFactory.Create(builder =>
@@ -23,44 +26,80 @@
             this.logger = loggerFactory.CreateLogger<FulfillmentApiClient>();
         }
 
+        /// <summary>
+        /// Debugs the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void Debug(string message)
         {
-            logger.LogDebug(message);
+            this.logger.LogDebug(message);
         }
 
+        /// <summary>
+        /// Debugs the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="ex">The ex.</param>
         public void Debug(string message, Exception ex)
         {
-            logger.LogDebug(ex, message);
+            this.logger.LogDebug(ex, message);
         }
 
+        /// <summary>
+        /// Errors the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void Error(string message)
         {
-            logger.LogError(message);
+            this.logger.LogError(message);
         }
 
+        /// <summary>
+        /// Errors the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="ex">The ex.</param>
         public void Error(string message, Exception ex)
         {
-            logger.LogError(ex, message);
+            this.logger.LogError(ex, message);
         }
 
+        /// <summary>
+        /// Information the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void Info(string message)
         {
-            logger.LogInformation(message);
+            this.logger.LogInformation(message);
         }
 
+        /// <summary>
+        /// Information the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="ex">The ex.</param>
         public void Info(string message, Exception ex)
         {
-            logger.LogInformation(ex, message);
+            this.logger.LogInformation(ex, message);
         }
 
+        /// <summary>
+        /// Warns the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void Warn(string message)
         {
-            logger.LogWarning(message);
+            this.logger.LogWarning(message);
         }
 
+        /// <summary>
+        /// Warns the specified message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        /// <param name="ex">The ex.</param>
         public void Warn(string message, Exception ex)
         {
-            logger.LogWarning(ex, message);
+            this.logger.LogWarning(ex, message);
         }
     }
 }

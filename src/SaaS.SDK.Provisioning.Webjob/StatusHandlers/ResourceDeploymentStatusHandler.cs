@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
-    using Microsoft.Azure.Management.ResourceManager.Models;
-    using Microsoft.EntityFrameworkCore;
+    using System;
+    using System.Linq;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
@@ -11,10 +11,6 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
     /// <summary>
     /// Status handler to handle the subscription in PendingDeployment status.
@@ -23,74 +19,77 @@
     public class ResourceDeploymentStatusHandler : AbstractSubscriptionStatusHandler
     {
         /// <summary>
-        /// The fulfillment apiclient
+        /// The fulfillment apiclient.
         /// </summary>
-        protected readonly IFulfillmentApiClient fulfillmentApiclient;
+        private readonly IFulfillmentApiClient fulfillmentApiclient;
 
         /// <summary>
-        /// The application configuration repository
+        /// The application configuration repository.
         /// </summary>
-        protected readonly IApplicationConfigRepository applicationConfigRepository;
+        private readonly IApplicationConfigRepository applicationConfigRepository;
 
         /// <summary>
-        /// The subscription log repository
+        /// The subscription log repository.
         /// </summary>
-        protected readonly ISubscriptionLogRepository subscriptionLogRepository;
+        private readonly ISubscriptionLogRepository subscriptionLogRepository;
 
         /// <summary>
-        /// The azure key vault client
+        /// The azure key vault client.
         /// </summary>
-        protected readonly IVaultService azureKeyVaultClient;
+        private readonly IVaultService azureKeyVaultClient;
 
         /// <summary>
-        /// The azure BLOB file client
+        /// The azure BLOB file client.
         /// </summary>
-        protected readonly IARMTemplateStorageService azureBlobFileClient;
+        private readonly IARMTemplateStorageService azureBlobFileClient;
 
         /// <summary>
-        /// The key vault configuration
+        /// The key vault configuration.
         /// </summary>
-        protected readonly KeyVaultConfig keyVaultConfig;
+        private readonly KeyVaultConfig keyVaultConfig;
 
         /// <summary>
-        /// The logger
+        /// The logger.
         /// </summary>
-        protected readonly ILogger<ResourceDeploymentStatusHandler> logger;
+        private readonly ILogger<ResourceDeploymentStatusHandler> logger;
 
         /// <summary>
-        /// The arm template deployment manager
+        /// The arm template deployment manager.
         /// </summary>
-        protected readonly ARMTemplateDeploymentManager armTemplateDeploymentManager;
+        private readonly ARMTemplateDeploymentManager armTemplateDeploymentManager;
 
         /// <summary>
-        /// The offers repository
+        /// The offers repository.
         /// </summary>
-        protected readonly IOffersRepository offersRepository;
+        private readonly IOffersRepository offersRepository;
 
         /// <summary>
-        /// The arm template repository
+        /// The arm template repository.
         /// </summary>
-        protected readonly IArmTemplateRepository armTemplateRepository;
+        private readonly IArmTemplateRepository armTemplateRepository;
 
         /// <summary>
-        /// The plan events mapping repository
+        /// The plan events mapping repository.
         /// </summary>
-        protected readonly IPlanEventsMappingRepository planEventsMappingRepository;
+        private readonly IPlanEventsMappingRepository planEventsMappingRepository;
 
         /// <summary>
-        /// The events repository
+        /// The events repository.
         /// </summary>
-        protected readonly IEventsRepository eventsRepository;
+        private readonly IEventsRepository eventsRepository;
 
         /// <summary>
-        /// The events repository
+        /// The events repository.
         /// </summary>
-        protected readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
-
-        protected readonly SubscriptionService subscriptionService;
+        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResourceDeploymentStatusHandler"/> class.
+        /// The subscription service.
+        /// </summary>
+        private readonly SubscriptionService subscriptionService;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResourceDeploymentStatusHandler" /> class.
         /// </summary>
         /// <param name="fulfillApiClient">The fulfill API client.</param>
         /// <param name="applicationConfigRepository">The application configuration repository.</param>
@@ -99,9 +98,17 @@
         /// <param name="azureKeyVaultClient">The azure key vault client.</param>
         /// <param name="azureBlobFileClient">The azure BLOB file client.</param>
         /// <param name="keyVaultConfig">The key vault configuration.</param>
+        /// <param name="plansRepository">The plans repository.</param>
+        /// <param name="usersRepository">The users repository.</param>
+        /// <param name="offersRepository">The offers repository.</param>
+        /// <param name="armTemplateRepository">The arm template repository.</param>
+        /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
+        /// <param name="eventsRepository">The events repository.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="armTemplateDeploymentManager">The arm template deployment manager.</param>
-        public ResourceDeploymentStatusHandler(IFulfillmentApiClient fulfillApiClient,
+        /// <param name="subscriptionTemplateParametersRepository">The subscription template parameters repository.</param>
+        public ResourceDeploymentStatusHandler(
+                                                IFulfillmentApiClient fulfillApiClient,
                                                 IApplicationConfigRepository applicationConfigRepository,
                                                 ISubscriptionLogRepository subscriptionLogRepository,
                                                 ISubscriptionsRepository subscriptionsRepository,
@@ -116,7 +123,8 @@
                                                 IEventsRepository eventsRepository,
                                                 ILogger<ResourceDeploymentStatusHandler> logger,
                                                 ARMTemplateDeploymentManager armTemplateDeploymentManager,
-                                                ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository) : base(subscriptionsRepository, plansRepository, usersRepository)
+                                                ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository)
+                                                : base(subscriptionsRepository, plansRepository, usersRepository)
         {
             this.fulfillmentApiclient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -131,7 +139,7 @@
             this.logger = logger;
             this.armTemplateDeploymentManager = armTemplateDeploymentManager;
             this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
-            subscriptionService = new SubscriptionService(subscriptionsRepository, plansRepository);
+            this.subscriptionService = new SubscriptionService(subscriptionsRepository, plansRepository);
         }
 
         /// <summary>
@@ -146,13 +154,10 @@
             this.logger?.LogInformation("Result subscription : {0}", JsonConvert.SerializeObject(subscription.AmpplanId));
             this.logger.LogInformation("Get PlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
-
             this.logger.LogInformation("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
-
             this.logger.LogInformation("Get Offers");
-
-            var offer = offersRepository.GetOfferById(planDetails.OfferId);
+            var offer = this.offersRepository.GetOfferById(planDetails.OfferId);
             this.logger.LogInformation("Get Events");
 
             var events = this.eventsRepository.GetByName("Activate");
@@ -161,16 +166,15 @@
 
             if (SubscriptionStatusEnumExtension.PendingActivation.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase) && planDetails.DeployToCustomerSubscription == true)
             {
-
                 // Check if arm template is available for the plan in Plan Event Mapping table with isactive=1
                 this.logger.LogInformation("Get PlanEventsMapping");
-                var planEvent = planEventsMappingRepository.GetPlanEvent(planDetails.PlanGuid, events.EventsId);
+                var planEvent = this.planEventsMappingRepository.GetPlanEvent(planDetails.PlanGuid, events.EventsId);
                 this.logger.LogInformation("Get Armtemplates");
                 if (planEvent != null && planEvent.Isactive == true)
                 {
-                    var armTemplate = armTemplateRepository.GetById(planEvent.ArmtemplateId);
+                    var armTemplate = this.armTemplateRepository.GetById(planEvent.ArmtemplateId);
                     this.logger.LogInformation("Get GetTemplateParameters");
-                    var attributelsit = subscriptionTemplateParametersRepository.GetById(subscriptionID, planDetails.PlanGuid);
+                    var attributelsit = this.subscriptionTemplateParametersRepository.GetById(subscriptionID, planDetails.PlanGuid);
 
                     try
                     {
@@ -184,15 +188,11 @@
                                 this.logger.LogInformation("Attributelsit : {0}", JsonConvert.SerializeObject(parametersList));
                                 if (parametersList.Count() > 0)
                                 {
-
                                     this.logger.LogInformation("UpdateWebJobSubscriptionStatus");
-
                                     this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentPending.ToString(), "Start Deployment", subscription.SubscriptionStatus);
-
                                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentPending.ToString(), true);
-
                                     this.logger.LogInformation("Get SubscriptionKeyVault");
-                                    string secretKey = "";
+                                    string secretKey = string.Empty;
                                     if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
                                     {
                                         var keyvault = this.subscriptionsRepository.GetDeploymentConfig(subscriptionID);
@@ -201,33 +201,27 @@
                                     }
                                     else
                                     {
-                                        secretKey = string.Format("{0}secrets/HostedsubscriptionCredentials", keyVaultConfig.KeyVaultUrl);
+                                        secretKey = string.Format("{0}secrets/HostedsubscriptionCredentials", this.keyVaultConfig.KeyVaultUrl);
                                     }
 
                                     this.logger.LogInformation("Get DoVault");
-                                    string secretValue = azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
+                                    string secretValue = this.azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
 
                                     var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
                                     this.logger.LogInformation("SecretValue : {0}", secretValue);
-
-
                                     this.logger.LogInformation("Start Deployment: DeployARMTemplate");
-                                    string armTemplateCOntent = azureBlobFileClient.GetARMTemplateContentAsString(armTemplate.ArmtempalteName);
+                                    string armTemplateCOntent = this.azureBlobFileClient.GetARMTemplateContentAsString(armTemplate.ArmtempalteName);
 
                                     var output = this.armTemplateDeploymentManager.DeployARMTemplate(armTemplate, parametersList, credenitals, armTemplateCOntent).ConfigureAwait(false).GetAwaiter().GetResult();
 
                                     string outputstring = JsonConvert.SerializeObject(output.Properties.Outputs);
-                                    var outPutList = subscriptionService.GenerateParmlistFromResponse(output);
+                                    var outPutList = this.subscriptionService.GenerateParmlistFromResponse(output);
                                     if (outPutList != null)
                                     {
-
-                                        subscriptionTemplateParametersRepository.Update(outPutList.ToList(), subscriptionID);
-
+                                        this.subscriptionTemplateParametersRepository.Update(outPutList.ToList(), subscriptionID);
                                     }
 
                                     this.logger.LogInformation(outputstring);
-
-
                                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString(), true);
 
                                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
@@ -237,19 +231,17 @@
                                         NewValue = SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString(),
                                         OldValue = SubscriptionStatusEnumExtension.DeploymentPending.ToString(),
                                         CreateBy = userdeatils.UserId,
-                                        CreateDate = DateTime.Now
+                                        CreateDate = DateTime.Now,
                                     };
                                     this.subscriptionLogRepository.Save(auditLog);
-
                                     this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Deployment Successful", SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString());
                                 }
                             }
                         }
-
                     }
                     catch (Exception ex)
                     {
-                        //Change status to  ARMTemplateDeploymentFailure
+                        // Change status to  ARMTemplateDeploymentFailure
                         string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
                         this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, armTemplate.ArmtempalteId, DeploymentStatusEnum.ARMTemplateDeploymentFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
                         this.logger.LogInformation(errorDescriptin);
@@ -263,12 +255,11 @@
                             NewValue = SubscriptionStatusEnumExtension.DeploymentFailed.ToString(),
                             OldValue = SubscriptionStatusEnumExtension.PendingActivation.ToString(),
                             CreateBy = userdeatils.UserId,
-                            CreateDate = DateTime.Now
+                            CreateDate = DateTime.Now,
                         };
                         this.subscriptionLogRepository.Save(auditLog);
                     }
                 }
-
             }
         }
     }

@@ -1,10 +1,11 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
 {
+    using System;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
+    /// <summary>
+    /// Bulk Upload Usage Staging Result.
+    /// </summary>
     public class BulkUploadUsageStagingResult
     {
         /// <summary>

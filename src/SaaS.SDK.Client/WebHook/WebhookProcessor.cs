@@ -1,21 +1,24 @@
-﻿using Microsoft.Marketplace.SaasKit.Contracts;
-using Microsoft.Marketplace.SaasKit.WebHook;
-using System;
-using System.Threading.Tasks;
-
-namespace Microsoft.Marketplace.SaasKit.WebHook
+﻿namespace Microsoft.Marketplace.SaasKit.WebHook
 {
+    using System;
+    using System.Threading.Tasks;
+    using Microsoft.Marketplace.SaasKit.Contracts;
+
+    /// <summary>
+    /// The webhook processor.
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.WebHook.IWebhookProcessor" />
     public class WebhookProcessor : IWebhookProcessor
     {
         /// <summary>
-        /// Defines the _apiClient
+        /// Defines the _apiClient.
         /// </summary>
         public IFulfillmentApiClient ApiClient;
 
         /// <summary>
-        /// The webhook handler
+        /// The webhook handler.
         /// </summary>
-        private readonly IWebhookHandler WebhookHandler;
+        private readonly IWebhookHandler webhookHandler;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebhookProcessor"/> class.
@@ -24,37 +27,37 @@ namespace Microsoft.Marketplace.SaasKit.WebHook
         /// <param name="webhookHandler">The webhook handler.</param>
         public WebhookProcessor(IFulfillmentApiClient apiClient, IWebhookHandler webhookHandler)
         {
-            ApiClient = apiClient;
-            this.WebhookHandler = webhookHandler;
+            this.ApiClient = apiClient;
+            this.webhookHandler = webhookHandler;
         }
 
         /// <summary>
         /// Processes the webhook notification asynchronous.
         /// </summary>
         /// <param name="payload">The payload.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException"></exception>
+        /// <returns> Notification.</returns>
         public async Task ProcessWebhookNotificationAsync(WebhookPayload payload)
         {
             switch (payload.Action)
             {
                 case WebhookAction.Unsubscribe:
-                    await this.WebhookHandler.UnsubscribedAsync(payload).ConfigureAwait(false);
+                    await this.webhookHandler.UnsubscribedAsync(payload).ConfigureAwait(false);
                     break;
 
                 case WebhookAction.ChangePlan:
-                    await this.WebhookHandler.ChangePlanAsync(payload).ConfigureAwait(false);
+                    await this.webhookHandler.ChangePlanAsync(payload).ConfigureAwait(false);
                     break;
 
                 case WebhookAction.ChangeQuantity:
-                    await this.WebhookHandler.ChangeQuantityAsync(payload).ConfigureAwait(false);
+                    await this.webhookHandler.ChangeQuantityAsync(payload).ConfigureAwait(false);
                     break;
 
                 case WebhookAction.Suspend:
-                    await this.WebhookHandler.SuspendedAsync(payload).ConfigureAwait(false);
+                    await this.webhookHandler.SuspendedAsync(payload).ConfigureAwait(false);
                     break;
 
                 case WebhookAction.Reinstate:
-                    await this.WebhookHandler.ReinstatedAsync(payload).ConfigureAwait(false);
+                    await this.webhookHandler.ReinstatedAsync(payload).ConfigureAwait(false);
                     break;
 
                 default:

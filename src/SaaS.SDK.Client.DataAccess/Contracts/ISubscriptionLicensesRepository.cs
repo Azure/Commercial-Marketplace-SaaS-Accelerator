@@ -1,12 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
-    using System;
     using System.Collections.Generic;
-    using System.Text;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
-    /// ISubscriptionLicenses Repository
+    /// ISubscriptionLicenses Repository.
     /// </summary>
     public interface ISubscriptionLicensesRepository
     {
@@ -16,15 +14,16 @@
         /// <param name="userId">The user identifier.</param>
         /// <param name="subscriptionStatus">The subscription status.</param>
         /// <returns>
-        /// return get all subscription licenses
+        /// return get all subscription licenses.
         /// </returns>
         IEnumerable<SubscriptionLicenses> GetSubscriptionLicensesByUser(int userId, string subscriptionStatus);
 
         /// <summary>
         /// Gets all subscription licenses.
         /// </summary>
+        /// <param name="subscriptionStatus">The subscription status.</param>
         /// <returns>
-        /// return get all subscription
+        /// return get all subscription.
         /// </returns>
         IEnumerable<SubscriptionLicenses> GetLicensesForSubscriptions(string subscriptionStatus);
 
@@ -33,7 +32,7 @@
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns>
-        /// return subscription Id
+        /// return subscription Id.
         /// </returns>
         int AssignLicenseToSubscription(SubscriptionLicenses subscription);
 
@@ -41,7 +40,9 @@
         /// Updates the active subscription.
         /// </summary>
         /// <param name="subscription">The subscription.</param>
-        /// <returns>return subscriptionId</returns>
+        /// <returns>
+        /// return subscriptionId.
+        /// </returns>
         int UpdateActiveSubscription(SubscriptionLicenses subscription);
     }
 }

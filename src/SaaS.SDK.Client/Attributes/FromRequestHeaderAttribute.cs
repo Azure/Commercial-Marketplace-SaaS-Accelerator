@@ -3,7 +3,7 @@
     using System;
 
     /// <summary>
-    /// FromRequestHeaderAttribute to set the Header Key with each Request
+    /// FromRequestHeaderAttribute to set the Header Key with each Request.
     /// </summary>
     /// <seealso cref="System.Attribute" />
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]

@@ -2,26 +2,24 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services;
-    using Microsoft.Marketplace.SaasKit.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Models;
 
     /// <summary>
-    /// SubscriptionLicenses Service
+    /// SubscriptionLicenses Service.
     /// </summary>
     public class SubscriptionLicensesService
     {
         /// <summary>
-        /// The subscription licenses repository
+        /// The subscription licenses repository.
         /// </summary>
-        public ISubscriptionLicensesRepository subscriptionLicensesRepository;
+        private ISubscriptionLicensesRepository subscriptionLicensesRepository;
 
         /// <summary>
-        /// The subscriptions repository
+        /// The subscriptions repository.
         /// </summary>
-        public ISubscriptionsRepository subscriptionsRepository;
+        private ISubscriptionsRepository subscriptionsRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionLicensesService" /> class.
@@ -39,7 +37,7 @@
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <returns>
-        /// return subscription licenses by user
+        /// return subscription licenses by user.
         /// </returns>
         public List<SubscriptionLicensesViewModel> GetSubScriptionLicensesbyUser(int userId)
         {

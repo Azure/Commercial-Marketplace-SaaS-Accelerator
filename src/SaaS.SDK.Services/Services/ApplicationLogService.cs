@@ -1,15 +1,18 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
+    using System;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using System;
 
+    /// <summary>
+    /// Application Log Service.
+    /// </summary>
     public class ApplicationLogService
     {
         /// <summary>
-        /// The application log repository
+        /// The application log repository.
         /// </summary>
-        private readonly IApplicationLogRepository ApplicationLogRepository;
+        private readonly IApplicationLogRepository applicationLogRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationLogService"/> class.
@@ -17,7 +20,7 @@
         /// <param name="applicationLogRepository">The application log repository.</param>
         public ApplicationLogService(IApplicationLogRepository applicationLogRepository)
         {
-            ApplicationLogRepository = applicationLogRepository;
+            this.applicationLogRepository = applicationLogRepository;
         }
 
         /// <summary>
@@ -29,10 +32,10 @@
             ApplicationLog newLog = new ApplicationLog()
             {
                 ActionTime = DateTime.Now,
-                LogDetail = logMessage
+                LogDetail = logMessage,
             };
 
-            ApplicationLogRepository.AddLog(newLog);
+            this.applicationLogRepository.AddLog(newLog);
         }
     }
 }

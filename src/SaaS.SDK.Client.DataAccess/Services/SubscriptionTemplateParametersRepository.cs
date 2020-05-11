@@ -1,5 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
     using Commons.Collections;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
@@ -9,23 +14,22 @@
     using Newtonsoft.Json;
     using NVelocity;
     using NVelocity.App;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
 
+    /// <summary>
+    /// Subscription Template Parameters.
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.ISubscriptionTemplateParametersRepository" />
     public class SubscriptionTemplateParametersRepository : ISubscriptionTemplateParametersRepository
     {
         /// <summary>
-        /// The context
+        /// The context.
         /// </summary>
         private readonly SaasKitContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionTemplateParametersRepository"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The this.context.</param>
         public SubscriptionTemplateParametersRepository(SaasKitContext context)
         {
             this.context = context;
@@ -34,30 +38,34 @@
         /// <summary>
         /// Gets the template parameters by subscription identifier.
         /// </summary>
-        /// <param name="SubscriptionID">The subscription identifier.</param>
+        /// <param name="subscriptionID">The subscription identifier.</param>
         /// <returns>
-        /// List of ARM template parameters associated with the SaaS subscription
+        /// List of ARM template parameters associated with the SaaS subscription.
         /// </returns>
-        public IEnumerable<SubscriptionTemplateParameters> GetTemplateParametersBySubscriptionId(Guid SubscriptionID)
+        public IEnumerable<SubscriptionTemplateParameters> GetTemplateParametersBySubscriptionId(Guid subscriptionID)
         {
-            var results = context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == SubscriptionID);
+            var results = this.context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
             if (results.Count() == 0)
+            {
                 return null;
+            }
             else
-                return context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == SubscriptionID);
+            {
+                return this.context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
+            }
         }
 
         /// <summary>
         /// Saves the specified subscription template parameters.
         /// </summary>
         /// <param name="subscriptionTemplateParameters">The subscription template parameters.</param>
-        /// <returns></returns>
+        /// <returns> Template Id.</returns>
         public int Save(SubscriptionTemplateParameters subscriptionTemplateParameters)
         {
-            var existingRecord = context.SubscriptionTemplateParameters.Where(x => x.Id == subscriptionTemplateParameters.Id).FirstOrDefault();
+            var existingRecord = this.context.SubscriptionTemplateParameters.Where(x => x.Id == subscriptionTemplateParameters.Id).FirstOrDefault();
             if (existingRecord == null)
             {
-                context.SubscriptionTemplateParameters.Add(subscriptionTemplateParameters);
+                this.context.SubscriptionTemplateParameters.Add(subscriptionTemplateParameters);
             }
             else
             {
@@ -66,37 +74,41 @@
                 existingRecord.Value = subscriptionTemplateParameters.Value;
                 existingRecord.ParameterType = subscriptionTemplateParameters.ParameterType;
             }
-            context.SaveChanges();
+
+            this.context.SaveChanges();
 
             return subscriptionTemplateParameters.Id;
         }
 
+        /// <summary>
+        /// Update subscription template parameter by identifier.
+        /// </summary>
+        /// <param name="parms"> List of parameters.</param>
+        /// <param name="subscriptionID"> Subscription ID.</param>
         public void Update(List<SubscriptionTemplateParameters> parms, Guid subscriptionID)
         {
             foreach (var parm in parms)
             {
-                var outputparm = context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID && s.Parameter == parm.Parameter && s.ParameterType.ToLower() == "output").FirstOrDefault();
+                var outputparm = this.context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID && s.Parameter == parm.Parameter && s.ParameterType.ToLower() == "output").FirstOrDefault();
 
                 if (outputparm != null)
                 {
                     outputparm.Value = parm.Value;
-                    context.SubscriptionTemplateParameters.Update(outputparm);
-                    context.SaveChanges();
+                    this.context.SubscriptionTemplateParameters.Update(outputparm);
+                    this.context.SaveChanges();
                 }
             }
         }
-
-
 
         /// <summary>
         /// Gets the subscription template parameter.
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="planId">The plan identifier.</param>
-        /// <returns></returns>
+        /// <returns> Subscription Template Parameters Model.</returns>
         public IEnumerable<SubscriptionTemplateParametersModel> GetSubscriptionTemplateParameter(Guid subscriptionId, Guid planId)
         {
-            var subscriptionTemplateParams = context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionId, planId);
+            var subscriptionTemplateParams = this.context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionId, planId);
             var subscriptionTemplateParameters = subscriptionTemplateParams.ToList();
 
             List<SubscriptionTemplateParametersModel> attributesList = new List<SubscriptionTemplateParametersModel>();
@@ -125,6 +137,7 @@
                     attributesList.Add(subscriptionparms);
                 }
             }
+
             return attributesList;
         }
 
@@ -132,15 +145,17 @@
         /// Gets the subscription template parameter by identifier.
         /// </summary>
         /// <param name="subscriptionID">The subscription identifier.</param>
-        /// <param name="PlanGuid">The plan unique identifier.</param>
-        /// <returns></returns>
-        public List<SubscriptionTemplateParameters> GetById(Guid subscriptionID, Guid PlanGuid)
+        /// <param name="planGuid">The plan unique identifier.</param>
+        /// <returns>
+        /// List of Subscription Template Parameters.
+        /// </returns>
+        public List<SubscriptionTemplateParameters> GetById(Guid subscriptionID, Guid planGuid)
         {
-            List<SubscriptionTemplateParameters> _list = new List<SubscriptionTemplateParameters>();
-            var subscriptionAttributes = context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, PlanGuid);
+            List<SubscriptionTemplateParameters> list = new List<SubscriptionTemplateParameters>();
+            var subscriptionAttributes = this.context.SubscriptionTemplateParametersOutPut.FromSqlRaw("dbo.spGetSubscriptionTemplateParameters {0},{1}", subscriptionID, planGuid);
 
-            var existingdata = context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
-            var subscriptionKeyValues = context.SubscriptionKeyValueOutPut.FromSqlRaw("dbo.spGetSubscriptionKeyValue {0}", subscriptionID);
+            var existingdata = this.context.SubscriptionTemplateParameters.Where(s => s.AmpsubscriptionId == subscriptionID);
+            var subscriptionKeyValues = this.context.SubscriptionKeyValueOutPut.FromSqlRaw("dbo.spGetSubscriptionKeyValue {0}", subscriptionID);
             if (existingdata != null)
             {
                 var existingdatalist = existingdata.ToList();
@@ -154,7 +169,7 @@
                     {
                         var beforeReplaceList = subscriptionAttributes.ToList();
                         var subscriptionKeyValuesList = subscriptionKeyValues.ToList();
-                        var subscriptionAttributesList = ReplaceDeploymentparms(beforeReplaceList, subscriptionKeyValuesList);
+                        var subscriptionAttributesList = this.ReplaceDeploymentparms(beforeReplaceList, subscriptionKeyValuesList);
 
                         if (subscriptionAttributesList.Count() > 0)
                         {
@@ -176,18 +191,18 @@
                                     AmpsubscriptionId = attr.AmpsubscriptionId,
                                     SubscriptionStatus = attr.SubscriptionStatus,
                                     SubscriptionName = attr.SubscriptionName,
-                                    CreateDate = DateTime.Now
+                                    CreateDate = DateTime.Now,
                                 };
-                                context.SubscriptionTemplateParameters.Add(parm);
-                                context.SaveChanges();
-                                _list.Add(parm);
+                                this.context.SubscriptionTemplateParameters.Add(parm);
+                                this.context.SaveChanges();
+                                list.Add(parm);
                             }
-
                         }
                     }
                 }
             }
-            return _list;
+
+            return list;
         }
 
         /// <summary>
@@ -195,7 +210,7 @@
         /// </summary>
         /// <param name="parmList">The parm list.</param>
         /// <param name="subscriptionKeyValuesList">The subscription key values list.</param>
-        /// <returns></returns>
+        /// <returns> Template Paramemters.</returns>
         public List<SubscriptionTemplateParametersOutPut> ReplaceDeploymentparms(List<SubscriptionTemplateParametersOutPut> parmList, List<SubscriptionKeyValueOutPut> subscriptionKeyValuesList)
         {
             Hashtable hashTable = new Hashtable();
@@ -216,6 +231,5 @@
             parmList = JsonConvert.DeserializeObject<List<SubscriptionTemplateParametersOutPut>>(writer.ToString());
             return parmList;
         }
-
     }
 }

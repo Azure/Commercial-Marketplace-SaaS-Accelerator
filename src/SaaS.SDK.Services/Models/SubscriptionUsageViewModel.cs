@@ -1,11 +1,11 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
+    using System.Collections.Generic;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using System.Collections.Generic;
 
     /// <summary>
-    /// Subscription Usage ViewModel
+    /// Subscription Usage ViewModel.
     /// </summary>
     public class SubscriptionUsageViewModel
     {

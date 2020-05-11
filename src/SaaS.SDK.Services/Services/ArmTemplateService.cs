@@ -1,22 +1,32 @@
-﻿
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
+    using System.Collections.Generic;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using System.Collections.Generic;
+
+    /// <summary>
+    /// Arm Template Service.
+    /// </summary>
     public class ArmTemplateService
     {
-
+        /// <summary>
+        /// The arm template repository.
+        /// </summary>
         private readonly IArmTemplateRepository armTemplateRepository;
 
-        public ArmTemplateService armTemplateService;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ArmTemplateService"/> class.
+        /// </summary>
+        /// <param name="armTemplateRepository">The arm template repository.</param>
         public ArmTemplateService(IArmTemplateRepository armTemplateRepository)
         {
             this.armTemplateRepository = armTemplateRepository;
         }
 
+        /// <summary>
+        /// Gets the arm templates.
+        /// </summary>
+        /// <returns> ARMTemplateViewModel list.</returns>
         public List<ARMTemplateViewModel> GetARMTemplates()
         {
             List<ARMTemplateViewModel> armTemplateList = new List<ARMTemplateViewModel>();
@@ -33,6 +43,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 armTemplate.UserId = item.UserId;
                 armTemplateList.Add(armTemplate);
             }
+
             return armTemplateList;
         }
     }

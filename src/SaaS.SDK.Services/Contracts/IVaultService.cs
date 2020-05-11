@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// Contract for Vault service to store sensitive detail
+    /// Contract for Vault service to store sensitive detail.
     /// </summary>
     public interface IVaultService
     {
@@ -13,21 +13,21 @@
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="val">The value.</param>
-        /// <returns></returns>
+        /// <returns> Key vault url.</returns>
         Task<string> WriteKeyAsync(string key, string val);
 
         /// <summary>
         /// Gets the key asynchronous.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <returns></returns>
+        /// <returns> key vault sting.</returns>
         Task<string> GetKeyAsync(string key);
 
         /// <summary>
         /// Validates the user parameters.
         /// </summary>
         /// <param name="dictionary">The dictionary.</param>
-        /// <returns></returns>
+        /// <returns> Validate User Parameters.</returns>
         bool ValidateUserParameters(IDictionary<string, string> dictionary);
     }
 }

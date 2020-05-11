@@ -2,43 +2,48 @@
 {
     /// <summary>
     /// Enum For Web
-    /// Actions
+    /// Actions.
     /// </summary>
     public enum WebhookAction
     {
         // (When the resource has been deleted)
+
         /// <summary>
-        /// The unsubscribe
+        /// The unsubscribe.
         /// </summary>
         Unsubscribe,
 
         // (When the change plan operation has completed)
+
         /// <summary>
-        /// The change plan
+        /// The change plan.
         /// </summary>
         ChangePlan,
 
-        // (When the change quantity operation has completed),
+        // (When the change quantity operation has completed)
+
         /// <summary>
-        /// The change quantity
+        /// The change quantity.
         /// </summary>
         ChangeQuantity,
 
-        //(When resource has been suspended)
+        // (When resource has been suspended)
+
         /// <summary>
-        /// The suspend
+        /// The suspend.
         /// </summary>
         Suspend,
 
         // (When resource has been reinstated after suspension)
+
         /// <summary>
-        /// The reinstate
+        /// The reinstate.
         /// </summary>
         Reinstate,
 
         /// <summary>
-        /// The transfer
+        /// The transfer.
         /// </summary>
-        Transfer
+        Transfer,
     }
 }

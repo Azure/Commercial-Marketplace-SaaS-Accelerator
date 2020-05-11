@@ -1,9 +1,9 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Linq;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     /// <summary>
     /// Utility class to convert json values to .net types.
@@ -12,7 +12,7 @@
     public class JsonARMPropertiesConverter : JsonConverter
     {
         /// <summary>
-        /// The types
+        /// The types.
         /// </summary>
         private readonly Type[] types;
 
@@ -26,6 +26,17 @@
         }
 
         /// <summary>
+        /// Gets a value indicating whether this <see cref="T:Newtonsoft.Json.JsonConverter" /> can read JSON.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this <see cref="T:Newtonsoft.Json.JsonConverter" /> can read JSON; otherwise, <c>false</c>.
+        /// </value>
+        public override bool CanRead
+        {
+            get { return false; }
+        }
+
+        /// <summary>
         /// Determines whether this instance can convert the specified object type.
         /// </summary>
         /// <param name="objectType">Type of the object.</param>
@@ -34,7 +45,7 @@
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            return types.Any(t => t == objectType);
+            return this.types.Any(t => t == objectType);
         }
 
         /// <summary>
@@ -47,7 +58,7 @@
         /// <returns>
         /// The object value.
         /// </returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <exception cref="NotImplementedException"> Exception.</exception>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             throw new NotImplementedException();
@@ -76,17 +87,5 @@
 
             output.WriteTo(writer);
         }
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="T:Newtonsoft.Json.JsonConverter" /> can read JSON.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this <see cref="T:Newtonsoft.Json.JsonConverter" /> can read JSON; otherwise, <c>false</c>.
-        /// </value>
-        public override bool CanRead
-        {
-            get { return false; }
-        }
-
     }
 }

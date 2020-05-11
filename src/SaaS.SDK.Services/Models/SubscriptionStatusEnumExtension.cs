@@ -1,14 +1,10 @@
-﻿using Microsoft.Marketplace.SaasKit.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
+    /// <summary>
+    /// Enumerator witrh new  status.
+    /// </summary>
     public enum SubscriptionStatusEnumExtension
     {
-
         /// <summary>
         /// The pending fulfillment start
         /// </summary>
@@ -34,17 +30,49 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// </summary>
         PendingActivation,
 
+        /// <summary>
+        /// The pending unsubscribe
+        /// </summary>
         PendingUnsubscribe,
 
+        /// <summary>
+        /// The activation failed
+        /// </summary>
         ActivationFailed,
 
+        /// <summary>
+        /// The unsubscribe failed
+        /// </summary>
         UnsubscribeFailed,
 
+        /// <summary>
+        /// The deployment pending
+        /// </summary>
         DeploymentPending,
+
+        /// <summary>
+        /// The deployment successful
+        /// </summary>
         DeploymentSuccessful,
+
+        /// <summary>
+        /// The deployment failed
+        /// </summary>
         DeploymentFailed,
+
+        /// <summary>
+        /// The delete resource pending
+        /// </summary>
         DeleteResourcePending,
+
+        /// <summary>
+        /// The delete resource success
+        /// </summary>
         DeleteResourceSuccess,
-        DeleteResourceFailed
+
+        /// <summary>
+        /// The delete resource failed
+        /// </summary>
+        DeleteResourceFailed,
     }
 }

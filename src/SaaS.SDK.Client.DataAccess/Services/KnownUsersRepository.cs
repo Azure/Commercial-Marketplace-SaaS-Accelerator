@@ -3,48 +3,52 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
+    /// <summary>
+    /// The Known users data repository.
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IKnownUsersRepository" />
     public class KnownUsersRepository : IKnownUsersRepository
     {
         /// <summary>
-        /// The context
+        /// The this.context.
         /// </summary>
         private readonly SaasKitContext context;
 
         /// <summary>
+        /// The disposed.
+        /// </summary>
+        private bool disposed = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="KnownUsersRepository"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The this.context.</param>
         public KnownUsersRepository(SaasKitContext context)
         {
             this.context = context;
         }
 
         /// <summary>
-        /// The disposed
-        /// </summary>
-        private bool disposed = false;
-
-        /// <summary>
         /// Gets the known user detail.
         /// </summary>
         /// <param name="emailAddress">The email address.</param>
         /// <param name="roleId">The role identifier.</param>
-        /// <returns>User detail by email and role</returns>        
+        /// <returns>
+        /// User detail by email and role.
+        /// </returns>
         public KnownUsers GetKnownUserDetail(string emailAddress, int roleId)
         {
-            return context.KnownUsers.Where(s => s.UserEmail == emailAddress && s.RoleId == roleId).FirstOrDefault();
+            return this.context.KnownUsers.Where(s => s.UserEmail == emailAddress && s.RoleId == roleId).FirstOrDefault();
         }
 
         /// <summary>
         /// Gets this instance.
         /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns> Exception.</returns>
         public IEnumerable<KnownUsers> Get()
         {
             throw new NotImplementedException();
@@ -54,8 +58,9 @@
         /// Gets the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns>
+        /// Entity for the given identifier.
+        /// </returns>
         public KnownUsers Get(int id)
         {
             throw new NotImplementedException();
@@ -65,8 +70,9 @@
         /// Adds the specified entities.
         /// </summary>
         /// <param name="entities">The entities.</param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <returns>
+        /// Internal identifier after saving the entity.
+        /// </returns>
         public int Save(KnownUsers entities)
         {
             throw new NotImplementedException();
@@ -76,10 +82,19 @@
         /// Removes the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
-        /// <exception cref="NotImplementedException"></exception>
         public void Remove(KnownUsers entity)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -92,20 +107,11 @@
             {
                 if (disposing)
                 {
-                    context.Dispose();
+                    this.context.Dispose();
                 }
             }
+
             this.disposed = true;
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
         }
     }
 }

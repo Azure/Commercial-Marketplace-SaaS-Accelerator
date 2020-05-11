@@ -1,13 +1,13 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
 {
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.WebHook;
     using Newtonsoft.Json;
 
     /// <summary>
-    /// Azure Web hook
+    /// Azure Web hook.
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route("api/[controller]")]
@@ -15,37 +15,37 @@
     public class AzureWebhookController : ControllerBase
     {
         /// <summary>
-        /// The application log repository
+        /// The application log repository.
         /// </summary>
         private readonly IApplicationLogRepository applicationLogRepository;
 
         /// <summary>
-        /// The subscriptions repository
+        /// The subscriptions repository.
         /// </summary>
         private readonly ISubscriptionsRepository subscriptionsRepository;
 
         /// <summary>
-        /// The plan repository
+        /// The plan repository.
         /// </summary>
         private readonly IPlansRepository planRepository;
 
         /// <summary>
-        /// The subscriptions log repository
+        /// The subscriptions log repository.
         /// </summary>
         private readonly ISubscriptionLogRepository subscriptionsLogRepository;
 
         /// <summary>
-        /// The web hook processor
+        /// The web hook processor.
         /// </summary>
         private readonly IWebhookProcessor webhookProcessor;
 
         /// <summary>
-        /// The application log service
+        /// The application log service.
         /// </summary>
         private readonly ApplicationLogService applicationLogService;
 
         /// <summary>
-        /// The subscription service
+        /// The subscription service.
         /// </summary>
         private readonly SubscriptionService subscriptionService;
 

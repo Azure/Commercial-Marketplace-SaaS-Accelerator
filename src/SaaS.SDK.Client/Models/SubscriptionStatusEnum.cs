@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     /// <summary>
-    /// Sets Subscription Operation Status
+    /// Sets Subscription Operation Status..
     /// </summary>
     public enum SubscriptionStatusEnum
     {
@@ -28,7 +28,6 @@
         /// <summary>
         /// Pending Activation
         /// </summary>
-        PendingActivation
-
+        PendingActivation,
     }
 }

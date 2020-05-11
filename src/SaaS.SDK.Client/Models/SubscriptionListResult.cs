@@ -1,16 +1,14 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
-    using Newtonsoft.Json;
     using System.Collections.Generic;
     using System.ComponentModel;
-
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// the subscription list result
+    /// the subscription list result.
     /// </summary>
     public class SubscriptionListResult : SaaSApiResult
     {
-
         /// <summary>
         /// Gets or sets the subscriptions result.
         /// </summary>
@@ -22,7 +20,7 @@
         public List<SubscriptionResult> SubscriptionsResult { get; set; }
 
         /// <summary>
-        /// Indicates the URL for retrieving more subscriptions.
+        /// Gets or sets indicates the URL for retrieving more subscriptions.
         /// </summary>
         /// <value>
         /// This value will be null when no further subscriptions can be retrieved.

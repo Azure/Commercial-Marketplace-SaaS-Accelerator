@@ -1,69 +1,75 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
-    /// Repository for value types
+    /// Repository for value types.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IValueTypesRepository" />
     public class ValueTypesRepository : IValueTypesRepository
     {
         /// <summary>
-        /// The context
+        /// The context.
         /// </summary>
         private readonly SaasKitContext context;
 
         /// <summary>
+        /// The disposed.
+        /// </summary>
+        private bool disposed = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ValueTypesRepository"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The this.context.</param>
         public ValueTypesRepository(SaasKitContext context)
         {
             this.context = context;
         }
 
         /// <summary>
-        /// The disposed
-        /// </summary>
-        private bool disposed = false;
-
-        /// <summary>
         /// Gets all.
         /// </summary>
         /// <returns>
-        /// List of all value types supported by the application
+        /// List of all value types supported by the application.
         /// </returns>
         public IEnumerable<ValueTypes> GetAll()
         {
-            return context.ValueTypes;
+            return this.context.ValueTypes;
         }
 
         /// <summary>
         /// Gets the by identifier.
         /// </summary>
-        /// <param name="Id">The identifier.</param>
-        /// <returns></returns>
-        public ValueTypes GetById(int Id)
+        /// <param name="id">The identifier.</param>
+        /// <returns> Value Types.</returns>
+        public ValueTypes GetById(int id)
         {
-            return context.ValueTypes.Where(s => s.ValueTypeId == Id).FirstOrDefault();
-
+            return this.context.ValueTypes.Where(s => s.ValueTypeId == id).FirstOrDefault();
         }
 
         /// <summary>
         /// Gets the value type values.
         /// </summary>
         /// <returns>
-        /// Returns all the values for value types
+        /// Returns all the values for value types.
         /// </returns>
         public IEnumerable<string> GetValueTypeValues()
         {
-            return context.ValueTypes.Select(s => s.ValueType);
+            return this.context.ValueTypes.Select(s => s.ValueType);
+        }
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -76,19 +82,11 @@
             {
                 if (disposing)
                 {
-                    context.Dispose();
+                    this.context.Dispose();
                 }
             }
-            this.disposed = true;
-        }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            this.disposed = true;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     /// <summary>
-    /// Response Model to return View Responses
+    /// Response Model to return View Responses.
     /// </summary>
     public class ResponseModel
     {

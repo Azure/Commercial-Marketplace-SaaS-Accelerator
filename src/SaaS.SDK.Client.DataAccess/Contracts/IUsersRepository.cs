@@ -1,10 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using System;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
-    /// Repository to access users
+    /// Repository to access users.
     /// </summary>
     /// <seealso cref="System.IDisposable" />
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IBaseRepository{Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Users}" />
@@ -14,7 +14,7 @@
         /// Gets the partner detail from email.
         /// </summary>
         /// <param name="emailAddress">The email address.</param>
-        /// <returns></returns>
+        /// <returns> Users.</returns>
         Users GetPartnerDetailFromEmail(string emailAddress);
     }
 }

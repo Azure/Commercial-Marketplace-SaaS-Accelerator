@@ -3,7 +3,7 @@
     using System;
 
     /// <summary>
-    /// Model encapsulating ARM template parameters related to SaaS subscription
+    /// Model encapsulating ARM template parameters related to SaaS subscription.
     /// </summary>
     public class SubscriptionTemplateParametersModel
     {

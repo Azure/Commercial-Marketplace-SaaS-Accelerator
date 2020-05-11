@@ -15,6 +15,5 @@
         /// </value>
         [FromRequestHeader("x-ms-requestid")]
         public string RequestID { get; set; }
-
     }
 }

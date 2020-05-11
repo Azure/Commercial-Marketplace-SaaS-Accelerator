@@ -24,7 +24,7 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Marketplace.SaasKit.Services;
 
     /// <summary>
-    /// Startup
+    /// Startup.
     /// </summary>
     public class Startup
     {
@@ -34,7 +34,7 @@ namespace Microsoft.Marketplace.Saas.Web
         /// <param name="configuration">The configuration.</param>
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         /// <summary>
@@ -45,7 +45,6 @@ namespace Microsoft.Marketplace.Saas.Web
         /// </value>
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         /// <summary>
         /// Configures the services.
         /// </summary>
@@ -76,7 +75,7 @@ namespace Microsoft.Marketplace.Saas.Web
                 Resource = this.Configuration["SaaSApiConfiguration:Resource"],
                 SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
-                TenantId = this.Configuration["SaaSApiConfiguration:TenantId"]
+                TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
             };
             var cloudConfig = new CloudStorageConfigs
             {
@@ -87,22 +86,22 @@ namespace Microsoft.Marketplace.Saas.Web
                 ClientID = this.Configuration["KeyVaultConfig:ClientID"],
                 ClientSecret = this.Configuration["KeyVaultConfig:ClientSecret"],
                 TenantID = this.Configuration["KeyVaultConfig:TenantID"],
-                KeyVaultUrl = this.Configuration["KeyVaultConfig:KeyVaultUrl"]
+                KeyVaultUrl = this.Configuration["KeyVaultConfig:KeyVaultUrl"],
             };
 
             var azureBlobConfig = new AzureBlobConfig()
             {
                 BlobContainer = this.Configuration["AzureBlobConfig:BlobContainer"],
-                BlobConnectionString = this.Configuration["AzureBlobConfig:BlobConnectionString"]
-
+                BlobConnectionString = this.Configuration["AzureBlobConfig:BlobConnectionString"],
             };
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            ///OPEN ID Authentication
+
    .AddOpenIdConnect(options =>
    {
        options.Authority = $"{config.AdAuthenticationEndPoint}/common";
@@ -124,16 +123,42 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
             services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
             services.AddDbContext<SaasKitContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+               options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
             InitializeRepositoryServices(services);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddMvc(option => option.EnableEndpointRouting = false);
-
-            // Add our Config object so it can be injected
-
             services.AddControllersWithViews();
+        }
+
+        /// <summary>
+        /// Configures the specified application.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <param name="env">The env.</param>
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
+            app.UseAuthentication();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
 
         /// <summary>
@@ -163,36 +188,6 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<KnownUserAttribute>();
             services.AddScoped<IArmTemplateRepository, ArmTemplateRepository>();
             services.AddScoped<ISubscriptionTemplateParametersRepository, SubscriptionTemplateParametersRepository>();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        /// <summary>
-        /// Configures the specified application.
-        /// </summary>
-        /// <param name="app">The application.</param>
-        /// <param name="env">The env.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
-            app.UseAuthentication();
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
         }
     }
 }

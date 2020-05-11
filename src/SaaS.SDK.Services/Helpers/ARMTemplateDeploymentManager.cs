@@ -1,5 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.Azure.Management.ResourceManager;
     using Microsoft.Azure.Management.ResourceManager.Models;
     using Microsoft.Extensions.Logging;
@@ -8,20 +13,18 @@
     using Microsoft.Rest.Azure.Authentication;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     /// <summary>
-    /// Helper to deploy ARM templates to Azure / delete resource group
+    /// Helper to deploy ARM templates to Azure / delete resource group.
     /// </summary>
-    public class ARMTemplateDeploymentManager 
+    public class ARMTemplateDeploymentManager
     {
         private readonly ILogger<ARMTemplateDeploymentManager> logger;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ARMTemplateDeploymentManager"/> class.
+        /// </summary>
+        /// <param name="logger">The logger.</param>
         public ARMTemplateDeploymentManager(ILogger<ARMTemplateDeploymentManager> logger)
         {
             this.logger = logger;
@@ -34,7 +37,7 @@
         /// <param name="templateParameters">The template parameters.</param>
         /// <param name="credenitals">The credenitals.</param>
         /// <param name="armTemplateContent">Content of the arm template.</param>
-        /// <returns></returns>
+        /// <returns> DeploymentExtended.</returns>
         public async Task<DeploymentExtended> DeployARMTemplate(Armtemplates template, List<SubscriptionTemplateParameters> templateParameters, CredentialsModel credenitals, string armTemplateContent)
         {
             this.logger.LogInformation($"Begin deployment of ARM Template - {template.ArmtempalteName}");
@@ -55,7 +58,7 @@
                 this.logger.LogInformation("Get resourceGroupName");
                 var resourceGroupName = templateParameters.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
                 this.logger.LogInformation("resourceGroupName: {0} ", resourceGroupName);
-                
+
                 this.logger.LogInformation("Get resourceGroupLocation");
                 var resourceGroupLocation = templateParameters.Where(s => s.Parameter.ToLower() == "location").FirstOrDefault();
                 this.logger.LogInformation("resourceGroupLocation: {0} ", resourceGroupLocation);
@@ -65,7 +68,7 @@
                 this.logger.LogInformation("resourceManagementClient.SubscriptionId: {0}", resourceManagementClient.SubscriptionId);
 
                 this.logger.LogInformation(" Create or check that resource group exists");
-                EnsureResourceGroupExists(resourceManagementClient, resourceGroupName.Value, resourceGroupLocation.Value);
+                this.EnsureResourceGroupExists(resourceManagementClient, resourceGroupName.Value, resourceGroupLocation.Value);
 
                 this.logger.LogInformation("Remove resourceGroupName , resourceGroupLocation from parameters List (not deleting the resource)");
                 templateParameters.Remove(resourceGroupName);
@@ -81,7 +84,7 @@
 
                 string deploymentName = string.Format("{0}-deployment", resourceGroupName.Value);
                 this.logger.LogInformation("Start a deployment {0}: DeployTemplate: {1}", deploymentName, template.ArmtempalteName);
-                var result = DeployTemplate(resourceManagementClient, resourceGroupName.Value, deploymentName, templateFileContents, hashTable);
+                var result = this.DeployTemplate(resourceManagementClient, resourceGroupName.Value, deploymentName, templateFileContents, hashTable);
                 this.logger.LogInformation("DeployTemplate Request Complete");
                 return result;
             }
@@ -89,28 +92,6 @@
             {
                 this.logger.LogError(ex, "Error in Deployment {0}", ex.Message);
                 throw ex;
-            }            
-        }
-
-        /// <summary>
-        /// Ensures that a resource group with the specified name exists. If it does not, will attempt to create one.
-        /// </summary>
-        /// <param name="resourceManagementClient">The resource manager client.</param>
-        /// <param name="resourceGroupName">The name of the resource group.</param>
-        /// <param name="resourceGroupLocation">The resource group location. Required when creating a new resource group.</param>
-        private void EnsureResourceGroupExists(ResourceManagementClient resourceManagementClient, string resourceGroupName, string resourceGroupLocation)
-        {
-            this.logger.LogInformation(string.Format("check if  resource group '{0}' in location '{1}' exists", resourceGroupName, resourceGroupLocation));
-            if (resourceManagementClient.ResourceGroups.CheckExistence(resourceGroupName) != true)
-            {
-                this.logger.LogInformation(string.Format("Creating resource group '{0}' in location '{1}'", resourceGroupName, resourceGroupLocation));
-                var resourceGroup = new ResourceGroup();
-                resourceGroup.Location = resourceGroupLocation;
-                resourceManagementClient.ResourceGroups.CreateOrUpdate(resourceGroupName, resourceGroup);
-            }
-            else
-            {
-                this.logger.LogInformation(string.Format("Using existing resource group '{0}'", resourceGroupName));
             }
         }
 
@@ -135,21 +116,39 @@
                 this.logger.LogInformation("resourceGroupName: {0} ", resourceGroupName);
                 this.logger.LogInformation("Get resourceGroupLocation");
                 var resourceGroupLocation = templateParameters.Where(s => s.Parameter.ToLower() == "location").FirstOrDefault();
-                
                 var resourceManagementClient = new ResourceManagementClient(serviceCreds);
                 resourceManagementClient.SubscriptionId = credenitals.SubscriptionID;
                 this.logger.LogInformation("resourceManagementClient.SubscriptionId: {0}", resourceManagementClient.SubscriptionId);
-
                 this.logger.LogInformation(" Create or check that resource group exists");
-                DeleteExistingResourceGroup(resourceManagementClient, resourceGroupName.Value, resourceGroupLocation.Value);
-
+                this.DeleteExistingResourceGroup(resourceManagementClient, resourceGroupName.Value, resourceGroupLocation.Value);
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error in Deployment {0}", ex.Message);
                 throw ex;
             }
+        }
 
+        /// <summary>
+        /// Ensures that a resource group with the specified name exists. If it does not, will attempt to create one.
+        /// </summary>
+        /// <param name="resourceManagementClient">The resource manager client.</param>
+        /// <param name="resourceGroupName">The name of the resource group.</param>
+        /// <param name="resourceGroupLocation">The resource group location. Required when creating a new resource group.</param>
+        private void EnsureResourceGroupExists(ResourceManagementClient resourceManagementClient, string resourceGroupName, string resourceGroupLocation)
+        {
+            this.logger.LogInformation(string.Format("check if  resource group '{0}' in location '{1}' exists", resourceGroupName, resourceGroupLocation));
+            if (resourceManagementClient.ResourceGroups.CheckExistence(resourceGroupName) != true)
+            {
+                this.logger.LogInformation(string.Format("Creating resource group '{0}' in location '{1}'", resourceGroupName, resourceGroupLocation));
+                var resourceGroup = new ResourceGroup();
+                resourceGroup.Location = resourceGroupLocation;
+                resourceManagementClient.ResourceGroups.CreateOrUpdate(resourceGroupName, resourceGroup);
+            }
+            else
+            {
+                this.logger.LogInformation(string.Format("Using existing resource group '{0}'", resourceGroupName));
+            }
         }
 
         private void DeleteExistingResourceGroup(ResourceManagementClient resourceManagementClient, string resourceGroupName, string resourceGroupLocation)
@@ -176,7 +175,8 @@
         /// <param name="resourceGroupName">The name of the resource group.</param>
         /// <param name="deploymentName">The name of the deployment.</param>
         /// <param name="templateFileContents">The template file contents.</param>
-        /// <param name="parameterFileContents">The parameter file contents.</param>
+        /// <param name="hashTable">The hash table.</param>
+        /// <returns> DeploymentExtended.</returns>
         private DeploymentExtended DeployTemplate(ResourceManagementClient resourceManagementClient, string resourceGroupName, string deploymentName, JObject templateFileContents, Hashtable hashTable)
         {
             try
@@ -190,7 +190,7 @@
                 {
                     Mode = DeploymentMode.Incremental,
                     Template = templateFileContents,
-                    Parameters = parameters
+                    Parameters = parameters,
                 };
 
                 var deploymentResult = resourceManagementClient.Deployments.CreateOrUpdate(resourceGroupName, deploymentName, deployment);
@@ -204,7 +204,7 @@
             {
                 this.logger.LogError(ex, "Error in Deployment {0}", ex.Message);
                 throw ex;
-            }            
+            }
         }
     }
 }

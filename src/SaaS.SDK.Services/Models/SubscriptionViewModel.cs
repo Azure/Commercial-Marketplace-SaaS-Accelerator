@@ -1,11 +1,9 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
-    //using Microsoft.Marketplace.SaasKit.Client.Models;
-    using Microsoft.Marketplace.SaasKit.Models;
     using System.Collections.Generic;
 
     /// <summary>
-    /// Subscription ViewModel
+    /// Subscription ViewModel.
     /// </summary>
     public class SubscriptionViewModel
     {
@@ -33,9 +31,20 @@
         /// </value>
         public bool IsSuccess { get; set; }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is automatic provisioning supported.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is automatic provisioning supported; otherwise, <c>false</c>.
+        /// </value>
         public bool IsAutomaticProvisioningSupported { get; set; }
 
+        /// <summary>
+        /// Gets or sets the saa s application URL.
+        /// </summary>
+        /// <value>
+        /// The saa s application URL.
+        /// </value>
         public string SaaSAppUrl { get; set; }
-
     }
 }

@@ -1,5 +1,8 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
@@ -8,86 +11,82 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
 
     /// <summary>
-    /// Status handler to send out notifications based on the last status of the subscription
+    /// Status handler to send out notifications based on the last status of the subscription.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers.AbstractSubscriptionStatusHandler" />
     public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
     {
         /// <summary>
-        /// The fulfillment API client
+        /// The fulfillment API client.
         /// </summary>
-        protected readonly IFulfillmentApiClient fulfillmentApiClient;
+        private readonly IFulfillmentApiClient fulfillmentApiClient;
 
         /// <summary>
-        /// The subscription repository
+        /// The subscription repository.
         /// </summary>
-        protected readonly ISubscriptionsRepository subscriptionRepository;
+        private readonly ISubscriptionsRepository subscriptionRepository;
 
         /// <summary>
-        /// The application configuration repository
+        /// The application configuration repository.
         /// </summary>
-        protected readonly IApplicationConfigRepository applicationConfigRepository;
+        private readonly IApplicationConfigRepository applicationConfigRepository;
 
         /// <summary>
-        /// The email template repository
+        /// The email template repository.
         /// </summary>
-        protected readonly IEmailTemplateRepository emailTemplateRepository;
+        private readonly IEmailTemplateRepository emailTemplateRepository;
 
         /// <summary>
-        /// The plan events mapping repository
+        /// The plan events mapping repository.
         /// </summary>
-        protected readonly IPlanEventsMappingRepository planEventsMappingRepository;
+        private readonly IPlanEventsMappingRepository planEventsMappingRepository;
 
         /// <summary>
-        /// The offer attributes repository
+        /// The offer attributes repository.
         /// </summary>
-        protected readonly IOfferAttributesRepository offerAttributesRepository;
+        private readonly IOfferAttributesRepository offerAttributesRepository;
 
         /// <summary>
-        /// The subscription service
+        /// The plan repository.
         /// </summary>
-        protected SubscriptionService subscriptionService = null;
+        private readonly IPlansRepository planRepository;
 
         /// <summary>
-        /// The plan repository
+        /// The offers repository.
         /// </summary>
-        protected readonly IPlansRepository planRepository;
+        private readonly IOffersRepository offersRepository;
 
         /// <summary>
-        /// The offers repository
+        /// The events repository.
         /// </summary>
-        protected readonly IOffersRepository offersRepository;
+        private readonly IEventsRepository eventsRepository;
 
         /// <summary>
-        /// The events repository
+        /// The subscription template parameters repository.
         /// </summary>
-        protected readonly IEventsRepository eventsRepository;
+        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
 
         /// <summary>
-        /// The subscription template parameters repository
+        /// The email service.
         /// </summary>
-        protected readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
+        private readonly IEmailService emailService;
 
         /// <summary>
-        /// The email service
+        /// The email helper.
         /// </summary>
-        protected readonly IEmailService emailService;
+        private readonly EmailHelper emailHelper;
 
         /// <summary>
-        /// The email helper
+        /// The logger.
         /// </summary>
-        protected readonly EmailHelper emailHelper;
+        private readonly ILogger<NotificationStatusHandler> logger;
 
         /// <summary>
-        /// The logger
+        /// The subscription service.
         /// </summary>
-        protected readonly ILogger<NotificationStatusHandler> logger;
+        private SubscriptionService subscriptionService = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationStatusHandler"/> class.
@@ -119,8 +118,8 @@
                                             IOffersRepository offersRepository,
                                             ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
                                             IEmailService emailService,
-                                            EmailHelper emailHelper,
-                                            ILogger<NotificationStatusHandler> logger) : base(subscriptionRepository, planRepository, usersRepository)
+                                            ILogger<NotificationStatusHandler> logger)
+                                            : base(subscriptionRepository, planRepository, usersRepository)
         {
             this.fulfillmentApiClient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -152,10 +151,7 @@
             this.logger?.LogInformation("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
             this.logger?.LogInformation("Get Offers");
-            var offer = this.offersRepository.GetOfferById(planDetails.OfferId);
             this.logger?.LogInformation("Get Events");
-            var events = this.eventsRepository.GetByName("Activate");
-
             var subscriptionTemplateParameters = this.subscriptionTemplateParametersRepository.GetTemplateParametersBySubscriptionId(subscription.AmpsubscriptionId);
             List<SubscriptionTemplateParametersModel> subscriptionTemplateParametersList = new List<SubscriptionTemplateParametersModel>();
             if (subscriptionTemplateParameters != null)
@@ -164,15 +160,9 @@
                 subscriptionTemplateParametersList = JsonConvert.DeserializeObject<List<SubscriptionTemplateParametersModel>>(serializedParent);
             }
 
-            List<SubscriptionParametersModel> subscriptionParametersList = new List<SubscriptionParametersModel>();
-
             var subscriptionParameters = this.subscriptionRepository.GetSubscriptionsParametersById(subscriptionID, planDetails.PlanGuid);
-
-
             var serializedSubscription = JsonConvert.SerializeObject(subscriptionParameters);
-            subscriptionParametersList = JsonConvert.DeserializeObject<List<SubscriptionParametersModel>>(serializedSubscription);
-
-
+            var subscriptionParametersList = JsonConvert.DeserializeObject<List<SubscriptionParametersModel>>(serializedSubscription);
             SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension()
             {
                 Id = subscription.AmpsubscriptionId,
@@ -186,11 +176,13 @@
                 CustomerName = userdeatils.FullName,
                 GuidPlanId = planDetails.PlanGuid,
                 SubscriptionParameters = subscriptionParametersList,
-                ARMTemplateParameters = subscriptionTemplateParametersList
+                ARMTemplateParameters = subscriptionTemplateParametersList,
             };
-            subscriptionDetail.Purchaser = new Models.PurchaserResult();
-            subscriptionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
-            subscriptionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
+            subscriptionDetail.Purchaser = new Models.PurchaserResult()
+            {
+                EmailId = subscription.PurchaserEmail,
+                TenantId = subscription.PurchaserTenantId ?? default,
+            };
 
             /*
              *  KB: Trigger the email when the subscription is in one of the following statuses:
@@ -207,12 +199,11 @@
             if (
              subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed.ToString() ||
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString()
-                )
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString())
             {
                 planEventName = "Unsubscribe";
-
             }
+
             subscriptionDetail.EventName = planEventName;
 
             string processStatus = "success";
@@ -220,17 +211,13 @@
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeploymentFailed.ToString() ||
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed.ToString() ||
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString()
-                )
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString())
             {
                 processStatus = "failure";
-
             }
 
             int? eventId = this.eventsRepository.GetByName(planEventName)?.EventsId;
-
             var planEvents = this.planEventsMappingRepository.GetPlanEvent(planDetails.PlanGuid, eventId.GetValueOrDefault());
-
             bool isEmailEnabledForUnsubscription = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForUnsubscription"));
             bool isEmailEnabledForPendingActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForPendingActivation"));
             bool isEmailEnabledForSubscriptionActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForSubscriptionActivation"));
@@ -247,13 +234,12 @@
                 {
                     triggerEmail = true;
                 }
+
                 if (planEventName == "Unsubscribe" && isEmailEnabledForUnsubscription)
                 {
                     triggerEmail = true;
                 }
-
             }
-
 
             if (triggerEmail)
             {

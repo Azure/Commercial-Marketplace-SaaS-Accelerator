@@ -1,11 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
-    using Microsoft.Marketplace.SaasKit.Models;
-    using Newtonsoft.Json;
     using System;
+    using Newtonsoft.Json;
 
     /// <summary>
-    /// Subscription Usage Result
+    /// Subscription Usage Result.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Models.SaaSApiResult" />
     public class MeteringUsageResult : SaaSApiResult

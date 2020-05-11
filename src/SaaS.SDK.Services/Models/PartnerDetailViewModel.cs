@@ -3,7 +3,7 @@
     using System;
 
     /// <summary>
-    /// Partner Detail ViewModel
+    /// Partner Detail ViewModel.
     /// </summary>
     public class PartnerDetailViewModel
     {

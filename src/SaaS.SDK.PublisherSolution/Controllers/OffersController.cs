@@ -1,20 +1,22 @@
 ﻿namespace Microsoft.Marketplace.Saas.Web.Controllers
 {
-    using Microsoft.Marketplace.Saas.Web.Controllers;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Newtonsoft.Json;
 
+    /// <summary>
+    /// Offers Controller.
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.Saas.Web.Controllers.BaseController" />
     [ServiceFilter(typeof(KnownUserAttribute))]
     public class OffersController : BaseController
     {
@@ -28,14 +30,19 @@
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
 
+        private readonly ILogger<OffersController> logger;
+
         private OfferServices offersService;
 
         /// <summary>
-        /// The logger
+        /// Initializes a new instance of the <see cref="OffersController"/> class.
         /// </summary>
-        private readonly ILogger<OffersController> logger;
-
-
+        /// <param name="offersRepository">The offers repository.</param>
+        /// <param name="applicationConfigRepository">The application configuration repository.</param>
+        /// <param name="usersRepository">The users repository.</param>
+        /// <param name="valueTypesRepository">The value types repository.</param>
+        /// <param name="offersAttributeRepository">The offers attribute repository.</param>
+        /// <param name="logger">The logger.</param>
         public OffersController(IOffersRepository offersRepository, IApplicationConfigRepository applicationConfigRepository, IUsersRepository usersRepository, IValueTypesRepository valueTypesRepository, IOfferAttributesRepository offersAttributeRepository, ILogger<OffersController> logger)
         {
             this.offersRepository = offersRepository;
@@ -50,7 +57,7 @@
         /// <summary>
         /// Indexes this instance.
         /// </summary>
-        /// <returns>return All subscription</returns>
+        /// <returns>return All subscription.</returns>
         public IActionResult Index()
         {
             this.logger.LogInformation("Offers Controller / Index");
@@ -58,7 +65,7 @@
             {
                 List<OffersModel> getAllOffersData = new List<OffersModel>();
                 this.TempData["ShowWelcomeScreen"] = "True";
-                var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
 
                 getAllOffersData = this.offersService.GetOffers();
 
@@ -67,28 +74,31 @@
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return View("Error", ex);
+                return this.View("Error", ex);
             }
         }
 
         /// <summary>
         /// Indexes this instance.
         /// </summary>
-        /// <returns>return All subscription</returns>
+        /// <param name="offerGuId">The offer gu identifier.</param>
+        /// <returns>
+        /// return All subscription.
+        /// </returns>
         public IActionResult OfferDetails(Guid offerGuId)
         {
             this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", offerGuId);
             try
             {
-                OffersViewModel OffersData = new OffersViewModel();
+                OffersViewModel offersData = new OffersViewModel();
                 this.TempData["ShowWelcomeScreen"] = "True";
-                var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-                OffersData = this.offersService.GetOfferOnId(offerGuId);
+                var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                offersData = this.offersService.GetOfferOnId(offerGuId);
 
                 var offerAttributes = this.offersAttributeRepository.GetInputAttributesByOfferId(offerGuId);
-                var valueTypes = valueTypesRepository.GetAll().ToList();
-                ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
-                OffersData.OfferAttributes = new List<OfferAttributesModel>();
+                var valueTypes = this.valueTypesRepository.GetAll().ToList();
+                this.ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
+                offersData.OfferAttributes = new List<OfferAttributesModel>();
                 if (offerAttributes != null)
                 {
                     foreach (var offerAttribute in offerAttributes)
@@ -111,38 +121,39 @@
                             IsDelete = offerAttribute.IsDelete ?? false,
                             CreateDate = DateTime.Now,
                             UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
-                            OfferId = OffersData.OfferGuid
+                            OfferId = offersData.OfferGuid,
                         };
-                        OffersData.OfferAttributes.Add(existingOfferAttribute);
-
+                        offersData.OfferAttributes.Add(existingOfferAttribute);
                     }
                 }
 
-
-                return this.PartialView(OffersData);
+                return this.PartialView(offersData);
             }
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return View("Error", ex);
+                return this.View("Error", ex);
             }
         }
 
         /// <summary>
         /// Indexes this instance.
         /// </summary>
-        /// <returns>return All subscription</returns>
+        /// <param name="offersData">The offers data.</param>
+        /// <returns>
+        /// return All subscription.
+        /// </returns>
         [HttpPost]
-        public IActionResult OfferDetails(OffersViewModel OffersData)
+        public IActionResult OfferDetails(OffersViewModel offersData)
         {
-            this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", JsonConvert.SerializeObject(OffersData));
+            this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", JsonConvert.SerializeObject(offersData));
             try
             {
-                var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-                if (OffersData != null && OffersData.OfferAttributes != null)
+                var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                if (offersData != null && offersData.OfferAttributes != null)
                 {
                     // query
-                    var validItems = OffersData.OfferAttributes.Where(i => i.IsRemove == false);
+                    var validItems = offersData.OfferAttributes.Where(i => i.IsRemove == false);
 
                     foreach (var offerAttribute in validItems)
                     {
@@ -164,25 +175,24 @@
                             IsDelete = offerAttribute.IsDelete,
                             CreateDate = DateTime.Now,
                             UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
-                            OfferId = OffersData.OfferGuid
+                            OfferId = offersData.OfferGuid,
                         };
                         this.offersAttributeRepository.Add(newOfferAttribute);
                     }
 
-                    var valueTypes = valueTypesRepository.GetAll().ToList();
-                    ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
+                    var valueTypes = this.valueTypesRepository.GetAll().ToList();
+                    this.ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
                     this.TempData["ShowWelcomeScreen"] = "True";
                 }
-                ModelState.Clear();
-                return RedirectToAction(nameof(OfferDetails), new { @offerGuId = OffersData.OfferGuid });
+
+                this.ModelState.Clear();
+                return this.RedirectToAction(nameof(this.OfferDetails), new { @offerGuId = offersData.OfferGuid });
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return View("Error", ex);
+                return this.View("Error", ex);
             }
-
         }
-
     }
 }

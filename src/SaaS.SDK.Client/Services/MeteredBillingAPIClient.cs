@@ -6,20 +6,18 @@
     using System.Threading.Tasks;
     using Microsoft.Marketplace.SaasKit.Configurations;
     using Microsoft.Marketplace.SaasKit.Contracts;
-    using Microsoft.Marketplace.SaasKit.Exceptions;
     using Microsoft.Marketplace.SaasKit.Helpers;
     using Microsoft.Marketplace.SaasKit.Models;
     using Microsoft.Marketplace.SaasKit.Network;
-    using Newtonsoft.Json;
 
     /// <summary>
-    /// Metered Api Client
+    /// Metered Api Client.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Contracts.IMeteredBillingApiClient" />
     public class MeteredBillingApiClient : IMeteredBillingApiClient
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FulfillmentApiClient" /> class.
+        /// Initializes a new instance of the <see cref="MeteredBillingApiClient"/> class.
         /// </summary>
         /// <param name="sdkSettings">The SDK settings.</param>
         /// <param name="logger">The logger.</param>
@@ -50,7 +48,7 @@
         /// </summary>
         /// <param name="subscriptionUsageRequest">The subscription usage request.</param>
         /// <returns>
-        /// Subscription Usage
+        /// Subscription Usage.
         /// </returns>
         public async Task<MeteringUsageResult> EmitUsageEventAsync(MeteringUsageRequest subscriptionUsageRequest)
         {
@@ -77,7 +75,7 @@
         /// </summary>
         /// <param name="subscriptionBatchUsageRequest">The subscription batch usage request.</param>
         /// <returns>
-        /// Subscription Usage
+        /// Subscription Usage.
         /// </returns>
         public async Task<MeteringBatchUsageResult> EmitBatchUsageEventAsync(IEnumerable<MeteringUsageRequest> subscriptionBatchUsageRequest)
         {
@@ -89,7 +87,7 @@
 
             Dictionary<string, object> batchUsageEventRequest = new Dictionary<string, object>
             {
-                { "request", subscriptionBatchUsageRequest }
+                { "request", subscriptionBatchUsageRequest },
             };
 
             var meteringBatchUsageResult = await restClient.DoRequest(url, HttpMethods.POST, batchUsageEventRequest).ConfigureAwait(false);

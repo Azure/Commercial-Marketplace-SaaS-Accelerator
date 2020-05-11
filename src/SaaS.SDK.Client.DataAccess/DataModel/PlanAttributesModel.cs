@@ -1,10 +1,9 @@
-﻿
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
 {
     using System;
 
     /// <summary>
-    /// Encapsulation for Plan attributes
+    /// Encapsulation for Plan attributes.
     /// </summary>
     public class PlanAttributesModel
     {

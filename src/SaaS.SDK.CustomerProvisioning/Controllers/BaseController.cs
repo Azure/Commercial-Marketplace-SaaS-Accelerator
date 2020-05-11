@@ -8,7 +8,7 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
 
     /// <summary>
-    ///  Sets a BaseController
+    ///  Sets a BaseController.
     /// </summary>
     /// <seealso cref="Microsoft.AspNetCore.Mvc.Controller" />
     public class BaseController : Controller
@@ -22,7 +22,7 @@
         }
 
         /// <summary>
-        /// Gets Current Logged in User Email Address
+        /// Gets Current Logged in User Email Address.
         /// </summary>
         /// <value>
         /// The current user email address.
@@ -36,7 +36,7 @@
         }
 
         /// <summary>
-        /// Gets Current Logged in User Name
+        /// Gets Current Logged in User Name.
         /// </summary>
         /// <value>
         /// The name of the current user.
@@ -50,9 +50,9 @@
         }
 
         /// <summary>
-        /// Get Current Logged in User Email Address
+        /// Get Current Logged in User Email Address.
         /// </summary>
-        /// <returns> Current Logged User Email</returns>
+        /// <returns> Current Logged User Email.</returns>
         public PartnerDetailViewModel GetCurrentUserDetail()
         {
             if (this.HttpContext != null && this.HttpContext.User.Identity.IsAuthenticated)
@@ -69,7 +69,9 @@
         /// <summary>
         /// Checks the authentication.
         /// </summary>
-        /// <returns> Check authentication</returns>
+        /// <returns>
+        /// Check authentication.
+        /// </returns>
         public IActionResult CheckAuthentication()
         {
             if (this.HttpContext == null || !this.HttpContext.User.Identity.IsAuthenticated)

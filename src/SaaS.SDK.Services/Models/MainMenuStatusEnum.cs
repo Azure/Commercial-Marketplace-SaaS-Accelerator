@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     /// <summary>
-    /// Sets Subscription Operation Status
+    /// Sets Subscription Operation Status.
     /// </summary>
     public enum MainMenuStatusEnum
     {
@@ -9,8 +9,5 @@
         /// Is Active Enable
         /// </summary>
         IsLicenseManagementEnabled,
-
-       
-
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using System;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
     /// Repository to access application log entries.

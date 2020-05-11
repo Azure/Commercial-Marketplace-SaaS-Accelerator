@@ -1,20 +1,20 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
+    using System;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
-    using System;
 
     /// <summary>
-    /// Implementation of IARMTemplateStorageService to store the template to Azure blob storage
+    /// Implementation of IARMTemplateStorageService to store the template to Azure blob storage.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IARMTemplateStorageService" />
     public class AzureBlobStorageService : IARMTemplateStorageService
     {
         /// <summary>
-        /// The azure BLOB configuration
+        /// The azure BLOB configuration.
         /// </summary>
         private AzureBlobConfig azureBlobConfig;
 
@@ -35,20 +35,20 @@
         /// <param name="fileContantType">Type of the file contant.</param>
         /// <param name="referenceid">The referenceid.</param>
         /// <returns>
-        /// Reference to the saved ARM template (eg:URL)
+        /// Reference to the saved ARM template (eg:URL).
         /// </returns>
         public string SaveARMTemplate(IFormFile file, string fileName, string fileContantType, Guid referenceid)
         {
-            CloudStorageAccount fileStorageAccount = CloudStorageAccount.Parse(azureBlobConfig.BlobConnectionString);
+            CloudStorageAccount fileStorageAccount = CloudStorageAccount.Parse(this.azureBlobConfig.BlobConnectionString);
             CloudBlobClient blobClient = fileStorageAccount.CreateCloudBlobClient();
-            CloudBlobContainer container = blobClient.GetContainerReference(azureBlobConfig.BlobContainer);
+            CloudBlobContainer container = blobClient.GetContainerReference(this.azureBlobConfig.BlobContainer);
             bool result = container.CreateIfNotExistsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
             if (result)
             {
                 container.SetPermissionsAsync(new BlobContainerPermissions
                 {
-                    PublicAccess = BlobContainerPublicAccessType.Blob
+                    PublicAccess = BlobContainerPublicAccessType.Blob,
                 });
             }
 
@@ -65,17 +65,19 @@
         /// </summary>
         /// <param name="fileName">Name of the file.</param>
         /// <returns>
-        /// Contents of ARM template as string
+        /// Contents of ARM template as string.
         /// </returns>
         public string GetARMTemplateContentAsString(string fileName)
         {
             // Setup the connection to the storage account
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(azureBlobConfig.BlobConnectionString);
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(this.azureBlobConfig.BlobConnectionString);
 
             // Connect to the blob storage
             CloudBlobClient serviceClient = storageAccount.CreateCloudBlobClient();
+
             // Connect to the blob container
-            CloudBlobContainer container = serviceClient.GetContainerReference(azureBlobConfig.BlobContainer);
+            CloudBlobContainer container = serviceClient.GetContainerReference(this.azureBlobConfig.BlobContainer);
+
             // Connect to the blob file
             CloudBlockBlob blob = container.GetBlockBlobReference(fileName);
 

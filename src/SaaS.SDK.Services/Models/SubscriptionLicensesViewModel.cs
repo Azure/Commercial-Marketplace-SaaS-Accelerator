@@ -1,13 +1,9 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc.Rendering;
 
     /// <summary>
-    /// SubscriptionLicenses ViewModel
+    /// SubscriptionLicenses ViewModel.
     /// </summary>
     public class SubscriptionLicensesViewModel
     {

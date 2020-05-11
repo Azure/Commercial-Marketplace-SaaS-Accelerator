@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
@@ -13,35 +12,37 @@
     using Microsoft.Marketplace.SaasKit.Models;
 
     [ServiceFilter(typeof(KnownUserAttribute))]
+
     /// <summary>
-    /// Licenses Controller
+    /// The Licneses controller.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.Saas.Web.Controllers.BaseController" />
     public class LicensesController : BaseController
     {
         /// <summary>
-        /// The subscription licenses repository
+        /// The subscription licenses repository.
         /// </summary>
         private readonly ISubscriptionLicensesRepository subscriptionLicensesRepository;
 
         /// <summary>
-        /// The subscription repository
+        /// The subscription repository.
         /// </summary>
         private readonly ISubscriptionsRepository subscriptionRepository;
 
         /// <summary>
-        /// The users repository
+        /// The users repository.
         /// </summary>
         private readonly IUsersRepository usersRepository;
 
         private readonly IApplicationConfigRepository applicationConfigRepository;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LicensesController"/> class.
+        /// Initializes a new instance of the <see cref="LicensesController" /> class.
         /// </summary>
         /// <param name="subscriptionLicenses">The subscription licenses.</param>
         /// <param name="subscriptionRepository">The subscription repository.</param>
         /// <param name="usersRepository">The users repository.</param>
+        /// <param name="applicationConfigRepository">The application configuration repository.</param>
         public LicensesController(ISubscriptionLicensesRepository subscriptionLicenses, ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository)
         {
             this.subscriptionLicensesRepository = subscriptionLicenses;
@@ -53,13 +54,14 @@
         /// <summary>
         /// Indexes this instance.
         /// </summary>
-        /// <returns>return All subscription</returns>
+        /// <returns> Return All Licenses.</returns>
         public IActionResult Index()
         {
-            if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
             {
                 this.TempData["ShowLicensesMenu"] = true;
             }
+
             SubscriptionLicensesModel subscriptionLicenses = new SubscriptionLicensesModel();
             subscriptionLicenses.SubscriptionList = new SelectList(this.subscriptionRepository.Get().Where(s => s.SubscriptionStatus == Convert.ToString(SubscriptionStatusEnum.Subscribed)), "Id", "Name");
             List<SubscriptionLicensesViewModel> subscriptionlist = new List<SubscriptionLicensesViewModel>();
@@ -76,22 +78,26 @@
                 subscription.SubScriptionID = item.SubscriptionId ?? 0;
                 subscriptionlist.Add(subscription);
             }
+
             subscriptionLicenses.Licenses = subscriptionlist;
             return this.View(subscriptionLicenses);
-            //return this.View(subscriptionlist);
         }
 
         /// <summary>
         /// Updates the active Subscription.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <returns>return Active Subscription</returns>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>
+        /// return Active Subscription.
+        /// </returns>
         public JsonResult UpdateActiveSubscription(int id, int subscriptionId)
         {
-            if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
             {
                 this.TempData["ShowLicensesMenu"] = true;
             }
+
             var subscriptionDetails = this.subscriptionLicensesRepository.GetLicensesForSubscriptions(Convert.ToString(SubscriptionStatusEnum.Subscribed))
                 .Where(s => s.SubscriptionId == subscriptionId).ToList();
 
@@ -104,15 +110,18 @@
             else
             {
                 if (requestedUpdateSubscription != null && requestedUpdateSubscription.Subscription != null)
+                {
                     return new JsonResult("There is already a license associated with the subscription " + requestedUpdateSubscription.Subscription.Name);
+                }
             }
+
             return new JsonResult(0);
         }
 
         /// <summary>
         /// Adds the subscription license.
         /// </summary>
-        /// <returns>return subscription list</returns>
+        /// <returns>return subscription list.</returns>
         public PartialViewResult AddSubscriptionLicense()
         {
             SubscriptionLicensesViewModel subscription = new SubscriptionLicensesViewModel();
@@ -124,14 +133,15 @@
         /// Adds the License detail.
         /// </summary>
         /// <param name="subscriptionLicenses">The subscription licenses.</param>
-        /// <returns>return subscription</returns>
+        /// <returns>return subscription.</returns>
         [HttpPost]
         public IActionResult AddLicenseDetail(SubscriptionLicensesViewModel subscriptionLicenses)
         {
-            if (Convert.ToBoolean(applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
             {
                 this.TempData["ShowLicensesMenu"] = true;
             }
+
             if (subscriptionLicenses != null)
             {
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -141,10 +151,9 @@
                     SubscriptionId = subscriptionLicenses.SubScriptionID,
                     IsActive = true,
                     CreatedDate = DateTime.Now,
-                    CreatedBy = currentUserDetail == null ? 0 : currentUserDetail.UserId
+                    CreatedBy = currentUserDetail == null ? 0 : currentUserDetail.UserId,
                 };
 
-                //Check For the Existing 
                 var getsubscriptionDetails = this.subscriptionLicensesRepository.GetLicensesForSubscriptions(Convert.ToString(SubscriptionStatusEnum.Subscribed))
                .Where(s => s.SubscriptionId == subscriptionLicenses.SubScriptionID).ToList();
 
@@ -152,10 +161,11 @@
                 {
                     if (getsubscriptionDetails.FirstOrDefault() != null && getsubscriptionDetails.FirstOrDefault().Subscription != null)
                     {
-                        TempData["msg"] = "<script>alert('There is already a license associated with the subscription" + getsubscriptionDetails.FirstOrDefault().Subscription.Name + "');</script>";
+                        this.TempData["msg"] = "<script>alert('There is already a license associated with the subscription" + getsubscriptionDetails.FirstOrDefault().Subscription.Name + "');</script>";
                         return this.RedirectToAction(nameof(this.Index));
                     }
                 }
+
                 this.subscriptionLicensesRepository.AssignLicenseToSubscription(subscriptionLicense);
             }
 

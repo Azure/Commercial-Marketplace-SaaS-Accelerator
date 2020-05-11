@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
 {
+    using System;
+
+    /// <summary>
+    /// Bulk Upload Usage Staging.
+    /// </summary>
     public partial class BulkUploadUsageStaging
     {
         public int Id { get; set; }

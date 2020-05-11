@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
-    public class BlobStorageConfig
+    /// <summary>
+    /// Blob Storage Connection.
+    /// </summary>
+    public class BlobStorageConnection
     {
+        /// <summary>
+        /// Gets or sets the BLOB connection string.
+        /// </summary>
+        /// <value>
+        /// The BLOB connection string.
+        /// </value>
         public string BlobConnectionString { get; set; }
     }
 }

@@ -3,32 +3,31 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.EntityFrameworkCore;
 
     /// <summary>
-    /// SubscriptionLicenses Repository
+    /// SubscriptionLicenses Repository.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.ISubscriptionLicensesRepository" />
     public class SubscriptionLicensesRepository : ISubscriptionLicensesRepository
     {
         /// <summary>
-        /// The disposed
-        /// </summary>
-        private bool disposed = false;
-
-        /// <summary>
-        /// The context
+        /// The context.
         /// </summary>
         private readonly SaasKitContext context;
 
         /// <summary>
+        /// The disposed.
+        /// </summary>
+        private bool disposed = false;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionLicensesRepository" /> class.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The this.context.</param>
         public SubscriptionLicensesRepository(SaasKitContext context)
         {
             this.context = context;
@@ -40,7 +39,7 @@
         /// <param name="userId">The user identifier.</param>
         /// <param name="subscriptionStatus">The subscription status.</param>
         /// <returns>
-        /// return all subscription licenses
+        /// return all subscription licenses.
         /// </returns>
         public IEnumerable<SubscriptionLicenses> GetSubscriptionLicensesByUser(int userId, string subscriptionStatus)
         {
@@ -52,8 +51,9 @@
         /// <summary>
         /// Gets all subscription licenses.
         /// </summary>
+        /// <param name="subscriptionStatus"> Status of subscription.</param>
         /// <returns>
-        /// return get all subscription
+        /// return get all subscription.
         /// </returns>
         public IEnumerable<SubscriptionLicenses> GetLicensesForSubscriptions(string subscriptionStatus)
         {
@@ -66,7 +66,7 @@
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns>
-        /// return subscription Id
+        /// return subscription Id.
         /// </returns>
         public int AssignLicenseToSubscription(SubscriptionLicenses subscription)
         {
@@ -89,7 +89,7 @@
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns>
-        /// return subscriptionId
+        /// return subscriptionId.
         /// </returns>
         public int UpdateActiveSubscription(SubscriptionLicenses subscription)
         {
@@ -107,6 +107,15 @@
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
@@ -119,16 +128,6 @@
             }
 
             this.disposed = true;
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-
-            GC.SuppressFinalize(this);
         }
     }
 }

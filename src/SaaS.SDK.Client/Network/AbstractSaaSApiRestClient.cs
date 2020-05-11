@@ -1,5 +1,11 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Network
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Microsoft.Marketplace.SaasKit.Attributes;
     using Microsoft.Marketplace.SaasKit.Configurations;
@@ -7,26 +13,21 @@
     using Microsoft.Marketplace.SaasKit.Helpers;
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
 
     /// <summary>
-    /// rest client call implementation
+    /// rest client call implementation.
     /// </summary>
-    /// <typeparam name="T">type of entity</typeparam>
-    public abstract class AbstractSaaSApiRestClient<T> where T : SaaSApiResult, new()
+    /// <typeparam name="T">type of entity.</typeparam>
+    public abstract class AbstractSaaSApiRestClient<T>
+        where T : SaaSApiResult, new()
     {
         /// <summary>
-        /// The SDK settings
+        /// The SDK settings.
         /// </summary>
         protected readonly SaaSApiClientConfiguration clientConfiguration;
 
         /// <summary>
-        /// The logger
+        /// The logger.
         /// </summary>
         protected readonly ILogger logger;
 
@@ -50,7 +51,7 @@
         /// <param name="headers">The headers.</param>
         /// <param name="contentType">Type of the content.</param>
         /// <returns>
-        /// Does the request
+        /// Request result.
         /// </returns>
         /// <exception cref="FulfillmentException">Token expired. Please logout and login again.</exception>
         public async Task<T> DoRequest(string url, string method, Dictionary<string, object> parameters, Dictionary<string, object> headers = null, string contentType = "application/json")
@@ -85,13 +86,13 @@
                 request.Method = method;
                 request.Accept = "application/json";
 
-                FillHeaders(headers, accessTokenResult, request);
-                await DoRequest(method, parameters, contentType, formattedParams, request).ConfigureAwait(false);
-                return await BuildResultFromResponse(request).ConfigureAwait(false);
+                this.FillHeaders(headers, accessTokenResult, request);
+                await this.DoRequest(method, parameters, contentType, formattedParams, request).ConfigureAwait(false);
+                return await this.BuildResultFromResponse(request).ConfigureAwait(false);
             }
             catch (WebException ex)
             {
-                return ProcessErrorResponse(url, ex);
+                return this.ProcessErrorResponse(url, ex);
             }
         }
 
@@ -100,14 +101,14 @@
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <param name="ex">The ex.</param>
-        /// <returns>Error result built using the data in the response</returns>
+        /// <returns>Error result built using the data in the response.</returns>
         protected abstract T ProcessErrorResponse(string url, WebException ex);
 
         /// <summary>
         /// Builds the result from response.
         /// </summary>
         /// <param name="request">The request.</param>
-        /// <returns>An instance of type T deserialized from the response</returns>
+        /// <returns>An instance of type T deserialized from the response.</returns>
         protected virtual async Task<T> BuildResultFromResponse(HttpWebRequest request)
         {
             WebResponse response = await request.GetResponseAsync().ConfigureAwait(false);
@@ -121,7 +122,7 @@
                     result = new T();
                 }
 
-                // Fill headers
+                // Fill headers.
                 var t = typeof(T);
                 var properties = t.GetProperties();
                 var responseHeaders = response.Headers;
@@ -155,6 +156,7 @@
         /// <param name="contentType">Type of the content.</param>
         /// <param name="formattedParams">The formatted parameters.</param>
         /// <param name="request">The request.</param>
+        /// <returns> Request result.</returns>
         protected virtual async Task DoRequest(string method, Dictionary<string, object> parameters, string contentType, string formattedParams, HttpWebRequest request)
         {
             if (string.Equals(HttpMethods.POST.ToString(), method) || string.Equals(HttpMethods.PUT.ToString(), method) || string.Equals(HttpMethods.PATCH.ToString(), method))
@@ -197,7 +199,6 @@
         /// <param name="headers">The headers.</param>
         /// <param name="accessTokenResult">The access token result.</param>
         /// <param name="request">The request.</param>
-        /// <returns></returns>
         protected virtual void FillHeaders(Dictionary<string, object> headers, AuthenticationResult accessTokenResult, HttpWebRequest request)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
