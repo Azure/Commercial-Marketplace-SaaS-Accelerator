@@ -90,35 +90,36 @@
         public void LogStatusDuringProvisioning(Guid subscriptionID, Guid? armtemplateId, string deploymentStatus, string errorDescription, string subscriptionStatus)
         {
             var subscription = this.context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionID).FirstOrDefault();
-            var existingWebJobStatus = this.context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
-            if (existingWebJobStatus == null)
-            {
-                WebJobSubscriptionStatus status = new WebJobSubscriptionStatus()
-                {
-                    SubscriptionId = subscriptionID,
-                    ArmtemplateId = armtemplateId,
-                    SubscriptionStatus = subscriptionStatus,
-                    DeploymentStatus = deploymentStatus,
-                    Description = errorDescription,
-                    InsertDate = DateTime.Now,
-                };
-                this.context.WebJobSubscriptionStatus.Add(status);
-                this.context.SaveChanges();
-            }
-            else
-            {
-                existingWebJobStatus.SubscriptionId = subscriptionID;
-                if (armtemplateId != default)
-                {
-                    existingWebJobStatus.ArmtemplateId = armtemplateId;
-                }
 
-                existingWebJobStatus.SubscriptionStatus = subscription.SubscriptionStatus;
-                existingWebJobStatus.DeploymentStatus = deploymentStatus;
-                existingWebJobStatus.Description = errorDescription;
-                this.context.WebJobSubscriptionStatus.Update(existingWebJobStatus);
-                this.context.SaveChanges();
-            }
+            // var existingWebJobStatus = this.context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
+            // if (existingWebJobStatus == null)
+            // {
+            WebJobSubscriptionStatus status = new WebJobSubscriptionStatus()
+            {
+                SubscriptionId = subscriptionID,
+                ArmtemplateId = armtemplateId,
+                SubscriptionStatus = subscriptionStatus,
+                DeploymentStatus = deploymentStatus,
+                Description = errorDescription,
+                InsertDate = DateTime.Now,
+            };
+            this.context.WebJobSubscriptionStatus.Add(status);
+            this.context.SaveChanges();
+
+            // }
+            // else
+            // {
+            //    existingWebJobStatus.SubscriptionId = subscriptionID;
+            //    if (armtemplateId != default)
+            //    {
+            //        existingWebJobStatus.ArmtemplateId = armtemplateId;
+            //    }
+            //    existingWebJobStatus.SubscriptionStatus = subscription.SubscriptionStatus;
+            //    existingWebJobStatus.DeploymentStatus = deploymentStatus;
+            //    existingWebJobStatus.Description = errorDescription;
+            //    this.context.WebJobSubscriptionStatus.Update(existingWebJobStatus);
+            //    this.context.SaveChanges();
+            // }
         }
     }
 }
