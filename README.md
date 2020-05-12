@@ -1,10 +1,10 @@
-# Microsoft Commercial Marketplace Community Code Samples and SDK for SaaS App Offers
+# Microsoft Commercial Marketplace Community Sample Code and SDK for SaaS App Offers
 ![.NET Core](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/workflows/.NET%20Core/badge.svg)
 
 
 ## Introduction
 
-This goal of this project is to provide a reference example with sample code for developers interested publishing transactable, Software as a-Service (SaaS) offers in Microsoft's Commercial Marketplace.
+The goal of this project is to provide a reference example with sample code for developers interested publishing transactable, Software as a-Service (SaaS) offers in Microsoft's Commercial Marketplace.
 
 The sample code uses a .NET-based SDK published as a part of this project. The SDK provides a framework for excercising the Commercial Marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) Leveraging the SDK, the sample code demonstrates how a typical SaaS platform interacts with these APIs in order to provision customers, enable logging, and manage Commercial Marketplace subscriptions.
 
