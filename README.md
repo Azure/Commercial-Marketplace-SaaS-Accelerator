@@ -1,4 +1,4 @@
-# Microsoft Commercial Marketplace Community Sample Code and SDK for SaaS App Offers
+# Microsoft Commercial Marketplace - Community Sample Code and SDK for SaaS App Offers
 ![.NET Core](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/workflows/.NET%20Core/badge.svg)
 
 
