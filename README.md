@@ -11,18 +11,18 @@ The sample code uses a .NET-based SDK published as a part of this project. The S
 
 ## Intended Use
 
-The sample code and SDK in this project are for reference purposes only and meant to complement the existing Commercial Marketplace documentation by demonstrating common API interactions required to use the SaaS App offer type. The intent of this project is to accelerate the onboarding experience by providing code samples for developers. Although the sample code leverages the SDK, Developers are encouraged to work with the SaaS Fulfillment API and Marketplace Metering Service API directly rather than rely on the SDK for production use.
+The sample code and SDK in this project are for reference purposes only and are meant to complement the existing Commercial Marketplace documentation by demonstrating common API interactions required to use the SaaS App offer type. The intent of this project is to accelerate the onboarding experience by providing code samples for developers. Although the sample code leverages the SDK, developers are encouraged to work with the SaaS Fulfillment API and Marketplace Metering Service API directly rather than rely on the SDK for production use.
 
 Please note: this is not a Microsoft-supported Azure SDK project. Support for this project is community-based and contributions are welcomed. Details on contributing can be found [below.](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK#contributing)
 
 
 ## Commercial Marketplace Documentation
 
-Before using this sample code and SDK, please review the Commercial Marketplace documentation resources below to understand the imoportant concepts, account setup, and offer configuration requirements for creating SaaS App offers.
+Before using this sample code and SDK, please review the Commercial Marketplace documentation resources below to understand the important concepts, account setup, and offer configuration requirements for publishing SaaS App offers.
 
 - [Commercial Marketplace Overview.](https://docs.microsoft.com/en-us/azure/marketplace/marketplace-publishers-guide) Overview of the Commercial Marketplace.
 
-- [SaaS Apps in the Commercial Marketplace.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer) Overview of the SaaS App business policies, step-by step offer creation and configuration requirements.
+- [SaaS Apps in the Commercial Marketplace.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer) Overview of the SaaS App business policies, plus step-by step offer creation and configuration requirements.
 
 - [SaaS Fulfillment API (v2).](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) API details for SaaS App Marketplace subscription creation and management.
 
@@ -33,12 +33,12 @@ Before using this sample code and SDK, please review the Commercial Marketplace 
 
 ## Sample Code and SDK Documentation 
 
-The documentation **(docs)** directory contains [Installation instructions](./docs/Installation-Instructions.md)** to help understand, implement, and deploy the sample code and SDK components. 
+The documentation **(docs)** directory contains [installation instructions](./docs/Installation-Instructions.md) to help understand, implement, and deploy the sample code and SDK components. 
 
 
 ## Terminology
 
-- SDK: Software Development Kit. This refers to the SDK for the .NET language and incldues the CLient and Data Access Libraries, as well as the Sample Web Applications used to excercise the SaaS Fulfillment API and Marketplace Metering Service API.
+- SDK: Software Development Kit. This refers to the SDK for the .NET language and incldues the Client and Data Access Libraries, as well as the Sample Web Applications used to excercise the SaaS Fulfillment API and Marketplace Metering Service API.
 
 - Client Library. This refers to a library (and associated tools, documentation, and samples) that customers/developers use to ease creating Commercial Markeptlace SaaS App offers.
 
@@ -56,7 +56,7 @@ The source **(src)** directory offers the following components:
 | **Customer Provisioning - Sample web application** | Demonstrates how to register, provision, and activate the Marketplace subscription. Implemented using ASP.Net Core 3.1, the sample web application uses the SaaS Client Library and Data Access Library to invoke and persist API interactions and provides an example user interface to demonstrate how a customer would manage their subscriptions and plans. |SaaS.SDK.CustomerProvisioning|
 | **Publisher Solution (metered billing)- Sample web application** | Demonstrates how to generate usage events used in metered billing transactions, and how to emit these events to the Marketplace Metering Service API. |SaaS.SDK.PublisherSolution|
 | **Client Data Access library** | Demonstrates how to persist Plans, Marketplace subscriptions, and related transaction attributes when using the SaaS Fulfillment API (v2) and Marketplace Metering Service API. |SaaS.SDK.Client.DataAccess |
-| **[Unit Tests project](./src/SaaS.SDK.UnitTest)** | Helps validate and test the SDK's codebase. | SaaS.SDK.UnitTest |
+| **[Unit Tests project](./src/SaaS.SDK.UnitTest)** | Helps validate and test the SDKs codebase. | SaaS.SDK.UnitTest |
 
 
 The sample code and SDK in this repository run in the Publisher's environment as illustrated below. The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
