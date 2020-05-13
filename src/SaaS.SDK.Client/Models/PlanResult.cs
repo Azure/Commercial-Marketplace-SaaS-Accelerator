@@ -2,7 +2,8 @@
 {
     using System.Collections.Generic;
     using System.ComponentModel;
-    using Newtonsoft.Json;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Sets Plan
@@ -16,7 +17,7 @@
         /// <value>
         /// The plans.
         /// </value>
-        [JsonProperty("plans")]
+        [JsonPropertyName("plans")]
         [DisplayName("plans")]
         public List<PlanDetailResult> Plans { get; set; }
     }

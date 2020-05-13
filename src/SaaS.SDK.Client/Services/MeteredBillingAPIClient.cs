@@ -10,7 +10,7 @@
     using Microsoft.Marketplace.SaasKit.Helpers;
     using Microsoft.Marketplace.SaasKit.Models;
     using Microsoft.Marketplace.SaasKit.Network;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Metered Api Client

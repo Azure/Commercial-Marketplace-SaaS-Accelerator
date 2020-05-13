@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     using Microsoft.Marketplace.SaasKit.Models;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
     using System;
     using System.Collections.Generic;
 
@@ -11,7 +11,7 @@
     {
         /// <summary>Gets or sets the error message.</summary>
         /// <value>The error message.</value>
-        [JsonProperty("message")]
+        [JsonPropertyName("message")]
         public string ErrorMessage { get; set; }
 
         /// <summary>
@@ -20,7 +20,7 @@
         /// <value>
         /// The additional information.
         /// </value>
-        [JsonProperty("additionalInfo")]
+        [JsonPropertyName("additionalInfo")]
         public AdditionalInfo AdditionalInfo { get; set; }
 
         /// <summary>
@@ -29,12 +29,12 @@
         /// <value>
         /// The error detail.
         /// </value>
-        [JsonProperty("details")]
+        [JsonPropertyName("details")]
         public List<ErrorDetail> ErrorDetail { get; set; }
         
         /// <summary>Gets or sets the error code.</summary>
         /// <value>The error code.</value>
-        [JsonProperty("code")]
+        [JsonPropertyName("code")]
         public string ErrorCode { get; set; }
     }
 
@@ -49,7 +49,7 @@
         /// <value>
         /// The accepted message.
         /// </value>
-        [JsonProperty("acceptedMessage")]
+        [JsonPropertyName("acceptedMessage")]
         public AcceptedMessage AcceptedMessage { get; set; }
     }
 
@@ -64,7 +64,7 @@
         /// <value>
         /// The usage event identifier.
         /// </value>
-        [JsonProperty("usageEventId")]
+        [JsonPropertyName("usageEventId")]
         public string UsageEventId { get; set; }
 
         /// <summary>
@@ -73,7 +73,7 @@
         /// <value>
         /// The status.
         /// </value>
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public string Status { get; set; }
 
         /// <summary>
@@ -82,7 +82,7 @@
         /// <value>
         /// The message time.
         /// </value>
-        [JsonProperty("messageTime")]
+        [JsonPropertyName("messageTime")]
         public string MessageTime { get; set; }
 
         /// <summary>
@@ -91,7 +91,7 @@
         /// <value>
         /// The resource identifier.
         /// </value>
-        [JsonProperty("resourceId")]
+        [JsonPropertyName("resourceId")]
         public Guid ResourceId { get; set; }
 
         /// <summary>
@@ -100,7 +100,7 @@
         /// <value>
         /// The quantity.
         /// </value>
-        [JsonProperty("quantity")]
+        [JsonPropertyName("quantity")]
         public string Quantity { get; set; }
 
         /// <summary>
@@ -109,7 +109,7 @@
         /// <value>
         /// The dimension.
         /// </value>
-        [JsonProperty("dimension")]
+        [JsonPropertyName("dimension")]
         public string Dimension { get; set; }
 
         /// <summary>
@@ -118,7 +118,7 @@
         /// <value>
         /// The effective start time.
         /// </value>
-        [JsonProperty("effectiveStartTime")]
+        [JsonPropertyName("effectiveStartTime")]
         public string EffectiveStartTime { get; set; }
 
         /// <summary>
@@ -127,7 +127,7 @@
         /// <value>
         /// The plan identifier.
         /// </value>
-        [JsonProperty("planId")]
+        [JsonPropertyName("planId")]
         public string PlanId { get; set; }
     }
 
@@ -142,7 +142,7 @@
         /// <value>
         /// The error message.
         /// </value>
-        [JsonProperty("message")]
+        [JsonPropertyName("message")]
         public string ErrorMessage { get; set; }
 
         /// <summary>
@@ -151,7 +151,7 @@
         /// <value>
         /// The target.
         /// </value>
-        [JsonProperty("target")]
+        [JsonPropertyName("target")]
         public string Target { get; set; }
 
         /// <summary>
@@ -160,7 +160,7 @@
         /// <value>
         /// The error code.
         /// </value>
-        [JsonProperty("code")]
+        [JsonPropertyName("code")]
         public string ErrorCode { get; set; }
     }
 }

@@ -2,8 +2,9 @@
 {
     using System;
     using Microsoft.Marketplace.SaasKit.Models;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+
 
     /// <summary>
     /// Web hook Payload get or set the API Response Data
@@ -16,8 +17,8 @@
         /// <value>
         /// The action.
         /// </value>
-        [JsonProperty(PropertyName = "action")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyName("action")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public WebhookAction Action { get; set; }
 
         /// <summary>
@@ -26,7 +27,7 @@
         /// <value>
         /// The activity identifier.
         /// </value>
-        [JsonProperty(PropertyName = "activityId")]
+        [JsonPropertyName("activityId")]
         public Guid ActivityId { get; set; }
 
         /// <summary>
@@ -35,7 +36,7 @@
         /// <value>
         /// The offer identifier.
         /// </value>
-        [JsonProperty(PropertyName = "offerId")]
+        [JsonPropertyName("offerId")]
         public string OfferId { get; set; }
 
         /// <summary>
@@ -44,7 +45,7 @@
         /// <value>
         /// Operation Id is presented as Id property on the JSON payload
         /// </value>
-        [JsonProperty(PropertyName = "Id")] public Guid OperationId { get; set; }
+        [JsonPropertyName("Id")] public Guid OperationId { get; set; }
 
         /// <summary>
         /// Gets or sets the plan identifier.
@@ -76,8 +77,8 @@
         /// <value>
         /// The status.
         /// </value>
-        [JsonProperty(PropertyName = "status")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyName("status")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public OperationStatusEnum Status { get; set; }
 
         /// <summary>
@@ -86,7 +87,7 @@
         /// <value>
         /// The subscription identifier.
         /// </value>
-        [JsonProperty(PropertyName = "subscriptionId")]
+        [JsonPropertyName("subscriptionId")]
         public Guid SubscriptionId { get; set; }
 
         /// <summary>
@@ -95,7 +96,7 @@
         /// <value>
         /// The time stamp.
         /// </value>
-        [JsonProperty(PropertyName = "timeStamp")]
+        [JsonPropertyName("timeStamp")]
         public DateTimeOffset TimeStamp { get; set; }
     }
 }

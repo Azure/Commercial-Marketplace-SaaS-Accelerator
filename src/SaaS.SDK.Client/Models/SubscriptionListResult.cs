@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
     using System.Collections.Generic;
     using System.ComponentModel;
 
@@ -17,7 +17,7 @@
         /// <value>
         /// The subscriptions result.
         /// </value>
-        [JsonProperty("Subscriptions")]
+        [JsonPropertyName("Subscriptions")]
         [DisplayName("Subscriptions")]
         public List<SubscriptionResult> SubscriptionsResult { get; set; }
 
@@ -29,7 +29,7 @@
         /// This value will contain a URL for subsequent queries when most subscriptions
         /// exist to be retrieved.
         /// </value>
-        [JsonProperty("@nextLink")]
+        [JsonPropertyName("@nextLink")]
         [DisplayName("NextLink")]
         public string NextLink { get; set; }
     }

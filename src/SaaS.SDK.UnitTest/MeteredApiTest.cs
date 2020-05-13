@@ -6,7 +6,7 @@
     using Microsoft.Marketplace.SaasKit.Models;
     using Microsoft.Marketplace.SaasKit.Services;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
     using System;
     using System.Collections.Generic;
     using System.Linq;

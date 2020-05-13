@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     using System.ComponentModel;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Plan Details
@@ -23,7 +23,7 @@
         /// <value>
         /// The plan identifier.
         /// </value>
-        [JsonProperty("planId")]
+        [JsonPropertyName("planId")]
         [DisplayName("planId")]
         public string PlanId { get; set; }
 
@@ -33,7 +33,7 @@
         /// <value>
         /// The display name.
         /// </value>
-        [JsonProperty("displayName")]
+        [JsonPropertyName("displayName")]
         [DisplayName("displayName")]
         public string DisplayName { get; set; }
 
@@ -43,7 +43,7 @@
         /// <value>
         ///   <c>true</c> if this instance is private; otherwise, <c>false</c>.
         /// </value>
-        [JsonProperty("isPrivate")]
+        [JsonPropertyName("isPrivate")]
         [DisplayName("isPrivate")]
         public bool IsPrivate { get; set; }
     }
