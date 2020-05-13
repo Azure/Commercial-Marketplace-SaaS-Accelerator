@@ -4,7 +4,6 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.Services;
     using Microsoft.Marketplace.SaasKit.WebHook;
-    //using System.Text.Json.Serialization;
     using System.Text.Json;
 
     /// <summary>
