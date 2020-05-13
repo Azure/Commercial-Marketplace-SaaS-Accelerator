@@ -1,31 +1,34 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.Models
 {
-    using Newtonsoft.Json;
+    //using Newtonsoft.Json;
+    using System.Text.Json;
     using System;
+    using System.Text.Json.Serialization;
 
     public class AzureWebHookPayLoad
     {
-        [JsonProperty(PropertyName = "action")]
+        [JsonPropertyName("action")]
         public string Action { get; set; }
 
-        [JsonProperty(PropertyName = "activityId")]
+        [JsonPropertyName("activityId")]
         public string ActivityId { get; set; }
 
-        [JsonProperty(PropertyName = "offerId")]
+        [JsonPropertyName("offerId")]
         public string OfferId { get; set; }
 
         // Operation Id is presented as Id property on the json payload
-        [JsonProperty(PropertyName = "id")] public string OperationId { get; set; }
+        [JsonPropertyName("id")]
+        public string OperationId { get; set; }
 
         public string PlanId { get; set; }
         public string PublisherId { get; set; }
         public int Quantity { get; set; }
         public string Status { get; set; }
 
-        [JsonProperty(PropertyName = "subscriptionId")]
+        [JsonPropertyName("subscriptionId")]
         public string SubscriptionId { get; set; }
 
-        [JsonProperty(PropertyName = "timeStamp")]
+        [JsonPropertyName("timeStamp")]
         public DateTimeOffset TimeStamp { get; set; }
     }
 }
