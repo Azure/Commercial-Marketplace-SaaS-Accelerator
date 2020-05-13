@@ -21,6 +21,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
     using Microsoft.Marketplace.SaasKit.WebHook;
     using Microsoft.Marketplace.SaasKit.Client.WebHook;
     using Microsoft.Marketplace.SaasKit.Client.Utilities;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Defines the <see cref="Startup" />
@@ -89,13 +90,20 @@ namespace Microsoft.Marketplace.SaasKit.Client
    })
    .AddCookie();
 
-            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));            
+            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
 
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             InitializeRepositoryServices(services);
+
+            // using System.Text.Json.Serialization
+            services.AddControllers()
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddMvc(option => option.EnableEndpointRouting = false);

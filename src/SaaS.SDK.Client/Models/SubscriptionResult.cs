@@ -96,6 +96,7 @@
         /// <value>
         /// The subscription status.
         /// </value>
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("saasSubscriptionStatus")]
         [DisplayName("Subscription Status")]
         public SubscriptionStatusEnum SaasSubscriptionStatus { get; set; }

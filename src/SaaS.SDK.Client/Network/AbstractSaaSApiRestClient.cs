@@ -111,16 +111,18 @@
         protected virtual async Task<T> BuildResultFromResponse(HttpWebRequest request)
         {
             WebResponse response = await request.GetResponseAsync().ConfigureAwait(false);
+            var result = new T();
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 string responseAsString = reader.ReadToEnd();
-                var result =  JsonSerializer.Deserialize<T>(responseAsString);
-
-                if (result == null)
+                if(!string.IsNullOrWhiteSpace(responseAsString))
                 {
-                    result = new T();
+                    result =  JsonSerializer.Deserialize<T>(responseAsString);
+                    if (result == null)
+                    {
+                        result = new T();
+                    }
                 }
-
                 // Fill headers
                 var t = typeof(T);
                 var properties = t.GetProperties();
