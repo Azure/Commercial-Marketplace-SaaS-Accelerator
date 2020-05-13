@@ -200,7 +200,7 @@
         /// <returns></returns>
         protected virtual void FillHeaders(Dictionary<string, object> headers, AuthenticationResult accessTokenResult, HttpWebRequest request)
         {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             if (headers == null)
             {
