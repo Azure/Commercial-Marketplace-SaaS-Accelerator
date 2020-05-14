@@ -1,15 +1,13 @@
 # Publisher sample web application	
 
-### Introduction
-
-Showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API.
-
 ### Description
 
-The web application is for publisher to help them perform the following actions:
+The web application demonstrates how publishers can perform the following actions:
 
-- Submit metered usage against subscriptions
+- Generate usage meter events
+- Submit usage meter events against subscriptions
 - Assign / revoke licenses to / from subscriptions
+- Persist and transmit usage meter events
 
 ### Source Code 
 
