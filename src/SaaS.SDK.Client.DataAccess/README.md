@@ -2,7 +2,7 @@
 
 ### Introduction
 
-Enables persistence of plans, subscription, and other transaction data used with the SaaS Fulfillment API (v2) and Marketplace Metering Service API.	
+Enables persistence of plans, subscription, and other transaction data used with the **[SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2)** and **[Marketplace Metering Service API](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis)**.	
 
 ### Description
 
