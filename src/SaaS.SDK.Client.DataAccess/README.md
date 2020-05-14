@@ -2,7 +2,7 @@
 
 ### Introduction
 
-Enables to persist the Plans, Subscriptions, and transactions with the fulfillment and Metered APIs.	
+Enables peristence of the plan, subscription, and transaction data with the SaaS fulfillment API (v2) and Marketplace Metering Service API.	
 
 ### Description
 
