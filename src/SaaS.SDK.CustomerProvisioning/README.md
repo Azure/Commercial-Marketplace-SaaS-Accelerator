@@ -2,12 +2,11 @@
 
 ### Introduction
 
-Showcases how to provision a customer (ASP.NET Core 3.1) that uses the SDK to invoke fulfillment APIs in order to manage the subscriptions against the SaaS offer in Azure.	
+Demonstrates how to provision a customer (ASP.NET Core 3.1) using the SDK to invoke the APIs to create and manage marketplace SaaS subscriptions.
 
 ### Description
 
-The web application demonstrates the end-user experience covering the scenarios - activation of a subscription, change plan and unsubscribe.
-The application also has a viewer over the licenses assigned by the publisher against subscriptions.
+The web application demonstrates the end-user experience covering the following scenarios: activation of a subscription, change plan, and unsubscribe. The application also has a view of the licenses assigned by the publisher against subscriptions.
 
 ### Source Code
 
