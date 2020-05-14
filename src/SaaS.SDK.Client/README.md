@@ -2,11 +2,11 @@
 
 ### Introduction
 
-This library implements the **[Fulfillment v2](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2)** and **[Metered](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis)** APIs and the **[Webhook](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service)** that handles messages from the Marketplace's E-commerce engine.
+This library implements the **[SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2)** and **[Marketplace Metering Service API](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis)**, as well as the **[Webhook](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#implementing-a-webhook-on-the-saas-service)**.
 
 ### Description
 
-This is the **core** library for the transactable SaaS SDK. It provides the implementation of the APIs
+This is the **core** library that interacts with the marketplace APIs.
 
 ### Source Code
 
