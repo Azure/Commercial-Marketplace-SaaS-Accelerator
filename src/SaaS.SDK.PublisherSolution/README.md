@@ -1,5 +1,9 @@
 # Publisher sample web application	
 
+### Introduction
+
+This is a sample web application that demonstrates common interactions between the publisher's SaaS platform and the marketplace APIs. 
+
 ### Description
 
 The web application demonstrates how publishers can perform the following actions:
