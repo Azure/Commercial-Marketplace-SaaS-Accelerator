@@ -61,7 +61,7 @@ The source **(src)** directory offers the following components:
 
 The sample code and SDK in this repository run in the Publisher's environment as illustrated below. The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
 
-![Usecase](./docs/images/UseCaseSaaSAPIs.png)
+![Usecase](./docs/images/sdk_overview.png)
 
 
 ## Technology and versions
