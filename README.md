@@ -13,6 +13,7 @@ The sample code uses a .NET-based SDK published as a part of this project. The S
 
 The sample code and SDK in this project are for reference purposes only and are meant to complement the existing commercial marketplace documentation by demonstrating common API interactions required for publishing and managing SaaS application offers. The intent of this project is to accelerate the onboarding experience by providing code samples for developers. Although the sample code leverages the SDK, developers are encouraged to work with the SaaS Fulfillment API and Marketplace Metering Service API directly rather than rely on the SDK for production use.
 
+
 Please note: this is not a Microsoft-supported Azure SDK project. Support for this project is community-based and contributions are welcomed. Details on contributing can be found [below.](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK#contributing)
 
 
