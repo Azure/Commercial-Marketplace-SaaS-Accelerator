@@ -290,7 +290,6 @@
             this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId:{1} :: operation:{2}", subscriptionId, planId, operation);
             try
             {
- 
                 SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
                 if (this.User.Identity.IsAuthenticated)
@@ -434,7 +433,6 @@
             this.logger.LogInformation("Home Controller / RecordUsage ");
             try
             {
-
                 if (this.User.Identity.IsAuthenticated)
                 {
                     var subscriptionDetail = this.subscriptionRepo.Get(subscriptionId);
@@ -469,7 +467,6 @@
             this.logger.LogInformation("Home Controller / ManageSubscriptionUsage  subscriptionData: {0}", JsonSerializer.Serialize(subscriptionData));
             try
             {
-
                 if (subscriptionData != null && subscriptionData.SubscriptionDetail != null)
                 {
                     var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -533,7 +530,6 @@
             {
                 if (this.User.Identity.IsAuthenticated)
                 {
-
                     var subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                     subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
@@ -648,5 +644,3 @@
         }
     }
 }
-
-

@@ -5,6 +5,7 @@
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using Microsoft.Marketplace.SaasKit.Attributes;
@@ -12,7 +13,6 @@
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Helpers;
     using Microsoft.Marketplace.SaasKit.Models;
-    using System.Text.Json;
 
     /// <summary>
     /// rest client call implementation.

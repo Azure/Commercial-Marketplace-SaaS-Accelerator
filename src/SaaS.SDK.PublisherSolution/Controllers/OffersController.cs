@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
@@ -11,8 +12,7 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using System.Text.Json;
-
+    
     /// <summary>
     /// Offers Controller.
     /// </summary>

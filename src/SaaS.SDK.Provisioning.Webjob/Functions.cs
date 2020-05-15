@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Text.Json;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
@@ -10,7 +11,6 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers;
-    using System.Text.Json;
 
     /// <summary>
     /// Processor for the trigger from storage queue. Move the subscription through statuses.
