@@ -52,10 +52,10 @@
                     @if (TempData["ShowWelcomeScreen"] != null && Convert.ToString(TempData["ShowWelcomeScreen"]) == "True")
                     {
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
-                        if (Convert.ToBoolean(TempData["ShowLicensesMenu"]))
+                        @*if (Convert.ToBoolean(TempData["ShowLicensesMenu"]))
                         {
                             <a class="nav-link" asp-area="" asp-controller="Licenses" asp-action="Index">Licenses</a>
-                        }
+                        }*@
                     }
                 }
             </a>

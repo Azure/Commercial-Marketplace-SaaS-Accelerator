@@ -27,7 +27,8 @@
         /// <summary>
         /// The subscription template parameters repository.
         /// </summary>
-        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
+        /// Prasad
+        //private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
 
         /// <summary>
         /// The logger.
@@ -48,7 +49,6 @@
                                                 IFulfillmentApiClient fulfillApiClient,
                                                 ISubscriptionsRepository subscriptionsRepository,
                                                 ISubscriptionLogRepository subscriptionLogRepository,
-                                                ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
                                                 IPlansRepository plansRepository,
                                                 IUsersRepository usersRepository,
                                                 ILogger<PendingActivationStatusHandler> logger)
@@ -56,7 +56,6 @@
         {
             this.fulfillmentApiClient = fulfillApiClient;
             this.subscriptionLogRepository = subscriptionLogRepository;
-            this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
             this.logger = logger;
         }
 

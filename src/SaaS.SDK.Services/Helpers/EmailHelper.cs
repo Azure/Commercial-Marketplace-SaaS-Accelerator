@@ -234,23 +234,24 @@
                 }
             }
 
-            if (subscription.ARMTemplateParameters != null && subscription.ARMTemplateParameters.Count > 0)
-            {
-                arminputlist = subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input").ToList();
-                if (arminputlist.Count > 0)
-                {
-                    context.Put("arminputparms", arminputlist);
-                }
-            }
+            ///Prasad
+            //if (subscription.ARMTemplateParameters != null && subscription.ARMTemplateParameters.Count > 0)
+            //{
+            //    arminputlist = subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input").ToList();
+            //    if (arminputlist.Count > 0)
+            //    {
+            //        context.Put("arminputparms", arminputlist);
+            //    }
+            //}
 
-            if (subscription.ARMTemplateParameters != null && subscription.ARMTemplateParameters.Count > 0)
-            {
-                armoutputlist = subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output").ToList();
-                if (armoutputlist.Count > 0)
-                {
-                    context.Put("armoutputparms", armoutputlist);
-                }
-            }
+            //if (subscription.ARMTemplateParameters != null && subscription.ARMTemplateParameters.Count > 0)
+            //{
+            //    armoutputlist = subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output").ToList();
+            //    if (armoutputlist.Count > 0)
+            //    {
+            //        context.Put("armoutputparms", armoutputlist);
+            //    }
+            //}
 
             StringWriter writer = new StringWriter();
             v.Evaluate(context, writer, string.Empty, body);

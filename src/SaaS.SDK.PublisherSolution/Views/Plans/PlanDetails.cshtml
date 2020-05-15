@@ -105,7 +105,7 @@
                                         <th>Event Name</th>
                                         <th>Active</th>
                                         <th>Copy To Customer</th>
-                                        <th>ARM Template</th>
+                                        @*<th>ARM Template</th>*@
                                         <th>
                                             Success Event Emails
                                         </th>
@@ -135,10 +135,9 @@
                                                 @Html.CheckBoxFor(model => model.PlanEvents[i].CopyToCustomer, new { name = "PlanEvents[@i].CopyToCustomer", id = string.Format("PlanEvents_CopyToCustomer_{0}", @i) })
                                                 @*<input type="checkbox" id="PlanEvents_IsEnabled_@i" name="PlanEvents[@i].IsEnabled" value="@Model.PlanEvents[i].IsEnabled" />*@
                                             </td>
-                                            <td>
+                                            @*<td>
                                                 @Html.DropDownListFor(model => model.PlanEvents[i].ArmtemplateId, ViewBag.ARMTemplate as IEnumerable<SelectListItem>, new { name = "PlanEvents[@i].ArmtemplateId", id = string.Format("PlanEvents_ArmtemplateId_{0}", @i) })
-
-                                            </td>
+                                            </td>*@
                                             <td><input type="text" style="width:200px;" id="PlanEvents_SuccessStateEmails_@i" name="PlanEvents[@i].SuccessStateEmails" value="@Model.PlanEvents[i].SuccessStateEmails" /></td>
                                             <td><input type="text" style="width:200px;" id="PlanEvents_FailureStateEmails_@i" name="PlanEvents[@i].FailureStateEmails" value="@Model.PlanEvents[i].FailureStateEmails" /></td>
                                         </tr>

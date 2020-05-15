@@ -45,7 +45,8 @@
         /// <summary>
         /// The subscriptions template repository.
         /// </summary>
-        private readonly ISubscriptionTemplateParametersRepository subscriptionsTemplateRepository;
+        /// Prasad
+        //private readonly ISubscriptionTemplateParametersRepository subscriptionsTemplateRepository;
 
         /// <summary>
         /// The logger.
@@ -55,7 +56,8 @@
         /// <summary>
         /// ARM template deployment manager.
         /// </summary>
-        private readonly ARMTemplateDeploymentManager aRMTemplateDeploymentManager;
+        /// Prasad
+        //private readonly ARMTemplateDeploymentManager aRMTemplateDeploymentManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PendingDeleteStatusHandler" /> class.
@@ -78,11 +80,10 @@
                                             ISubscriptionsRepository subscriptionsRepository,
                                             IVaultService azureKeyVaultClient,
                                             KeyVaultConfig keyVaultConfig,
-                                            ISubscriptionTemplateParametersRepository subscriptionsTemplateRepository,
                                             IPlansRepository plansRepository,
                                             IUsersRepository usersRepository,
-                                            ILogger<PendingDeleteStatusHandler> logger,
-                                            ARMTemplateDeploymentManager aRMTemplateDeploymentManager)
+                                            ILogger<PendingDeleteStatusHandler> logger
+                                            )
                                             : base(subscriptionsRepository, plansRepository, usersRepository)
         {
             this.fulfillmentApiClient = fulfillApiClient;
@@ -90,9 +91,7 @@
             this.subscriptionLogRepository = subscriptionLogRepository;
             this.azureKeyVaultClient = azureKeyVaultClient;
             this.keyVaultConfig = keyVaultConfig;
-            this.subscriptionsTemplateRepository = subscriptionsTemplateRepository;
             this.logger = logger;
-            this.aRMTemplateDeploymentManager = aRMTemplateDeploymentManager;
         }
 
         /// <summary>
@@ -112,71 +111,71 @@
             {
                 try
                 {
-                    var subscriptionParameters = this.subscriptionsTemplateRepository.GetTemplateParametersBySubscriptionId(subscriptionID);
-                    if (subscriptionParameters != null)
-                    {
-                        var parametersList = subscriptionParameters.ToList();
-                        if (parametersList.Count() > 0)
-                        {
-                            this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupPending.ToString(), "Delete Resource Group Begin", subscription.SubscriptionStatus);
-                            this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourcePending.ToString(), true);
+                    //var subscriptionParameters = this.subscriptionsTemplateRepository.GetTemplateParametersBySubscriptionId(subscriptionID);
+                    //if (subscriptionParameters != null)
+                    //{
+                    //    var parametersList = subscriptionParameters.ToList();
+                    //    if (parametersList.Count() > 0)
+                    //    {
+                    //        this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupPending.ToString(), "Delete Resource Group Begin", subscription.SubscriptionStatus);
+                    //        this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourcePending.ToString(), true);
 
-                            var resourceGroup = parametersList.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
-                            this.logger?.LogInformation("Get SubscriptionKeyVault");
-                            string secretKey = string.Empty;
-                            if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
-                            {
-                                var keyvault = this.subscriptionsRepository.GetDeploymentConfig(subscriptionID);
-                                secretKey = keyvault.SecureId;
-                            }
-                            else
-                            {
-                                secretKey = string.Format("{0}secrets/HostedsubscriptionCredentials", this.keyVaultConfig.KeyVaultUrl);
-                            }
+                    //        var resourceGroup = parametersList.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
+                    //        this.logger?.LogInformation("Get SubscriptionKeyVault");
+                    //        string secretKey = string.Empty;
+                    //        if (planDetails.DeployToCustomerSubscription != null && planDetails.DeployToCustomerSubscription == true)
+                    //        {
+                    //            var keyvault = this.subscriptionsRepository.GetDeploymentConfig(subscriptionID);
+                    //            secretKey = keyvault.SecureId;
+                    //        }
+                    //        else
+                    //        {
+                    //            secretKey = string.Format("{0}secrets/HostedsubscriptionCredentials", this.keyVaultConfig.KeyVaultUrl);
+                    //        }
 
-                            this.logger?.LogInformation("Get DoVault");
-                            string secretValue = this.azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
+                    //        this.logger?.LogInformation("Get DoVault");
+                    //        string secretValue = this.azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                            var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
-                            this.logger?.LogInformation("SecretValue : {0}", secretValue);
+                    //        var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
+                    //        this.logger?.LogInformation("SecretValue : {0}", secretValue);
 
-                            this.aRMTemplateDeploymentManager.DeleteResoureGroup(parametersList, credenitals);
+                    //        this.aRMTemplateDeploymentManager.DeleteResoureGroup(parametersList, credenitals);
 
-                            this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), string.Format("Delete Resource Group: {0} End", resourceGroup), subscription.SubscriptionStatus.ToString());
+                    //        this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), string.Format("Delete Resource Group: {0} End", resourceGroup), subscription.SubscriptionStatus.ToString());
 
-                            this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourceSuccess.ToString(), true);
+                    //        this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourceSuccess.ToString(), true);
 
-                            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                            {
-                                Attribute = SubscriptionLogAttributes.Deployment.ToString(),
-                                SubscriptionId = subscription.Id,
-                                NewValue = SubscriptionStatusEnumExtension.DeleteResourceSuccess.ToString(),
-                                OldValue = SubscriptionStatusEnumExtension.DeleteResourcePending.ToString(),
-                                CreateBy = userdeatils.UserId,
-                                CreateDate = DateTime.Now,
-                            };
-                            this.subscriptionLogRepository.Save(auditLog);
-                        }
-                    }
+                    //        SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                    //        {
+                    //            Attribute = SubscriptionLogAttributes.Deployment.ToString(),
+                    //            SubscriptionId = subscription.Id,
+                    //            NewValue = SubscriptionStatusEnumExtension.DeleteResourceSuccess.ToString(),
+                    //            OldValue = SubscriptionStatusEnumExtension.DeleteResourcePending.ToString(),
+                    //            CreateBy = userdeatils.UserId,
+                    //            CreateDate = DateTime.Now,
+                    //        };
+                    //        this.subscriptionLogRepository.Save(auditLog);
+                    //    }
+                    //}
                 }
                 catch (Exception ex)
                 {
-                    string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
-                    this.logger?.LogInformation(errorDescriptin);
+                    //string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
+                    //this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupFailure.ToString(), errorDescriptin, subscription.SubscriptionStatus.ToString());
+                    //this.logger?.LogInformation(errorDescriptin);
 
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString(), true);
+                    //this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString(), true);
 
-                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                    {
-                        Attribute = SubscriptionLogAttributes.Deployment.ToString(),
-                        SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString(),
-                        OldValue = subscription.SubscriptionStatus.ToString(),
-                        CreateBy = userdeatils.UserId,
-                        CreateDate = DateTime.Now,
-                    };
-                    this.subscriptionLogRepository.Save(auditLog);
+                    //SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                    //{
+                    //    Attribute = SubscriptionLogAttributes.Deployment.ToString(),
+                    //    SubscriptionId = subscription.Id,
+                    //    NewValue = SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString(),
+                    //    OldValue = subscription.SubscriptionStatus.ToString(),
+                    //    CreateBy = userdeatils.UserId,
+                    //    CreateDate = DateTime.Now,
+                    //};
+                    //this.subscriptionLogRepository.Save(auditLog);
                 }
             }
         }

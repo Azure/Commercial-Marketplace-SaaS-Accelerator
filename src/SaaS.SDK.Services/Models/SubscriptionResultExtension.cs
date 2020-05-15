@@ -43,14 +43,6 @@
         public List<SubscriptionParametersModel> SubscriptionParameters { get; set; }
 
         /// <summary>
-        /// Gets or sets the arm template parameters.
-        /// </summary>
-        /// <value>
-        /// The arm template parameters.
-        /// </value>
-        public List<SubscriptionTemplateParametersModel> ARMTemplateParameters { get; set; }
-
-        /// <summary>
         /// Gets or sets the name of the event.
         /// </summary>
         /// <value>

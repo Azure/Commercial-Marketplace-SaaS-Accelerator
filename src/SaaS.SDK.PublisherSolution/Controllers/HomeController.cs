@@ -84,7 +84,8 @@
 
         private readonly IOptions<SaaSApiClientConfiguration> options;
 
-        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
+        //Prasad
+        //private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
 
         private readonly CloudStorageConfigs cloudConfigs;
 
@@ -118,7 +119,7 @@
         /// <param name="subscriptionTemplateParametersRepository">The subscription template parameters repository.</param>
         /// <param name="cloudConfigs">The cloud configs.</param>
         public HomeController(
-                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository, CloudStorageConfigs cloudConfigs)
+                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, CloudStorageConfigs cloudConfigs)
         {
             this.apiClient = apiClient;
             this.subscriptionRepo = subscriptionRepo;
@@ -143,7 +144,6 @@
             this.options = options;
             this.cloudConfigs = cloudConfigs;
             this.azureWebJobsStorage = cloudConfigs.AzureWebJobsStorage;
-            this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
         }
 
         /// <summary>
@@ -269,33 +269,34 @@
         /// <returns>
         /// Subscription log detail.
         /// </returns>
-        public IActionResult SubscriptionTemplateParmeters(Guid subscriptionId, Guid planId)
-        {
-            this.logger.LogInformation("Home Controller / SubscriptionTemplateParmeters subscriptionId : {0}", JsonConvert.SerializeObject(subscriptionId));
-            try
-            {
-                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                {
-                    this.TempData["ShowLicensesMenu"] = true;
-                }
+        /// Prasad
+        //public IActionResult SubscriptionTemplateParmeters(Guid subscriptionId, Guid planId)
+        //{
+        //    this.logger.LogInformation("Home Controller / SubscriptionTemplateParmeters subscriptionId : {0}", JsonConvert.SerializeObject(subscriptionId));
+        //    try
+        //    {
+        //        if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+        //        {
+        //            this.TempData["ShowLicensesMenu"] = true;
+        //        }
 
-                if (this.User.Identity.IsAuthenticated)
-                {
-                    List<SubscriptionTemplateParameters> subscriptionTemplateParms = new List<SubscriptionTemplateParameters>();
-                    subscriptionTemplateParms = this.subscriptionTemplateParametersRepository.GetById(subscriptionId, planId).ToList();
-                    return this.View(subscriptionTemplateParms);
-                }
-                else
-                {
-                    return this.RedirectToAction(nameof(this.Index));
-                }
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
-            }
-        }
+        //        if (this.User.Identity.IsAuthenticated)
+        //        {
+        //            List<SubscriptionTemplateParameters> subscriptionTemplateParms = new List<SubscriptionTemplateParameters>();
+        //            subscriptionTemplateParms = this.subscriptionTemplateParametersRepository.GetById(subscriptionId, planId).ToList();
+        //            return this.View(subscriptionTemplateParms);
+        //        }
+        //        else
+        //        {
+        //            return this.RedirectToAction(nameof(this.Index));
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+        //        return this.View("Error", ex);
+        //    }
+        //}
 
         /// <summary>
         /// Subscriptions the details.
