@@ -1,4 +1,4 @@
-# Transactable SaaS SDK Sample Database
+# Transactable SaaS SDK Database
 
 ## Introduction
 

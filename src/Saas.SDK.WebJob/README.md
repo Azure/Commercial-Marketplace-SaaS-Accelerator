@@ -25,5 +25,5 @@ The Project is located in the **SaaS.SDK.Provisioning.Webjob** folder. The proje
 
 | Section Name | Description |
 | --- | --- |  
-| Dependencies | Microsoft.Azure.KeyVault, Microsoft.Azure.Management.ResourceManager, Microsoft.Azure.WebJobs.Extensions, Microsoft.Azure.WebJobs.Extensions.Storage, Microsoft.Extensions.Logging.Console, Microsoft.Rest.ClientRuntime.Azure.Authentication|
+| Dependencies | Microsoft.Azure.Management.ResourceManager, Microsoft.Azure.WebJobs.Extensions, Microsoft.Azure.WebJobs.Extensions.Storage, Microsoft.Extensions.Logging.Console, Microsoft.Rest.ClientRuntime.Azure.Authentication|
 | StatusHandlers | Interface - ISubscriptionStatusHandler and the various implementations to handle the statuses|
