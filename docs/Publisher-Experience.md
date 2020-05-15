@@ -4,7 +4,6 @@
 * [Test purchase to download the offer and plan details](#test-purchase-to-download-the-offer-and-plan-details)
 * [Manage Offers](#manage-offers)
   * [Manage offer parameters](#manage-offer-parameters)
-* [Manage ARM templates](#manage-arm-templates)
 * [Manage Plans](#manage-plans)
   * [Subscription input parameters](#subscription-input-parameters)
   * [Subscription events](#subscription-events)
@@ -16,18 +15,15 @@
 * [View activity log](#view-activity-log)
 * [Metering](#metering)
 * [Emit usage events](#emit-usage-events)
-* [Manage Licenses](#manage-licenses)
   
 ## Overview
 
 The Publisher web application is the admin console for the publisher to help:
 
 * Manage offers - define the input fields that can appear on the landing page for the customer when an offer is purchased
-* Manage ARM templates
 * Manage plans
   * control the fields that can appear on the landing page
-  * configure events, email recipients, ARM templates that can be deployed
-  * define if the ARM templates should be deployed to customer subscription or hosted subscription
+  * configure events and email recipients  
 * Manage subscriptions
   * Activate
   * Emit usage events
@@ -100,30 +96,6 @@ SaaS offers that is published in Azure Market Place can be extracted and managed
 * Click **Save** after adding the desired number of rows / changes
 * The set of the fields here are the global defaults available for override at the plans that are part of the offer
 
-## Manage ARM templates
-
-* Log on to the **Publisher Portal**
-* Click **ARM templates** in the menu
-* The page lists down the ARM Templates ( if already uploaded ). These are the ARM templates that can be associated to events like activation / unsubscription of a SaaS subscription
-
-![List ARM templates](./images/list-arm-templates.png)
-
-* Click **Add** to upload an ARM template
-* Click **Browse** to browse to the file and click **Upload**
-![Upload ARM template](./images/upload-arm-template.png)
-
-* The page presents the input and output parameters after parsing the template. The ARM template is stored as a file to the Azure blob storage ( refer to [Installation Instructions](./Installation-Instructions.md) for details on the configuration)
-
-![ARM template parameters](./images/arm-template-parameters.png)
-
-* You could define the values for the input parameters and the values support the following keywords. Here is an explanation on the keywords supported and how they get substituted at runtime just before the ARM template is deployed. The substituted values get saved against SaaS subscription as deployment parameters.
-
-| Keyword | Value|
-|---------|------|
-| $\{Subscription} | Name of the subscription (spaces replaced with hyphen)|
-| $\{Plan} | Name of the plan associated with the SaaS subscription (spaces replaced with hyphen) |
-| $\{Offer} | Name of the offer associated with the SaaS subscription (spaces replaced with hyphen) |
-
 ## Manage Plans
 
 * Log on to the **Publisher Portal**
@@ -137,17 +109,14 @@ SaaS offers that is published in Azure Market Place can be extracted and managed
 * Check the box under the column **Enable** to make the field appear on the landing page. Uncheck it to hide the input from appearing on the landing page
 ![Plan Parameters](./images/plan-parameters.png)
 
-* Check the box - **Deploy to customer subscription** if the ARM template associated with the plan should be deployed to the customer subscription during provisioning. Checking this box would lead to additional input fields to show up on the landing page to collect the tenant, subscription, service principal and secret details from the customer.
-
 ![Landing page](./images/subscription-landingpage.png)
 
 ### Subscription events
 
-* Click **Events** tab in the plan detail to see the configuration of ARM templates and the email recipients by events that are relevant in the provisioning of a SaaS subscription
+* Click **Events** tab in the plan detail to see the email recipients by events that are relevant in the provisioning of a SaaS subscription
 ![Plan Parameters](./images/plan-events.png)
 
 * Check the box if an event configuration should ne activated
-* Select an ARM Template in case it has to be deployed as part of processing the event for the SaaS subscription
 
 * Check the box - **Copy to Customer** to include customer email address in the email notifications relevant to the event
 
@@ -188,7 +157,7 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 ![Update subscription](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-update-api-v2-calls-from-saas-service-a.png)
 
-* Log on to **Publisher solution**.
+* Log on to **Publisher portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 * The table on this page enlists all the subscriptions and their status.
 * Click **Change Plan** option in the dropdown menu that appears when the icon under the **Actions** column against any of the active subscriptions is clicked.
@@ -217,7 +186,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 ## Unsubscribe
 
-* Log on to **Publisher solution**.
+* Log on to **Publisher portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 * The table on this page enlists all the subscriptions and their status.
 * Click **Unsubscribe** against an active subscription.
@@ -242,7 +211,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 ## Change Quantity
 
-* Log on to **Publisher solution**.
+* Log on to **Publisher portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 * The table on this page enlists all the subscriptions and their status.
 * Click **Change quantity** in the menu as shown in the below picture
@@ -283,7 +252,7 @@ The Plan ID is available in the **Plan overview** tab of the offer as shown here
 
 ## View activity log
 
-* Log on to **Publisher solution**.
+* Log on to **Publisher portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 * The table on this page enlists all the subscriptions and their status.
 * Click **Activity Log** to view the log of activity that happened against the subscription.
@@ -346,12 +315,3 @@ Task<MeteringUsageResult> EmitUsageEventAsync(MeteringUsageRequest usageEventReq
 ```
 
 The service tracks the requests sent and the response received from the marketplace metering APIs for auditing purposes.
-
-## Manage Licenses
-
-* Log on to **Publisher solution**
-* Click **Licenses** menu at the top to view the list of subscriptions and licenses.
-* There is an option to **Revoke** an active license and **Activate** an already revoked license.
-![View Licenses](./images/publisher-add-revoke-license.png)
-* Select a subscription, enter license key detail and hit **Add License** to assign a license.
-![Add License](./images/publisher-add-revoke-license.png)
