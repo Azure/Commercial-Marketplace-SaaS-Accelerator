@@ -140,18 +140,6 @@ Here are the steps to set up a web application, say Customer portal and you are 
 
 * The connection string is going to be used as the value for the keys **AzureWebJobsStorage** and **AzureBlobConfig** > **BlobConnectionString** in appSettings.json / Azure application configuration
 
-### Create Blob storage
-
-* Azure blob storage is used to hold the ARM template files
-* Navigate to the **Storage Account** that was created earlier
-* Click **Containers** in the **Blob service** section in the left menu
-* Click **+ Container** button in the top bar
-* Give the container a name and set the access level as **Private (no anonymous access)**
-
-![Blob container](./images/storage-account-blob-container.png)
-
-* The name of the container should be set as value for the key **AzureBlobConfig** > **BlobContainer** in appSettings.json / Azure application configuration
-
 ## Create marketplace offer
 
 For the purpose of the sample, a new marketplace offer is created and is made available in known tenants to test out the SaaS SDK with the Customer portal. More details on the creation of SaaS offers are available [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer).
@@ -217,9 +205,6 @@ In this section, we will go over the steps to download the latest sources from t
 
     * **DefaultConnection** - Set the connection string to connect to the database
     * **AzureWebJobsStorage** - Connection string to the Azure storage queue. Adding a message to this queue would trigger the **Provisioning webjob** that monitors the queue for messages
-    * **AzureBlobConfig**  - Contains the access detail to the Azure blob storage. ARM templates uploaded via the publisher solution are stored in the Azure Blob storage
-      * **BlobContainer** - Name of the container for the blob storage
-      * **BlobConnectionString** - Connection string to the Azure Blob storage
 
 After making all of the above changes, the **appSettings.json** would look like below sample.
 
@@ -249,11 +234,7 @@ After making all of the above changes, the **appSettings.json** would look like 
     "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>"
     },
   "AllowedHosts": "*",
-  "AzureWebJobsStorage": "<Connection String for storage queue. Enqueueing a message to this queue triggers the webjob>",  
-  "AzureBlobConfig": {
-    "BlobContainer": "<Azure storage account container>",
-    "BlobConnectionString": "<Azure storage account  connection string>"
-  }
+  "AzureWebJobsStorage": "<Connection String for storage queue. Enqueueing a message to this queue triggers the webjob>"  
 }
 
 ```
