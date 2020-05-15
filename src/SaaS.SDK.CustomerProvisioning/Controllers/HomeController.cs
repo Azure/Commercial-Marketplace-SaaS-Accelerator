@@ -149,11 +149,6 @@
 
                 if (this.User.Identity.IsAuthenticated)
                 {
-                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                    {
-                        this.TempData["ShowLicensesMenu"] = true;
-                    }
-
                     var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
@@ -184,19 +179,6 @@
                                 x.PlanGUID = Guid.NewGuid();
                             });
                             this.subscriptionService.AddPlanDetailsForSubscription(planList);
-                            /* Indra
-                            var deploymentAttributes = this.offerAttributesRepository.GetDeploymentParameters();
-                            if (deploymentAttributes != null && deploymentAttributes.Count() > 0)
-                            {
-                                var attribures = this.offerAttributesRepository.AddDeploymentAttributes(newOfferId, currentUserId, deploymentAttributes.ToList());
-                                var allPlansOfSubscription = this.planRepository.GetPlansByOfferId(newOfferId);
-
-                                foreach (var plan in allPlansOfSubscription)
-                                {
-                                    var deploymentAttributesofPlan = this.planService.SavePlanDeploymentAttributes(plan, currentUserId);
-                                }
-                            }
-                            */
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
@@ -255,47 +237,6 @@
             }
         }
 
-        /* Indra
-        /// <summary>
-        /// Validates the user parameters.
-        /// </summary>
-        /// <param name="subscriptionResultExtension">The subscription result extension.</param>
-        /// <returns> Success or failure status.</returns>
-        [HttpPost]
-        public IActionResult ValidateUserParameters(SubscriptionResultExtension subscriptionResultExtension)
-        {
-            if (this.User.Identity.IsAuthenticated)
-            {
-                if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
-                {
-                    var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment").ToList();
-                    IDictionary<string, string> parms = new Dictionary<string, string>();
-                    foreach (var parm in deploymentParms)
-                    {
-                        parms.Add(parm.DisplayName, parm.Value);
-                    }
-
-                    bool isFileSupported = this.keyVaultClient.ValidateUserParameters(parms);
-                    if (!isFileSupported)
-                    {
-                        return this.Json(new { status = false, responseText = "Invalid Credentials." });
-                    }
-                    else
-                    {
-                        return this.Json(new { status = true, responseText = "Valid Credentials" });
-                    }
-                }
-                else
-                {
-                    return this.Json(new { status = false, responseText = "Enter Valid Credentials" });
-                }
-            }
-            else
-            {
-                return this.RedirectToAction(nameof(this.Index));
-            }
-        }*/
-
         /// <summary>
         /// Subscription this instance.
         /// </summary>
@@ -307,11 +248,6 @@
             {
                 if (this.User.Identity.IsAuthenticated)
                 {
-                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                    {
-                        this.TempData["ShowLicensesMenu"] = true;
-                    }
-
                     this.TempData["ShowWelcomeScreen"] = "True";
                     SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
                     subscriptionDetail.Subscriptions = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, default, true).ToList();
@@ -358,11 +294,6 @@
             {
                 if (this.User.Identity.IsAuthenticated)
                 {
-                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                    {
-                        this.TempData["ShowLicensesMenu"] = true;
-                    }
-
                     var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                     subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
@@ -490,11 +421,6 @@
             this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation));
             try
             {
-                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                {
-                    this.TempData["ShowLicensesMenu"] = true;
-                }
-
                 SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
                 if (this.User.Identity.IsAuthenticated)
                 {
@@ -543,11 +469,6 @@
             {
                 try
                 {
-                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                    {
-                        this.TempData["ShowLicensesMenu"] = true;
-                    }
-
                     var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                     SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
 
@@ -572,22 +493,6 @@
                                         var inputParmsList = inputParms.ToList();
                                         this.subscriptionService.AddSubscriptionParameters(inputParmsList, currentUserId);
                                     }
-
-                                    /* Indra
-                                    var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment");
-                                    if (deploymentParms != null && planDetail.DeployToCustomerSubscription == true)
-                                    {
-                                        var deploymentParmslist = deploymentParms.ToList();
-                                        IDictionary<string, string> parms = new Dictionary<string, string>();
-                                        foreach (var parm in deploymentParmslist)
-                                        {
-                                            parms.Add(parm.DisplayName, parm.Value.Trim());
-                                        }
-
-                                        string azureKeyValtSecret = this.keyVaultClient.WriteKeyAsync(subscriptionId.ToString(),  JsonSerializer.Serialize(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
-                                        this.subscriptionRepository.SaveDeploymentCredentials(subscriptionId, azureKeyValtSecret, currentUserId);
-                                    }
-                                    */
                                 }
 
                                 if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
@@ -687,10 +592,6 @@
                 {
                     var subscriptionId = Guid.Empty;
                     var planId = string.Empty;
-                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                    {
-                        this.TempData["ShowLicensesMenu"] = true;
-                    }
 
                     if (subscriptionDetail != null)
                     {
@@ -846,11 +747,6 @@
         {
             try
             {
-                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                {
-                    this.TempData["ShowLicensesMenu"] = true;
-                }
-
                 SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
                 if (this.User.Identity.IsAuthenticated)

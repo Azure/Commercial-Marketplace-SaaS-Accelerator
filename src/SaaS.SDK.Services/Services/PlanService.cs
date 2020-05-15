@@ -127,19 +127,6 @@
             return plan;
         }
 
-        /* Indra
-        /// <summary>
-        /// Updates the deploy to customer subscription flag.
-        /// </summary>
-        /// <param name="plan">The plan.</param>
-        public void UpdateDeployToCustomerSubscriptionFlag(PlansModel plan)
-        {
-            var existingPlan = this.plansRepository.GetByInternalReference(plan.PlanGUID);
-            existingPlan.DeployToCustomerSubscription = plan.DeployToCustomerSubscription;
-            this.plansRepository.Save(existingPlan);
-        }
-        */
-
         /// <summary>
         /// Saves the plan attributes.
         /// </summary>
