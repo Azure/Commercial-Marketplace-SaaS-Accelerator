@@ -1,7 +1,8 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     using System;
-    using Newtonsoft.Json;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Wbe hook pary load.
@@ -14,7 +15,7 @@
         /// <value>
         /// The action.
         /// </value>
-        [JsonProperty(PropertyName = "action")]
+        [JsonPropertyName("action")]
         public string Action { get; set; }
 
         /// <summary>
@@ -23,7 +24,7 @@
         /// <value>
         /// The activity identifier.
         /// </value>
-        [JsonProperty(PropertyName = "activityId")]
+        [JsonPropertyName("activityId")]
         public string ActivityId { get; set; }
 
         /// <summary>
@@ -32,7 +33,7 @@
         /// <value>
         /// The offer identifier.
         /// </value>
-        [JsonProperty(PropertyName = "offerId")]
+        [JsonPropertyName("offerId")]
         public string OfferId { get; set; }
 
         // Operation Id is presented as Id property on the json payload.
@@ -43,7 +44,7 @@
         /// <value>
         /// The operation identifier.
         /// </value>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string OperationId { get; set; }
 
         /// <summary>
@@ -84,7 +85,7 @@
         /// <value>
         /// The subscription identifier.
         /// </value>
-        [JsonProperty(PropertyName = "subscriptionId")]
+        [JsonPropertyName("subscriptionId")]
         public string SubscriptionId { get; set; }
 
         /// <summary>
@@ -93,7 +94,7 @@
         /// <value>
         /// The time stamp.
         /// </value>
-        [JsonProperty(PropertyName = "timeStamp")]
+        [JsonPropertyName("timeStamp")]
         public DateTimeOffset TimeStamp { get; set; }
     }
 }

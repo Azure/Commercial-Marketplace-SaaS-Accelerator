@@ -10,7 +10,7 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     /// Licenses Controller.
@@ -19,7 +19,6 @@
     [ServiceFilter(typeof(KnownUserAttribute))]
     public class PlansController : BaseController
     {
-
         /// <summary>
         /// The subscription repository.
         /// </summary>
@@ -37,6 +36,9 @@
         private readonly IOffersRepository offerRepository;
 
         private readonly IOfferAttributesRepository offerAttributeRepository;
+
+        //---Prasad---
+        //private readonly IArmTemplateRepository armTemplateRepository;
 
         private readonly ILogger<OffersController> logger;
 
@@ -111,6 +113,9 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
+                //Prasad
+                //var armTemplates = this.armTemplateRepository.GetAll().ToList();
+                //this.ViewBag.ARMTemplate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
                 return this.PartialView(plans);
             }
             catch (Exception ex)
@@ -130,7 +135,7 @@
         [HttpPost]
         public IActionResult PlanDetails(PlansModel plans)
         {
-            this.logger.LogInformation("Plans Controller / PlanDetails:  plans {0}", JsonConvert.SerializeObject(plans));
+            this.logger.LogInformation("Plans Controller / PlanDetails:  plans {0}",  JsonSerializer.Serialize(plans));
             try
             {
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);

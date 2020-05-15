@@ -1,11 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     using System;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Get TermResult
+    /// Get TermResult.
     /// </summary>
     public class TermResult
     {
@@ -15,7 +14,7 @@
         /// <value>
         /// The end date.
         /// </value>
-        [JsonProperty("endDate")]
+        [JsonPropertyName("endDate")]
         public DateTimeOffset EndDate { get; set; }
 
         /// <summary>
@@ -24,7 +23,7 @@
         /// <value>
         /// The start date.
         /// </value>
-        [JsonProperty("startDate")]
+        [JsonPropertyName("startDate")]
         public DateTimeOffset StartDate { get; set; }
 
         /// <summary>
@@ -33,8 +32,8 @@
         /// <value>
         /// The term unit.
         /// </value>
-        [JsonProperty("termUnit")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyName("termUnit")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TermUnitEnum TermUnit { get; set; }
     }
 }

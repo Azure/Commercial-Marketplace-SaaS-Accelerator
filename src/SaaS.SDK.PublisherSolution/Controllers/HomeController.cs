@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,6 @@
     using Microsoft.Marketplace.SaasKit.Models;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Queue;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Home Controller.
@@ -83,6 +83,9 @@
         private readonly IEventsRepository eventsRepository;
 
         private readonly IOptions<SaaSApiClientConfiguration> options;
+
+        //Prasad
+        //private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
 
         private readonly CloudStorageConfigs cloudConfigs;
 
@@ -232,7 +235,7 @@
         /// </returns>
         public IActionResult SubscriptionLogDetail(Guid subscriptionId)
         {
-            this.logger.LogInformation("Home Controller / RecordUsage : subscriptionId: {0}", JsonConvert.SerializeObject(subscriptionId));
+            this.logger.LogInformation("Home Controller / RecordUsage : subscriptionId: {0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
                 if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
@@ -257,6 +260,8 @@
                 return this.View("Error", ex);
             }
         }
+    }
+}
 
         /* Indra
         /// <summary>
@@ -267,33 +272,34 @@
         /// <returns>
         /// Subscription log detail.
         /// </returns>
-        public IActionResult SubscriptionTemplateParmeters(Guid subscriptionId, Guid planId)
-        {
-            this.logger.LogInformation("Home Controller / SubscriptionTemplateParmeters subscriptionId : {0}", JsonConvert.SerializeObject(subscriptionId));
-            try
-            {
-                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                {
-                    this.TempData["ShowLicensesMenu"] = true;
-                }
+        /// Prasad
+        //public IActionResult SubscriptionTemplateParmeters(Guid subscriptionId, Guid planId)
+        //{
+        //    this.logger.LogInformation("Home Controller / SubscriptionTemplateParmeters subscriptionId : {0}", JsonConvert.SerializeObject(subscriptionId));
+        //    try
+        //    {
+        //        if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+        //        {
+        //            this.TempData["ShowLicensesMenu"] = true;
+        //        }
 
-                if (this.User.Identity.IsAuthenticated)
-                {
-                    List<SubscriptionTemplateParameters> subscriptionTemplateParms = new List<SubscriptionTemplateParameters>();
-                    subscriptionTemplateParms = this.subscriptionTemplateParametersRepository.GetById(subscriptionId, planId).ToList();
-                    return this.View(subscriptionTemplateParms);
-                }
-                else
-                {
-                    return this.RedirectToAction(nameof(this.Index));
-                }
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
-            }
-        }*/
+        //        if (this.User.Identity.IsAuthenticated)
+        //        {
+        //            List<SubscriptionTemplateParameters> subscriptionTemplateParms = new List<SubscriptionTemplateParameters>();
+        //            subscriptionTemplateParms = this.subscriptionTemplateParametersRepository.GetById(subscriptionId, planId).ToList();
+        //            return this.View(subscriptionTemplateParms);
+        //        }
+        //        else
+        //        {
+        //            return this.RedirectToAction(nameof(this.Index));
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+        //        return this.View("Error", ex);
+        //    }
+        //}
 
         /// <summary>
         /// Subscriptions the details.
@@ -311,11 +317,11 @@
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                 this.subscriptionService = new SubscriptionService(this.subscriptionRepo, this.planRepository, userId);
-                this.logger.LogInformation("User authenticate successfully & GetSubscriptionByIdAsync  SubscriptionID :{0}", JsonConvert.SerializeObject(subscriptionId));
+                this.logger.LogInformation("User authenticate successfully & GetSubscriptionByIdAsync  SubscriptionID :{0}", JsonSerializer.Serialize(subscriptionId));
                 this.TempData["ShowWelcomeScreen"] = false;
                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
-                var serializedParent = JsonConvert.SerializeObject(oldValue);
-                subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
+                var serializedParent = JsonSerializer.Serialize(oldValue);
+                subscriptionDetail = JsonSerializer.Deserialize<SubscriptionResultExtension>(serializedParent);
                 this.logger.LogInformation("serializedParent :{0}", serializedParent);
                 subscriptionDetail.ShowWelcomeScreen = false;
                 subscriptionDetail.SubscriptionStatus = oldValue.SubscriptionStatus;
@@ -354,7 +360,7 @@
                     var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
-                    this.logger.LogInformation("GetSubscriptionByIdAsync SubscriptionID :{0} :: planID:{1}:: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(operation));
+                    this.logger.LogInformation("GetSubscriptionByIdAsync SubscriptionID :{0} :: planID:{1}:: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(operation));
 
                     this.TempData["ShowWelcomeScreen"] = false;
                     var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
@@ -385,7 +391,7 @@
         /// <returns> The <see cref="IActionResult" />.</returns>
         public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation, int numberofProviders)
         {
-            this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2} :: NumberofProviders : {3}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId), JsonConvert.SerializeObject(operation), JsonConvert.SerializeObject(numberofProviders));
+            this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2} :: NumberofProviders : {3}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation), JsonSerializer.Serialize(numberofProviders));
             try
             {
                 var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -435,7 +441,7 @@
                     queueObject.PortalName = "Admin";
                 }
 
-                string queueMessage = JsonConvert.SerializeObject(queueObject);
+                string queueMessage = JsonSerializer.Serialize(queueObject);
                 string storageConnectionString = this.cloudConfigs.AzureWebJobsStorage ?? this.azureWebJobsStorage;
                 CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
 
@@ -526,7 +532,7 @@
         [HttpPost]
         public IActionResult ManageSubscriptionUsage(SubscriptionUsageViewModel subscriptionData)
         {
-            this.logger.LogInformation("Home Controller / ManageSubscriptionUsage  subscriptionData: {0}", JsonConvert.SerializeObject(subscriptionData));
+            this.logger.LogInformation("Home Controller / ManageSubscriptionUsage  subscriptionData: {0}", JsonSerializer.Serialize(subscriptionData));
             try
             {
                 if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
@@ -546,18 +552,18 @@
                         ResourceId = subscriptionData.SubscriptionDetail.AmpsubscriptionId,
                     };
                     var meteringUsageResult = new MeteringUsageResult();
-                    var requestJson = JsonConvert.SerializeObject(subscriptionUsageRequest);
+                    var requestJson = JsonSerializer.Serialize(subscriptionUsageRequest);
                     var responseJson = string.Empty;
                     try
                     {
                         this.logger.LogInformation("EmitUsageEventAsync");
                         meteringUsageResult = this.apiClient.EmitUsageEventAsync(subscriptionUsageRequest).ConfigureAwait(false).GetAwaiter().GetResult();
-                        responseJson = JsonConvert.SerializeObject(meteringUsageResult);
+                        responseJson = JsonSerializer.Serialize(meteringUsageResult);
                         this.logger.LogInformation(responseJson);
                     }
                     catch (MeteredBillingException mex)
                     {
-                        responseJson = JsonConvert.SerializeObject(mex.MeteredBillingErrorDetail);
+                        responseJson = JsonSerializer.Serialize(mex.MeteredBillingErrorDetail);
                         meteringUsageResult.Status = mex.ErrorCode;
                         this.logger.LogInformation(responseJson);
                     }
@@ -592,7 +598,7 @@
         /// </returns>
         public IActionResult ViewSubscriptionDetail(Guid subscriptionId)
         {
-            this.logger.LogInformation("Home Controller / SubscriptionDetail subscriptionId:{0}", JsonConvert.SerializeObject(subscriptionId));
+            this.logger.LogInformation("Home Controller / SubscriptionDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
                 if (this.User.Identity.IsAuthenticated)
@@ -649,7 +655,7 @@
         [HttpPost]
         public async Task<IActionResult> ChangeSubscriptionPlan(SubscriptionResult subscriptionDetail)
         {
-            this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonConvert.SerializeObject(subscriptionDetail));
+            this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
             try
             {
                 var subscriptionId = Guid.Empty;
@@ -680,7 +686,7 @@
                             {
                                 var changePlanOperationResult = await this.fulfillApiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
                                 changePlanOperationStatus = changePlanOperationResult.Status;
-                                this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId));
+                                this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId));
                                 this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
                             }
 
@@ -720,3 +726,4 @@
         }
     }
 }
+*/

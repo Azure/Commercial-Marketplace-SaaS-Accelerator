@@ -3,13 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.Azure.Management.ResourceManager.Models;
+    using System.Text.Json;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Models;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using SaasKitModels = Microsoft.Marketplace.SaasKit.Models;
 
     /// <summary>
@@ -278,8 +276,8 @@
 
             var subscriptionParameters = this.subscriptionRepository.GetSubscriptionsParametersById(subscriptionId, planId);
 
-            var serializedSubscription = JsonConvert.SerializeObject(subscriptionParameters);
-            subscriptionParametersList = JsonConvert.DeserializeObject<List<SubscriptionParametersModel>>(serializedSubscription);
+            var serializedSubscription = JsonSerializer.Serialize(subscriptionParameters);
+            subscriptionParametersList = JsonSerializer.Deserialize<List<SubscriptionParametersModel>>(serializedSubscription);
 
             return subscriptionParametersList;
         }
@@ -314,45 +312,45 @@
         /// </summary>
         /// <param name="outputstring">The outputstring.</param>
         /// <returns> Subscription Template Parameters.</returns>
-        public List<SubscriptionTemplateParameters> GenerateParmlistFromResponse(DeploymentExtended outputstring)
-        {
-            List<SubscriptionTemplateParameters> childlist = new List<SubscriptionTemplateParameters>();
-            JObject templateOutputs = (JObject)outputstring.Properties.Outputs;
-            foreach (JToken child in templateOutputs.Children())
-            {
-                SubscriptionTemplateParameters childparms = new SubscriptionTemplateParameters();
-                childparms = new SubscriptionTemplateParameters();
-                childparms.ParameterType = "output";
-                var paramName = (child as JProperty).Name;
-                childparms.Parameter = paramName;
-                object paramValue = string.Empty;
+        //    public List<SubscriptionTemplateParameters> GenerateParmlistFromResponse(DeploymentExtended outputstring)
+        //    {
+        //        List<SubscriptionTemplateParameters> childlist = new List<SubscriptionTemplateParameters>();
+        //        JObject templateOutputs = (JObject)outputstring.Properties.Outputs;
+        //        foreach (JToken child in templateOutputs.Children())
+        //        {
+        //            SubscriptionTemplateParameters childparms = new SubscriptionTemplateParameters();
+        //            childparms = new SubscriptionTemplateParameters();
+        //            childparms.ParameterType = "output";
+        //            var paramName = (child as JProperty).Name;
+        //            childparms.Parameter = paramName;
+        //            object paramValue = string.Empty;
 
-                foreach (JToken grandChild in child)
-                {
-                    foreach (JToken grandGrandChild in grandChild)
-                    {
-                        var property = grandGrandChild as JProperty;
+        //            foreach (JToken grandChild in child)
+        //            {
+        //                foreach (JToken grandGrandChild in grandChild)
+        //                {
+        //                    var property = grandGrandChild as JProperty;
 
-                        if (property != null && property.Name == "value")
-                        {
-                            var type = property.Value.GetType();
+        //                    if (property != null && property.Name == "value")
+        //                    {
+        //                        var type = property.Value.GetType();
 
-                            if (type == typeof(JValue) || type == typeof(JArray) ||
-                            property.Value.Type == JTokenType.Object ||
-                            property.Value.Type == JTokenType.Date)
-                            {
-                                paramValue = property.Value;
-                                if (paramValue != null)
-                                {
-                                    childparms.Value = paramValue.ToString();
-                                }
-                            }
-                        }
-                    }
-                }
+        //                        if (type == typeof(JValue) || type == typeof(JArray) ||
+        //                        property.Value.Type == JTokenType.Object ||
+        //                        property.Value.Type == JTokenType.Date)
+        //                        {
+        //                            paramValue = property.Value;
+        //                            if (paramValue != null)
+        //                            {
+        //                                childparms.Value = paramValue.ToString();
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //            }
 
-                childlist.Add(childparms);
-            }
+        //            childlist.Add(childparms);
+        //        }
 
             return childlist;
         }

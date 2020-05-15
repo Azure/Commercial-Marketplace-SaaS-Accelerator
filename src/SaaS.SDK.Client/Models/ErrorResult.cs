@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Binds Error Detail in the Response.
@@ -13,7 +13,7 @@
         /// <value>
         /// The code.
         /// </value>
-        [JsonProperty("code")]
+        [JsonPropertyName("code")]
         public string Code { get; set; }
 
         /// <summary>
@@ -22,7 +22,7 @@
         /// <value>
         /// The message.
         /// </value>
-        [JsonProperty("message")]
+        [JsonPropertyName("message")]
         public string Message { get; set; }
     }
 }

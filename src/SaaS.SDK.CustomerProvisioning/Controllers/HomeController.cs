@@ -1,5 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text.Json;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Diagnostics;
@@ -13,11 +18,6 @@
     using Microsoft.Marketplace.SaasKit.Models;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Queue;
-    using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using SaasKitModels = Microsoft.Marketplace.SaasKit.Models;
 
     /// <summary>Home Controller.</summary>
@@ -130,7 +130,6 @@
             this.eventsRepository = eventsRepository;
             this.cloudConfigs = cloudConfigs;
             this.azureWebJobsStorage = cloudConfigs.AzureWebJobsStorage;
-
         }
 
         /// <summary>
@@ -177,8 +176,8 @@
                             };
                             Guid newOfferId = this.offersRepository.Add(offers);
                             List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
-                            var serializedPlans = JsonConvert.SerializeObject(subscriptionPlanDetail);
-                            planList = JsonConvert.DeserializeObject<List<PlanDetailResultExtension>>(serializedPlans);
+                            var serializedPlans = JsonSerializer.Serialize(subscriptionPlanDetail);
+                            planList = JsonSerializer.Deserialize<List<PlanDetailResultExtension>>(serializedPlans);
                             planList.ForEach(x =>
                             {
                                 x.OfferId = newOfferId;
@@ -354,7 +353,7 @@
         /// </returns>
         public IActionResult SubscriptionDetail(Guid subscriptionId)
         {
-            this.logger.LogInformation("Home Controller / SubscriptionDetail subscriptionId:{0}", JsonConvert.SerializeObject(subscriptionId));
+            this.logger.LogInformation("Home Controller / SubscriptionDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
                 if (this.User.Identity.IsAuthenticated)
@@ -390,7 +389,7 @@
         /// </returns>
         public IActionResult SubscriptionQuantityDetail(Guid subscriptionId)
         {
-            this.logger.LogInformation("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonConvert.SerializeObject(subscriptionId));
+            this.logger.LogInformation("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
                 if (this.User.Identity.IsAuthenticated)
@@ -417,7 +416,7 @@
         /// <returns> Subscription log detail.</returns>
         public IActionResult SubscriptionLogDetail(Guid subscriptionId)
         {
-            this.logger.LogInformation("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonConvert.SerializeObject(subscriptionId));
+            this.logger.LogInformation("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
                 if (this.User.Identity.IsAuthenticated)
@@ -488,7 +487,7 @@
         /// <returns> Subscription Detials.</returns>
         public IActionResult SubscriptionDetails(Guid subscriptionId, string planId, string operation)
         {
-            this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId), JsonConvert.SerializeObject(operation));
+            this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation));
             try
             {
                 if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
@@ -539,7 +538,7 @@
         [HttpPost]
         public IActionResult SubscriptionOperation(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation)
         {
-            this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId), JsonConvert.SerializeObject(operation));
+            this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation));
             if (this.User.Identity.IsAuthenticated)
             {
                 try
@@ -564,7 +563,7 @@
                         {
                             try
                             {
-                                this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionResultExtension.SubscriptionParameters));
+                                this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonSerializer.Serialize(subscriptionResultExtension.SubscriptionParameters));
                                 if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
                                 {
                                     var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input");
@@ -585,7 +584,7 @@
                                             parms.Add(parm.DisplayName, parm.Value.Trim());
                                         }
 
-                                        string azureKeyValtSecret = this.keyVaultClient.WriteKeyAsync(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
+                                        string azureKeyValtSecret = this.keyVaultClient.WriteKeyAsync(subscriptionId.ToString(),  JsonSerializer.Serialize(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
                                         this.subscriptionRepository.SaveDeploymentCredentials(subscriptionId, azureKeyValtSecret, currentUserId);
                                     }
                                     */
@@ -647,7 +646,7 @@
                         }
                     }
 
-                    string queueMessage = JsonConvert.SerializeObject(queueObject);
+                    string queueMessage = JsonSerializer.Serialize(queueObject);
                     string storageConnectionString = this.cloudConfigs.AzureWebJobsStorage ?? this.azureWebJobsStorage;
                     CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
                     //// Create the queue client.
@@ -681,7 +680,7 @@
         [HttpPost]
         public async Task<IActionResult> ChangeSubscriptionPlan(SubscriptionResult subscriptionDetail)
         {
-            this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonConvert.SerializeObject(subscriptionDetail));
+            this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
             if (this.User.Identity.IsAuthenticated)
             {
                 try
@@ -715,7 +714,7 @@
                                     var changePlanOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
                                     changePlanOperationStatus = changePlanOperationResult.Status;
 
-                                    this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId));
+                                    this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId));
                                     this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
                                 }
 
@@ -766,7 +765,7 @@
         [HttpPost]
         public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
         {
-            this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonConvert.SerializeObject(subscriptionDetail));
+            this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
             if (this.User.Identity.IsAuthenticated)
             {
                 try
@@ -790,7 +789,7 @@
                                     var changeQuantityOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
                                     changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
-                                    this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(quantity));
+                                    this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(quantity));
                                     this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId);
                                 }
 

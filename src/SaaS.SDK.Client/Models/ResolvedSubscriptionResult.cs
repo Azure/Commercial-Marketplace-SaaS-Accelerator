@@ -1,10 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     using System;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Resolved Subscription Response
+    /// Resolved Subscription Response.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Models.SaaSApiResult" />
     public class ResolvedSubscriptionResult : SaaSApiResult
@@ -47,7 +47,7 @@
         /// <value>
         /// The subscription identifier.
         /// </value>
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public Guid SubscriptionId { get; set; }
 
         /// <summary>

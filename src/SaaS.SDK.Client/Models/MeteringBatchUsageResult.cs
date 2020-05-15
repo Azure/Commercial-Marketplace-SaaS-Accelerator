@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     using System.Collections.Generic;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Subscription Batch Usage Result.
@@ -15,7 +15,7 @@
         /// <value>
         /// The count.
         /// </value>
-        [JsonProperty("count")]
+        [JsonPropertyName("count")]
         public int Count { get; set; }
 
         /// <summary>
@@ -24,7 +24,7 @@
         /// <value>
         /// The result.
         /// </value>
-        [JsonProperty("result")]
+        [JsonPropertyName("result")]
         public IEnumerable<ResultBatchUsageResult> Result { get; set; }
     }
 }
