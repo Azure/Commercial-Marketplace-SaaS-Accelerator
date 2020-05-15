@@ -308,6 +308,7 @@
             }
         }
 
+        /*
         /// <summary>
         /// Generates the parmlist from response.
         /// </summary>
@@ -355,5 +356,6 @@
 
             return childlist;
         }
+        */
     }
 }

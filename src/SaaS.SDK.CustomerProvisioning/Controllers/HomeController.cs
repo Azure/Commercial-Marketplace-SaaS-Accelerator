@@ -1,15 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -19,6 +14,10 @@
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Queue;
     using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using SaasKitModels = Microsoft.Marketplace.SaasKit.Models;
 
     /// <summary>Home Controller.</summary>
@@ -71,9 +70,8 @@
         private readonly IOfferAttributesRepository offerAttributesRepository;
 
         private readonly IEventsRepository eventsRepository;
-        private readonly CloudStorageConfigs cloudConfigs;
 
-        private readonly IVaultService keyVaultClient;
+        private readonly CloudStorageConfigs cloudConfigs;
 
         private string azureWebJobsStorage;
 
@@ -111,8 +109,7 @@
         /// <param name="offerAttributesRepository">The offer attributes repository.</param>
         /// <param name="eventsRepository">The events repository.</param>
         /// <param name="cloudConfigs">The cloud configs.</param>
-        /// <param name="keyVaultClient">The key vault client.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, CloudStorageConfigs cloudConfigs, IVaultService keyVaultClient)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, CloudStorageConfigs cloudConfigs)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -133,7 +130,7 @@
             this.eventsRepository = eventsRepository;
             this.cloudConfigs = cloudConfigs;
             this.azureWebJobsStorage = cloudConfigs.AzureWebJobsStorage;
-            this.keyVaultClient = keyVaultClient;
+
         }
 
         /// <summary>
@@ -188,6 +185,7 @@
                                 x.PlanGUID = Guid.NewGuid();
                             });
                             this.subscriptionService.AddPlanDetailsForSubscription(planList);
+                            /* Indra
                             var deploymentAttributes = this.offerAttributesRepository.GetDeploymentParameters();
                             if (deploymentAttributes != null && deploymentAttributes.Count() > 0)
                             {
@@ -199,7 +197,7 @@
                                     var deploymentAttributesofPlan = this.planService.SavePlanDeploymentAttributes(plan, currentUserId);
                                 }
                             }
-
+                            */
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
@@ -222,7 +220,6 @@
                             subscriptionExtension.CustomerEmailAddress = this.CurrentUserEmailAddress;
                             subscriptionExtension.CustomerName = this.CurrentUserName;
                             subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
-                            subscriptionExtension.DeployToCustomerSubscription = currentPlan.DeployToCustomerSubscription ?? false;
                         }
                     }
                     else
@@ -259,6 +256,7 @@
             }
         }
 
+        /* Indra
         /// <summary>
         /// Validates the user parameters.
         /// </summary>
@@ -297,7 +295,7 @@
             {
                 return this.RedirectToAction(nameof(this.Index));
             }
-        }
+        }*/
 
         /// <summary>
         /// Subscription this instance.
@@ -461,7 +459,7 @@
         /// <returns>
         /// Return View.
         /// </returns>
-        public IActionResult ProcessMessage(string action,string status)
+        public IActionResult ProcessMessage(string action, string status)
         {
             try
             {
@@ -576,6 +574,7 @@
                                         this.subscriptionService.AddSubscriptionParameters(inputParmsList, currentUserId);
                                     }
 
+                                    /* Indra
                                     var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment");
                                     if (deploymentParms != null && planDetail.DeployToCustomerSubscription == true)
                                     {
@@ -589,6 +588,7 @@
                                         string azureKeyValtSecret = this.keyVaultClient.WriteKeyAsync(subscriptionId.ToString(), JsonConvert.SerializeObject(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
                                         this.subscriptionRepository.SaveDeploymentCredentials(subscriptionId, azureKeyValtSecret, currentUserId);
                                     }
+                                    */
                                 }
 
                                 if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
@@ -865,7 +865,6 @@
                     subscriptionDetail.ShowWelcomeScreen = false;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
-                    subscriptionDetail.DeployToCustomerSubscription = planDetails.DeployToCustomerSubscription ?? false;
                     subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
                 }
 

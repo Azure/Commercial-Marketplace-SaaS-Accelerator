@@ -43,14 +43,6 @@
         public List<SubscriptionParametersModel> SubscriptionParameters { get; set; }
 
         /// <summary>
-        /// Gets or sets the arm template parameters.
-        /// </summary>
-        /// <value>
-        /// The arm template parameters.
-        /// </value>
-        public List<SubscriptionTemplateParametersModel> ARMTemplateParameters { get; set; }
-
-        /// <summary>
         /// Gets or sets the name of the event.
         /// </summary>
         /// <value>
@@ -66,12 +58,5 @@
         /// </value>
         public SubscriptionStatusEnumExtension SubscriptionStatus { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether [deploy to customer subscription].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [deploy to customer subscription]; otherwise, <c>false</c>.
-        /// </value>
-        public bool DeployToCustomerSubscription { get; set; }
     }
 }

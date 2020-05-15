@@ -59,8 +59,6 @@
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.PlanId)
-                            @Html.HiddenFor(model => model.DeployToCustomerSubscription)
-
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Purchaser Email ")
@@ -192,7 +190,7 @@
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
                     {
                         <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Activate</a>
-                        <a onclick="ValidateData()" id="btnvalidate" class="cm-button-default text-right">Validate</a>
+                        @* Indra <a onclick="ValidateData()" id="btnvalidate" class="cm-button-default text-right">Validate</a>*@
                     }
                 </div>
             }
@@ -230,7 +228,7 @@ else
 <script type="text/javascript">
 
     $(document).ready(function () {
-
+        /* Indra
         var Isdeploy = $('#DeployToCustomerSubscription').val();
         if (Isdeploy.toLowerCase() == "false") {
             $(".Deployment").attr("disabled", "disabled").hide();
@@ -241,8 +239,9 @@ else
             $("#btnvalidate").show();
             $("#btnActive").hide();
         }
+        */
     })
-
+    /* Indra
     function ValidateData() {
         var formobject = $('#frmIndex').serialize();
         $.ajax({
@@ -283,7 +282,8 @@ else
                 }
         });
 
-    }
+    }*/
+
     function SubscriptionOperation(subscriptionId, planId, operation) {
         if (validate()) {
             var formobject = $('#frmIndex').serialize();

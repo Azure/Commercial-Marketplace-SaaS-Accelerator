@@ -30,14 +30,16 @@
         /// <returns>List of attributes of an offer.</returns>
         IEnumerable<OfferAttributes> GetInputAttributesByOfferId(Guid offerId);
 
-        /// <summary>
-        /// Adds the deployment attributes.
-        /// </summary>
-        /// <param name="offerId">The offer identifier.</param>
-        /// <param name="currentUserId">The current user identifier.</param>
-        /// <param name="deploymentAttributes">The deployment attributes.</param>
-        /// <returns>Id of the newly added deployment attribute.</returns>
-        int? AddDeploymentAttributes(Guid offerId, int currentUserId, List<DeploymentAttributes> deploymentAttributes);
+        /* Indra
+          /// <summary>
+          /// Adds the deployment attributes.
+          /// </summary>
+          /// <param name="offerId">The offer identifier.</param>
+          /// <param name="currentUserId">The current user identifier.</param>
+          /// <param name="deploymentAttributes">The deployment attributes.</param>
+          /// <returns>Id of the newly added deployment attribute.</returns>
+          int? AddDeploymentAttributes(Guid offerId, int currentUserId, List<DeploymentAttributes> deploymentAttributes);
+      */
 
         /// <summary>
         /// Gets the offer attribute by identifier.
@@ -46,11 +48,13 @@
         /// <returns>Offer attribute.</returns>
         OfferAttributes GetById(int offerAttributeId);
 
+        /* Indra
         /// <summary>
         /// Gets the deployment parameters.
         /// </summary>
         /// <returns>List of deployment parameters across offers.</returns>
         IEnumerable<DeploymentAttributes> GetDeploymentParameters();
+        */
 
         /// <summary>
         /// Gets all offer attributes by offer identifier ( includes deployment and input attributes).

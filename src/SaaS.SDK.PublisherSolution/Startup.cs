@@ -81,19 +81,6 @@ namespace Microsoft.Marketplace.Saas.Web
             {
                 AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
             };
-            var keyVaultConfig = new KeyVaultConfig()
-            {
-                ClientID = this.Configuration["KeyVaultConfig:ClientID"],
-                ClientSecret = this.Configuration["KeyVaultConfig:ClientSecret"],
-                TenantID = this.Configuration["KeyVaultConfig:TenantID"],
-                KeyVaultUrl = this.Configuration["KeyVaultConfig:KeyVaultUrl"],
-            };
-
-            var azureBlobConfig = new AzureBlobConfig()
-            {
-                BlobContainer = this.Configuration["AzureBlobConfig:BlobContainer"],
-                BlobConnectionString = this.Configuration["AzureBlobConfig:BlobConnectionString"],
-            };
 
             services.AddAuthentication(options =>
             {
@@ -118,10 +105,6 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new MeteringApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddSingleton<CloudStorageConfigs>(cloudConfig);
-            services.AddSingleton<IVaultService>(new AzureKeyVaultClient(keyVaultConfig, loggerFactory.CreateLogger<AzureKeyVaultClient>()));
-            services.AddSingleton<IARMTemplateStorageService>(new AzureBlobStorageService(azureBlobConfig));
-            services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
-            services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -175,19 +158,14 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
             services.AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>();
             services.AddScoped<IMeteredDimensionsRepository, MeteredDimensionsRepository>();
-            services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
             services.AddScoped<IKnownUsersRepository, KnownUsersRepository>();
             services.AddScoped<IOffersRepository, OffersRepository>();
-            services.AddScoped<IArmTemplateRepository, ArmTemplateRepository>();
             services.AddScoped<IValueTypesRepository, ValueTypesRepository>();
             services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
             services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
-            services.AddScoped<IArmTemplateParametersRepository, ArmTemplateParametersRepository>();
             services.AddScoped<KnownUserAttribute>();
-            services.AddScoped<IArmTemplateRepository, ArmTemplateRepository>();
-            services.AddScoped<ISubscriptionTemplateParametersRepository, SubscriptionTemplateParametersRepository>();
         }
     }
 }

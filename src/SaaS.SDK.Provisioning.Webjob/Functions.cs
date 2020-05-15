@@ -58,16 +58,6 @@
         private readonly IEventsRepository eventsRepository;
 
         /// <summary>
-        /// The azure key vault client.
-        /// </summary>
-        private readonly IVaultService azureKeyVaultClient;
-
-        /// <summary>
-        /// The azure BLOB file client.
-        /// </summary>
-        private readonly IARMTemplateStorageService azureBlobFileClient;
-
-        /// <summary>
         /// The plan repository.
         /// </summary>
         private readonly IPlansRepository planRepository;
@@ -81,11 +71,6 @@
         /// The users repository.
         /// </summary>
         private readonly IUsersRepository usersRepository;
-
-        /// <summary>
-        /// The subscription template parameters repository.
-        /// </summary>
-        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
 
         /// <summary>
         /// The emial service.
@@ -103,19 +88,9 @@
         private readonly List<ISubscriptionStatusHandler> deactivateStatusHandlers;
 
         /// <summary>
-        /// The key vault configuration.
-        /// </summary>
-        private readonly KeyVaultConfig keyVaultConfig;
-
-        /// <summary>
         /// The email helper.
         /// </summary>
         private readonly EmailHelper emailHelper;
-
-        /// <summary>
-        /// The arm template repository.
-        /// </summary>
-        private readonly IArmTemplateRepository armTemplateRepository;
 
         /// <summary>
         /// The logger factory.
@@ -153,22 +128,15 @@
                             IPlanEventsMappingRepository planEventsMappingRepository,
                             IOfferAttributesRepository offerAttributesRepository,
                             IEventsRepository eventsRepository,
-                            IVaultService azureKeyVaultClient,
                             IPlansRepository planRepository,
                             IOffersRepository offersRepository,
                             IUsersRepository usersRepository,
-                            IArmTemplateRepository armTemplateRepository,
-                            IARMTemplateStorageService azureBlobFileClient,
-                            ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
-                            KeyVaultConfig keyVaultConfig,
                             IEmailService emailService,
                             EmailHelper emailHelper,
                             ILoggerFactory loggerFactory)
         {
             this.fulfillmentApiClient = fulfillmentApiClient;
             this.subscriptionRepository = subscriptionRepository;
-            this.azureKeyVaultClient = azureKeyVaultClient;
-            this.azureBlobFileClient = azureBlobFileClient;
             this.applicationConfigrepository = applicationConfigRepository;
             this.emailTemplaterepository = emailTemplaterepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
@@ -178,41 +146,37 @@
             this.planRepository = planRepository;
             this.offersRepository = offersRepository;
             this.usersRepository = usersRepository;
-            this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
-            this.keyVaultConfig = keyVaultConfig;
             this.emialService = emailService;
             this.emailHelper = emailHelper;
             this.loggerFactory = loggerFactory;
-            this.armTemplateRepository = armTemplateRepository;
-
             this.activateStatusHandlers = new List<ISubscriptionStatusHandler>();
             this.deactivateStatusHandlers = new List<ISubscriptionStatusHandler>();
 
-            var armTemplateDeploymentManager = new ARMTemplateDeploymentManager(this.loggerFactory.CreateLogger<ARMTemplateDeploymentManager>());
+            /* Indra   var armTemplateDeploymentManager = new ARMTemplateDeploymentManager(this.loggerFactory.CreateLogger<ARMTemplateDeploymentManager>());
 
-            this.activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(
-                                                                            fulfillmentApiClient,
-                                                                            this.applicationConfigrepository,
-                                                                            subscriptionLogRepository,
-                                                                            subscriptionRepository,
-                                                                            azureKeyVaultClient,
-                                                                            azureBlobFileClient,
-                                                                            keyVaultConfig,
-                                                                            planRepository,
-                                                                            usersRepository,
-                                                                            this.offersRepository,
-                                                                            this.armTemplateRepository,
-                                                                            this.planEventsMappingRepository,
-                                                                            this.eventsRepository,
-                                                                            this.loggerFactory.CreateLogger<ResourceDeploymentStatusHandler>(),
-                                                                            armTemplateDeploymentManager,
-                                                                            subscriptionTemplateParametersRepository));
+               this.activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(
+                                                                               fulfillmentApiClient,
+                                                                               this.applicationConfigrepository,
+                                                                               subscriptionLogRepository,
+                                                                               subscriptionRepository,
+                                                                               azureKeyVaultClient,
+                                                                               azureBlobFileClient,
+                                                                               keyVaultConfig,
+                                                                               planRepository,
+                                                                               usersRepository,
+                                                                               this.offersRepository,
+                                                                               this.armTemplateRepository,
+                                                                               this.planEventsMappingRepository,
+                                                                               this.eventsRepository,
+                                                                               this.loggerFactory.CreateLogger<ResourceDeploymentStatusHandler>(),
+                                                                               armTemplateDeploymentManager,
+                                                                               subscriptionTemplateParametersRepository));
+                                                                               */
 
             this.activateStatusHandlers.Add(new PendingActivationStatusHandler(
                                                                             fulfillmentApiClient,
                                                                             subscriptionRepository,
                                                                             subscriptionLogRepository,
-                                                                            subscriptionTemplateParametersRepository,
                                                                             planRepository,
                                                                             usersRepository,
                                                                             this.loggerFactory.CreateLogger<PendingActivationStatusHandler>()));
@@ -237,22 +201,21 @@
                                                                         subscriptionRepository,
                                                                         usersRepository,
                                                                         offersRepository,
-                                                                        subscriptionTemplateParametersRepository,
                                                                         emailService,
                                                                         this.loggerFactory.CreateLogger<NotificationStatusHandler>()));
 
-            this.deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(
-                                                                            fulfillmentApiClient,
-                                                                            this.applicationConfigrepository,
-                                                                            subscriptionLogRepository,
-                                                                            subscriptionRepository,
-                                                                            azureKeyVaultClient,
-                                                                            keyVaultConfig,
-                                                                            subscriptionTemplateParametersRepository,
-                                                                            planRepository,
-                                                                            usersRepository,
-                                                                            this.loggerFactory.CreateLogger<PendingDeleteStatusHandler>(),
-                                                                            armTemplateDeploymentManager));
+            /* Indra this.deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(
+                                                                             fulfillmentApiClient,
+                                                                             this.applicationConfigrepository,
+                                                                             subscriptionLogRepository,
+                                                                             subscriptionRepository,
+                                                                             azureKeyVaultClient,
+                                                                             keyVaultConfig,
+                                                                             subscriptionTemplateParametersRepository,
+                                                                             planRepository,
+                                                                             usersRepository,
+                                                                             this.loggerFactory.CreateLogger<PendingDeleteStatusHandler>(),
+                                                                             armTemplateDeploymentManager));*/
 
             this.deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(
                                                                         fulfillmentApiClient,
@@ -273,7 +236,6 @@
                                                                         subscriptionRepository,
                                                                         usersRepository,
                                                                         offersRepository,
-                                                                        subscriptionTemplateParametersRepository,
                                                                         emailService,
                                                                         this.loggerFactory.CreateLogger<NotificationStatusHandler>()));
         }

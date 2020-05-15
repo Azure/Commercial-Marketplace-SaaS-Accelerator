@@ -50,14 +50,6 @@
         public string OfferName { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [deploy to customer subscription].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [deploy to customer subscription]; otherwise, <c>false</c>.
-        /// </value>
-        public bool DeployToCustomerSubscription { get; set; }
-
-        /// <summary>
         /// Gets or sets the plans list.
         /// </summary>
         /// <value>

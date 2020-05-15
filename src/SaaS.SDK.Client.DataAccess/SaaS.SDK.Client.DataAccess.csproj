@@ -22,11 +22,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Services\SubscriptionLicensesRepository.cs">
-      <ExcludeFromSourceAnalysis>True</ExcludeFromSourceAnalysis>
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
-    </Compile>
-  </ItemGroup>
-
 </Project>

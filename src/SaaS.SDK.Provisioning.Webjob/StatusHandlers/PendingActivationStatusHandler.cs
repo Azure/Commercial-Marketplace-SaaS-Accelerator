@@ -25,11 +25,6 @@
         private readonly ISubscriptionLogRepository subscriptionLogRepository;
 
         /// <summary>
-        /// The subscription template parameters repository.
-        /// </summary>
-        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
-
-        /// <summary>
         /// The logger.
         /// </summary>
         private readonly ILogger<PendingActivationStatusHandler> logger;
@@ -48,7 +43,6 @@
                                                 IFulfillmentApiClient fulfillApiClient,
                                                 ISubscriptionsRepository subscriptionsRepository,
                                                 ISubscriptionLogRepository subscriptionLogRepository,
-                                                ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
                                                 IPlansRepository plansRepository,
                                                 IUsersRepository usersRepository,
                                                 ILogger<PendingActivationStatusHandler> logger)
@@ -56,7 +50,6 @@
         {
             this.fulfillmentApiClient = fulfillApiClient;
             this.subscriptionLogRepository = subscriptionLogRepository;
-            this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
             this.logger = logger;
         }
 
@@ -97,12 +90,12 @@
                     };
                     this.subscriptionLogRepository.Save(auditLog);
 
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Activated", SubscriptionStatusEnumExtension.Subscribed.ToString());
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, "Activated", SubscriptionStatusEnumExtension.Subscribed.ToString());
                 }
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, SubscriptionStatusEnumExtension.ActivationFailed.ToString());
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, errorDescriptin, SubscriptionStatusEnumExtension.ActivationFailed.ToString());
                     this.logger?.LogInformation(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.ActivationFailed.ToString(), false);

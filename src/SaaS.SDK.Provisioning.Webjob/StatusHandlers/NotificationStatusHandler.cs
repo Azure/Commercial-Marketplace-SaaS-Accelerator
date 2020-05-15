@@ -64,11 +64,6 @@
         private readonly IEventsRepository eventsRepository;
 
         /// <summary>
-        /// The subscription template parameters repository.
-        /// </summary>
-        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
-
-        /// <summary>
         /// The email service.
         /// </summary>
         private readonly IEmailService emailService;
@@ -116,7 +111,6 @@
                                             ISubscriptionsRepository subscriptionRepository,
                                             IUsersRepository usersRepository,
                                             IOffersRepository offersRepository,
-                                            ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository,
                                             IEmailService emailService,
                                             ILogger<NotificationStatusHandler> logger)
                                             : base(subscriptionRepository, planRepository, usersRepository)
@@ -131,7 +125,6 @@
             this.planRepository = planRepository;
             this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository);
             this.offersRepository = offersRepository;
-            this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
             this.emailService = emailService;
             this.emailHelper = new EmailHelper(applicationConfigRepository, subscriptionRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository);
             this.logger = logger;
@@ -152,13 +145,6 @@
             var userdeatils = this.GetUserById(subscription.UserId);
             this.logger?.LogInformation("Get Offers");
             this.logger?.LogInformation("Get Events");
-            var subscriptionTemplateParameters = this.subscriptionTemplateParametersRepository.GetTemplateParametersBySubscriptionId(subscription.AmpsubscriptionId);
-            List<SubscriptionTemplateParametersModel> subscriptionTemplateParametersList = new List<SubscriptionTemplateParametersModel>();
-            if (subscriptionTemplateParameters != null)
-            {
-                var serializedParent = JsonConvert.SerializeObject(subscriptionTemplateParameters.ToList());
-                subscriptionTemplateParametersList = JsonConvert.DeserializeObject<List<SubscriptionTemplateParametersModel>>(serializedParent);
-            }
 
             var subscriptionParameters = this.subscriptionRepository.GetSubscriptionsParametersById(subscriptionID, planDetails.PlanGuid);
             var serializedSubscription = JsonConvert.SerializeObject(subscriptionParameters);
@@ -176,7 +162,6 @@
                 CustomerName = userdeatils.FullName,
                 GuidPlanId = planDetails.PlanGuid,
                 SubscriptionParameters = subscriptionParametersList,
-                ARMTemplateParameters = subscriptionTemplateParametersList,
             };
             subscriptionDetail.Purchaser = new Models.PurchaserResult()
             {
@@ -184,16 +169,6 @@
                 TenantId = subscription.PurchaserTenantId ?? default,
             };
 
-            /*
-             *  KB: Trigger the email when the subscription is in one of the following statuses:
-             *  PendingFulfillmentStart - Send out the pending activation email.
-             *  DeploymentFailed
-             *  Subscribed
-             *  ActivationFailed
-             *  DeleteResourceFailed
-             *  Unsubscribed
-             *  UnsubscribeFailed
-             */
             string planEventName = "Activate";
 
             if (

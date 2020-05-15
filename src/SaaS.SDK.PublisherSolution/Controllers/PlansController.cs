@@ -19,10 +19,6 @@
     [ServiceFilter(typeof(KnownUserAttribute))]
     public class PlansController : BaseController
     {
-        /// <summary>
-        /// The subscription licenses repository.
-        /// </summary>
-        private readonly ISubscriptionLicensesRepository subscriptionLicensesRepository;
 
         /// <summary>
         /// The subscription repository.
@@ -42,8 +38,6 @@
 
         private readonly IOfferAttributesRepository offerAttributeRepository;
 
-        private readonly IArmTemplateRepository armTemplateRepository;
-
         private readonly ILogger<OffersController> logger;
 
         private PlanService plansService;
@@ -60,9 +54,8 @@
         /// <param name="offerRepository">The offer repository.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="armTemplateRepository">The arm template repository.</param>
-        public PlansController(ISubscriptionLicensesRepository subscriptionLicenses, ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger, IArmTemplateRepository armTemplateRepository)
+        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger)
         {
-            this.subscriptionLicensesRepository = subscriptionLicenses;
             this.subscriptionRepository = subscriptionRepository;
             this.usersRepository = usersRepository;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -70,7 +63,6 @@
             this.offerAttributeRepository = offerAttributeRepository;
             this.offerRepository = offerRepository;
             this.logger = logger;
-            this.armTemplateRepository = armTemplateRepository;
             this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
         }
 
@@ -119,8 +111,6 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
-                var armTemplates = this.armTemplateRepository.GetAll().ToList();
-                this.ViewBag.ARMTemplate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
                 return this.PartialView(plans);
             }
             catch (Exception ex)
@@ -146,7 +136,6 @@
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 if (plans != null)
                 {
-                    this.plansService.UpdateDeployToCustomerSubscriptionFlag(plans);
                     if (plans.PlanAttributes != null)
                     {
                         var inputAtttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();

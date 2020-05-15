@@ -84,8 +84,6 @@
 
         private readonly IOptions<SaaSApiClientConfiguration> options;
 
-        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
-
         private readonly CloudStorageConfigs cloudConfigs;
 
         private UserService userService;
@@ -118,7 +116,7 @@
         /// <param name="subscriptionTemplateParametersRepository">The subscription template parameters repository.</param>
         /// <param name="cloudConfigs">The cloud configs.</param>
         public HomeController(
-                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository, CloudStorageConfigs cloudConfigs)
+                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, CloudStorageConfigs cloudConfigs)
         {
             this.apiClient = apiClient;
             this.subscriptionRepo = subscriptionRepo;
@@ -143,7 +141,6 @@
             this.options = options;
             this.cloudConfigs = cloudConfigs;
             this.azureWebJobsStorage = cloudConfigs.AzureWebJobsStorage;
-            this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
         }
 
         /// <summary>
@@ -261,6 +258,7 @@
             }
         }
 
+        /* Indra
         /// <summary>
         /// Subscriptions the log detail.
         /// </summary>
@@ -295,7 +293,7 @@
                 this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
-        }
+        }*/
 
         /// <summary>
         /// Subscriptions the details.

@@ -209,8 +209,6 @@
                         planEvent.FailureStateEmails = events.FailureStateEmails;
                         planEvent.EventsName = events.EventsName;
                         planEvent.EventId = events.EventId;
-                        planEvent.ArmtemplateId = events.ArmtemplateId ?? default;
-
                         planEvent.CopyToCustomer = events.CopyToCustomer ?? false;
                         if (planEvent.EventsName != "Pending Activation")
                         {
@@ -288,7 +286,6 @@
                     existingPlanEvents.UserId = planEvents.UserId;
                     existingPlanEvents.CreateDate = DateTime.Now;
                     existingPlanEvents.CopyToCustomer = planEvents.CopyToCustomer;
-                    existingPlanEvents.ArmtemplateId = planEvents.ArmtemplateId;
                     this.context.PlanEventsMapping.Update(existingPlanEvents);
                     this.context.SaveChanges();
                     return existingPlanEvents.Id;

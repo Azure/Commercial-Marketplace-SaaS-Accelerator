@@ -5,111 +5,111 @@
     ViewData["Title"] = "Subscriptions";
 }
 
-    <div class="text-center">
-        <div class="container">
-            <br />
-            @if (!Model.IsSuccess && !string.IsNullOrEmpty(Model.ErrorMessage))
-            {
-                <div class="alert alert-danger">
-                    <strong>Error!</strong> @Model.ErrorMessage
-                </div>
-            }
-            <form method="post">
-                <div class="">
-                    <div class="card-body">
-                        <div class="text-left">
-                            <span class="cm-section-heading">Subscriptions</span>
-                        </div>
-                        <div>
-                            @if (Model.Subscriptions.Count() > 0)
-                            {
-                                <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20" width="100%">
-                                    <thead class="cm-table-head">
+<div class="text-center">
+    <div class="container">
+        <br />
+        @if (!Model.IsSuccess && !string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-danger">
+                <strong>Error!</strong> @Model.ErrorMessage
+            </div>
+        }
+        <form method="post">
+            <div class="">
+                <div class="card-body">
+                    <div class="text-left">
+                        <span class="cm-section-heading">Subscriptions</span>
+                    </div>
+                    <div>
+                        @if (Model.Subscriptions.Count() > 0)
+                        {
+                            <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20" width="100%">
+                                <thead class="cm-table-head">
+                                    <tr>
+                                        <th>User Name</th>
+                                        <th>User Email</th>
+                                        <th>Subscription Name</th>
+                                        <th>Plan</th>
+                                        <th>Quantity</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (var i = 0; i < Model.Subscriptions.Count; i++)
+                                    {
+                                        var subscription = Model.Subscriptions[i];
                                         <tr>
-                                            <th>User Name</th>
-                                            <th>User Email</th>
-                                            <th>Subscription Name</th>
-                                            <th>Plan</th>
-                                            <th>Quantity</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @for (var i = 0; i < Model.Subscriptions.Count; i++)
-                                        {
-                                            var subscription = Model.Subscriptions[i];
-                                            <tr>
-                                                <td class="text-left">
-                                                    @subscription.CustomerName
-                                                </td>
-                                                <td class="text-left">
-                                                    @subscription.CustomerEmailAddress
-                                                </td>
-                                                <td class="text-left">
-                                                    @Html.HiddenFor(s => s.Subscriptions[i].Id)
-                                                    @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
-                                                    @subscription.Name
-                                                </td>
-                                                <td class="text-left">@subscription.PlanId</td>
-                                                <td class="text-left">
-                                                    @if (@subscription.IsPerUserPlan)
-                                                    {
-                                                        @subscription.Quantity
-                                                    }
-                                                    else
-                                                    {
-                                                        <span>N/A</span>
-                                                    }
-                                                </td>
-                                                <td class="text-left">@subscription.SubscriptionStatus</td>
-                                                <td class="text-left cm-ellipsis">
-                                                    <div class="nav-item dropdown">
-                                                        <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
-                                                        <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                            @if (subscription.IsMeteringSupported && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
-                                                            {
-                                                                <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId">Manage Usage</a>
-                                                            }
-                                                            @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
-                                                            {
-                                                                <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
-                                                            }
-                                                            @if (Model.IsAutomaticProvisioningSupported == false && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
-                                                            {
-                                                                <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
-                                                                <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
-                                                            }
-                                                            <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
-                                                            <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionParmsById('@subscription.Id')">Deployment Parameters</a>
-                                                        </div>
+                                            <td class="text-left">
+                                                @subscription.CustomerName
+                                            </td>
+                                            <td class="text-left">
+                                                @subscription.CustomerEmailAddress
+                                            </td>
+                                            <td class="text-left">
+                                                @Html.HiddenFor(s => s.Subscriptions[i].Id)
+                                                @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
+                                                @subscription.Name
+                                            </td>
+                                            <td class="text-left">@subscription.PlanId</td>
+                                            <td class="text-left">
+                                                @if (@subscription.IsPerUserPlan)
+                                                {
+                                                    @subscription.Quantity
+                                                }
+                                                else
+                                                {
+                                                    <span>N/A</span>
+                                                }
+                                            </td>
+                                            <td class="text-left">@subscription.SubscriptionStatus</td>
+                                            <td class="text-left cm-ellipsis">
+                                                <div class="nav-item dropdown">
+                                                    <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                                    <div class="dropdown-menu" aria-labelledby="dropdown01">
+                                                        @if (subscription.IsMeteringSupported && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
+                                                        {
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId">Manage Usage</a>
+                                                        }
+                                                        @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
+                                                        {
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
+                                                        }
+                                                        @if (Model.IsAutomaticProvisioningSupported == false && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
+                                                        {
+                                                            <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
+                                                        }
+                                                        <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
+                                                        @* Indra <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionParmsById('@subscription.Id')">Deployment Parameters</a>*@
                                                     </div>
+                                                </div>
 
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            }
-                            else
-                            {
-                                <div class="cm-panel-default mt40">
-                                    <div class="p-3 mr420">
-                                        <p>
-                                            No subscriptions from your customers yet!
-                                        </p>
-                                    </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="cm-panel-default mt40">
+                                <div class="p-3 mr420">
+                                    <p>
+                                        No subscriptions from your customers yet!
+                                    </p>
                                 </div>
-                            }
-                        </div>
+                            </div>
+                        }
                     </div>
                 </div>
-                <!-- Modal -->
-                <div class="modal fade" id="myModal" role="dialog">
-                </div>
-            </form>
-        </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+            </div>
+        </form>
     </div>
+</div>
 
 <script>
     function ViewSubscriptionlogdetailsById(subscriptionId) {
@@ -171,23 +171,24 @@
         });
     }
 
-    function ViewSubscriptionParmsById(subscriptionId) {
-        $.ajax({
-            type: "Get",
-            url: "SubscriptionTemplateParmeters",
-            data: { subscriptionId: subscriptionId },
-            contentType: "application/json; charset=utf-8",
-            datatype: "json",
-            success: function (data) {
-                $('#myModal').html(data);
-                $('#myModal').modal();
-            },
-            error: function () {
-                alert("Content load failed.");
-            }
-        });
-    }
-
+    /* Indra
+     function ViewSubscriptionParmsById(subscriptionId) {
+           $.ajax({
+               type: "Get",
+               url: "SubscriptionTemplateParmeters",
+               data: { subscriptionId: subscriptionId },
+               contentType: "application/json; charset=utf-8",
+               datatype: "json",
+               success: function (data) {
+                   $('#myModal').html(data);
+                   $('#myModal').modal();
+               },
+               error: function () {
+                   alert("Content load failed.");
+               }
+           });
+       }
+       */
 
 
 </script>

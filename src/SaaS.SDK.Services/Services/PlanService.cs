@@ -56,7 +56,6 @@
                 plans.Description = item.Description;
                 plans.IsmeteringSupported = item.IsmeteringSupported;
                 plans.OfferID = item.OfferId;
-                plans.DeployToCustomerSubscription = item.DeployToCustomerSubscription ?? false;
                 plans.PlanGUID = item.PlanGuid;
                 plansList.Add(plans);
             }
@@ -89,7 +88,6 @@
                 Description = existingPlan.Description,
                 PlanGUID = existingPlan.PlanGuid,
                 OfferName = offerDetails.OfferName,
-                DeployToCustomerSubscription = existingPlan.DeployToCustomerSubscription ?? false,
             };
 
             plan.PlanAttributes = new List<PlanAttributesModel>();
@@ -122,7 +120,6 @@
                     EventName = events.EventsName,
                     EventId = events.EventId,
                     CopyToCustomer = events.CopyToCustomer,
-                    ArmtemplateId = events.ArmtemplateId,
                 };
                 plan.PlanEvents.Add(planEventsModel);
             }
@@ -130,6 +127,7 @@
             return plan;
         }
 
+        /* Indra
         /// <summary>
         /// Updates the deploy to customer subscription flag.
         /// </summary>
@@ -140,6 +138,7 @@
             existingPlan.DeployToCustomerSubscription = plan.DeployToCustomerSubscription;
             this.plansRepository.Save(existingPlan);
         }
+        */
 
         /// <summary>
         /// Saves the plan attributes.
@@ -184,7 +183,6 @@
                 events.UserId = planEvents.UserId;
                 events.CreateDate = DateTime.Now;
                 events.CopyToCustomer = planEvents.CopyToCustomer;
-                events.ArmtemplateId = planEvents.ArmtemplateId;
                 var planEventsId = this.plansRepository.AddPlanEvents(events);
                 return planEventsId;
             }
