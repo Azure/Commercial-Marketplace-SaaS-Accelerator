@@ -173,6 +173,6 @@
         /// <value>
         /// The type of the HTML.
         /// </value>
-        public string HTMLType { get; set; }
+        public string Htmltype { get; set; }
     }
 }

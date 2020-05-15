@@ -134,17 +134,17 @@
                                         </dd>
 
                                     }
-                                    else if (Model.SubscriptionParameters[i].HTMLType == "date")
+                                    else if (Model.SubscriptionParameters[i].Htmltype == "date")
                                     {
                                         <dd class="col-sm-9 p-2 p10 @Model.SubscriptionParameters[i].Type">
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
                                             else
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
 
                                         </dd>
@@ -155,11 +155,11 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
                                             else
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
 
                                         </dd>
@@ -190,7 +190,6 @@
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
                     {
                         <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Activate</a>
-                        @* Indra <a onclick="ValidateData()" id="btnvalidate" class="cm-button-default text-right">Validate</a>*@
                     }
                 </div>
             }
@@ -226,63 +225,6 @@ else
     </div>
 }
 <script type="text/javascript">
-
-    $(document).ready(function () {
-        /* Indra
-        var Isdeploy = $('#DeployToCustomerSubscription').val();
-        if (Isdeploy.toLowerCase() == "false") {
-            $(".Deployment").attr("disabled", "disabled").hide();
-            $("#btnvalidate").hide();
-            $("#btnActive").show();
-        }
-        else {
-            $("#btnvalidate").show();
-            $("#btnActive").hide();
-        }
-        */
-    })
-    /* Indra
-    function ValidateData() {
-        var formobject = $('#frmIndex').serialize();
-        $.ajax({
-            url: '/Home/ValidateUserParameters',
-            type: 'POST',
-            data: formobject,
-            cache: false,
-            success: function (result) {
-
-                if (result.status = true) {
-                    swal({
-                        title: "Success",
-                        text: "Credentials are valid",
-                        icon: "success"
-                    })
-                    $("#btnvalidate").hide();
-                    $("#btnActive").show();
-                }
-                else {
-                    swal({
-                        title: "Error",
-                        text: "Credentials are not valid", //result.responseText,
-                        icon: "error"
-                    })
-                    $("#btnActive").hide();
-                    $("#btnvalidate").show();
-                }
-            },
-            Error:
-                function (result) {
-                    swal({
-                        title: "Error",
-                        text: "Credentials are not valid", //result.responseText,
-                        icon: "error"
-                    })
-                    $("#btnActive").hide();
-                    $("#btnvalidate").show();
-                }
-        });
-
-    }*/
 
     function SubscriptionOperation(subscriptionId, planId, operation) {
         if (validate()) {

@@ -92,7 +92,6 @@
         /// </summary>
         private readonly EmailHelper emailHelper;
 
-        ///--Prasad--
         /// <summary>
         /// The logger factory.
         /// </summary>
@@ -153,27 +152,6 @@
             this.activateStatusHandlers = new List<ISubscriptionStatusHandler>();
             this.deactivateStatusHandlers = new List<ISubscriptionStatusHandler>();
 
-            /* Indra   var armTemplateDeploymentManager = new ARMTemplateDeploymentManager(this.loggerFactory.CreateLogger<ARMTemplateDeploymentManager>());
-
-               this.activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(
-                                                                               fulfillmentApiClient,
-                                                                               this.applicationConfigrepository,
-                                                                               subscriptionLogRepository,
-                                                                               subscriptionRepository,
-                                                                               azureKeyVaultClient,
-                                                                               azureBlobFileClient,
-                                                                               keyVaultConfig,
-                                                                               planRepository,
-                                                                               usersRepository,
-                                                                               this.offersRepository,
-                                                                               this.armTemplateRepository,
-                                                                               this.planEventsMappingRepository,
-                                                                               this.eventsRepository,
-                                                                               this.loggerFactory.CreateLogger<ResourceDeploymentStatusHandler>(),
-                                                                               armTemplateDeploymentManager,
-                                                                               subscriptionTemplateParametersRepository));
-                                                                               */
-
             this.activateStatusHandlers.Add(new PendingActivationStatusHandler(
                                                                             fulfillmentApiClient,
                                                                             subscriptionRepository,
@@ -204,19 +182,6 @@
                                                                         offersRepository,
                                                                         emailService,
                                                                         this.loggerFactory.CreateLogger<NotificationStatusHandler>()));
-
-            /* Indra this.deactivateStatusHandlers.Add(new PendingDeleteStatusHandler(
-                                                                             fulfillmentApiClient,
-                                                                             this.applicationConfigrepository,
-                                                                             subscriptionLogRepository,
-                                                                             subscriptionRepository,
-                                                                             azureKeyVaultClient,
-                                                                             keyVaultConfig,
-                                                                             subscriptionTemplateParametersRepository,
-                                                                             planRepository,
-                                                                             usersRepository,
-                                                                             this.loggerFactory.CreateLogger<PendingDeleteStatusHandler>(),
-                                                                             armTemplateDeploymentManager));*/
 
             this.deactivateStatusHandlers.Add(new UnsubscribeStatusHandler(
                                                                         fulfillmentApiClient,

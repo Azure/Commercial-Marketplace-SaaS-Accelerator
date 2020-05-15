@@ -3,17 +3,16 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using System.Text.Json;
 
     /// <summary>
-    /// Licenses Controller.
+    /// Plans Controller.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.Saas.Web.Controllers.BaseController" />
     [ServiceFilter(typeof(KnownUserAttribute))]
@@ -37,17 +36,13 @@
 
         private readonly IOfferAttributesRepository offerAttributeRepository;
 
-        //---Prasad---
-        //private readonly IArmTemplateRepository armTemplateRepository;
-
         private readonly ILogger<OffersController> logger;
 
         private PlanService plansService;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PlansController"/> class.
+        /// Initializes a new instance of the <see cref="PlansController" /> class.
         /// </summary>
-        /// <param name="subscriptionLicenses">The subscription licenses.</param>
         /// <param name="subscriptionRepository">The subscription repository.</param>
         /// <param name="usersRepository">The users repository.</param>
         /// <param name="applicationConfigRepository">The application configuration repository.</param>
@@ -55,7 +50,6 @@
         /// <param name="offerAttributeRepository">The offer attribute repository.</param>
         /// <param name="offerRepository">The offer repository.</param>
         /// <param name="logger">The logger.</param>
-        /// <param name="armTemplateRepository">The arm template repository.</param>
         public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger)
         {
             this.subscriptionRepository = subscriptionRepository;
@@ -77,11 +71,6 @@
             this.logger.LogInformation("Plans Controller / OfferDetails:  offerGuId");
             try
             {
-                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                {
-                    this.TempData["ShowPlansMenu"] = true;
-                }
-
                 List<PlansModel> getAllPlansData = new List<PlansModel>();
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -113,9 +102,6 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
-                //Prasad
-                //var armTemplates = this.armTemplateRepository.GetAll().ToList();
-                //this.ViewBag.ARMTemplate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
                 return this.PartialView(plans);
             }
             catch (Exception ex)
@@ -135,7 +121,7 @@
         [HttpPost]
         public IActionResult PlanDetails(PlansModel plans)
         {
-            this.logger.LogInformation("Plans Controller / PlanDetails:  plans {0}",  JsonSerializer.Serialize(plans));
+            this.logger.LogInformation("Plans Controller / PlanDetails:  plans {0}", JsonSerializer.Serialize(plans));
             try
             {
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);

@@ -62,7 +62,6 @@
         /// </summary>
         private readonly IEventsRepository eventsRepository;
 
-        ///Prasad
         /// <summary>
         /// The email service.
         /// </summary>

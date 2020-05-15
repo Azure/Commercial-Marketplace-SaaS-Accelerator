@@ -223,8 +223,7 @@
 
             VelocityContext context = new VelocityContext(hashTable);
             IList list;
-            //IList arminputlist;
-            //IList armoutputlist;
+
             if (subscription.SubscriptionParameters != null && subscription.SubscriptionParameters.Count > 0)
             {
                 list = subscription.SubscriptionParameters.Where(s => s.Type.ToLower() == "input").ToList();
@@ -234,26 +233,6 @@
                 }
             }
 
-            /*  Indra
-             *  if (subscription.ARMTemplateParameters != null && subscription.ARMTemplateParameters.Count > 0)
-                 {
-                     arminputlist = subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "input").ToList();
-                     if (arminputlist.Count > 0)
-                     {
-                         context.Put("arminputparms", arminputlist);
-                     }
-                 }
-
-                 if (subscription.ARMTemplateParameters != null && subscription.ARMTemplateParameters.Count > 0)
-                 {
-                     armoutputlist = subscription.ARMTemplateParameters.Where(s => s.ParameterType.ToLower() == "output").ToList();
-                     if (armoutputlist.Count > 0)
-                     {
-                         context.Put("armoutputparms", armoutputlist);
-                     }
-                 }
-
-         */
             StringWriter writer = new StringWriter();
             v.Evaluate(context, writer, string.Empty, body);
             return writer.ToString();
