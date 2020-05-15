@@ -84,9 +84,6 @@
 
         private readonly IOptions<SaaSApiClientConfiguration> options;
 
-        //Prasad
-        //private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
-
         private readonly CloudStorageConfigs cloudConfigs;
 
         private UserService userService;
@@ -271,7 +268,6 @@
         /// <returns>
         /// Subscription log detail.
         /// </returns>
-        /// Prasad
         //public IActionResult SubscriptionTemplateParmeters(Guid subscriptionId, Guid planId)
         //{
         //    this.logger.LogInformation("Home Controller / SubscriptionTemplateParmeters subscriptionId : {0}", JsonConvert.SerializeObject(subscriptionId));

@@ -37,9 +37,6 @@
 
         private readonly IOfferAttributesRepository offerAttributeRepository;
 
-        //---Prasad---
-        //private readonly IArmTemplateRepository armTemplateRepository;
-
         private readonly ILogger<OffersController> logger;
 
         private PlanService plansService;
@@ -113,9 +110,6 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
-                //Prasad
-                //var armTemplates = this.armTemplateRepository.GetAll().ToList();
-                //this.ViewBag.ARMTemplate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
                 return this.PartialView(plans);
             }
             catch (Exception ex)

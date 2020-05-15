@@ -92,7 +92,6 @@
         /// </summary>
         private readonly EmailHelper emailHelper;
 
-        ///--Prasad--
         /// <summary>
         /// The logger factory.
         /// </summary>
