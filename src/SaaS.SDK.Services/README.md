@@ -10,7 +10,7 @@ The Project is located in the **SaaS.SDK.Services** folder. The project is compo
 
 | Section Name | Description |
 | --- | --- |  
-| Dependencies | Microsoft.Azure.KeyVault, Microsoft.Azure.Management.ResourceManager, Microsoft.Extensions.Logging.Console, Microsoft.IdentityModel.Clients.ActiveDirectory,  Microsoft.Rest.ClientRuntime.Azure.Authentication, Newtonsoft.Json, WindowsAzure.Storage|
+| Dependencies | Microsoft.Azure.Management.ResourceManager, Microsoft.Extensions.Logging.Console, Microsoft.IdentityModel.Clients.ActiveDirectory,  Microsoft.Rest.ClientRuntime.Azure.Authentication, Newtonsoft.Json, WindowsAzure.Storage|
 | Contracts| Interfaces / contracts for the services|
 | Services | Implementation of the interfaces |
 | Models |  POCO classes - instances participate as parameters / return types from the services
