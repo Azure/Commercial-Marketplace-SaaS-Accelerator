@@ -84,6 +84,9 @@
 
         private readonly IOptions<SaaSApiClientConfiguration> options;
 
+        //Prasad
+        //private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
+
         private readonly CloudStorageConfigs cloudConfigs;
 
         private UserService userService;
@@ -267,33 +270,34 @@
         /// <returns>
         /// Subscription log detail.
         /// </returns>
-        public IActionResult SubscriptionTemplateParmeters(Guid subscriptionId, Guid planId)
-        {
-            this.logger.LogInformation("Home Controller / SubscriptionTemplateParmeters subscriptionId : {0}",  JsonSerializer.Serialize(subscriptionId));
-            try
-            {
-                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
-                {
-                    this.TempData["ShowLicensesMenu"] = true;
-                }
+        /// Prasad
+        //public IActionResult SubscriptionTemplateParmeters(Guid subscriptionId, Guid planId)
+        //{
+        //    this.logger.LogInformation("Home Controller / SubscriptionTemplateParmeters subscriptionId : {0}", JsonConvert.SerializeObject(subscriptionId));
+        //    try
+        //    {
+        //        if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+        //        {
+        //            this.TempData["ShowLicensesMenu"] = true;
+        //        }
 
-                if (this.User.Identity.IsAuthenticated)
-                {
-                    List<SubscriptionTemplateParameters> subscriptionTemplateParms = new List<SubscriptionTemplateParameters>();
-                    subscriptionTemplateParms = this.subscriptionTemplateParametersRepository.GetById(subscriptionId, planId).ToList();
-                    return this.View(subscriptionTemplateParms);
-                }
-                else
-                {
-                    return this.RedirectToAction(nameof(this.Index));
-                }
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
-            }
-        }*/
+        //        if (this.User.Identity.IsAuthenticated)
+        //        {
+        //            List<SubscriptionTemplateParameters> subscriptionTemplateParms = new List<SubscriptionTemplateParameters>();
+        //            subscriptionTemplateParms = this.subscriptionTemplateParametersRepository.GetById(subscriptionId, planId).ToList();
+        //            return this.View(subscriptionTemplateParms);
+        //        }
+        //        else
+        //        {
+        //            return this.RedirectToAction(nameof(this.Index));
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+        //        return this.View("Error", ex);
+        //    }
+        //}
 
         /// <summary>
         /// Subscriptions the details.
