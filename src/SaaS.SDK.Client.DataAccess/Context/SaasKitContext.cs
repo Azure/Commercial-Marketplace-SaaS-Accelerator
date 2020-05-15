@@ -460,8 +460,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             {
                 entity.Property(e => e.Id).HasColumnName("ID");
 
-                entity.Property(e => e.ArmtemplateId).HasColumnName("ARMTemplateID");
-
                 entity.Property(e => e.Description).IsUnicode(false);
 
                 entity.Property(e => e.InsertDate).HasColumnType("datetime");

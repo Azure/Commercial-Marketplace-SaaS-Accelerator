@@ -111,45 +111,53 @@
         /// <returns>An instance of type T deserialized from the response.</returns>
         protected virtual async Task<T> BuildResultFromResponse(HttpWebRequest request)
         {
-            WebResponse response = await request.GetResponseAsync().ConfigureAwait(false);
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+            try
             {
-                string responseAsString = reader.ReadToEnd();
-
-                var result = new T();
-                if (!string.IsNullOrWhiteSpace(responseAsString))
+                WebResponse response = await request.GetResponseAsync().ConfigureAwait(false);
+                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
-                    result = JsonSerializer.Deserialize<T>(responseAsString);
+                    string responseAsString = reader.ReadToEnd();
 
-                    if (result == null)
+                    var result = new T();
+                    if (!string.IsNullOrWhiteSpace(responseAsString))
                     {
-                        result = new T();
-                    }
-                }
+                        result = JsonSerializer.Deserialize<T>(responseAsString);
 
-                // Fill headers.
-                var t = typeof(T);
-                var properties = t.GetProperties();
-                var responseHeaders = response.Headers;
-                foreach (var prop in properties)
-                {
-                    var fromHeaderAttribute = prop.GetCustomAttributes(typeof(FromRequestHeaderAttribute), false).FirstOrDefault() as FromRequestHeaderAttribute;
-                    if (fromHeaderAttribute != null)
-                    {
-                        var valFromData = responseHeaders[fromHeaderAttribute?.HeaderKey?.ToString()];
-                        if (valFromData != null)
+                        if (result == null)
                         {
-                            // MP : Null value check added
-                            if (result != null && !string.IsNullOrEmpty(valFromData))
+                            result = new T();
+                        }
+                    }
+
+                    // Fill headers.
+                    var t = typeof(T);
+                    var properties = t.GetProperties();
+                    var responseHeaders = response.Headers;
+                    foreach (var prop in properties)
+                    {
+                        var fromHeaderAttribute = prop.GetCustomAttributes(typeof(FromRequestHeaderAttribute), false).FirstOrDefault() as FromRequestHeaderAttribute;
+                        if (fromHeaderAttribute != null)
+                        {
+                            var valFromData = responseHeaders[fromHeaderAttribute?.HeaderKey?.ToString()];
+                            if (valFromData != null)
                             {
-                                prop.SetValue(result, valFromData, null);
+                                // MP : Null value check added
+                                if (result != null && !string.IsNullOrEmpty(valFromData))
+                                {
+                                    prop.SetValue(result, valFromData, null);
+                                }
                             }
                         }
                     }
-                }
 
-                this.logger?.Info("Response : " + responseAsString);
-                return result;
+                    this.logger?.Info("Response : " + responseAsString);
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                string error = ex.Message;
+                return null;
             }
         }
 

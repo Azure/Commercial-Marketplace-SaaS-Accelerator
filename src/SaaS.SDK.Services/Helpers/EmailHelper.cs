@@ -223,8 +223,8 @@
 
             VelocityContext context = new VelocityContext(hashTable);
             IList list;
-            IList arminputlist;
-            IList armoutputlist;
+            //IList arminputlist;
+            //IList armoutputlist;
             if (subscription.SubscriptionParameters != null && subscription.SubscriptionParameters.Count > 0)
             {
                 list = subscription.SubscriptionParameters.Where(s => s.Type.ToLower() == "input").ToList();
