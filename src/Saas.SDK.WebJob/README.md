@@ -4,7 +4,6 @@
 
 Background job to process requests to provision SaaS subscriptions. The webjob gets triggered due to a message enqueued by the **Customer portal** application and the **Publisher portal** to a storage queue. The job moves the subscription through various statuses and takes care of the following actions:
 
-* Deploy ARM templates
 * Activate / delete SaaS subscription
 * Notify customer / publisher based on the event configuration set at the plan related to the subscription in context
 
