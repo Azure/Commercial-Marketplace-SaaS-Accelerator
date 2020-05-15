@@ -36,7 +36,6 @@ The sample and the SDK in this repository cover the components that comprise the
 
 ![Usecase](./images/UseCaseSaaSAPIs.png)
 
-
 ### Features 
 
 - The Azure Marketplace Metering SDK enables SaaS applications publish usage data to Azure so that customers are charged  according to non-standard units. 
@@ -44,6 +43,8 @@ The sample and the SDK in this repository cover the components that comprise the
 - More details on the fulfillment APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-a-subscription) 
 - More details on the metering APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis).
 - Steps to create a SaaS offer are available [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer)
+
+---
 
 ## Prerequisites
 
@@ -56,45 +57,44 @@ Ensure the following prerequisites are met before getting started:
 
 Besides, it is assumed that you have access to the following resources:
 - [Azure subscription](https://ms.portal.azure.com/) - to host the SDK components and sample web applications.
-- [Partner Center](https://partner.microsoft.com/en-US/) - to create and publish a marketplace offer.
+- [Partner Center](https://partner.microsoft.com/en-US/) - to create and publish a marketplace offer. This can be used to create a SQL Server instance in Azure. 
+
+---
 
 ## Set up web application resources in Azure
 
 Follow the below steps to create a web application resource in an Azure subscription. The AMP SDK sample client application will be deployed against this resource. 
 
-- Log on to [Azure](https://portal.azure.com) 
-- Click **All Services** in the menu on the left
-- Click **App Services**
-
+1. Log on to [Azure](https://portal.azure.com) 
+2. Click **All Services** in the menu on the left
+3. Click **App Services**
  ![AllServices](./images/Appservice.PNG)
 
--  Click **Add** button to add a new **App Service**
-![AllServices](./images/AppserviceNew.PNG)
+4.  Click **Add** button to add a new **App Service**
+ ![AllServices](./images/AppserviceNew.PNG)
 
-- Fill out the details for the new **App Service**
+5. Fill out the details for the new **App Service**
+  - Select Subscription
+  - Enter Name  of the instance 
+  - Select RunTime stack - **.Net Core 3.1(LTS)**
+  - Select **Region**
+  - Select  **App Service Plan** 
+
 ![AllServices](./images/AddNewAppservice.PNG)
 
-	- Select Subscription
-    - Enter Name  of the instance 
-	- Select RunTime stack - **.Net Core 3.1(LTS)**
-    - Select **Region**
-    - Select  **App Service Plan** 
-    
-- Click **Review + Create** to initiate the creation of the resource
+6. Click **Review + Create** to initiate the creation of the resource
 
-- Go to the details of the resource after it is successfully created. You can use the notification in the top right portion of the menu bar to get a link to the resource
+7. Go to the details of the resource after it is successfully created. You can use the notification in the top right portion of the menu bar to get a link to the resource
 
-- Click **Overview** to see the details of the resource that is just created
+8. Click **Overview** to see the details of the resource that is just created
+![AllServices](./images/AppServiceOverview.PNG)
 
-![AllServices](./images/AppServiceOverview.PNG).
-
-- In the **Overview** tab, click **Get Publish Profile** button in the menu bar to download the publish profile to your local folder
-
-![AllServices](./images/AppServicePublish.PNG).
+9. In the **Overview** tab, click **Get Publish Profile** button in the menu bar to download the publish profile to your local folder
+![AllServices](./images/AppServicePublish.PNG)
 
 > Note: We need to create two web application resources - one for the marketplace provisioning service and the other for SaaS service.
 
-- Create another Web App for the marketplace provisioning service.
+10. Create another Web App for the marketplace provisioning service, using the same process you used for the original Web App.
 
 ## Set up storage account for queues and blob storage
 - Log on to [Azure](https://portal.azure.com)
@@ -238,36 +238,41 @@ Assuming that the activation workflow is turned off, the sample client applicati
 
 ### Create marketplace offer
 
-For the purpose of the sample, a new marketplace offer is created and is made available in known tenants to test out the AMP SDK with the sample client application. More details on the creation of SaaS offers are available [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer)
+For the purpose of the sample, a new marketplace offer is created and is made available in known tenants to test out the AMP SDK with the sample client application. More details on the creation of SaaS offers are available [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer).
 
 ### Set up the sample client application locally
 
 In this section, we will go over the steps to download the latest sources from the repository, build the application ready for deployment to Azure.
 
-- Clone or download the latest source code from [here](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK)
-- Open the solution **SaaS.SDK.sln** in Visual Studio 2019
+1. Clone or download the latest source code from [here](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK)
+2. Open the solution **SaaS.SDK.sln** in Visual Studio 2019
 
 ![Solution Structure](./images/solution-structure-vs.png)
 
-- Right-click on the project named **SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
-- Open the file **appsettings.json** under the project **SaaS.SDK.CustomerProvisioning** and update the values as follows:
+3. Right-click on the project named **SaaS.SDK.CustomerProvisioning** and click **Set as StartUp Project**.
+4. Open the file **appsettings.json** under the project **SaaS.SDK.CustomerProvisioning** and update the values as follows:
 
-    - **GrantType** - Leave this as *client_credentials*
-
+    - **GrantType** - Leave this as `client_credentials`
     - **ClientId** - Azure Active Directory Application ID (as provided in the marketplace offer in Partner Center). Steps to create an Azure AD application for SaaS app can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration)
-    *Note:* Ensure that you have set the reply URL to the web application for the authentication to work properly
-    > - Log on to [Azure](https://portal.azure.com)
-    > - Click **Azure Active Directory** in the left menu
-    > - Click **App Registrations** in the menu on the left
-    > - Locate the AD application and click to go to details
-    > - Click on the hyperlink next to **Redirect URIs**
+    
+    *Note:* Ensure that you have set the reply URL to the web application for the authentication to work properly.
+
+5. Update the Application Registration in the AAD tenant.
+
+   - Log on to [Azure](https://portal.azure.com)
+   - Click **Azure Active Directory** in the left menu
+   - Click **App Registrations** in the menu on the left
+   - Locate the AD application and click to go to details
+   - Click on the hyperlink next to **Redirect URIs**  
     ![Redirect URIs](./images/ad-app-redirect-uris.png)
-    > - Make sure that you set https://localhost:44363/Home/Index as the redirect uri for the authentication to work when you run the app locally
+
+    - Make sure you set https://localhost:44363/Home/Index as the redirect uri for the authentication to work when you run the app locally in Visual Studio.
     ![Redirect URI](./images/ad-app-redirect-uris-home-index.png)
-    > - Scroll down and check the box that reads **ID tokens** in the **Implicit grant** section
+    
+    - Scroll down and check the box that reads **ID tokens** in the **Implicit grant** section
     ![ID Token](./images/id-token.png)
 
-    - **ClientSecret** - Secret from he Azure Active Directory Application
+    - **ClientSecret** - Secret from the Azure Active Directory Application
 
     - **Resource** - Set this to *62d94f6c-d599-489b-a797-3e10e42fbe22*
 
@@ -294,7 +299,7 @@ In this section, we will go over the steps to download the latest sources from t
       - **BlobContainer** - Name of the container for the blob storage
       - **BlobConnectionString** - Connection string to the Azure Blob storage 
 
-- Sample **appSettings.json** would look like below:
+After making all of the above changes, the **appSettings.json** would look like below sample.
 
 ```json
 {
@@ -336,7 +341,7 @@ In this section, we will go over the steps to download the latest sources from t
 }
 
 ```
-**Note**: When defining the keys in Azure App Service -> Configuration -> App Settings, refer to the below example for correctness:
+> **Note**: When defining the keys in Azure App Service -> Configuration -> App Settings, refer to the below example for correctness:
 
 |Name| Value|
 |--|--|
@@ -344,38 +349,56 @@ In this section, we will go over the steps to download the latest sources from t
 
 > **Tip** __(double underscore) should be used to define the config items that appear as nested keys in appSettings.json
 
-- Deploy SQL database to Azure as follows:
-  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy-v1.json" target="_blank">
+---
+
+### Deploying the SQL Database
+
+1. Click the button to start the deployment of SQL database 
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy-v1.json" target="_blank">
+
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/> 
-</a> to start the deployment of SQL database
-   - Fill out the details on the template deployment form as shown here
-   ![Deploy database](./images/Deploy-Database.png) 
-   - Click **Purchase** after agreeing to the terms and conditions by checking the box to start the deployment of the database by name **AMPSaaSDB**
-   - Update the connection string property in **appSettings.json** with the details related to SQL Server name, database and the credentials to connect to the database.
-   - >**Note:** The application holds the configuration, feature flags and email templates in tables named **ApplicationConfiguration** and **EmailTemplate** tables. It is recommended that these tables are initialized and the values are validated by running the relevant SQL in **AMP-DB-2.0.sql**
-- If you want to set up the database locally, you could create and initialize the database by following the steps given below:
-  - Create a database named **AMPSaaSDB**
-  - Switch to the database - **AMPSaaSDB**
-  - Run the script - **AMP-DB-1.0.sql** to initalize the database
-  - Run the script - **AMP-DB-2.0.sql** to update your existing database to 2.0
-  - Run the script - **AMP-DB-2.1.sql** to update your existing database to 2.1
-  - Add entries into KnownUsers table to allow login to **Publisher Portal**   
-  > Note: If you already had created a database using an earlier version of the SDK, you just need to run the scripts with a higher version. 
-      
-- Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
+</a> 
+
+2.  Fill out the details on the template deployment form as shown here
+![Deploy database](./images/Deploy-Database.png) 
+
+3. Click **Purchase** after agreeing to the terms and conditions by checking the box to start the deployment of the database by name **AMPSaaSDB**
+4. Update the connection string property in **appSettings.json** with the details related to SQL Server name, database and the credentials to connect to the database.
+   >**Note:** The application holds the configuration, feature flags and email templates in tables named **ApplicationConfiguration** and **EmailTemplate** tables. It is recommended that these tables are initialized and the values are validated by running the relevant SQL in **AMP-DB-2.0.sql**
+
+### Alterntive SQL Database Setup
+
+If you want to set up the database locally, you could create and initialize the database by following the steps given below:
+1. Create a database named **AMPSaaSDB**
+2. Switch to the database - **AMPSaaSDB**
+3. Run the script - **AMP-DB-1.0.sql** to initalize the database
+4. Run the script - **AMP-DB-2.0.sql** to update your existing database to 2.0
+5. Add entries into KnownUsers table to allow login to **Publisher Portal**   
+  > Note: If you already had created a database using an earlier version of the SDK, you just need to run the **AMP-DB-2.0.sql** 
+
+---
+
+### Run the Applicaiton Locally      
+
+Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
 *Note: Make sure that the home page url is listed in the **replyURLs** in the AD application for the authentication against Azure AD to work properly.*
+
+---
 
 ### Deploy the application to Azure
 
 #### Using an ARM template and Azure CLI
 
-  - Click [![Deploy to Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Fdeploy-webapp.json) to launch the template that deploys web applications to Azure
-  - After navigating to the Azure portal, fill out the form that appears as below:
+1. Click [![Deploy to Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Fdeploy-webapp.json) to launch the template that deploys web applications to Azure
+2. After navigating to the Azure portal, fill out the form that appears as below:
+
   ![ARM Template to deploy web apps](./images/deploy-webapp-template.png)
-    - **Web App Name Prefix** - The template creates two web applications and the prefix is used to prepend the word before the names of the web applications and the app service plan.
+
+> **Web App Name Prefix** - The template creates two web applications and the prefix is used to prepend the word before the names of the web applications and the app service plan.
       -Eg: Web App Name Prefix  = **saasdemo**. App service plan is created with the name - **saasdemoAmpAppSvcPlan**, provisioning service is created as **saasdemo-portal.azurewebsites.net** and publisher application is created as **saasdemo-admin.azurewebsites.net**
-  - Fill out the Tenant ID, AD Application ID and secret, accept the terms and click **Purchase** to start the deployment
-  - Deploy the packages to the web apps using Azure CLI by following these steps after the deployment of web apps is completed
+1. Fill out the Tenant ID, AD Application ID and secret, accept the terms and click **Purchase** to start the deployment
+2. Deploy the packages to the web apps using Azure CLI by following these steps after the deployment of web apps is completed
+    
     - While you are on the Azure Portal, click on Azure CLI button in the top bar
     ![Launch Azure CLI](./images/azure-cli-button.png)
     - At the bottom of the window, a pane gets enabled with a request to choose the command shell. Click **Powershell** to proceed
@@ -392,22 +415,22 @@ In this section, we will go over the steps to download the latest sources from t
 
     Publish-AzWebapp -ResourceGroupName saas-demo-rg -Name saasdemo-admin -ArchivePath PublisherPortal.zip
     ```
-    - Navigate to the web application -> Configuration and add an item to connection strings with the detail to connect to the database. The below screenshot illustrates the place where the setting has to be added.
-    - >Note: DefaultConnection should be added to both the portals 
-    ![Connection string](./images/webapp-connection-string.png)
+  
+  3. Navigate to the web application -> Configuration and add an item to connection strings with the detail to connect to the database. The below screenshot illustrates the place where the setting has to be added.
+  ![Connection string](./images/webapp-connection-string.png)
 
-#### Manual deployment using VS 2019
+> Note: DefaultConnection should be added to both the portals 
 
-- Open solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
+### Manual deployment using VS 2019
 
+1. Open the solution in **Visual Studio 2019** and open **Solution Explorer**. Right click on **SaaS.SDK.CustomerProvisioning** Project and click **Publish ...**
 ![AllServices](./images/project-publish-menu.PNG)
 
-- Click **Import Profile ...** to browse and select the publish profile that was downloaded earlier
-- Click **Publish** to deploy the web application to Azure App Service
-
+2. Click **Import Profile ...** to browse and select the publish profile that was downloaded earlier
+3. Click **Publish** to deploy the web application to Azure App Service
 ![AllServices](./images/VSPublishProfile.PNG).
 
-- Navigate to the  **URL (Instance Name)** to validate the deployment
+4. Navigate to the  **URL (Instance Name)** to validate the deployment
 
 > Note: The steps to set up the Publisher solution - **SaaS.SDK.PublisherSolution** locally are identical to the steps to set up the marketplace provisioning service.
 
@@ -455,7 +478,8 @@ Suppose the names of the web applications deployed to Azure are as follows:
 **Provisioning Service** - https://saaskit-portal.azurewebsites.net
 **Publisher Application** - https://saaskit-admin.azurewebsites.net
 
-The **Technical Configuration** section of the Marketplace offer with the values filled using the web app names would look like as shown here
+The **Technical Configuration** section of the Marketplace offer with the values filled using the web app names would look like as shown here.
+
 ![Technical Configuration](./images/offer-technical-configuration.png)
 
 |Field | Value |
@@ -470,13 +494,14 @@ The **Technical Configuration** section of the Marketplace offer with the values
 The Provisioning servie and the Publisher solution are configured to log the activity to console ( when running locally ). The logs are available via **Log Stream** when the applications are running in Azure as app services.
 Logs in Azure can be viewed by following the below steps:
 
-- Log on to https://portal.azure.com
-- Navigate to the app service 
-- Click **App Service logs** and set the parameters as shown here:
+1. Log on to https://portal.azure.com
+2. Navigate to the app service 
+3. Click **App Service logs** and set the parameters as shown here:
 
 ![App service logs](./images/azure-application-logging.png)
 
-- Click **Log Stream** in the menu on the left to look at the logs output by the application. You could see the view refreshing every minute with the latest log information due to the activity in the application as you access the application in another browser window.
+4. Click **Log Stream** in the menu on the left to look at the logs output by the application. You could see the view refreshing every minute with the latest log information due to the activity in the application as you access the application in another browser window.
+
 - You can download the logs from the FTP URL that is available in the **App Service Logs** interface.
 - The credentials to access the FTP location are available in the **Publish Profile** of the web application.
 

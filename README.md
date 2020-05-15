@@ -1,95 +1,99 @@
-# Microsoft Commercial Marketplace Transactable SaaS Offer SDK
+# Microsoft Commercial Marketplace - Community Sample Code and SDK for SaaS App Offers
 ![.NET Core](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/workflows/.NET%20Core/badge.svg)
+
 
 ## Introduction
 
-This SDK's goal is to provide guidance and the components needed for Publishers (ISVs and StartUps) to create transactable Software as a-Service (SaaS) offers in the Azure and AppSource marketplaces.  
+The goal of this project is to provide a reference example with sample code for developers interested publishing transactable, Software as a-Service (SaaS) offers in Microsoft's Commercial Marketplace.
 
-The SDK provides the components required for the implementations of the billing (fulfillment v2 and metered) APIs, and additional components that showcase how to build a customer provisioning interface, logging, and administration of the customer's subscriptions. These are the core projects in the SDK:  
-
-- **Transactable SaaS Client Library** that implements the fulfillment v2 and metered APIs and the Web-hook that handles messages from the Marketplace's E-commerce engine.
-- **Customer provisioning sample web application** that showcases how to register, provision, and activate the customer subscription. Implemented using ASP.Net Core 3.1, it uses the SaaS Client library and Data Access Library to to invoke and persists interactions with the fulfillment APIs. In addition, it provides interfaces for a customer to manage their subscriptions and plans. 
-- **Publisher sample web application** that showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. 
-- **Client Data Access library** that demonstrates how to persist the Plans, Subscriptions, and transactions with the fulfillment and Metered APIs.
-- **Client Services** contains the services used by the Customer provisioning and Publisher solution to orchestrate calls to the API / database.
-- **Provisioning webjob** implements the  background job in processing the requests from the Customer Provisioning and the Publisher portals and moves the subscriptions through relevant statuses
+The sample code uses a .NET-based SDK published as a part of this project. The SDK provides a framework for excercising the Commercial Marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) Leveraging the SDK, the sample code demonstrates how a typical SaaS platform interacts with these APIs in order to provision customers, enable logging, and manage Commercial Marketplace subscriptions.
 
 
-### Documentation 
+## Intended Use
 
-The documentation **(docs)** directory contains: 
+The sample code and SDK in this project are for reference purposes only and are meant to complement the existing Commercial Marketplace documentation by demonstrating common API interactions required to use the SaaS App offer type. The intent of this project is to accelerate the onboarding experience by providing code samples for developers. Although the sample code leverages the SDK, developers are encouraged to work with the SaaS Fulfillment API and Marketplace Metering Service API directly rather than rely on the SDK for production use.
 
-- **[Installation instructions](./docs/Installation-Instructions.md)** to help understand, implmenet and deploy the SDK  components.  
-- **Review of the SaaS Offer BluePrints** the SDK provides extended functionality. In addition, to the implementation . Like using the SaaS offer a way to transact [Virtual Machines](https://docs.microsoft.com/en-us/azure/marketplace/cloud-partner-portal/virtual-machine/cpp-virtual-machine-offer)  and [Azure Application](https://docs.microsoft.com/en-us/azure/marketplace/cloud-partner-portal/azure-applications/cpp-azure-app-offer) offers with the use of software licenses (Scheduled for v.1.1 of this SDK) and for implementing Hybrid SaaS applications (scheduled for v1.2 of this SDK)
+Please note: this is not a Microsoft-supported Azure SDK project. Support for this project is community-based and contributions are welcomed. Details on contributing can be found [below.](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK#contributing)
 
-### Sources 
+
+## Commercial Marketplace Documentation
+
+Before using this sample code and SDK, please review the Commercial Marketplace documentation resources below to understand the important concepts, account setup, and offer configuration requirements for publishing SaaS App offers.
+
+- [Commercial Marketplace Overview.](https://docs.microsoft.com/en-us/azure/marketplace/marketplace-publishers-guide) Overview of the Commercial Marketplace.
+
+- [SaaS Apps in the Commercial Marketplace.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer) Overview of the SaaS App business policies, plus step-by step offer creation and configuration requirements.
+
+- [SaaS Fulfillment API (v2).](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) API details for SaaS App Marketplace subscription creation and management.
+
+- [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) API details for the Marketplace Metering Service which, when used in conjunction with the SaaS Fulfillment API, enables event-based billing. 
+
+- [SaaS Fulfillment API FAQ.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq) Frequently-asked questions about the SaaS Fulfillment APIs.
+
+
+## Sample Code and SDK Documentation 
+
+The documentation **(docs)** directory contains [installation instructions](./docs/Installation-Instructions.md) to help understand, implement, and deploy the sample code and SDK components. 
+
+
+## Terminology
+
+- SDK: Software Development Kit. This refers to the SDK for the .NET language and incldues the Client and Data Access Libraries, as well as the Sample Web Applications used to excercise the SaaS Fulfillment API and Marketplace Metering Service API.
+
+- Client Library. This refers to a library (and associated tools, documentation, and samples) that customers/developers use to ease creating Commercial Markeptlace SaaS App offers.
+
+- Sample Web Application. This refers to source code that leverages the SDK and Client Libraries.   
+
+
+## Projects 
 
 The source **(src)** directory offers the following components: 
 
 
 | Project | Description | Directory Name |
 | --- | --- | --- |
-|  **Transactable SaaS Client Library** |Implements the fulfillment v2 and metered APIs and the Web-hook that handles messages from the Marketplace's E-commerce engine. |SaaS.SDK.Client|
-| **Customer provisioning sample web application** | Showcases how to provision a customer (ASP.NET Core 3.1) that uses the SDK to invoke fulfillment APIs in order to manage the subscriptions against the SaaS offer in Azure. |SaaS.SDK.CustomerProvisioning|
-| **Publisher sample web application** | Showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. |SaaS.SDK.PublisherSolution|
-| **Client Data Access library** | Enables to persist the Plans, Subscriptions, and transactions with the fulfillment and Metered APIs. |SaaS.SDK.Client.DataAccess |
-| **Client Services** | Provides the service layer for the web applications | SaaS.SDK.Provisioning.Services|
-| **Provisioning webjob** |  Implements the  background job in processing the requests from the Customer Provisioning and the Publisher portals and moves the subscriptions through relevant statuses | SaaS.SDK.WebJob |
-| **[Unit Tests project](./docs/Microsoft-Marketplace-SaaS-SDK-UnitTest.md)** | Helps validate and test the SDK's codebase. | SaaS.SDK.UnitTest |
+| **Transactable SaaS Client Library** | Implements the SaaS Fulfillment API (v2), Marketplace Metering Service API, and the Web-hook that handles messages from the Marketplace billing system. |SaaS.SDK.Client|
+| **Customer Provisioning - Sample web application** | Demonstrates how to register, provision, and activate the Marketplace subscription. Implemented using ASP.Net Core 3.1, the sample web application uses the SaaS Client Library and Data Access Library to invoke and persist API interactions and provides an example user interface to demonstrate how a customer would manage their subscriptions and plans. |SaaS.SDK.CustomerProvisioning|
+| **Publisher Solution (metered billing)- Sample web application** | Demonstrates how to generate usage events used in metered billing transactions, and how to emit these events to the Marketplace Metering Service API. |SaaS.SDK.PublisherSolution|
+| **Client Data Access library** | Demonstrates how to persist Plans, Marketplace subscriptions, and related transaction attributes when using the SaaS Fulfillment API (v2) and Marketplace Metering Service API. |SaaS.SDK.Client.DataAccess |
+| **[Unit Tests Project](./src/SaaS.SDK.UnitTest)** | Helps validate and test the SDKs codebase. | SaaS.SDK.UnitTest |
 
 
-The web sample applications and the SDK in this repository cover the components that comprise the highlighted area in the below picture
-
-The Azure Marketplace Metering SDK enables SaaS applications publish usage data to Azure so that customers are charged  according to non-standard units. 
-
-The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
+The sample code and SDK in this repository run in the Publisher's environment as illustrated below. The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
 
 ![Usecase](./docs/images/UseCaseSaaSAPIs.png)
 
 
-### Technology
+## Technology and Versions
 
-This SDK has been developed using the following technologies: 
+This SDK has been developed using the following technologies and versions: 
 
 - [.NET Core 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 - [ASP.NET Core Runtime 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 - [Entity Framework](https://docs.microsoft.com/en-us/ef/)
 
 
-## Resources
+## Security
+- The sample code and SDK have been scanned for vulnerabilities and use secure configurations. Versions have been reviewed to ensure compatibility with the lastest security guidelines.
 
-- Details on the fulfillment v2 API can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-a-subscription) 
-
-- Details on the metering APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis).
-
-- Steps to create a SaaS offer are available [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer)
 
 ## Prerequisites
 
 Ensure the following prerequisites are met before getting started:
 
+- You must have an active Azure subscription for development and testing purposes. Creat an Azure subscription [here.](https://azure.microsoft.com/en-us/free/)
+- You must have a Partner Center account enabled for use with the Commercial Marketplace. Create an account [here.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-account)
 - We recommend using an Integrated Development Environment (IDE):  [Visual Studio Code](https://code.visualstudio.com/),  [Visual Studio 2019](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16#), etc...
 - The SDK has been implemented using [.NET Core 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
-- For Persistence we are using [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/en-us/ef/). However, feel free to use any data repository you are comfortable with.  
+- For data persistence we are using [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/en-us/ef/). However, feel free to use any data repository you are comfortable with.  
 
-Besides, it is assumed that you have access to the following resources:
-- Azure subscription - to host the AMP SDK sample client application.
-- Partner Center - to create and publish a marketplace offer.
 
-## Roadmap
-
-The following is the proposed road map for this SDK: 
+## Releases
 
 - **February 2020 - v1.0** Current Release. It includes the full implementation of the Fulfillment V2 and metered APIs with web applications that demonstrate customer provisioning and publisher solutions. 
-- **March 2020 - v1.1** Add the **SaaS Offer as a License Manager Application** blueprint: This is targeted for Publishers that would like to use a combination of two Azure Marketplace offers to transact their SaaS Solution.  The first offer is a SaaS offer that would be use as a mechanism to sell a license for the solution on specific terms (defined by Plan) and a Virtual Machine or an Azure Application offer that will deploy the solution in the Customer Subscription as a BYOL offer.   
-- **May 2020 - v1.2** Add the **SaaS Offer that deploys in the Customer's Azure Subscription** (also referred as the Hybrid Model) blueprint: Targeted to publishers that:
-	- Need use the billing capabilities of the SaaS offer for the Virtual Machine and Azure Application (Solution Template) offer
-	- Partners that would like to deploy solutions in the customer’s subscriptions that use technologies (VM + Container, Kubernetes, etc…) that are not currently supported by other offers in Marketplace
-	- Partners that need to deploy solutions in the customer’s subscriptions that use Azure Services that cannot be fully automated via Azure Resource Manager Deployments (need manual steps to complete the full deployment). 
-	- Partners that have a SaaS deployment solution that needs to have both a SaaS Application running into their subscription and Azure resources deployed into the customers Azure subscription. A combination of both is required to enable their solution to work.
 
 
-# Contributing
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
@@ -102,3 +106,7 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
+## License
+
+This project is released under the [MIT License](LICENSE).
