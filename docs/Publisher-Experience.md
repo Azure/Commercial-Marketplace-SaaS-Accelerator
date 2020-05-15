@@ -55,17 +55,17 @@ SaaS offers that is published in Azure Market Place can be extracted and managed
 * Clicking **Add** ( or **Create Software as a Service**) leads you to a page that lists down SaaS offers available for purchase.
 
 * Search for **Cloud SaaS** and locate our SaaS offer in the listing
-![AMP SDK Sample Offer](./images/Search-Results-SaaS.png)
+![SaaS Offer](./images/Search-Results-SaaS.png)
 
 * Click on the tile to view the details of the offer
-![AMP SDK Sample Offer detail](./images/SaaS-Offer-Detail.png)
+![SaaS Offer detail](./images/SaaS-Offer-Detail.png)
 * **Select a software plan** and click **Create**
 * Fill out the form and click **Subscribe**
-![AMP SDK Sample Offer](./images/Subscribe-to-Plan.png)
+![SaaS Offer](./images/Subscribe-to-Plan.png)
 * A new resource gets created and appears in the listing
 ![SaaS Subscriptions](./images/CloudSaasOfferList.png)
 * Click the text under **Name** to view the details of the resource
-* Click **Configure Account** option in the header bar. You will now be redirected to the SaaS offer landing page offered by the **AMP SDK Sample Client Application** in a new tab / window
+* Click **Configure Account** option in the header bar. You will now be redirected to the SaaS offer landing page offered by the **Customer portal** in a new tab / window
 * The landing page presents the details of the offer that was purchased with an option to **Activate** the subscription.
 
 > In a real scenario, the landing page would collect additional details relevant for provisioning the target SaaS application and any additional custom information from customer if required .
@@ -167,7 +167,7 @@ The below diagram illustrates the flow of information between Azure and the Azur
 * On the landing page, review the details presented and click **Activate**
 ![SaaS Subscriptions](./images/activate-subscription.png)
 
-> The AMP SDK sample application calls the following AMP SDK API methods in the background
+> The Publisher portal calls the following SaaS SDK API methods in the background.
 
 ```csharp
 // Determine the details of the offer using the marketplace token that is available in the URL during the redirect from Azure to the landing page.
@@ -198,7 +198,7 @@ The below diagram illustrates the flow of information between Azure and the Azur
 * Select a desired plan and click **Change Plan**.
 ![SaaS Subscriptions](./images/change-plan.png)
 
-> The AMP SDK sample application calls the following AMP SDK API methods in the background
+> The Publisher portal calls the following SaaS SDK API methods in the background.
 
 ```csharp
 // Initiate the change plan process
@@ -224,7 +224,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 ![SaaS Subscriptions](./images/unsubscribe.png)
 * Confirm your action to trigger the deletion of the subscription.
 
-> The AMP SDK sample application calls the following AMP SDK API methods in the background.
+> The Publisher portal calls the following SaaS SDK API methods in the background.
 
 ```csharp
 // Initiate the delete subscription process
@@ -256,7 +256,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
   
 ![Per user pricing](./images/per-user-plan-pricing.png)
 
-> The AMP SDK sample application calls the following AMP SDK API methods in the background.
+> The Publisher portal calls the following SaaS SDK API methods in the background.
 
 ```csharp
 Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, int? subscriptionQuantity);
