@@ -1,4 +1,4 @@
-# Microsoft Commercial Marketplace - Community Sample Code and SDK for SaaS applications
+# Microsoft Commercial Marketplace - Community Sample Code and SDK for SaaS Applications
 ![.NET Core](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/workflows/.NET%20Core/badge.svg)
 
 
@@ -23,13 +23,13 @@ Before using this sample code and SDK, please review the commercial marketplace 
 
 - [Commercial marketplace documentation.](https://docs.microsoft.com/azure/marketplace/) Getting started and top articles
 
-- [SaaS SaaS applications in the commercial marketplace.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-new-saas-offer) Overview of the SaaS SaaS application business policies, plus step-by step offer creation and configuration requirements.
+- [SaaS applications in the commercial marketplace.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-new-saas-offer) Overview of the SaaS SaaS application business policies, plus step-by step offer creation and configuration requirements.
 
-- [SaaS Fulfillment API (v2).](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) API details for SaaS SaaS application subscription creation and management.
+- [SaaS fulfillment API (v2).](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) API details for SaaS SaaS application subscription creation and management.
 
-- [Marketplace Metering Service API.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) API details for the Marketplace Metering Service which, when used in conjunction with the SaaS Fulfillment API, enables event-based billing. 
+- [Marketplace metering service API.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) API details for the Marketplace Metering Service which, when used in conjunction with the SaaS Fulfillment API, enables event-based billing. 
 
-- [SaaS Fulfillment API FAQ.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq) Frequently-asked questions about the SaaS Fulfillment APIs.
+- [SaaS fulfillment API FAQ.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq) Frequently-asked questions about the SaaS Fulfillment APIs.
 
 
 ## Sample code and SDK documentation 
