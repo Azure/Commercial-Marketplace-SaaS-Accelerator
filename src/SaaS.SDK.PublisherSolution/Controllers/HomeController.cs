@@ -260,6 +260,8 @@
                 return this.View("Error", ex);
             }
         }
+    }
+}
 
         /* Indra
         /// <summary>
@@ -724,3 +726,4 @@
         }
     }
 }
+*/
