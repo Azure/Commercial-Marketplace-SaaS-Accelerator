@@ -10,7 +10,7 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     /// Licenses Controller.
@@ -135,13 +135,12 @@
         [HttpPost]
         public IActionResult PlanDetails(PlansModel plans)
         {
-            this.logger.LogInformation("Plans Controller / PlanDetails:  plans {0}", JsonConvert.SerializeObject(plans));
+            this.logger.LogInformation("Plans Controller / PlanDetails:  plans {0}",  JsonSerializer.Serialize(plans));
             try
             {
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 if (plans != null)
                 {
-                    this.plansService.UpdateDeployToCustomerSubscriptionFlag(plans);
                     if (plans.PlanAttributes != null)
                     {
                         var inputAtttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();

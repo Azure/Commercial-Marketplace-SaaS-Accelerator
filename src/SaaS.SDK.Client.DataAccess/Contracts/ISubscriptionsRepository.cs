@@ -51,13 +51,14 @@
         /// <param name="quantity">The quantity identifier.</param>
         void UpdateQuantityForSubscription(Guid subscriptionId, int quantity);
 
-        /// <summary>
-        /// Saves the deployment credentials.
-        /// </summary>
-        /// <param name="subscriptionId">The subscription identifier.</param>
-        /// <param name="keyVaultSecret">The key vault secret.</param>
-        /// <param name="userId">The user identifier.</param>
-        void SaveDeploymentCredentials(Guid subscriptionId, string keyVaultSecret, int userId);
+        /* Indra  /// <summary>
+          /// Saves the deployment credentials.
+          /// </summary>
+          /// <param name="subscriptionId">The subscription identifier.</param>
+          /// <param name="keyVaultSecret">The key vault secret.</param>
+          /// <param name="userId">The user identifier.</param>
+          void SaveDeploymentCredentials(Guid subscriptionId, string keyVaultSecret, int userId);
+          */
 
         /// <summary>
         /// Gets the subscriptions parameters by identifier.
@@ -73,11 +74,12 @@
         /// <param name="subscriptionParametersOutput">The subscription parameters output.</param>
         void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput);
 
-        /// <summary>
-        /// Gets the deployment configuration.
-        /// </summary>
-        /// <param name="subscriptionId">The subscription identifier.</param>
-        /// <returns> Subscription Key Vault.</returns>
-        SubscriptionKeyVault GetDeploymentConfig(Guid subscriptionId);
+        /* Indra  /// <summary>
+          /// Gets the deployment configuration.
+          /// </summary>
+          /// <param name="subscriptionId">The subscription identifier.</param>
+          /// <returns> Subscription Key Vault.</returns>
+          SubscriptionKeyVault GetDeploymentConfig(Guid subscriptionId);
+          */
     }
 }

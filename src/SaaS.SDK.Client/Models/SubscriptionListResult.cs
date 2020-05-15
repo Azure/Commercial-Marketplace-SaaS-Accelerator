@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
     using System.ComponentModel;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// the subscription list result.
@@ -15,7 +15,7 @@
         /// <value>
         /// The subscriptions result.
         /// </value>
-        [JsonProperty("Subscriptions")]
+        [JsonPropertyName("Subscriptions")]
         [DisplayName("Subscriptions")]
         public List<SubscriptionResult> SubscriptionsResult { get; set; }
 
@@ -27,7 +27,7 @@
         /// This value will contain a URL for subsequent queries when most subscriptions
         /// exist to be retrieved.
         /// </value>
-        [JsonProperty("@nextLink")]
+        [JsonPropertyName("@nextLink")]
         [DisplayName("NextLink")]
         public string NextLink { get; set; }
     }

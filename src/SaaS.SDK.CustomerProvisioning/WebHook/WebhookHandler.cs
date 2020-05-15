@@ -10,7 +10,7 @@
     using Microsoft.Marketplace.SaasKit.WebHook;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Queue;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     /// Handler For the WebHook Actions.
@@ -169,7 +169,7 @@
             queueObject.PortalName = "Admin";
             await Task.CompletedTask;
 
-            string queueMessage = JsonConvert.SerializeObject(queueObject);
+            string queueMessage =  JsonSerializer.Serialize(queueObject);
             string storageConnectionString = this.cloudConfigs.AzureWebJobsStorage ?? this.azureWebJobsStorage;
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
 

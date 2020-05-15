@@ -39,22 +39,6 @@
                 </ul>
                 <div id="tabs-Parameters">
                     <div id="PlanAttributes">
-                        <div calss="container">
-                            <dl class="row">
-                                <dt class="col-5 text-right">Deploy to Customer Subscription</dt>
-                                <dd class="col-3 text-left">
-
-                                    <label class="switch">
-                                        @Html.CheckBoxFor(model => model.DeployToCustomerSubscription)
-                                        <span class="slider round"></span>
-                                    </label>
-                                </dd>
-
-
-
-
-                            </dl>
-                        </div>
                         @if (Model.PlanAttributes != null && Model.PlanAttributes.Count() > 0)
                         {
                             <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
@@ -105,7 +89,6 @@
                                         <th>Event Name</th>
                                         <th>Active</th>
                                         <th>Copy To Customer</th>
-                                        @*<th>ARM Template</th>*@
                                         <th>
                                             Success Event Emails
                                         </th>
@@ -135,9 +118,6 @@
                                                 @Html.CheckBoxFor(model => model.PlanEvents[i].CopyToCustomer, new { name = "PlanEvents[@i].CopyToCustomer", id = string.Format("PlanEvents_CopyToCustomer_{0}", @i) })
                                                 @*<input type="checkbox" id="PlanEvents_IsEnabled_@i" name="PlanEvents[@i].IsEnabled" value="@Model.PlanEvents[i].IsEnabled" />*@
                                             </td>
-                                            @*<td>
-                                                @Html.DropDownListFor(model => model.PlanEvents[i].ArmtemplateId, ViewBag.ARMTemplate as IEnumerable<SelectListItem>, new { name = "PlanEvents[@i].ArmtemplateId", id = string.Format("PlanEvents_ArmtemplateId_{0}", @i) })
-                                            </td>*@
                                             <td><input type="text" style="width:200px;" id="PlanEvents_SuccessStateEmails_@i" name="PlanEvents[@i].SuccessStateEmails" value="@Model.PlanEvents[i].SuccessStateEmails" /></td>
                                             <td><input type="text" style="width:200px;" id="PlanEvents_FailureStateEmails_@i" name="PlanEvents[@i].FailureStateEmails" value="@Model.PlanEvents[i].FailureStateEmails" /></td>
                                         </tr>
@@ -163,19 +143,20 @@
 <script>
 
     $(document).ready(function () {
-        var Isdeploy = $('#DeployToCustomerSubscription').prop('checked');
-        $(".Deployment input:checkbox").attr('disabled', 'disabled');
-        //$(".Deployment input:checkbox").attr('onclick', "return false");
-        if (Isdeploy == false) {
-            $(".Deployment").hide();
-        }
-        else {
-            $(".Deployment").show();
-        }
-
+        /*  Indra
+         *  var Isdeploy = $('#DeployToCustomerSubscription').prop('checked');
+          $(".Deployment input:checkbox").attr('disabled', 'disabled');
+          //$(".Deployment input:checkbox").attr('onclick', "return false");
+          if (Isdeploy == false) {
+              $(".Deployment").hide();
+          }
+          else {
+              $(".Deployment").show();
+          }
+  */
 
     })
-
+    /* Indra
     $('#DeployToCustomerSubscription').on('change', function () {
         if (!this.checked) {
             $(".Deployment").hide();
@@ -185,6 +166,8 @@
             $(".Deployment").show();
         }
     });
+
+   */
     function successconfirmDialog() {
         swal({
             title: "Saved",

@@ -6,7 +6,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Contracts;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     /// Status handler to handle the subscriptions that are in PendingActivation status.
@@ -23,12 +23,6 @@
         /// The subscription log repository.
         /// </summary>
         private readonly ISubscriptionLogRepository subscriptionLogRepository;
-
-        /// <summary>
-        /// The subscription template parameters repository.
-        /// </summary>
-        /// Prasad
-        //private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
 
         /// <summary>
         /// The logger.
@@ -67,13 +61,12 @@
         {
             this.logger?.LogInformation("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
-            this.logger?.LogInformation("Result subscription : {0}", JsonConvert.SerializeObject(subscription.AmpplanId));
+            this.logger?.LogInformation("Result subscription : {0}", JsonSerializer.Serialize(subscription.AmpplanId));
             this.logger?.LogInformation("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
             string oldstatus = subscription.SubscriptionStatus;
 
-            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString())
+            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
             {
                 try
                 {
@@ -96,12 +89,12 @@
                     };
                     this.subscriptionLogRepository.Save(auditLog);
 
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Activated", SubscriptionStatusEnumExtension.Subscribed.ToString());
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, "Activated", SubscriptionStatusEnumExtension.Subscribed.ToString());
                 }
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, SubscriptionStatusEnumExtension.ActivationFailed.ToString());
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, errorDescriptin, SubscriptionStatusEnumExtension.ActivationFailed.ToString());
                     this.logger?.LogInformation(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.ActivationFailed.ToString(), false);

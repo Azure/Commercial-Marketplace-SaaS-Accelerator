@@ -12,7 +12,7 @@
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Helpers;
     using Microsoft.Marketplace.SaasKit.Models;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     /// rest client call implementation.
@@ -58,7 +58,7 @@
         {
             try
             {
-                this.logger?.Info("Call Rest Service : {0}" + JsonConvert.SerializeObject(new { url = url, method = method, parameters = parameters, headers = headers, contentType = contentType }));
+                this.logger?.Info("Call Rest Service : {0}" + JsonSerializer.Serialize(new { url = url, method = method, parameters = parameters, headers = headers, contentType = contentType }));
                 var accessTokenResult = await ADAuthenticationHelper.GetAccessToken(this.clientConfiguration).ConfigureAwait(false);
 
                 string formattedParams = string.Empty;
@@ -73,7 +73,7 @@
                     {
                         if ("application/json".Equals(contentType))
                         {
-                            formattedParams = JsonConvert.SerializeObject(parameters);
+                            formattedParams = JsonSerializer.Serialize(parameters);
                         }
                         else
                         {
@@ -115,11 +115,16 @@
             using (StreamReader reader = new StreamReader(response.GetResponseStream()))
             {
                 string responseAsString = reader.ReadToEnd();
-                var result = JsonConvert.DeserializeObject<T>(responseAsString);
 
-                if (result == null)
+                var result = new T();
+                if (!string.IsNullOrWhiteSpace(responseAsString))
                 {
-                    result = new T();
+                    result = JsonSerializer.Deserialize<T>(responseAsString);
+
+                    if (result == null)
+                    {
+                        result = new T();
+                    }
                 }
 
                 // Fill headers.

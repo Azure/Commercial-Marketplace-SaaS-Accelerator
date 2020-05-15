@@ -4,7 +4,7 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.WebHook;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     /// Azure Web hook.
@@ -78,7 +78,7 @@
 
             if (request != null)
             {
-                var json = JsonConvert.SerializeObject(request);
+                var json =  JsonSerializer.Serialize(request);
                 this.applicationLogService.AddApplicationLog("Webhook Serialize Object " + json);
                 await this.webhookProcessor.ProcessWebhookNotificationAsync(request).ConfigureAwait(false);
             }

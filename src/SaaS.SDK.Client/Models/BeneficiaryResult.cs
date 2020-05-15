@@ -1,10 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     using System;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Beneficiary Result
+    /// Beneficiary Result.
     /// </summary>
     public class BeneficiaryResult
     {
@@ -14,7 +14,7 @@
         /// <value>
         /// The tenant identifier.
         /// </value>
-        [JsonProperty("tenantId")]
+        [JsonPropertyName("tenantId")]
         public Guid TenantId { get; set; }
     }
 }

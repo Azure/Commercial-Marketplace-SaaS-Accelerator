@@ -14,6 +14,5 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public int EventId { get; set; }
         public string EventsName { get; set; }
         public bool? CopyToCustomer { get; set; }
-        public Guid? ArmtemplateId { get; set; }
     }
 }

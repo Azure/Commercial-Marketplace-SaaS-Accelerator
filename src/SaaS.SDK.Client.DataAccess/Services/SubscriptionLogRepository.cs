@@ -83,43 +83,21 @@
         /// Logs the status during provisioning.
         /// </summary>
         /// <param name="subscriptionID">The subscription identifier.</param>
-        /// <param name="armtemplateId">The armtempalte identifier.</param>
-        /// <param name="deploymentStatus">The deployment status.</param>
         /// <param name="errorDescription">The error description.</param>
         /// <param name="subscriptionStatus">The subscription status.</param>
-        public void LogStatusDuringProvisioning(Guid subscriptionID, Guid? armtemplateId, string deploymentStatus, string errorDescription, string subscriptionStatus)
+        public void LogStatusDuringProvisioning(Guid subscriptionID, string errorDescription, string subscriptionStatus)
         {
             var subscription = this.context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionID).FirstOrDefault();
 
-            // var existingWebJobStatus = this.context.WebJobSubscriptionStatus.Where(s => s.SubscriptionId == subscriptionID).FirstOrDefault();
-            // if (existingWebJobStatus == null)
-            // {
             WebJobSubscriptionStatus status = new WebJobSubscriptionStatus()
             {
                 SubscriptionId = subscriptionID,
-                ArmtemplateId = armtemplateId,
                 SubscriptionStatus = subscriptionStatus,
-                DeploymentStatus = deploymentStatus,
                 Description = errorDescription,
                 InsertDate = DateTime.Now,
             };
             this.context.WebJobSubscriptionStatus.Add(status);
             this.context.SaveChanges();
-
-            // }
-            // else
-            // {
-            //    existingWebJobStatus.SubscriptionId = subscriptionID;
-            //    if (armtemplateId != default)
-            //    {
-            //        existingWebJobStatus.ArmtemplateId = armtemplateId;
-            //    }
-            //    existingWebJobStatus.SubscriptionStatus = subscription.SubscriptionStatus;
-            //    existingWebJobStatus.DeploymentStatus = deploymentStatus;
-            //    existingWebJobStatus.Description = errorDescription;
-            //    this.context.WebJobSubscriptionStatus.Update(existingWebJobStatus);
-            //    this.context.SaveChanges();
-            // }
         }
     }
 }

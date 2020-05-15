@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Error handle FulfillmentError.
@@ -13,7 +13,7 @@
         /// <value>
         /// The error.
         /// </value>
-        [JsonProperty("error")]
+        [JsonPropertyName("error")]
         public ErrorResult Error { get; set; }
     }
 }

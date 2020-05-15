@@ -24,14 +24,6 @@
         public Guid PlanId { get; set; }
 
         /// <summary>
-        /// Gets or sets the armtemplate identifier.
-        /// </summary>
-        /// <value>
-        /// The armtemplate identifier.
-        /// </value>
-        public Guid ArmtemplateId { get; set; }
-
-        /// <summary>
         /// Gets or sets the event identifier.
         /// </summary>
         /// <value>

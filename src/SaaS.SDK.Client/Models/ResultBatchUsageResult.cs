@@ -1,7 +1,6 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
-    using System.Collections.Generic;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// BatchUsage Result.
@@ -15,7 +14,7 @@
         /// <value>
         /// The Error.
         /// </value>
-        [JsonProperty("error")]
+        [JsonPropertyName("error")]
         public object Error { get; set; }
     }
 }

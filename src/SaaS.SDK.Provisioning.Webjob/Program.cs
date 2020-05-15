@@ -103,29 +103,9 @@
             {
                 AzureWebJobsStorage = Configuration["AzureWebJobsStorage"],
             };
-            var keyVaultConfig = new KeyVaultConfig()
-            {
-                ClientID = Configuration["KeyVaultConfig:ClientID"],
-                ClientSecret = Configuration["KeyVaultConfig:ClientSecret"],
-                TenantID = Configuration["KeyVaultConfig:TenantID"],
-                KeyVaultUrl = Configuration["KeyVaultConfig:KeyVaultUrl"],
-            };
-            ///Prasad
-            //var azureBlobConfig = new AzureBlobConfig()
-            //{
-            //    BlobContainer = Configuration["AzureBlobConfig:BlobContainer"],
-            //    BlobConnectionString = Configuration["AzureBlobConfig:BlobConnectionString"],
-            //};
 
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
-
-            services.AddSingleton<IVaultService>(new AzureKeyVaultClient(keyVaultConfig, loggerFactory.CreateLogger<AzureKeyVaultClient>()));
-            ///---Prasad---
-            //services.AddSingleton<IARMTemplateStorageService>(new AzureBlobStorageService(azureBlobConfig));
-            services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
-            //services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
-
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -145,9 +125,6 @@
             services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
-            //---Prasad---
-            //services.AddScoped<ISubscriptionTemplateParametersRepository, SubscriptionTemplateParametersRepository>();
-            //services.AddScoped<IArmTemplateRepository, ArmTemplateRepository>();
             services.AddScoped<IEmailService, SMTPEmailService>();
             services.AddScoped<EmailHelper, EmailHelper>();
         }

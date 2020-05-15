@@ -81,14 +81,6 @@ namespace Microsoft.Marketplace.Saas.Web
             {
                 AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
             };
-            var keyVaultConfig = new KeyVaultConfig()
-            {
-                ClientID = this.Configuration["KeyVaultConfig:ClientID"],
-                ClientSecret = this.Configuration["KeyVaultConfig:ClientSecret"],
-                TenantID = this.Configuration["KeyVaultConfig:TenantID"],
-                KeyVaultUrl = this.Configuration["KeyVaultConfig:KeyVaultUrl"],
-            };
-
 
             services.AddAuthentication(options =>
             {
@@ -113,8 +105,6 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new MeteringApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddSingleton<CloudStorageConfigs>(cloudConfig);
-            services.AddSingleton<IVaultService>(new AzureKeyVaultClient(keyVaultConfig, loggerFactory.CreateLogger<AzureKeyVaultClient>()));
-            services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 

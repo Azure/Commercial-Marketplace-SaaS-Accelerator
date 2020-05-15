@@ -1,8 +1,8 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
+﻿using System;
+using System.Collections.Generic;
+
+namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
 {
-    /// <summary>
-    /// The Application Configuration Entity.
-    /// </summary>
     public partial class ApplicationConfiguration
     {
         public int Id { get; set; }

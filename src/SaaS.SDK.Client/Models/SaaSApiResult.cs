@@ -3,7 +3,7 @@
     using Microsoft.Marketplace.SaasKit.Attributes;
 
     /// <summary>
-    /// Get Fulfillment Result
+    /// Get Fulfillment Result.
     /// </summary>
     public class SaaSApiResult
     {
