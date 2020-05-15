@@ -1,13 +1,13 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
     using System;
+    using System.Text.Json;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Contracts;
-    using System.Text.Json;
-
+    
     /// <summary>
     /// Status handler to handle the unsubscription event.
     /// </summary>

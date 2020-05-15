@@ -2,11 +2,11 @@
 {
     using System.IO;
     using System.Net;
+    using System.Text.Json;
     using Microsoft.Marketplace.SaasKit.Configurations;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Exceptions;
     using Microsoft.Marketplace.SaasKit.Models;
-    using System.Text.Json;
 
     /// <summary>
     /// Metering Api RestClient.
@@ -50,7 +50,7 @@
                 using (StreamReader reader = new StreamReader(webresponse.GetResponseStream()))
                 {
                     responseString = reader.ReadToEnd();
-                    meteredBillingErrorResult =  JsonSerializer.Deserialize<MeteringErrorResult>(responseString);
+                    meteredBillingErrorResult = JsonSerializer.Deserialize<MeteringErrorResult>(responseString);
                 }
 
                 this.logger?.Info("Error :: " + responseString);
@@ -61,17 +61,17 @@
                 }
                 else if (webresponse.StatusCode == HttpStatusCode.NotFound)
                 {
-                    this.logger?.Warn("Returning the error as " +  JsonSerializer.Serialize(new { Error = "Not Found" }));
+                    this.logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Not Found" }));
                     throw new MeteredBillingException(string.Format("Unable to find the request {0}", url), SaasApiErrorCode.NotFound, meteredBillingErrorResult);
                 }
                 else if (webresponse.StatusCode == HttpStatusCode.Conflict)
                 {
-                    this.logger?.Warn("Returning the error as " +  JsonSerializer.Serialize(new { Error = "Conflict" }));
+                    this.logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Conflict" }));
                     throw new MeteredBillingException(string.Format("Conflict came for {0}", url), SaasApiErrorCode.Conflict, meteredBillingErrorResult);
                 }
                 else if (webresponse.StatusCode == HttpStatusCode.BadRequest)
                 {
-                    this.logger?.Warn("Returning the error as " +  JsonSerializer.Serialize(new { Error = "Bad Request" }));
+                    this.logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Bad Request" }));
                     throw new MeteredBillingException(string.Format("Unable to process the request {0}, server responding as BadRequest. Please verify the post data. ", url), SaasApiErrorCode.BadRequest, meteredBillingErrorResult);
                 }
             }

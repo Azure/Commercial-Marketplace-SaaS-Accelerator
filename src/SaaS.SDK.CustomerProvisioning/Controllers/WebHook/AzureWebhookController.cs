@@ -1,10 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
 {
+    using System.Text.Json;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.WebHook;
-    using System.Text.Json;
 
     /// <summary>
     /// Azure Web hook.
@@ -78,7 +78,7 @@
 
             if (request != null)
             {
-                var json =  JsonSerializer.Serialize(request);
+                var json = JsonSerializer.Serialize(request);
                 this.applicationLogService.AddApplicationLog("Webhook Serialize Object " + json);
                 await this.webhookProcessor.ProcessWebhookNotificationAsync(request).ConfigureAwait(false);
             }

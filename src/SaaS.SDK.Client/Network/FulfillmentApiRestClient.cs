@@ -2,10 +2,10 @@
 {
     using System.IO;
     using System.Net;
+    using System.Text.Json;
     using Microsoft.Marketplace.SaasKit.Configurations;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Models;
-    using System.Text.Json;
 
     /// <summary>
     /// The Fulfillment Api RestClient.
@@ -54,17 +54,17 @@
                     }
                     else if (webresponse.StatusCode == HttpStatusCode.NotFound)
                     {
-                        this.logger?.Warn("Returning the error as " +  JsonSerializer.Serialize(new { Error = "Not Found" }));
+                        this.logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Not Found" }));
                         throw new FulfillmentException(string.Format("Unable to find the request {0}", url), SaasApiErrorCode.NotFound);
                     }
                     else if (webresponse.StatusCode == HttpStatusCode.Conflict)
                     {
-                        this.logger?.Warn("Returning the error as " +  JsonSerializer.Serialize(new { Error = "Conflict" }));
+                        this.logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Conflict" }));
                         throw new FulfillmentException(string.Format("Conflict came for {0}", url), SaasApiErrorCode.Conflict);
                     }
                     else if (webresponse.StatusCode == HttpStatusCode.BadRequest)
                     {
-                        this.logger?.Warn("Returning the error as " +  JsonSerializer.Serialize(new { Error = "Bad Request" }));
+                        this.logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Bad Request" }));
                         throw new FulfillmentException(string.Format("Unable to process the request {0}, server responding as BadRequest. Please verify the post data. ", url), SaasApiErrorCode.BadRequest);
                     }
                 }
@@ -75,15 +75,15 @@
                 using (StreamReader reader = new StreamReader(httpResponse.GetResponseStream()))
                 {
                     var responseAsString = reader.ReadToEnd();
-                    var errorFromAPI =  JsonSerializer.Deserialize<FulfillmentErrorResult>(responseAsString);
+                    var errorFromAPI = JsonSerializer.Deserialize<FulfillmentErrorResult>(responseAsString);
 
-                    this.logger?.Warn("Returning the error as " +  JsonSerializer.Serialize(new { Error = responseAsString }));
+                    this.logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = responseAsString }));
 
                     throw new FulfillmentException(errorFromAPI.Error.Message, SaasApiErrorCode.InternalServerError);
                 }
             }
 
-            this.logger?.Error("Error while completing the request as " +  JsonSerializer.Serialize(new
+            this.logger?.Error("Error while completing the request as " + JsonSerializer.Serialize(new
             {
                 Error = httpResponse,
             }));

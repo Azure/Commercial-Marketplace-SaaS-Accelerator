@@ -11,14 +11,14 @@
     public class WebhookProcessor : IWebhookProcessor
     {
         /// <summary>
-        /// Defines the _apiClient.
-        /// </summary>
-        public IFulfillmentApiClient ApiClient;
-
-        /// <summary>
         /// The webhook handler.
         /// </summary>
         private readonly IWebhookHandler webhookHandler;
+
+        /// <summary>
+        /// Defines the _apiClient.
+        /// </summary>
+        private IFulfillmentApiClient apiClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebhookProcessor"/> class.
@@ -27,7 +27,7 @@
         /// <param name="webhookHandler">The webhook handler.</param>
         public WebhookProcessor(IFulfillmentApiClient apiClient, IWebhookHandler webhookHandler)
         {
-            this.ApiClient = apiClient;
+            this.apiClient = apiClient;
             this.webhookHandler = webhookHandler;
         }
 

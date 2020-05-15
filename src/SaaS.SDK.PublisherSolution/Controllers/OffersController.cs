@@ -12,7 +12,7 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    
+
     /// <summary>
     /// Offers Controller.
     /// </summary>
@@ -146,7 +146,7 @@
         [HttpPost]
         public IActionResult OfferDetails(OffersViewModel offersData)
         {
-            this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}",  JsonSerializer.Serialize(offersData));
+            this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", JsonSerializer.Serialize(offersData));
             try
             {
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);

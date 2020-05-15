@@ -57,6 +57,5 @@
         /// The subscription status.
         /// </value>
         public SubscriptionStatusEnumExtension SubscriptionStatus { get; set; }
-
     }
 }

@@ -1,7 +1,6 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     using System;
-    using Microsoft.Marketplace.SaasKit.Models;
     using System.Text.Json.Serialization;
 
     /// <summary>
