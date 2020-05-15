@@ -134,17 +134,17 @@
                                         </dd>
 
                                     }
-                                    else if (Model.SubscriptionParameters[i].HTMLType == "date")
+                                    else if (Model.SubscriptionParameters[i].Htmltype == "date")
                                     {
                                         <dd class="col-sm-9 p-2 p10 @Model.SubscriptionParameters[i].Type">
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
                                             else
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
 
                                         </dd>
@@ -155,11 +155,11 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
                                             else
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
                                             }
 
                                         </dd>
