@@ -223,7 +223,7 @@
         /// <value>
         /// The term.
         /// </value>
-        [JsonPropertyName("term ")]
+        [JsonPropertyName("term")]
         public TermResult Term { get; set; }
 
         /// <summary>Gets or sets the customer email address.</summary>
