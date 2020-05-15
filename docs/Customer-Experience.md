@@ -14,7 +14,7 @@
 
 ## Overview
 
-The Customer provisioning web application provides the landing page for the customers who purchase the transactable SaaS offer.
+The Customer portal provides the landing page for the customers who purchase the transactable SaaS offer.
 
 ## Purchase SaaS offer
 
@@ -36,18 +36,18 @@ If you don't have prior subscriptions against SaaS offers, the list would be bla
 5. Clicking **Add** ( or **Create Software as a Service**) leads you to a page that lists down SaaS offers available for purchase.
 
 6. Search for **Cloud SaaS** and locate our SaaS offer in the listing
-![AMP SDK Sample Offer](./images/Search-Results-SaaS.png)
+![SaaS Offer](./images/Search-Results-SaaS.png)
 
 7. Click on the tile to view the details of the offer
-![AMP SDK Sample Offer detail](./images/SaaS-Offer-Detail.png)
+![SaaS Offer detail](./images/SaaS-Offer-Detail.png)
 8. **Select a software plan** and click **Create**
 
 9. Fill out the form and click **Subscribe**
-![AMP SDK Sample Offer](./images/Subscribe-to-Plan.png)
+![SaaS Offer](./images/Subscribe-to-Plan.png)
 10. A new resource gets created and appears in the listing
 ![SaaS Subscriptions](./images/CloudSaasOfferList.png)
 11. Click the text under **Name** to view the details of the resource
-12. Click **Configure Account** option in the header bar. You will now be redirected to the SaaS offer landing page offered by the **AMP SDK Sample Client Application** in a new tab / window
+12. Click **Configure Account** option in the header bar. You will now be redirected to the SaaS offer landing page offered by the **Customer portal** in a new tab / window
 
 13. The landing page presents the details of the offer that was purchased with an option to **Activate** the subscription.
 
@@ -55,7 +55,7 @@ If you don't have prior subscriptions against SaaS offers, the list would be bla
 
 ## Landing Page
 
-1. Customer lands on the page served from the Customer provisioning application that presents the details of the subscription related to the purchase. The landing page might present additional input fields in the form based on the configuration set by the Publisher for the plan. Besides, the fields might comprise the following, in case the Publisher has set the **Deploy to customer subscription** switch turned on.
+1. Customer lands on the page served from the Customer portal that presents the details of the subscription related to the purchase. The landing page might present additional input fields in the form based on the configuration set by the Publisher for the plan. Besides, the fields might comprise the following, in case the Publisher has set the **Deploy to customer subscription** switch turned on.
 
 2. User needs to fill the fields like below which will help in deploying app in the subscription.
    * *Tenant Id*
@@ -84,7 +84,7 @@ The below diagram illustrates the flow of information between Azure and the Azur
 * On the landing page, review the details presented and click **Activate**
 ![SaaS Subscriptions](./images/activate-subscription.png)
 
-> The AMP SDK sample application calls the following AMP SDK API methods in the background
+> The Customer portal calls the following SaaS SDK API methods in the background
 
 ```csharp
 // Determine the details of the offer using the marketplace token that is available in the URL during the redirect from Azure to the landing page.
@@ -105,7 +105,7 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 ![Update subscription](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-update-api-v2-calls-from-saas-service-a.png)
 
-* Log on to **Customer provisioning service**.
+* Log on to **Customer portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 * The table on this page enlists all the subscriptions and their status.
 * Click **Change Plan** option in the dropdown menu that appears when the icon under the **Actions** column against any of the active subscriptions is clicked.
@@ -115,7 +115,7 @@ The below diagram illustrates the flow of information between Azure and the Azur
 * Select a desired plan and click **Change Plan**.
 ![SaaS Subscriptions](./images/change-plan.png)
 
-> The AMP SDK sample application calls the following AMP SDK API methods in the background
+> The Customer portal calls the following SaaS SDK API methods in the background
 
 ```csharp
 // Initiate the change plan process
@@ -134,14 +134,14 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 ## Unsubscribe
 
-* Log on to **Customer provisioning service**.
+* Log on to **Customer portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 * The table on this page enlists all the subscriptions and their status.
 * Click **Unsubscribe** against an active subscription.
 ![SaaS Subscriptions](./images/unsubscribe.png)
 * Confirm your action to trigger the deletion of the subscription.
 
-> The AMP SDK sample application calls the following AMP SDK API methods in the background.
+> The Customer portal calls the following SaaS SDK API methods in the background.
 
 ```csharp
 // Initiate the delete subscription process
@@ -159,7 +159,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 ## Change Quantity
 
-* Log on to **Customer provisioning service**.
+* Log on to **Customer portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 * The table on this page enlists all the subscriptions and their status.
 * Click **Change quantity** in the menu as shown in the below picture
@@ -173,11 +173,11 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
   
 ![Per user pricing](./images/per-user-plan-pricing.png)
 
-> The AMP SDK sample application calls the following AMP SDK API methods in the background.
+> The Customer portal calls the following SaaS SDK API methods in the background.
 
 ## View activity log
 
-* Log on to **Customer provisioning service**.
+* Log on to **Customer portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
 * The table on this page enlists all the subscriptions and their status.
 * Click **Activity Log** to view the log of activity that happened against the subscription.
@@ -186,7 +186,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 ## View Licenses
 
-* Log on to **Customer provisioning service**
+* Log on to **Customer portal**
 * Click **Licenses** menu at the top to view the list of subscriptions and licenses.
 * Use the **Copy** button to copy the license text to clipboard
 
