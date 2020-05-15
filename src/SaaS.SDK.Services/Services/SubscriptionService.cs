@@ -3,13 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Microsoft.Azure.Management.ResourceManager.Models;
+    using System.Text.Json;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Models;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using SaasKitModels = Microsoft.Marketplace.SaasKit.Models;
 
     /// <summary>
@@ -278,8 +276,8 @@
 
             var subscriptionParameters = this.subscriptionRepository.GetSubscriptionsParametersById(subscriptionId, planId);
 
-            var serializedSubscription = JsonConvert.SerializeObject(subscriptionParameters);
-            subscriptionParametersList = JsonConvert.DeserializeObject<List<SubscriptionParametersModel>>(serializedSubscription);
+            var serializedSubscription = JsonSerializer.Serialize(subscriptionParameters);
+            subscriptionParametersList = JsonSerializer.Deserialize<List<SubscriptionParametersModel>>(serializedSubscription);
 
             return subscriptionParametersList;
         }

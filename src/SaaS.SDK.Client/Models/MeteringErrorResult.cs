@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>Metering API Exception Response.</summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Models.SaaSApiResult"/>
@@ -10,7 +10,7 @@
     {
         /// <summary>Gets or sets the error message.</summary>
         /// <value>The error message.</value>
-        [JsonProperty("message")]
+        [JsonPropertyName("message")]
         public string ErrorMessage { get; set; }
 
         /// <summary>
@@ -19,7 +19,7 @@
         /// <value>
         /// The additional information.
         /// </value>
-        [JsonProperty("additionalInfo")]
+        [JsonPropertyName("additionalInfo")]
         public AdditionalInfo AdditionalInfo { get; set; }
 
         /// <summary>
@@ -28,12 +28,12 @@
         /// <value>
         /// The error detail.
         /// </value>
-        [JsonProperty("details")]
+        [JsonPropertyName("details")]
         public List<ErrorDetail> ErrorDetail { get; set; }
 
         /// <summary>Gets or sets the error code.</summary>
         /// <value>The error code.</value>
-        [JsonProperty("code")]
+        [JsonPropertyName("code")]
         public string ErrorCode { get; set; }
     }
 }

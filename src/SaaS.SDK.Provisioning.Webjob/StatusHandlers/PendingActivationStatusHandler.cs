@@ -6,7 +6,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Contracts;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     /// Status handler to handle the subscriptions that are in PendingActivation status.
@@ -61,13 +61,12 @@
         {
             this.logger?.LogInformation("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
-            this.logger?.LogInformation("Result subscription : {0}", JsonConvert.SerializeObject(subscription.AmpplanId));
+            this.logger?.LogInformation("Result subscription : {0}", JsonSerializer.Serialize(subscription.AmpplanId));
             this.logger?.LogInformation("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
             string oldstatus = subscription.SubscriptionStatus;
 
-            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString())
+            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
             {
                 try
                 {

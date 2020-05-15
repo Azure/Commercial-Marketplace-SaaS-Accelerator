@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using System.Text.Json;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
@@ -10,7 +10,6 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Contracts;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Status handler to send out notifications based on the last status of the subscription.
@@ -147,8 +146,8 @@
             this.logger?.LogInformation("Get Events");
 
             var subscriptionParameters = this.subscriptionRepository.GetSubscriptionsParametersById(subscriptionID, planDetails.PlanGuid);
-            var serializedSubscription = JsonConvert.SerializeObject(subscriptionParameters);
-            var subscriptionParametersList = JsonConvert.DeserializeObject<List<SubscriptionParametersModel>>(serializedSubscription);
+            var serializedSubscription = JsonSerializer.Serialize(subscriptionParameters);
+            var subscriptionParametersList = JsonSerializer.Deserialize<List<SubscriptionParametersModel>>(serializedSubscription);
             SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension()
             {
                 Id = subscription.AmpsubscriptionId,
@@ -173,7 +172,6 @@
 
             if (
              subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString() ||
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString())
             {
                 planEventName = "Unsubscribe";
@@ -183,10 +181,8 @@
 
             string processStatus = "success";
             if (
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeploymentFailed.ToString() ||
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString())
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString())
             {
                 processStatus = "failure";
             }

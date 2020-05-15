@@ -10,7 +10,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     /// Processor for the trigger from storage queue. Move the subscription through statuses.
@@ -251,7 +251,7 @@
             {
                 logger.LogInformation($"Payload received for the webjob as {message}");
 
-                var model = JsonConvert.DeserializeObject<SubscriptionProcessQueueModel>(message);
+                var model = JsonSerializer.Deserialize<SubscriptionProcessQueueModel>(message);
 
                 if ("Activate".Equals(model.TriggerEvent, StringComparison.InvariantCultureIgnoreCase))
                 {

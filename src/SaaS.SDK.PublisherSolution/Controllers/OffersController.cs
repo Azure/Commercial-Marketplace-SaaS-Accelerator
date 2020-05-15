@@ -11,7 +11,7 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     /// Offers Controller.
@@ -146,7 +146,7 @@
         [HttpPost]
         public IActionResult OfferDetails(OffersViewModel offersData)
         {
-            this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", JsonConvert.SerializeObject(offersData));
+            this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}",  JsonSerializer.Serialize(offersData));
             try
             {
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
