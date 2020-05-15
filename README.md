@@ -4,21 +4,21 @@
 
 ## Introduction
 
-The goal of this project is to provide a reference example with sample code for developers interested publishing transactable, Software as a-Service (SaaS) offers in Microsoft's Commercial Marketplace.
+The goal of this project is to provide a reference example with sample code for developers interested publishing transactable, Software as a-Service (SaaS) offers in Microsoft's commercial marketplace.
 
-The sample code uses a .NET-based SDK published as a part of this project. The SDK provides a framework for excercising the Commercial Marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) Leveraging the SDK, the sample code demonstrates how a typical SaaS platform interacts with these APIs in order to provision customers, enable logging, and manage Commercial Marketplace subscriptions.
+The sample code uses a .NET-based SDK published as a part of this project. The SDK provides a framework for excercising the commercial marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) Leveraging the SDK, the sample code demonstrates how a typical SaaS platform interacts with these APIs in order to provision customers, enable logging, and manage commercial marketplace subscriptions.
 
 
 ## Intended Use
 
-The sample code and SDK in this project are for reference purposes only and are meant to complement the existing Commercial Marketplace documentation by demonstrating common API interactions required to use the SaaS App offer type. The intent of this project is to accelerate the onboarding experience by providing code samples for developers. Although the sample code leverages the SDK, developers are encouraged to work with the SaaS Fulfillment API and Marketplace Metering Service API directly rather than rely on the SDK for production use.
+The sample code and SDK in this project are for reference purposes only and are meant to complement the existing commercial marketplace documentation by demonstrating common API interactions required to use the SaaS App offer type. The intent of this project is to accelerate the onboarding experience by providing code samples for developers. Although the sample code leverages the SDK, developers are encouraged to work with the SaaS Fulfillment API and Marketplace Metering Service API directly rather than rely on the SDK for production use.
 
 Please note: this is not a Microsoft-supported Azure SDK project. Support for this project is community-based and contributions are welcomed. Details on contributing can be found [below.](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK#contributing)
 
 
 ## Commercial Marketplace Documentation
 
-Before using this sample code and SDK, please review the Commercial Marketplace documentation resources below to understand the important concepts, account setup, and offer configuration requirements for publishing SaaS App offers.
+Before using this sample code and SDK, please review the commercial marketplace documentation resources below to understand the important concepts, account setup, and offer configuration requirements for publishing SaaS App offers.
 
 - [Commercial Marketplace Overview.](https://docs.microsoft.com/en-us/azure/marketplace/marketplace-publishers-guide) Overview of the Commercial Marketplace.
 
@@ -26,7 +26,7 @@ Before using this sample code and SDK, please review the Commercial Marketplace 
 
 - [SaaS Fulfillment API (v2).](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) API details for SaaS App Marketplace subscription creation and management.
 
-- [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) API details for the Marketplace Metering Service which, when used in conjunction with the SaaS Fulfillment API, enables event-based billing. 
+- [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) API details for the Commercial Marketplace Metering Service which, when used in conjunction with the SaaS Fulfillment API, enables event-based billing. 
 
 - [SaaS Fulfillment API FAQ.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq) Frequently-asked questions about the SaaS Fulfillment APIs.
 
@@ -82,7 +82,7 @@ This SDK has been developed using the following technologies and versions:
 Ensure the following prerequisites are met before getting started:
 
 - You must have an active Azure subscription for development and testing purposes. Creat an Azure subscription [here.](https://azure.microsoft.com/en-us/free/)
-- You must have a Partner Center account enabled for use with the Commercial Marketplace. Create an account [here.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-account)
+- You must have a Partner Center account enrolled in the commercial marketplace. Create an account [here.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-account)
 - We recommend using an Integrated Development Environment (IDE):  [Visual Studio Code](https://code.visualstudio.com/),  [Visual Studio 2019](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16#), etc...
 - The SDK has been implemented using [.NET Core 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 - For data persistence we are using [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/en-us/ef/). However, feel free to use any data repository you are comfortable with.  
