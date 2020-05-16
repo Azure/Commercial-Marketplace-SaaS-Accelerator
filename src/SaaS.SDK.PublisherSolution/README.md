@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is a sample web application that demonstrates common interactions between the publisher's SaaS platform and the marketplace APIs. 
+This is a sample web application that demonstrates common interactions between the publisher's SaaS platform and the marketplace APIs.
 
 ## Description
 

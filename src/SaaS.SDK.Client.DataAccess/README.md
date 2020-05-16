@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Enables persistence of plans, subscription, and other transaction data used with the **[SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2)** and **[Marketplace Metering Service API](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis)**.	
+Enables persistence of plans, subscription, and other transaction data used with the **[SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2)** and **[Marketplace Metering Service API](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis)**.
 
 ## Description
 
@@ -13,7 +13,7 @@ Entities that are persisted in the Database
 | Entity Name | Description |
 | --- | --- |
 | Application Log | Tracks the Customer Web Application Sample activity |  
-| Metered Dimensions | Tracks the metered information that will be submitted to the Marketplace Metering Service API. The metered data is submitted by the Publisher. In the SDK, there is an interface in the Publisher Sample web application that will help generate this data.  | 
+| Metered Dimensions | Tracks the metered information that will be submitted to the Marketplace Metering Service API. The metered data is submitted by the Publisher. In the SDK, there is an interface in the Publisher Sample web application that will help generate this data.  |
 | Plans | Stores the SaaS Offer plan information. Plans are part of the SaaS offer and submitted via Partner Center. This table is populated after calls to the Fulfillment API|  
 | Subscription Audit Log | This table is an audit trail for all the operations regarding Subscriptions. |  
 | Subscriptions | Tracks the Offer's Subscriptions. Associates Customers (users) with their selected Plan|  
