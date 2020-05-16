@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyName>Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning</AssemblyName>
-    <RootNamespace>Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning</RootNamespace>
+    <AssemblyName>SaaS.SDK.CustomerProvisioning</AssemblyName>
+    <RootNamespace>SaaS.SDK.CustomerProvisioning</RootNamespace>
     <Company>Microsoft</Company>
     <Authors>Microsoft.Marketplace</Authors>
     <Product>SaaS.SDK</Product>
