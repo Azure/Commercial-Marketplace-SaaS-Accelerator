@@ -2,14 +2,16 @@
 
 ## Introduction
 
-Showcases how to generate metering based transactions, persistence of those transactions and transmission of these transactions to the metering service billing API.
+This is a sample web application that demonstrates common interactions between the publisher's SaaS platform and the marketplace APIs. 
 
 ## Description
 
-The web application is for publisher to help them perform the following actions:
+The web application demonstrates how publishers can perform the following actions:
 
-- Submit metered usage against subscriptions
+- Generate usage meter events
+- Submit usage meter events against subscriptions
 - Assign / revoke licenses to / from subscriptions
+- Persist and transmit usage meter events
 
 ## Source Code
 
