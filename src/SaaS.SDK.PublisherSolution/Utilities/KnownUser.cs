@@ -35,7 +35,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities
                 email = context.HttpContext.User.Claims.Where(s => s.Type == WebConstants.CLAIM_EMAILADDRESS).FirstOrDefault().Value;
                 //KnownUsersRepository 
                 isKnownuser = knownUsersRepository.GetKnownUserDetail(email, 1)?.Id > 0;
-                //if (email == "Phaneendra.Nagubandi@spektrasystems.com")
                 if (!isKnownuser)
                 {
                     var routeValues = new RouteValueDictionary();
