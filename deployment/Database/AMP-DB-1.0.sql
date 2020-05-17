@@ -903,12 +903,13 @@ GO
 
 
 CREATE Procedure spGenerateEmailHtml
+(
+@subscriptionId varchar(225) ,
+@processStatus varchar(225) 
+)
 AS
 BEGIN
 declare @html varchar(max) =(select TemplateBody from [EmailTemplate] where status='SQL Template')
-
-DECLARE @subscriptionId varchar(225) ='96C38EBB-4FF3-1DD6-751C-4B73933012DF'
-DECLARE @processStatus varchar(225) = 'success'
 
 DECLARE 
   @planId varchar(225)
