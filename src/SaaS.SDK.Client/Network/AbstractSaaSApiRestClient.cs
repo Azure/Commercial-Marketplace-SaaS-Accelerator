@@ -1,17 +1,13 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Network
 {
-    using Microsoft.IdentityModel.Clients.ActiveDirectory;
-    using Microsoft.Marketplace.SaasKit.Attributes;
+    using Microsoft.Marketplace.SaaS.SDK.Client.Network;
     using Microsoft.Marketplace.SaasKit.Configurations;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Helpers;
     using Microsoft.Marketplace.SaasKit.Models;
-    using System.Text.Json;
-    using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
     using System.Net;
+    using System.Text.Json;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -58,36 +54,21 @@
             try
             {
                 this.logger?.Info("Call Rest Service : {0}" + JsonSerializer.Serialize(new { url = url, method = method, parameters = parameters, headers = headers, contentType = contentType }));
+
                 var accessTokenResult = await ADAuthenticationHelper.GetAccessToken(this.clientConfiguration).ConfigureAwait(false);
 
-                string formattedParams = string.Empty;
-                if ((string.Equals(HttpMethods.GET.ToString(), method) || string.Equals(HttpMethods.DELETE.ToString(), method)) && parameters != null && parameters.Count() > 0)
+                if(headers == null)
                 {
-                    formattedParams = string.Join("&", parameters.Select(x => x.Key + "=" + System.Net.WebUtility.UrlEncode(x.Value.ToString())));
-                    url = string.Format("{0}?{1}", url, formattedParams);
+                    headers = new Dictionary<string, object>();                    
                 }
-                else if ((string.Equals(HttpMethods.POST.ToString(), method) || string.Equals(HttpMethods.PUT.ToString(), method) || string.Equals(HttpMethods.PATCH.ToString(), method)) && parameters != null && parameters.Count() > 0)
-                {
-                    if (parameters != null && parameters.Count() > 0)
-                    {
-                        if ("application/json".Equals(contentType))
-                        {
-                            formattedParams = JsonSerializer.Serialize(parameters);
-                        }
-                        else
-                        {
-                            formattedParams = string.Join("&", parameters.Select(x => x.Key + "=" + x.Value));
-                        }
-                    }
-                }
+                // Add bearer token
+                headers.Add("Authorization", string.Format($"Bearer {accessTokenResult.AccessToken}"));
 
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(url));
-                request.Method = method;
-                request.Accept = "application/json";
-
-                FillHeaders(headers, accessTokenResult, request);
-                await DoRequest(method, parameters, contentType, formattedParams, request).ConfigureAwait(false);
-                return await BuildResultFromResponse(request).ConfigureAwait(false);
+                var webRequestHelper = new WebRequestHelper(url, method, contentType);
+                await webRequestHelper.PrepareDataForRequest(parameters)
+                                        .FillHeaders(headers)
+                                        .DoRequestAsync().ConfigureAwait(false);
+                return await webRequestHelper.BuildResultFromResponse<T>().ConfigureAwait(false);
             }
             catch (WebException ex)
             {
@@ -102,123 +83,5 @@
         /// <param name="ex">The ex.</param>
         /// <returns>Error result built using the data in the response</returns>
         protected abstract T ProcessErrorResponse(string url, WebException ex);
-
-        /// <summary>
-        /// Builds the result from response.
-        /// </summary>
-        /// <param name="request">The request.</param>
-        /// <returns>An instance of type T deserialized from the response</returns>
-        protected virtual async Task<T> BuildResultFromResponse(HttpWebRequest request)
-        {
-            WebResponse response = await request.GetResponseAsync().ConfigureAwait(false);
-            var result = new T();
-            using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-            {
-                string responseAsString = reader.ReadToEnd();
-                if(!string.IsNullOrWhiteSpace(responseAsString))
-                {
-                    result =  JsonSerializer.Deserialize<T>(responseAsString);
-                    if (result == null)
-                    {
-                        result = new T();
-                    }
-                }
-                // Fill headers
-                var t = typeof(T);
-                var properties = t.GetProperties();
-                var responseHeaders = response.Headers;
-                foreach (var prop in properties)
-                {
-                    var fromHeaderAttribute = prop.GetCustomAttributes(typeof(FromRequestHeaderAttribute), false).FirstOrDefault() as FromRequestHeaderAttribute;
-                    if (fromHeaderAttribute != null)
-                    {
-                        var valFromData = responseHeaders[fromHeaderAttribute?.HeaderKey?.ToString()];
-                        if (valFromData != null)
-                        {
-                            // MP : Null value check added
-                            if (result != null && !string.IsNullOrEmpty(valFromData))
-                            {
-                                prop.SetValue(result, valFromData, null);
-                            }
-                        }
-                    }
-                }
-
-                this.logger?.Info("Response : " + responseAsString);
-                return result;
-            }
-        }
-
-        /// <summary>
-        /// Does the request.
-        /// </summary>
-        /// <param name="method">The method.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <param name="contentType">Type of the content.</param>
-        /// <param name="formattedParams">The formatted parameters.</param>
-        /// <param name="request">The request.</param>
-        protected virtual async Task DoRequest(string method, Dictionary<string, object> parameters, string contentType, string formattedParams, HttpWebRequest request)
-        {
-            if (string.Equals(HttpMethods.POST.ToString(), method) || string.Equals(HttpMethods.PUT.ToString(), method) || string.Equals(HttpMethods.PATCH.ToString(), method))
-            {
-                if (parameters != null && parameters.Count > 0)
-                {
-                    request.ContentType = contentType;
-                    using (Stream stream = await request.GetRequestStreamAsync().ConfigureAwait(false))
-                    {
-                        using (StreamWriter writer = new StreamWriter(stream))
-                        {
-                            writer.Write(formattedParams);
-                            writer.Flush();
-                        }
-
-                        stream.Close();
-                    }
-                }
-                else
-                {
-                    request.ContentLength = 1;
-
-                    using (Stream stream = await request.GetRequestStreamAsync().ConfigureAwait(false))
-                    {
-                        using (StreamWriter writer = new StreamWriter(stream))
-                        {
-                            writer.Write(" ");
-                            writer.Flush();
-                        }
-
-                        stream.Close();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Fills the headers.
-        /// </summary>
-        /// <param name="headers">The headers.</param>
-        /// <param name="accessTokenResult">The access token result.</param>
-        /// <param name="request">The request.</param>
-        /// <returns></returns>
-        protected virtual void FillHeaders(Dictionary<string, object> headers, AuthenticationResult accessTokenResult, HttpWebRequest request)
-        {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-            if (headers == null)
-            {
-                headers = new Dictionary<string, object>();
-            }
-
-            if (headers != null)
-            {
-                // Add bearer token
-                headers.Add("Authorization", string.Format($"Bearer {accessTokenResult.AccessToken}"));
-
-                foreach (KeyValuePair<string, object> kvp in headers)
-                {
-                    request.Headers[kvp.Key] = kvp.Value.ToString();
-                }
-            }
-        }
     }
 }
