@@ -116,7 +116,7 @@ SaaS offers that is published in Azure Market Place can be extracted and managed
 * Click **Events** tab in the plan detail to see the email recipients by events that are relevant in the provisioning of a SaaS subscription
 ![Plan Parameters](./images/plan-events.png)
 
-* Check the box if an event configuration should ne activated
+* Check the box if an event configuration should be activated
 
 * Check the box - **Copy to Customer** to include customer email address in the email notifications relevant to the event
 
@@ -124,7 +124,7 @@ SaaS offers that is published in Azure Market Place can be extracted and managed
 
 * All the subscriptions purchased will be availabe under the subscriptions screen.
 * The status of each subscription will be availbe in the list.
-* From this scree the actions on the subscriptions like Change Plan, Chan Quantity,  Manage Usage, Activate and unsubscribe can be done depending on the status.
+* From this screen the actions on the subscriptions like Change Plan, Change Quantity,  Manage Usage, Activate and unsubscribe can be done depending on the status.
 
 ![SaaS Subscriptions](./images/customer-subscriptions.png)
 
@@ -200,7 +200,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 Task<SubscriptionUpdateResult> DeleteSubscriptionAsync(Guid subscriptionId, string subscriptionPlanID);
 ```
 
-> The operation is asynchronous and the call to **change plan** comes back with an operation location that should be queried for status.
+> The operation is asynchronous and the call to **Unsubscribe** comes back with an operation location that should be queried for status.
 
 ```csharp
 // Get the latest status of the subscription due to an operation / action.
@@ -231,7 +231,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, int? subscriptionQuantity);
 ```
 
-> The operation is asynchronous and the call to **change plan** comes back with an operation location that should be queried for status.
+> The operation is asynchronous and the call to **Change quantity** comes back with an operation location that should be queried for status.
 
 ```csharp
 // Get the latest status of the subscription due to an operation / action.

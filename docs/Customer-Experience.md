@@ -63,7 +63,7 @@ If you don't have prior subscriptions against SaaS offers, the list would be bla
 1. All the subscriptions purchased by the customer will be availabe under the subscriptions screen.
 2. The status of each subscription will be available in the list.
 
-3. From this screen the actions on the subscriptions like Change Plan, Chan Quantity, Activate and unsubscribe can be done depending on the status.
+3. From this screen the actions on the subscriptions like **Change Plan**, **Change Quantity**, **Activate** and **Unsubscribe** can be done depending on the status. These actions can be performed by the customer if the activation workflow is turned off by setting the **IsAutomaticProvisioningSupported** to **True**.
 
 ![SaaS Subscriptions](./images/customer-subscriptions.png)
 
@@ -139,7 +139,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 Task<SubscriptionUpdateResult> DeleteSubscriptionAsync(Guid subscriptionId, string subscriptionPlanID);
 ```
 
-> The operation is asynchronous and the call to **change plan** comes back with an operation location that should be queried for status.
+> The operation is asynchronous and the call to **Unsubscribe** comes back with an operation location that should be queried for status.
 
 ```csharp
 // Get the latest status of the subscription due to an operation / action.

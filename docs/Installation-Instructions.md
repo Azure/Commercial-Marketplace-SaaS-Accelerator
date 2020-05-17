@@ -23,7 +23,7 @@ The SDK provides the components required for the implementations of the marketpl
 
 * **Transactable SaaS Client Library (SaaS.SDK.Client)** implements the fulfillment v2 and metering service APIs and the webhook that handles messages from the Marketplace's E-commerce engine.
 * **Customer portal (SaaS.SDK.CustomerProvisioning)** showcases how to register, provision, and activate the customer subscription. Implemented using ASP.Net Core 3.1, it uses the SaaS Client library and Data Access Library to to invoke and persists interactions with the fulfillment APIs. In addition, it provides interfaces for a customer to manage their subscriptions and plans.
-* **Publisher portal (SaaS.SDK.PublisherSolution)** showcases how to generate metering based transactions, persistence of those transactions and transmission of these transactions to the metering service API.
+* **Publisher portal (SaaS.SDK.PublisherSolution)** showcases how to generate metering based transactions, persistence of those transactions and transmission of these transactions to the metering service API.Implemented using ASP.Net Core 3.1, it uses the SaaS Client library and Data Access Library to to invoke and persists interactions with the fulfillment APIs. In addition, it provides interface for a publisher to manage offers, plans, subscriptions and metering.
 * **Client Data Access library (SaaS.SDK.Client.DataAccess)** demonstrates how to persist the Plans, Subscriptions, and transactions with the fulfillment and metering service APIs.
 * **Client Services (SaaS.SDK.Provisioning.Services)** contains the services used by the Customer and Publisher portals to orchestrate calls to the marketplace APIs / database.
 * **Provisioning webjob (SaaS.SDK.Provisioning.Webjob)** implements the  background job in processing the requests from the Customer and the Publisher portals and moves the subscriptions through relevant statuses.
@@ -35,7 +35,7 @@ The sample and the SDK in this repository cover the components that comprise the
 ### Features
 
 * The Azure Marketplace Metering SDK enables SaaS applications publish usage data to Azure so that customers are charged  according to non-standard units.
-* The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
+* The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the above image, respectively.
 * More details on the fulfillment APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2#update-a-subscription)
 * More details on the metering APIs can be found [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis).
 * Steps to create a SaaS offer are available [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/create-new-saas-offer)
@@ -151,7 +151,8 @@ If you want to set up the database locally or in Azure, you could create and ini
 * Create a database named **AMPSaaSDB**
 * Switch to the database - **AMPSaaSDB**
 * Run the script - **AMP-DB-1.0.sql** to initalize the database
-* Add entries into KnownUsers table to allow login to **Publisher Portal**  
+* Add entries into **KnownUsers** table to allow login to **Publisher Portal**
+* Update entries in **ApplicationConfiguration** table as appropriate. More details on the entries in the **ApplicationConfiguration** table are available [here](./deployment/Database/README.md)
 
 ---
 
@@ -201,7 +202,7 @@ In this section, we will go over the steps to download the latest sources from t
 
     * **AdAuthenticationEndpoint** - <https://login.microsoftonline.com>
 
-    * **SaaSAppUrl** - URL to the SaaS Metering service ( for this example. It should be the link to the SaaS application, in general)
+    * **SaaSAppUrl** - URL to the Publisher SaaS application ( for this example. It should be the link to the SaaS application, in general)
 
     * **DefaultConnection** - Set the connection string to connect to the database
     * **AzureWebJobsStorage** - Connection string to the Azure storage queue. Adding a message to this queue would trigger the **Provisioning webjob** that monitors the queue for messages
@@ -250,6 +251,7 @@ After making all of the above changes, the **appSettings.json** would look like 
 ### Run the application locally
 
 Press **Ctrl + F5** in Visual Studio 2019 to run the application locally.
+
 *Note: Make sure that the home page url is listed in the **replyURLs** in the AD application for the authentication against Azure AD to work properly.*
 
 ---
