@@ -47,26 +47,23 @@
         /// <summary>
         /// Prepares the content of the email.
         /// </summary>
-        /// <param name="subscriptionResultExtension">The subscription result extension.</param>
+        /// <param name="subscriptionID">The subscription identifier.</param>
+        /// <param name="planGuId">The plan gu identifier.</param>
         /// <param name="processStatus">The process status.</param>
-        /// <param name="oldValue">The old value.</param>
-        /// <param name="newValue">The new value.</param>
+        /// <param name="planEventName">Name of the plan event.</param>
+        /// <param name="subscriptionStatus">The subscription status.</param>
         /// <returns>
         /// Email Content Model.
         /// </returns>
         /// <exception cref="Exception">Error while sending an email, please check the configuration.
         /// or
         /// Error while sending an email, please check the configuration.</exception>
-        public EmailContentModel PrepareEmailContent(
-                                                        SubscriptionResultExtension subscriptionResultExtension,
-                                                        string processStatus = "success",
-                                                        SubscriptionStatusEnumExtension oldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart,
-                                                        string newValue = null)
+        public EmailContentModel PrepareEmailContent(Guid subscriptionID, Guid planGuId, string processStatus, string planEventName, string subscriptionStatus)
         {
             EmailContentModel emailContent = new EmailContentModel();
-            string body = this.ProcessTemplate(subscriptionResultExtension, processStatus, oldValue, newValue);
-            var subscriptionEvent = this.eventsRepository.GetByName(subscriptionResultExtension.EventName);
-            var emailTemplateData = this.emailTemplateRepository.GetTemplateForStatus(subscriptionResultExtension.SubscriptionStatus.ToString());
+            string body = this.emailTemplateRepository.GetEmailBodyForSubscription(subscriptionID, processStatus);
+            var subscriptionEvent = this.eventsRepository.GetByName(planEventName);
+            var emailTemplateData = this.emailTemplateRepository.GetTemplateForStatus(subscriptionStatus);
             string subject = string.Empty;
 
             bool copyToCustomer = false;
@@ -83,7 +80,7 @@
             string smtpHost = this.applicationConfigRepository.GetValueByName("SMTPHost");
             if (processStatus.ToLower() == "success")
             {
-                var successEventData = this.planEventsMappingRepository.GetPlanEvent(subscriptionResultExtension.GuidPlanId, subscriptionEvent.EventsId);
+                var successEventData = this.planEventsMappingRepository.GetPlanEvent(planGuId, subscriptionEvent.EventsId);
 
                 if (successEventData != null)
                 {
@@ -112,7 +109,7 @@
 
             if (processStatus.ToLower() == "failure")
             {
-                var failureStateEmails = this.planEventsMappingRepository.GetPlanEvent(subscriptionResultExtension.GuidPlanId, subscriptionEvent.EventsId);
+                var failureStateEmails = this.planEventsMappingRepository.GetPlanEvent(planGuId, subscriptionEvent.EventsId);
 
                 if (failureStateEmails != null)
                 {
@@ -139,31 +136,31 @@
                 }
             }
 
-            if (subscriptionResultExtension.SubscriptionStatus.ToString() == "PendingActivation")
+            if (subscriptionStatus == "PendingActivation")
             {
                 subject = "Pending Activation";
             }
-            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "Subscribed")
+            else if (subscriptionStatus == "Subscribed")
             {
                 subject = "Subscription Activation";
             }
-            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "Unsubscribed")
+            else if (subscriptionStatus == "Unsubscribed")
             {
                 subject = "Unsubscription";
             }
-            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "DeploymentFailed")
+            else if (subscriptionStatus == "DeploymentFailed")
             {
                 subject = "Deployment Failed";
             }
-            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "ActivationFailed")
+            else if (subscriptionStatus == "ActivationFailed")
             {
                 subject = "Activation Failed";
             }
-            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "UnsubscribeFailed")
+            else if (subscriptionStatus == "UnsubscribeFailed")
             {
                 subject = "Unsubscribe Failed";
             }
-            else if (subscriptionResultExtension.SubscriptionStatus.ToString() == "DeleteResourceFailed")
+            else if (subscriptionStatus == "DeleteResourceFailed")
             {
                 subject = "Delete Resource Failed";
             }

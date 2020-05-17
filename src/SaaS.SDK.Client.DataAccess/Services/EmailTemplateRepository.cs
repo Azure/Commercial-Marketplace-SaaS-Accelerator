@@ -1,6 +1,8 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using System;
     using System.Linq;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
@@ -42,5 +44,20 @@
 
             return null;
         }
+
+        /// <summary>
+        /// Gets the email template for subscription status.
+        /// </summary>
+        /// <param name="subscriptionID">The subscription identifier.</param>
+        /// <param name="processStatus">The process status.</param>
+        /// <returns>
+        /// Email template relevant to the status of the subscription.
+        /// </returns>
+        public string GetEmailBodyForSubscription(Guid subscriptionID, string processStatus)
+        {
+            var emialResult = this.context.ApplicationConfiguration.FromSqlRaw("dbo.spGenerateEmailHtml {0},{1}", subscriptionID, processStatus).FirstOrDefault();
+            return emialResult.Value;
+        }
+
     }
 }

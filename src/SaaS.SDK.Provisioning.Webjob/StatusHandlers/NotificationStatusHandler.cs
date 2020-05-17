@@ -142,31 +142,6 @@
             var planDetails = this.GetPlanById(subscription.AmpplanId);
             this.logger?.LogInformation("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
-            this.logger?.LogInformation("Get Offers");
-            this.logger?.LogInformation("Get Events");
-
-            var subscriptionParameters = this.subscriptionRepository.GetSubscriptionsParametersById(subscriptionID, planDetails.PlanGuid);
-            var serializedSubscription = JsonSerializer.Serialize(subscriptionParameters);
-            var subscriptionParametersList = JsonSerializer.Deserialize<List<SubscriptionParametersModel>>(serializedSubscription);
-            SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension()
-            {
-                Id = subscription.AmpsubscriptionId,
-                SubscribeId = subscription.Id,
-                PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId,
-                Quantity = subscription.Ampquantity,
-                Name = subscription.Name,
-                SubscriptionStatus = this.subscriptionService.GetSubscriptionStatus(subscription.SubscriptionStatus),
-                IsActiveSubscription = subscription.IsActive ?? false,
-                CustomerEmailAddress = userdeatils.EmailAddress,
-                CustomerName = userdeatils.FullName,
-                GuidPlanId = planDetails.PlanGuid,
-                SubscriptionParameters = subscriptionParametersList,
-            };
-            subscriptionDetail.Purchaser = new Models.PurchaserResult()
-            {
-                EmailId = subscription.PurchaserEmail,
-                TenantId = subscription.PurchaserTenantId ?? default,
-            };
 
             string planEventName = "Activate";
 
@@ -176,8 +151,6 @@
             {
                 planEventName = "Unsubscribe";
             }
-
-            subscriptionDetail.EventName = planEventName;
 
             string processStatus = "success";
             if (
@@ -214,13 +187,13 @@
 
             if (triggerEmail)
             {
-                var emailContent = this.emailHelper.PrepareEmailContent(subscriptionDetail, processStatus, subscriptionDetail.SubscriptionStatus, subscriptionDetail.SubscriptionStatus.ToString());
+                var emailContent = this.emailHelper.PrepareEmailContent(subscriptionID, planDetails.PlanGuid, processStatus, planEventName, subscription.SubscriptionStatus);
 
                 this.emailService.SendEmail(emailContent);
 
-                if (emailContent.CopyToCustomer && !string.IsNullOrEmpty(subscriptionDetail.CustomerEmailAddress))
+                if (emailContent.CopyToCustomer && !string.IsNullOrEmpty(userdeatils.EmailAddress))
                 {
-                    emailContent.ToEmails = subscriptionDetail.CustomerEmailAddress;
+                    emailContent.ToEmails = userdeatils.EmailAddress;
                     this.emailService.SendEmail(emailContent);
                 }
             }
