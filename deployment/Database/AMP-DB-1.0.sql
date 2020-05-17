@@ -904,7 +904,7 @@ GO
 
 CREATE Procedure spGenerateEmailHtml
 (
-@subscriptionId varchar(225) ,
+@subscriptionId varchar(225),
 @processStatus varchar(225) 
 )
 AS
@@ -1060,7 +1060,7 @@ END
 		 
 		
 
- select 1,'Email' AS [Name], @html as [Value], 'Email from sp' as [Description]
+ select 1 AS ID,'Email' AS [Name], @html as [Value]
 
 
 /* test values
@@ -1088,6 +1088,25 @@ SELECT
 */
 
 End
+
+
+GO
+
+/****** Object:  Table [dbo].[SubscriptionEmailOutput]    Script Date: 05-17-2020 6.17.50 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[SubscriptionEmailOutput](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [varchar](225) NULL,
+	[Value] [varchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+
 
 
 GO

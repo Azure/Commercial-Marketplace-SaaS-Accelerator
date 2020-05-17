@@ -55,9 +55,16 @@
         /// </returns>
         public string GetEmailBodyForSubscription(Guid subscriptionID, string processStatus)
         {
-            var emialResult = this.context.ApplicationConfiguration.FromSqlRaw("dbo.spGenerateEmailHtml {0},{1}", subscriptionID, processStatus).FirstOrDefault();
-            return emialResult.Value;
+            var emialResult = this.context.ApplicationConfiguration.FromSqlRaw("dbo.spGenerateEmailHtml {0},{1}", subscriptionID, processStatus).ToList();
+            var emailRecord = emialResult.FirstOrDefault();
+            if (emailRecord != null)
+            {
+                return emailRecord.Value;
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
-
     }
 }
