@@ -20,16 +20,25 @@ The following picture illustrates the entities and the relationships among them:
 | Entity | Description |
 | --- | --- |  
 | ApplicationConfiguration | Holds application level configuration like SMTP details and feature flags |
-| ApplicationLog  | Activity in the application is tracked via a custom logger implementation |
+| ApplicationLog | Activity in the application is tracked via a custom logger implementation |
 | DatabaseVersionHistory | Tracks the changes to the database by versions |
-| KnownUsers | Users that can log on to the Publisher web application. Publisher should initialize this table to allow users to access the Publisher web application |
+| EmailTemplate | Predefined set of email templates |
+| Events | List of events that occur in the context of a subscription against a plan which can be configured for email notifications |
+| KnownUsers | Admin users on the publisher side that can log on to the Publisher portal|
 | MeteredAuditLogs | The request and response against metering service API is stored here. Helps troubleshoot issuses when posting usage data to Azure |
 | MeteredDimensions  | Stores the meters related to plans |
-| Plans  | All the plans related to the marketplace offer are stored here|
-| Roles | Defins one role PublisherAdmin and is assigned to users that can log on to Publisher web application|
-| Subscriptions  | Holds the Subscriptions against the marketplace offer and the latest status |
-| SubscriptionAuditLogs  | Activity against a subscription due to actions like activation, change plan and unsubscribe are tracked here|
-| Users | Holds the users auto-registered via the Provisioning service |
+| OfferAttributes | Global set of attributes that could appear as additional input paramteters during the purchase of a subscription |
+| Offers | Marketplace related to the publisher |
+| PlanAttributeMapping | Overrides for the input attributes defined at the offer level|
+| PlanEventsMapping | Event configuration by plan |
+| Plans | Plans associated with the Marketplace offer|
+| Roles | User roles |
+| SubscriptionAttributeValues | Values provided by the user on the landing page, for the additional input attributes as configured at the plan level |
+| SubscriptionAuditLogs | Activity on the subscription is saved to this table |
+| Subscriptions | List of SaaS subscriptions
+| Users | Users ( auto-registered due to purchase of subscriptions) |
+| ValueTypes | Type of attributes, for the fields that appear on the subscription landing page|
+| WebJobSubscriptionStatus | Status changes on the subscription as processed by the webjob are logged here |
 
 ### Application Configuration
 
