@@ -457,6 +457,35 @@
         }
 
         /// <summary>
+        /// Get Subscription Details for selected Subscription.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>
+        /// The <see cref="IActionResult" />.
+        /// </returns>
+        public IActionResult SubscriptionQuantityDetail(Guid subscriptionId)
+        {
+            this.logger.LogInformation("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
+            try
+            {
+                if (this.User.Identity.IsAuthenticated)
+                {
+                    var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                    return this.View(subscriptionDetail);
+                }
+                else
+                {
+                    return this.RedirectToAction(nameof(this.Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return this.View("Error", ex);
+            }
+        }
+
+        /// <summary>
         /// Manages the subscription usage.
         /// </summary>
         /// <param name="subscriptionData">The subscription data.</param>
@@ -640,6 +669,84 @@
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
+            }
+        }
+
+        /// <summary>
+        /// Changes the quantity plan.
+        /// </summary>
+        /// <param name="subscriptionDetail">The subscription detail.</param>
+        /// <returns>Changes subscription quantity.</returns>
+        [HttpPost]
+        public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
+        {
+            this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
+            if (this.User.Identity.IsAuthenticated)
+            {
+                try
+                {
+                    if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity > 0)
+                    {
+                        try
+                        {
+                            var subscriptionId = subscriptionDetail.Id;
+                            var quantity = subscriptionDetail.Quantity;
+
+                            var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+
+                            var jsonResult = await this.fulfillApiClient.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
+
+                            var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
+                            if (jsonResult != null && jsonResult.OperationId != default)
+                            {
+                                while (OperationStatusEnum.InProgress.Equals(changeQuantityOperationStatus) || OperationStatusEnum.NotStarted.Equals(changeQuantityOperationStatus))
+                                {
+                                    var changeQuantityOperationResult = await this.fulfillApiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                    changeQuantityOperationStatus = changeQuantityOperationResult.Status;
+
+                                    this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(quantity));
+                                    this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId);
+                                }
+
+                                var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
+
+                                this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
+                                this.logger.LogInformation("Quantity Successfully Changed.");
+                                this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.");
+
+                                if (oldValue != null)
+                                {
+                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                    {
+                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
+                                        SubscriptionId = oldValue.SubscribeId,
+                                        NewValue = quantity.ToString(),
+                                        OldValue = oldValue.Quantity.ToString(),
+                                        CreateBy = currentUserId,
+                                        CreateDate = DateTime.Now,
+                                    };
+                                    this.subscriptionLogRepository.Save(auditLog);
+                                }
+                            }
+                        }
+                        catch (FulfillmentException fex)
+                        {
+                            this.TempData["ErrorMsg"] = fex.Message;
+                            this.logger.LogError("Message:{0} :: {1}   ", fex.Message, fex.InnerException);
+                        }
+                    }
+
+                    return this.RedirectToAction(nameof(this.Subscriptions));
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                    return this.View("Error", ex);
+                }
+            }
+            else
+            {
+                return this.RedirectToAction(nameof(this.Index));
             }
         }
     }
