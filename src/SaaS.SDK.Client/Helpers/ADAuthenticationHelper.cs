@@ -17,13 +17,13 @@
         /// Gets the access token.
         /// </summary>
         /// <param name="settings">The settings.</param>
-        /// <returns>Get Authentication Token</returns>
+        /// <returns>Get Authentication Token.</returns>
         public static async Task<ADAuthenticationResult> GetAccessToken(SaaSApiClientConfiguration settings)
         {
             string authorizeUrl = string.Format($"https://login.microsoftonline.com/{settings.TenantId}/oauth2/token");
             var webRequestHelper = new WebRequestHelper(authorizeUrl, HttpMethods.POST, "application/x-www-form-urlencoded");
 
-            var payload = new Dictionary<string, Object>();
+            var payload = new Dictionary<string, object>();
             payload.Add("Grant_type", "client_credentials");
             payload.Add("Client_id", settings.ClientId);
             payload.Add("Client_secret", settings.ClientSecret);
