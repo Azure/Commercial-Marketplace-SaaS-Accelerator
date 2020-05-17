@@ -7,7 +7,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Contracts;
-    
+
     /// <summary>
     /// Status handler to handle the unsubscription event.
     /// </summary>
