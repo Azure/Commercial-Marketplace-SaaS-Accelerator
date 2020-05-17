@@ -4,12 +4,9 @@
     using System.Collections;
     using System.IO;
     using System.Linq;
-    using Commons.Collections;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using NVelocity;
-    using NVelocity.App;
 
     /// <summary>
     /// Email Helper.
@@ -78,6 +75,7 @@
             bool smtpSsl = bool.Parse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
             int port = int.Parse(this.applicationConfigRepository.GetValueByName("SMTPPort"));
             string smtpHost = this.applicationConfigRepository.GetValueByName("SMTPHost");
+            
             if (processStatus.ToLower() == "success")
             {
                 var successEventData = this.planEventsMappingRepository.GetPlanEvent(planGuId, subscriptionEvent.EventsId);
@@ -180,59 +178,6 @@
             emailContent.SMTPHost = smtpHost;
 
             return emailContent;
-        }
-
-        /// <summary>
-        /// Processes the template.
-        /// </summary>
-        /// <param name="subscription">The subscription.</param>
-        /// <param name="processStatus">The process status.</param>
-        /// <param name="oldValue">The old value.</param>
-        /// <param name="newValue">The new value.</param>
-        /// <returns> string.</returns>
-        public string ProcessTemplate(SubscriptionResultExtension subscription, string processStatus, SubscriptionStatusEnumExtension oldValue, string newValue)
-        {
-            string parameter = string.Empty;
-            string value = string.Empty;
-            string parameterType = string.Empty;
-
-            string body = string.Empty;
-            EmailTemplate templateDetails = this.emailTemplateRepository.GetTemplateForStatus("Template");
-            body = templateDetails.TemplateBody;
-            string applicationName = this.applicationConfigRepository.GetValueByName("ApplicationName");
-            Hashtable hashTable = new Hashtable();
-            hashTable.Add("ApplicationName", applicationName);
-            hashTable.Add("CustomerEmailAddress", subscription.CustomerEmailAddress);
-            hashTable.Add("CustomerName", subscription.CustomerName);
-            hashTable.Add("Id", subscription.Id);
-            hashTable.Add("SubscriptionName", subscription.Name);
-            hashTable.Add("SaasSubscriptionStatus", subscription.SubscriptionStatus);
-            hashTable.Add("oldValue", oldValue);
-            hashTable.Add("newValue", newValue);
-            hashTable.Add("planevent", processStatus);
-            hashTable.Add("PurchaserEmail", subscription.Purchaser.EmailId ?? " ");
-            hashTable.Add("PurchaserTenant", Convert.ToString(subscription.Purchaser.TenantId) ?? " ");
-
-            ExtendedProperties p = new ExtendedProperties();
-
-            VelocityEngine v = new VelocityEngine();
-            v.Init(p);
-
-            VelocityContext context = new VelocityContext(hashTable);
-            IList list;
-
-            if (subscription.SubscriptionParameters != null && subscription.SubscriptionParameters.Count > 0)
-            {
-                list = subscription.SubscriptionParameters.Where(s => s.Type.ToLower() == "input").ToList();
-                if (list.Count > 0)
-                {
-                    context.Put("parms", list);
-                }
-            }
-
-            StringWriter writer = new StringWriter();
-            v.Evaluate(context, writer, string.Empty, body);
-            return writer.ToString();
         }
     }
 }

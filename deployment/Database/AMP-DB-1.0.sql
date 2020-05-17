@@ -902,7 +902,7 @@ Id Int identity(1,1)
 GO
 
 
-CREATE Procedure spGenerateEmailHtml
+CREATE Procedure spGetFormattedEmailBody
 (
 @subscriptionId varchar(225),
 @processStatus varchar(225) 
