@@ -150,7 +150,7 @@ If you want to set up the database locally or in Azure, you could create and ini
 
 * Create a database named **AMPSaaSDB**
 * Switch to the database - **AMPSaaSDB**
-* Run the script - **AMP-DB-1.0.sql** to initalize the database
+* Run the script - **AMP-DB-2.1.sql** to initalize the database
 * Add entries into **KnownUsers** table to allow login to **Publisher Portal**
 * Update entries in **ApplicationConfiguration** table as appropriate. More details on the entries in the **ApplicationConfiguration** table are available [here](./deployment/Database/README.md)
 

@@ -9,7 +9,7 @@ The Provisioning and the Publisher applications use SQL Server database as the d
 The SQL scripts build on top of each other. When setting up your database, do the following.
 
 1. Start with a blank database
-2. Run AMP-DB-1.0.sql
+2. Run AMP-DB-2.1.sql
 
 ## Description
 
