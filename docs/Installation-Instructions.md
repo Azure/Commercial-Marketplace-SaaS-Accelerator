@@ -143,6 +143,10 @@ Deploying the debug release, and choosing "self-contained" deployment mode is us
 
 ### Running the solution locally
 
+Make sure both **SaaS.SDK.CustomerProvisioning** and **SaaS.SDK.CustomerProvisioning** are set up to run on the dotnet development web server (Kestrel), by selecting the host. For details, please see Kestrel [documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel?view=aspnetcore-3.1).
+
+![RunTarget](./images/RunTarget.png)
+
 Right click on the solution, in Visual Studio as shown in the figure below.
 
 ![SetStartupProjects](./images/SetStartupProjects.png)
