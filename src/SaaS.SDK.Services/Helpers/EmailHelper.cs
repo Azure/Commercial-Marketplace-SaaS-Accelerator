@@ -75,92 +75,33 @@
             bool smtpSsl = bool.Parse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
             int port = int.Parse(this.applicationConfigRepository.GetValueByName("SMTPPort"));
             string smtpHost = this.applicationConfigRepository.GetValueByName("SMTPHost");
-            
-            if (processStatus.ToLower() == "success")
-            {
-                var successEventData = this.planEventsMappingRepository.GetPlanEvent(planGuId, subscriptionEvent.EventsId);
 
-                if (successEventData != null)
+            var eventData = this.planEventsMappingRepository.GetPlanEvent(planGuId, subscriptionEvent.EventsId);
+
+            if (eventData != null)
+            {
+                toReceipents = eventData.SuccessStateEmails;
+                copyToCustomer = Convert.ToBoolean(eventData.CopyToCustomer);
+            }
+
+            if (string.IsNullOrEmpty(toReceipents))
+            {
+                throw new Exception(" Error while sending an email, please check the configuration. ");
+            }
+
+            if (emailTemplateData != null)
+            {
+                if (!string.IsNullOrEmpty(toReceipents) && !string.IsNullOrEmpty(emailTemplateData.Cc))
                 {
-                    toReceipents = successEventData.SuccessStateEmails;
-                    copyToCustomer = Convert.ToBoolean(successEventData.CopyToCustomer);
+                    ccReceipents = emailTemplateData.Cc;
                 }
 
-                if (string.IsNullOrEmpty(toReceipents))
+                if (!string.IsNullOrEmpty(emailTemplateData.Bcc))
                 {
-                    throw new Exception(" Error while sending an email, please check the configuration. ");
+                    bccReceipents = emailTemplateData.Bcc;
                 }
 
-                if (emailTemplateData != null)
-                {
-                    if (!string.IsNullOrEmpty(toReceipents) && !string.IsNullOrEmpty(emailTemplateData.Cc))
-                    {
-                        ccReceipents = emailTemplateData.Cc;
-                    }
-
-                    if (!string.IsNullOrEmpty(emailTemplateData.Bcc))
-                    {
-                        bccReceipents = emailTemplateData.Bcc;
-                    }
-                }
-            }
-
-            if (processStatus.ToLower() == "failure")
-            {
-                var failureStateEmails = this.planEventsMappingRepository.GetPlanEvent(planGuId, subscriptionEvent.EventsId);
-
-                if (failureStateEmails != null)
-                {
-                    toReceipents = failureStateEmails.FailureStateEmails;
-                    copyToCustomer = Convert.ToBoolean(failureStateEmails.CopyToCustomer);
-                }
-
-                if (string.IsNullOrEmpty(toReceipents))
-                {
-                    throw new Exception(" Error while sending an email, please check the configuration. ");
-                }
-
-                if (emailTemplateData != null)
-                {
-                    if (!string.IsNullOrEmpty(toReceipents) && !string.IsNullOrEmpty(emailTemplateData.Cc))
-                    {
-                        ccReceipents = emailTemplateData.Cc;
-                    }
-
-                    if (string.IsNullOrEmpty(emailTemplateData.Bcc))
-                    {
-                        bccReceipents = emailTemplateData.Bcc;
-                    }
-                }
-            }
-
-            if (subscriptionStatus == "PendingActivation")
-            {
-                subject = "Pending Activation";
-            }
-            else if (subscriptionStatus == "Subscribed")
-            {
-                subject = "Subscription Activation";
-            }
-            else if (subscriptionStatus == "Unsubscribed")
-            {
-                subject = "Unsubscription";
-            }
-            else if (subscriptionStatus == "DeploymentFailed")
-            {
-                subject = "Deployment Failed";
-            }
-            else if (subscriptionStatus == "ActivationFailed")
-            {
-                subject = "Activation Failed";
-            }
-            else if (subscriptionStatus == "UnsubscribeFailed")
-            {
-                subject = "Unsubscribe Failed";
-            }
-            else if (subscriptionStatus == "DeleteResourceFailed")
-            {
-                subject = "Delete Resource Failed";
+                subject = emailTemplateData.Subject;
             }
 
             emailContent.BCCEmails = bccReceipents;
