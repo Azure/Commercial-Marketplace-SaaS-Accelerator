@@ -890,19 +890,8 @@ SELECT 'Template','Template',GETDATE(),'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML
 
 GO
 
-GO
-Create Table SubscriptionEmailOutput
-(
-Id Int identity(1,1)
-,Name varchar(225)
-,Value varchar(MAX)
-)
 
-
-GO
-
-
-Alter Procedure spGetFormattedEmailBody  
+Create Procedure spGetFormattedEmailBody  
 (  
 @subscriptionId varchar(225),  
 @processStatus varchar(225)   
