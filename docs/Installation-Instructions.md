@@ -30,13 +30,12 @@ The sample provides the components implementing clients for SaaS Fulfillment API
 - **Customer provisioning sample web application** showcases how to register, provision, and activate the customer subscription. Implemented using ASP.Net Core 3.1, it uses the SaaS Client library and Data Access Library to to invoke and persists interactions with the fulfillment APIs. In addition, it provides interfaces for a customer to manage their subscriptions and plans. 
 - **Publisher sample web application** showcases how to generate metered based transactions, persistence of those transactions and transmission of these transactions to the metered billing API. 
 - **Client Data Access library** demonstrates how to persist the Plans, Subscriptions, and transactions with the fulfillment and Metered APIs.
-# Transactable SaaS Offer Fulfillment v2 and Metering SDK Instructions
 
 The sample and the SDK in this repository cover the components that comprise the highlighted area in this architecture diagram:
 
 ![Usecase](./images/UseCaseSaaSAPIs.png)
 
-### Features 
+### Features
 
 - Demonstrates the basic process for activating a subscription, and handling requests on landing page and webhook endpoint to support related scenarios using the SDK (also known as Transactable SaaS Client Library)
 - Transactable SaaS Client Library and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
@@ -97,14 +96,15 @@ After making all of the above changes, the **appSettings.json** would look like 
     "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/api",
     "SignedOutRedirectUri": "<provisioning_or_publisher_web_app_base_path>/Home/Index",
     "TenantId": "<TenantID-of-AD-Application>",
-    "FulFillmentAPIVersion": "2018-09-15",
+    "FulFillmentAPIVersion": "2018-08-31",
     "AdAuthenticationEndPoint": "https://login.microsoftonline.com",
     "SaaSAppUrl" : "<Link-to-SaaS-Application>"
   },
   "connectionStrings" : {
     "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>"
     },
-  "AllowedHosts": "*"
+  "AllowedHosts": "*",
+  "AzureWebJobsStorage": "<Connection String for storage queue. Enqueueing a message to this queue triggers the webjob>"  
 }
 
 ```
@@ -411,16 +411,18 @@ The intent here is to illustrate how the assignment can be done via the interfac
 The provisioning application and the publisher application are configured to log the activity to console ( when running locally ). The logs are available via **Log Stream** when the applications are running in Azure as app services.
 Logs in Azure can be viewed by following the below steps:
 
-1. Log on to https://portal.azure.com
-2. Navigate to the app service 
-3. Click **App Service logs** and set the parameters as shown here:
+* Log on to [Azure](https://portal.azure.com)
+* Navigate to the app service
+* Click **App Service logs** and set the parameters as shown here:
 
 ![App service logs](./images/azure-application-logging.png)
 
-4. Click **Log Stream** in the menu on the left to look at the logs output by the application. You could see the view refreshing every minute with the latest log information due to the activity in the application as you access the application in another browser window.
+* Click **Log Stream** in the menu on the left to look at the logs output by the application. You could see the view refreshing every minute with the latest log information due to the activity in the application as you access the application in another browser window.
 
-- You can download the logs from the FTP URL that is available in the **App Service Logs** interface.
-- The credentials to access the FTP location are available in the **Publish Profile** of the web application.
+* You can download the logs from the FTP URL that is available in the **App Service Logs** interface.
+* The credentials to access the FTP location are available in the **Publish Profile** of the web application.
 
+### Next steps
 
- 
+* [Customer purchase experience](./Customer-Experience.md)
+* [Publisher experience](./Publisher-Experience.md)
