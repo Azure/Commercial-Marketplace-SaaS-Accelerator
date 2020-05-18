@@ -61,6 +61,11 @@
             string body = this.emailTemplateRepository.GetEmailBodyForSubscription(subscriptionID, processStatus);
             var subscriptionEvent = this.eventsRepository.GetByName(planEventName);
             var emailTemplateData = this.emailTemplateRepository.GetTemplateForStatus(subscriptionStatus);
+            if (processStatus == "failure")
+            {
+                emailTemplateData = this.emailTemplateRepository.GetTemplateForStatus("Failed");
+            }
+
             string subject = string.Empty;
 
             bool copyToCustomer = false;
