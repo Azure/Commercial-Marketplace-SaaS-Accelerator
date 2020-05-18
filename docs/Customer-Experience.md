@@ -1,6 +1,8 @@
 # Customer experience
 
+## Table of contents
 - [Customer experience](#customer-experience)
+  - [Table of contents](#table-of-contents)
   - [Overview](#overview)
   - [Subscribing to the offer](#subscribing-to-the-offer)
     - [Activate](#activate)
