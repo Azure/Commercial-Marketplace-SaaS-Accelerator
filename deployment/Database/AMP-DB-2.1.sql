@@ -1,4 +1,4 @@
-/*Basic version 1.0 Schema*/
+/*Basic version 2.1 Schema*/
 GO
 /****** Object:  Table [dbo].[ApplicationConfiguration]    Script Date: 05-15-2020 12.56.43 PM ******/
 SET ANSI_NULLS ON
@@ -761,7 +761,7 @@ END
 GO
 INSERT INTO [DatabaseVersionHistory] 
 
-Select 1.0, 'Master Schema',Getdate(), 'DB User'
+Select 2.1, 'Master Schema',Getdate(), 'DB User'
 
 GO
 
