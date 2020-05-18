@@ -1,73 +1,72 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
+    /// <summary>
+    /// Subscription Log Repository.
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.ISubscriptionLogRepository" />
     public class SubscriptionLogRepository : ISubscriptionLogRepository
     {
         /// <summary>
-        /// The context
+        /// The context.
         /// </summary>
-        public SaasKitContext Context = new SaasKitContext();
+        private readonly SaasKitContext context;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SubscriptionLogRepository"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The this.context.</param>
         public SubscriptionLogRepository(SaasKitContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
         /// <summary>
         /// Adds the specified subscription logs.
         /// </summary>
         /// <param name="subscriptionLogs">The subscription logs.</param>
-        /// <returns></returns>
-        public int Add(SubscriptionAuditLogs subscriptionLogs)
+        /// <returns> log Id.</returns>
+        public int Save(SubscriptionAuditLogs subscriptionLogs)
         {
-            try
-            {
-                Context.SubscriptionAuditLogs.Add(subscriptionLogs);
-                Context.SaveChanges();
-                return subscriptionLogs.Id;
-            }
-            catch (Exception) {}
-            return 0;
+            this.context.SubscriptionAuditLogs.Add(subscriptionLogs);
+            this.context.SaveChanges();
+            return subscriptionLogs.Id;
         }
 
         /// <summary>
         /// Gets this instance.
         /// </summary>
-        /// <returns></returns>
+        /// <returns> List of log.</returns>
         public IEnumerable<SubscriptionAuditLogs> Get()
         {
-            return Context.SubscriptionAuditLogs.Include(s => s.Subscription);
+            return this.context.SubscriptionAuditLogs.Include(s => s.Subscription);
         }
 
         /// <summary>
         /// Gets the subscription by subscription identifier.
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
-        /// <returns></returns>
+        /// <returns> Subscription Audit Logs.</returns>
         public IEnumerable<SubscriptionAuditLogs> GetSubscriptionBySubscriptionId(Guid subscriptionId)
         {
-            return Context.SubscriptionAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.AmpsubscriptionId == subscriptionId);
+            return this.context.SubscriptionAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.AmpsubscriptionId == subscriptionId);
         }
 
         /// <summary>
         /// Gets the specified identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <returns></returns>
+        /// <returns> Subscription Audit Logs.</returns>
         public SubscriptionAuditLogs Get(int id)
         {
-            return Context.SubscriptionAuditLogs.Where(s => s.Id == id).FirstOrDefault();
+            return this.context.SubscriptionAuditLogs.Where(s => s.Id == id).FirstOrDefault();
         }
 
         /// <summary>
@@ -76,8 +75,29 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         /// <param name="entity">The entity.</param>
         public void Remove(SubscriptionAuditLogs entity)
         {
-            Context.SubscriptionAuditLogs.Remove(entity);
-            Context.SaveChanges();
+            this.context.SubscriptionAuditLogs.Remove(entity);
+            this.context.SaveChanges();
+        }
+
+        /// <summary>
+        /// Logs the status during provisioning.
+        /// </summary>
+        /// <param name="subscriptionID">The subscription identifier.</param>
+        /// <param name="errorDescription">The error description.</param>
+        /// <param name="subscriptionStatus">The subscription status.</param>
+        public void LogStatusDuringProvisioning(Guid subscriptionID, string errorDescription, string subscriptionStatus)
+        {
+            var subscription = this.context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionID).FirstOrDefault();
+
+            WebJobSubscriptionStatus status = new WebJobSubscriptionStatus()
+            {
+                SubscriptionId = subscriptionID,
+                SubscriptionStatus = subscriptionStatus,
+                Description = errorDescription,
+                InsertDate = DateTime.Now,
+            };
+            this.context.WebJobSubscriptionStatus.Add(status);
+            this.context.SaveChanges();
         }
     }
 }

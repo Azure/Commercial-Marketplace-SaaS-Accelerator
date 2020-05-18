@@ -1,12 +1,13 @@
-﻿using Microsoft.Marketplace.SaasKit.Configurations;
-using Microsoft.Marketplace.SaasKit.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaasKit.Helpers
+﻿namespace Microsoft.Marketplace.SaasKit.Helpers
 {
-   public class UrlHelper
+    using System;
+    using Microsoft.Marketplace.SaasKit.Configurations;
+    using Microsoft.Marketplace.SaasKit.Models;
+
+    /// <summary>
+    /// The url helper.
+    /// </summary>
+    public class UrlHelper
     {
         /// <summary>
         /// GetFulfilllments the URL.
@@ -15,7 +16,7 @@ namespace Microsoft.Marketplace.SaasKit.Helpers
         /// <param name="resourceGuid">The resource unique identifier.</param>
         /// <param name="action">The action.</param>
         /// <param name="operationGuid">The operation unique identifier.</param>
-        /// <returns></returns>
+        /// <returns> Saas URL.</returns>
         public static string GetSaaSApiUrl(SaaSApiClientConfiguration clientConfiguration, Guid resourceGuid, SaaSResourceActionEnum? action, Guid? operationGuid = null)
         {
             var resourceId = Convert.ToString(resourceGuid);

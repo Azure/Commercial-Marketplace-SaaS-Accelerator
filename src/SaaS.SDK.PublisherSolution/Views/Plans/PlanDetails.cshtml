@@ -1,0 +1,181 @@
+﻿@using Microsoft.Marketplace.SaaS.SDK.Services.Models
+@using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+@model PlansModel
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="~/css/jquery-ui/jquery-ui.css" rel="stylesheet" />
+    <link href="~/css/jquery-ui/style.css" rel="stylesheet" />
+    <script src="~/lib/jquery-ui/jquery-1.12.4.js"></script>
+    <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+</head>
+<body>
+
+
+    <script>
+        $(function () {
+            $("#tabs").tabs();
+        });
+    </script>
+    <div class="text-center mt20">
+        <div class="card card-header">
+            <dl class="row">
+                <dt class="col-2 text-right"><b>Offer Name</b></dt>
+                <dd class="col-3 text-left">@Model.OfferName</dd>
+                <dt class="col-3 text-right"><b>Plan name</b></dt>
+                <dd class="col-4 text-left">@Model.DisplayName</dd>
+            </dl>
+        </div>
+        <form method="post" id="frmPlanEvents" asp-action="PlanDetails" asp-controller="Plans">
+            <div>
+                @Html.HiddenFor(model => model.OfferID)
+                @Html.HiddenFor(model => model.PlanGUID)
+                @Html.HiddenFor(model => model.Id)
+            </div>
+            <div id="tabs">
+                <ul>
+                    <li><a href="#tabs-Parameters">Parameters</a></li>
+                    <li><a href="#tabs-Events">Events</a></li>
+                </ul>
+                <div id="tabs-Parameters">
+                    <div id="PlanAttributes">
+                        @if (Model.PlanAttributes != null && Model.PlanAttributes.Count() > 0)
+                        {
+                            <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
+                                <theader>
+                                    <tr>
+                                        <th>DisplayName</th>
+                                        <th>Enable</th>
+                                    </tr>
+                                </theader>
+                                <tbody id="ReplacingTable">
+                                    @for (int i = 0; i < Model.PlanAttributes.Count(); i++)
+                                    {
+
+
+                                        <tr id="tr_PlanAttributes_@i" class="@Model.PlanAttributes[i].Type">
+                                            <td>
+                                                <input id="PlanAttributes[@i].PlanAttributeId" type="hidden" value="@Model.PlanAttributes[i].PlanAttributeId" class="iHidden" name="PlanAttributes[@i].PlanAttributeId" />
+                                                <input id="PlanAttributes[@i].OfferAttributeId" type="hidden" value="@Model.PlanAttributes[i].OfferAttributeId" class="iHidden" name="PlanAttributes[@i].OfferAttributeId" />
+                                                <input id="PlanAttributes[@i].PlanId" type="hidden" value="@Model.PlanAttributes[i].PlanId" class="iHidden" name="PlanAttributes[@i].PlanId" />
+                                                <input id="PlanAttributes[@i].Type" type="hidden" value="@Model.PlanAttributes[i].Type" class="iHidden" name="PlanAttributes[@i].Type" />
+                                                @Model.PlanAttributes[i].DisplayName
+                                            </td>
+                                            <td>
+                                                @*<input type="checkbox" id="PlanAttributes[@i].IsEnabled" name="OfferAttributes[@i].IsEnabled" value="@Model.PlanAttributes[i].IsEnabled" />*@
+                                                @Html.CheckBoxFor(model => model.PlanAttributes[i].IsEnabled, new { name = "PlanAttributes[@i].IsEnabled", id = string.Format("PlanAttributes_IsEnabled_{0}", @i) })
+                                            </td>
+                                        </tr>
+
+
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        <div style="text-align:right;">
+                            <p>
+                                <input class="cm-button-default mt0" type="button" onclick="savePlanParameters()" value="Save Parameters" />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div id="tabs-Events">
+                    <div id="PlanEvents">
+                        @if (Model.PlanEvents != null && Model.PlanEvents.Count() > 0)
+                        {
+                            <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
+                                <theader>
+                                    <tr>
+                                        <th>Event Name</th>
+                                        <th>Active</th>
+                                        <th>Copy To Customer</th>
+                                        <th>
+                                            Success Event Emails
+                                        </th>
+                                        <th>
+                                            Failure Event Emails
+                                        </th>
+                                    </tr>
+                                </theader>
+                                <tbody id="ReplacingTable">
+                                    @for (int i = 0; i < Model.PlanEvents.Count(); i++)
+                                    {
+
+
+                                        <tr id="tr_PlanEvents_@i">
+                                            <td>
+                                                <input id="PlanEvents_Id_@i" type="hidden" value="@Model.PlanEvents[i].Id" class="iHidden" name="PlanEvents[@i].Id" />
+                                                <input id="PlanEvents_PlanId_@i" type="hidden" value="@Model.PlanEvents[i].PlanId" class="iHidden" name="PlanEvents[@i].PlanId" />
+                                                <input id="PlanEvents_EventId_@i" type="hidden" value="@Model.PlanEvents[i].EventId" class="iHidden" name="PlanEvents[@i].EventId" />
+                                                @*<input type="text" style="width:70px;" id="PlanAttributes[@i].DisplayName" name="PlanAttributes[@i].DisplayName" value="@Model.PlanAttributes[i].DisplayName" />*@
+                                                @Model.PlanEvents[i].EventName
+                                            </td>
+                                            <td>
+                                                @Html.CheckBoxFor(model => model.PlanEvents[i].Isactive, new { name = "PlanEvents[@i].Isactive", id = string.Format("PlanEvents_Isactive_{0}", @i) })
+                                                @*<input type="checkbox" id="PlanEvents_IsEnabled_@i" name="PlanEvents[@i].IsEnabled" value="@Model.PlanEvents[i].IsEnabled" />*@
+                                            </td>
+                                            <td>
+                                                @Html.CheckBoxFor(model => model.PlanEvents[i].CopyToCustomer, new { name = "PlanEvents[@i].CopyToCustomer", id = string.Format("PlanEvents_CopyToCustomer_{0}", @i) })
+                                                @*<input type="checkbox" id="PlanEvents_IsEnabled_@i" name="PlanEvents[@i].IsEnabled" value="@Model.PlanEvents[i].IsEnabled" />*@
+                                            </td>
+                                            <td><input type="text" style="width:200px;" id="PlanEvents_SuccessStateEmails_@i" name="PlanEvents[@i].SuccessStateEmails" value="@Model.PlanEvents[i].SuccessStateEmails" /></td>
+                                            <td><input type="text" style="width:200px;" id="PlanEvents_FailureStateEmails_@i" name="PlanEvents[@i].FailureStateEmails" value="@Model.PlanEvents[i].FailureStateEmails" /></td>
+                                        </tr>
+
+
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        <div style="text-align:right;">
+                            <p>
+                                <input class="cm-button-default mt0" type="button" onclick="savePlanParameters()" value="Save Events" />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+</body>
+<script>
+
+    function successconfirmDialog() {
+        swal({
+            title: "Saved",
+            text: "Plan parameters saved successfully.",
+            icon: "success",
+            timer: 1000
+        })
+    }
+    function errorconfirmDialog() {
+        swal({
+            title: "Error",
+            text: "An error has occured, please check the log.",
+            icon: "error",
+            timer: 1000
+        })
+    }
+    function savePlanParameters() {
+        var formobject = $('#frmPlanEvents').serialize();
+        $.ajax({
+            url: 'Plans/PlanDetails',
+            type: 'POST',
+            data: formobject,
+            cache: false,
+            success: function (result) {
+                debugger;
+                successconfirmDialog();
+                $('#myModal').html(result);
+            },
+            Error:
+                function (result) {
+                    errorconfirmDialog();
+                    $('#myModal').html(result);
+                }
+        });
+    }
+
+</script>

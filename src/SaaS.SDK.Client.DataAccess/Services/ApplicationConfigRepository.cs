@@ -1,34 +1,50 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
+    /// <summary>
+    /// Repository to access ApplicationConfiguration.
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IApplicationConfigRepository" />
     public class ApplicationConfigRepository : IApplicationConfigRepository
     {
-        private readonly SaasKitContext Context;
+        /// <summary>
+        /// The context.
+        /// </summary>
+        private readonly SaasKitContext context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApplicationConfigRepository"/> class.
+        /// </summary>
+        /// <param name="context">The this.context.</param>
         public ApplicationConfigRepository(SaasKitContext context)
         {
-            Context = context;
+            this.context = context;
         }
 
-        public string GetValuefromApplicationConfig(string Name)
+        /// <summary>
+        /// Gets the name of the value by.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>
+        /// Value of application configuration entry by name.
+        /// </returns>
+        public string GetValueByName(string name)
         {
-            return Context.ApplicationConfiguration.Where(s => s.Name == Name).FirstOrDefault().Value;
+            return this.context.ApplicationConfiguration.Where(s => s.Name == name).FirstOrDefault().Value;
         }
 
         /// <summary>
         /// Gets the value from application configuration.
         /// </summary>
-        /// <returns></returns>
-        public IEnumerable<ApplicationConfiguration> GetValuefromApplicationConfig()
+        /// <returns>List of all application configuration items.</returns>
+        public IEnumerable<ApplicationConfiguration> GetAll()
         {
-            return Context.ApplicationConfiguration;
+            return this.context.ApplicationConfiguration;
         }
     }
 }

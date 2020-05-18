@@ -4,7 +4,7 @@
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Enum Representation for Web hook Action
+    /// Enum Representation for Web hook Action.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum WebhookAction
@@ -48,6 +48,6 @@
         /// The transfer
         /// </summary>
         [EnumMember(Value = "Transfer")]
-        Transfer
+        Transfer,
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     /// <summary>
-    /// Fulfillment Action Enum
+    /// Fulfillment Action Enum.
     /// </summary>
     public enum SaaSResourceActionEnum
     {
@@ -43,6 +43,6 @@
         /// <summary>
         /// The subscription batch usageevent
         /// </summary>
-        SUBSCRIPTION_BATCHUSAGEEVENT
+        SUBSCRIPTION_BATCHUSAGEEVENT,
     }
 }

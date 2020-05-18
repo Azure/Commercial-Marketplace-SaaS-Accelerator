@@ -1,28 +1,54 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
+    using System;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
+    /// <summary>
+    /// Repository to access application logs.
+    /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IApplicationLogRepository" />
     public class ApplicationLogRepository : IApplicationLogRepository
     {
-        /// <summary>The context</summary>
+        /// <summary>
+        /// The this.context.
+        /// </summary>
         private readonly SaasKitContext context;
+
+        /// <summary>
+        /// The disposed.
+        /// </summary>
+        private bool disposed = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationLogRepository"/> class.
         /// </summary>
-        /// <param name="context">The context.</param>
+        /// <param name="context">The this.context.</param>
         public ApplicationLogRepository(SaasKitContext context)
         {
             this.context = context;
         }
 
         /// <summary>
-        /// The disposed
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        private bool disposed = false;
+        public void Dispose()
+        {
+            this.Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Adds the application logs.
+        /// </summary>
+        /// <param name="logDetail">The log detail.</param>
+        public void AddLog(ApplicationLog logDetail)
+        {
+            this.context.ApplicationLog.Add(logDetail);
+            this.context.SaveChanges();
+        }
 
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
@@ -34,30 +60,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             {
                 if (disposing)
                 {
-                    context.Dispose();
+                    this.context.Dispose();
                 }
             }
+
             this.disposed = true;
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Adds the application logs.
-        /// </summary>
-        /// <param name="logDetail">The log detail.</param>
-        public void AddApplicationLogs(ApplicationLog logDetail)
-        {
-            context.ApplicationLog.Add(logDetail);
-            context.SaveChanges();
         }
     }
 }

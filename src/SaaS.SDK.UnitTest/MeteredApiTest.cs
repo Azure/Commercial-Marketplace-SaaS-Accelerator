@@ -1,30 +1,29 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.UnitTest
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Marketplace.SaasKit.Configurations;
     using Microsoft.Marketplace.SaasKit.Helpers;
     using Microsoft.Marketplace.SaasKit.Models;
     using Microsoft.Marketplace.SaasKit.Services;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     /// <summary>
-    /// Metered API Test
+    /// Metered API Test.
     /// </summary>
     [TestClass]
     public class MeteredApiTest
     {
-        /// <summary>The client</summary>
+        /// <summary>The client.</summary>
         private MeteredBillingApiClient client;
 
-        /// <summary>The client</summary>
+        /// <summary>The client.</summary>
         private FulfillmentApiClient fulfillmentClient;
 
-        /// <summary>The configuration</summary>
+        /// <summary>The configuration.</summary>
         private SaaSApiClientConfiguration configuration = new SaaSApiClientConfiguration();
 
         /// <summary>Initializes a new instance of the <see cref="MeteredApiTest"/> class.</summary>
@@ -44,7 +43,7 @@
         /// <summary>
         /// Check Authentication.
         /// </summary>
-        /// <returns>Test Authentication</returns>
+        /// <returns>Test Authentication.</returns>
         [TestMethod]
         public async Task CheckAuthentication()
         {
@@ -56,7 +55,7 @@
         /// <summary>
         /// Gets the subscription by identifier.
         /// </summary>
-        /// <returns>Test Subscription Usage</returns>
+        /// <returns>Test Subscription Usage.</returns>
         [TestMethod]
         public async Task TestSubscriptionUsage()
         {
@@ -69,7 +68,7 @@
                 EffectiveStartTime = DateTime.UtcNow,
                 PlanId = defaultSubscription?.PlanId,
                 Quantity = 5,
-                ResourceId = defaultSubscription.Id
+                ResourceId = defaultSubscription.Id,
             };
             var response = this.client.EmitUsageEventAsync(subscriptionUsageRequest).Result;
             Assert.AreEqual(response.Status, "Accepted");
@@ -80,7 +79,7 @@
         /// <summary>
         /// Test subscription batch usage.
         /// </summary>
-        /// <returns>Test Subscription Batch Usage</returns>
+        /// <returns>Test Subscription Batch Usage.</returns>
         [TestMethod]
         public async Task TestSubscriptionBatchUsage()
         {
@@ -95,7 +94,7 @@
                     EffectiveStartTime = DateTime.UtcNow,
                     PlanId = defaultSubscription?.PlanId,
                     Quantity = 5,
-                    ResourceId = defaultSubscription.Id
+                    ResourceId = defaultSubscription.Id,
                 },
                 new MeteringUsageRequest()
                 {
@@ -103,7 +102,7 @@
                     EffectiveStartTime = DateTime.UtcNow,
                     PlanId = defaultSubscription?.PlanId,
                     Quantity = 5,
-                    ResourceId = defaultSubscription.Id
+                    ResourceId = defaultSubscription.Id,
                 },
             };
             var response = await this.client.EmitBatchUsageEventAsync(subscriptionUsageRequest);

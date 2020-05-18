@@ -1,0 +1,270 @@
+﻿@using Microsoft.Marketplace.SaaS.SDK.Services.Models
+@using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+@model OffersViewModel
+
+<div class="text-center maxwidth">
+    <form method="post" id="frmOfferattributes" asp-action="OfferDetails" asp-controller="Offers">
+        @*action="Offers/OfferDetails"*@
+        <div class="container mrtop maxwidth" style="float:left;">
+            <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
+                <input class="cm-button-default mt0" style="line-height:10px; background-color: #2E8B57;" type="button" id="btnAdd" value="Add new row" />
+                <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="saveOfferParameters()" value="Save changes" />
+            </div>
+            @*<div calss="text-right maxwidth" style="text-align:right; width:1300px;">
+                    <p>
+
+                    </p>
+                </div>*@
+            <div class="card card-header mb0 pb0 maxwidth">
+                <input type='hidden' id='OfferID' name='OfferID' value="@Model.OfferID" />
+                <input type='hidden' id='OfferName' name='OfferName' value="@Model.OfferName" />
+                <input type='hidden' id='OfferGuid' name='OfferGuid' value="@Model.OfferGuid" />
+                <input type='hidden' id='Id' name='Id' value="@Model.Id" />
+                <dl class="row">
+
+                    <dt class="col-2 text-right"><b>Offer name</b></dt>
+                    <dd class="col-3 text-left">@Model.OfferID</dd>
+                    @*<dt class="col-3 text-right"><b>Offer name</b></dt>
+                        <dd class="col-4 text-left">@Model.OfferName</dd>*@
+                </dl>
+            </div>
+            <div id="tableload mb0 pb0">
+                <table class="table table-bordered dt-responsive cm-table maxwidth" id="tblcontainer">
+                    <theader>
+                        <tr>
+                            <th>  ParameterId         </th>
+                            <th>  DisplayName         </th>
+                            <th>  Description         </th>
+                            <th>  ValueTypeId         </th>
+                            <th>  FromList            </th>
+                            <th>  ValuesList          </th>
+                            <th>  Max                 </th>
+                            <th>  Min                 </th>
+                            @*<th>  OfferID             </th>*@
+                            @*<th>  Type                </th>*@
+                            <th>  DisplaySequence     </th>
+                            <th>  Isactive            </th>
+                            <th>  IsRequired           </th>
+                            <th>  Remove            </th>
+
+                        </tr>
+                    </theader>
+                    <tbody id="tblbody">
+                    </tbody>
+                </table>
+                @if (Model.OfferAttributes != null && Model.OfferAttributes.Count() > 0)
+                {
+                    <table style="display:none;">
+                        <tbody id="tbodyinitialload">
+                            @for (int i = 0; i < Model.OfferAttributes.Count(); i++)
+                            {
+                                <tr id="tr_OfferAttributes_@i">
+                                    <td>
+                                        <input id="OfferAttributes_Id_@i" type="hidden" value="@i" class="iHidden" name="OfferAttributes[@i].Id" />
+                                        <input id="OfferAttributes_AttributeID_@i" type="hidden" class="iHidden" name="OfferAttributes[@i].AttributeID" value="@Model.OfferAttributes[i].AttributeID" />
+                                        <input type="text" style="width:70px;" id="OfferAttributes_ParameterId_@i" name="OfferAttributes[@i].ParameterId" value="@Model.OfferAttributes[i].ParameterId" />
+                                    </td>
+                                    <td><input type="text" style="width:70px;" id="OfferAttributes_DisplayName_@i" name="OfferAttributes[@i].DisplayName" value="@Model.OfferAttributes[i].DisplayName" /></td>
+                                    <td><input type="text" style="width:70px;" id="OfferAttributes_Description_@i" name="OfferAttributes[@i].Description" value="@Model.OfferAttributes[i].Description" /></td>
+                                    <td>
+                                        @*<input type="text" style="width:70px;" id="OfferAttributes_i__ValueTypeId" name="OfferAttributes[@i].ValueTypeId" />*@
+                                        @*@Html.DropDownList("OfferAttributes[@i].ValueTypeId", ViewBag.ValueTypes as SelectList, new { @id = "OfferAttributes[@i].ValueTypeId", @value = @Model.OfferAttributes[i].ValueTypeId })*@
+                                        @Html.DropDownListFor(model => model.OfferAttributes[i].ValueTypeId, ViewBag.ValueTypes as IEnumerable<SelectListItem>, new { name = "OfferAttributes[@i].ValueTypeId", id = string.Format("OfferAttributes_ValueTypeId_{0}", @i) })
+                                    </td>
+                                    <td>
+                                        @*<input type="checkbox" id="OfferAttributes_FromList_@i" name="OfferAttributes[@i].FromList" value="@Model.OfferAttributes[i].FromList" checked="@Model.OfferAttributes[i].FromList" />*@
+                                        @Html.CheckBoxFor(model => model.OfferAttributes[i].FromList, new { name = "OfferAttributes[@i].FromList", id = string.Format("OfferAttributes_FromList_{0}", @i) })
+                                    </td>
+                                    <td><input type="text" style="width:70px;" id="OfferAttributes_ValuesList_@i" name="OfferAttributes[@i].ValuesList" value="@Model.OfferAttributes[i].ValuesList" /></td>
+                                    <td><input type="text" style="width:70px;" id="OfferAttributes_Max_@i" name="OfferAttributes[@i].Max" value="@Model.OfferAttributes[i].Max" /></td>
+                                    <td><input type="text" style="width:70px;" id="OfferAttributes_Min_@i" name="OfferAttributes[@i].Min" value="@Model.OfferAttributes[i].Min" /></td>
+                                    @*<td><input type="text" style="width:70px;" id="OfferAttributes_i__OfferID" name="OfferAttributes[@i].OfferID" /></td>*@
+                                    <td>
+                                        <input type="hidden" style="width:70px;" id="OfferAttributes_Type_@i" name="OfferAttributes[@i].Type" value="@Model.OfferAttributes[i].Type" />
+                                        <input type="text" style="width:70px;" id="OfferAttributes_DisplaySequence_@i" name="OfferAttributes[@i].DisplaySequence" value="@Model.OfferAttributes[i].DisplaySequence" />
+                                    </td>
+                                    <td>
+                                        @*<input type="checkbox" id="OfferAttributes_Isactive_@i" name="OfferAttributes[@i].Isactive" value="@Model.OfferAttributes[i].Isactive" checked="@Model.OfferAttributes[i].Isactive" />*@
+                                        @Html.CheckBoxFor(model => model.OfferAttributes[i].Isactive, new { name = "OfferAttributes[@i].Isactive", id = string.Format("OfferAttributes_Isactive_{0}", @i) })
+                                    </td>
+                                    <td>
+                                        @Html.CheckBoxFor(model => model.OfferAttributes[i].IsRequired, new { name = "OfferAttributes[@i].IsRequired", id = string.Format("OfferAttributes_IsRequired_{0}", @i) })
+                                    </td>
+                                    <td>
+                                        <input id="btnRemove" class="cm-button-default mt0" style="line-height:10px;background-color: #B22222; width:90px; text-align: left;" type="button" value="Remove" onclick="removeRow(@i);" />
+                                        <input type="hidden" value="" id="OfferAttributes_IsRemove_@i" name="OfferAttributes[@i].IsRemove" />
+                                        <input type="hidden" value="" id="OfferAttributes_IsDelete_@i" name="OfferAttributes[@i].IsDelete" />
+                                    </td>
+                                </tr>
+
+
+                            }
+                        </tbody>
+                    </table>
+                }
+                <table id="tbldynamicload" style="display:none;">
+                    <tbody id="tbodydynamicload">
+                        <tr id='tr_OfferAttributes_itemIndex'>
+                            <td>
+                                <input id='OfferAttributes_Id_itemIndex' type='hidden' value='itemIndex' class='iHidden' name='OfferAttributes[itemIndex].Id' />
+                                <input id="OfferAttributes_AttributeID_itemIndex" type="hidden" class="iHidden" name='OfferAttributes[itemIndex].AttributeID' />
+                                <input type='text' style='width:70px;' id='OfferAttributes_ParameterId_itemIndex' name='OfferAttributes[itemIndex].ParameterId' />
+                            </td>
+                            <td><input type='text' style='width:70px;' id='OfferAttributes_DisplayName_itemIndex' name='OfferAttributes[itemIndex].DisplayName' /></td>
+                            <td><input type='text' style='width:70px;' id='OfferAttributes_Description_itemIndex' name='OfferAttributes[itemIndex].Description' /></td>
+                            <td>
+                                @*<input type='text' style='width:70px;' id='OfferAttributes[itemIndex].ValueTypeId' name='OfferAttributes[itemIndex].ValueTypeId' />*@
+                                @Html.DropDownList("OfferAttributes[itemIndex].ValueTypeId", ViewBag.ValueTypes as SelectList, new { @id = "OfferAttributes_ValueTypeId_itemIndex" })
+                            </td>
+                            <td>
+                                @*<input type='checkbox' value='true' id='OfferAttributes_FromList_itemIndex' name='OfferAttributes[itemIndex].FromList' />*@
+                                @Html.CheckBox("OfferAttributes[itemIndex].FromList", new { @id = "OfferAttributes_FromList_itemIndex" })
+                            </td>
+                            <td><input type='text' style='width:70px;' id='OfferAttributes_ValuesList_itemIndex' name='OfferAttributes[itemIndex].ValuesList' /></td>
+                            <td><input type='text' style='width:70px;' id='OfferAttributes_Max_itemIndex' name='OfferAttributes[itemIndex].Max' /></td>
+                            <td><input type='text' style='width:70px;' id='OfferAttributes_Min_itemIndex' name='OfferAttributes[itemIndex].Min' /></td>
+                            @*<td><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].OfferID' name='OfferAttributes[itemIndex].OfferID' /></td>*@
+                            <td>
+                                <input type='hidden' style='width:70px;' id='OfferAttributes_Type_itemIndex' name='OfferAttributes[itemIndex].Type' value="Input" />
+                                <input type='text' style='width:70px;' id='OfferAttributes_DisplaySequence_itemIndex' name='OfferAttributes[itemIndex].DisplaySequence' />
+                            </td>
+                            <td>
+                                @*<input type='checkbox' value='true' id='OfferAttributes_Isactive_itemIndex' name='OfferAttributes[itemIndex].Isactive' />*@
+                                @Html.CheckBox("OfferAttributes[itemIndex].Isactive", new { @id = "OfferAttributes_Isactive_itemIndex" })
+                            </td>
+                            <td>
+                                @Html.CheckBox("OfferAttributes[itemIndex].IsRequired", new { @id = "OfferAttributes_IsRequired_itemIndex" })
+                            </td>
+                            <td>
+                                <input id='btnRemove' class="cm-button-default mt0" type='button' style="line-height:10px; background-color: #B22222; width:90px; text-align: left;" value='Remove' onclick='removeRow(itemIndex);' />
+                                <input type='hidden' value='' id='OfferAttributes_IsRemove_itemIndex' name='OfferAttributes[itemIndex].IsRemove' />
+                                <input type='hidden' value='' id='OfferAttributes_IsDelete_itemIndex' name='OfferAttributes[itemIndex].IsDelete' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
+                <input class="cm-button-default mt0" style="line-height:10px;background-color: #2E8B57;" type="button" id="btnAdd2" value="Add new row" />
+                <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="saveOfferParameters()" value="Save changes" />
+            </div>
+            @*<div calss="text-right maxwidth" style="text-align:right; width:1300px;">
+                    <p>
+
+                    </p>
+                </div>*@
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        //$('#frmOfferattributes').ajaxForm( { beforeSubmit: validate } );
+        //$('#tblcontainer').hide();
+        //var fieldLength = $("#tblcontainer ReplacingTable input.iHidden").length;
+
+        var fieldLength = $("#tbodyinitialload > tr").length;
+        if (fieldLength != undefined || fieldLength != 0) {
+            //$('#tblcontainer').show();
+            var initialhtml = $("#tbodyinitialload").html();
+            $('#tblbody').append(initialhtml);
+            $('#tbodyinitialload').remove();
+        }
+
+        if ($("#tblbody select").length > 0) {
+            $("select").each(function () {
+                var id = this.id;
+                dropdownChange(id);
+            });
+        }
+
+    })
+    $(document).on('change', "select", function () {
+        var id = event.target.id;
+        dropdownChange(id);
+    });
+    $(function () {
+        $("#btnAdd, #btnAdd2").click(function (e) {
+            //$('#tblcontainer').show();
+            //var itemIndex = $("#tblcontainer input.iHidden").length;
+            var itemIndex = $("#tblbody > tr").length;
+            e.preventDefault();
+            var newItem = $("#tbodydynamicload").html();
+            var findstrinig = 'itemIndex';
+            var regx = new RegExp(findstrinig, 'g');
+            newItem = newItem.replace(regx, itemIndex);
+            //$("<tr id='tr_OfferAttributes_" + itemIndex + "__Id'><td><input id='OfferAttributes_" + itemIndex + "__Id' type='hidden' value='" + itemIndex + "' class='iHidden' name='OfferAttributes[" + itemIndex + "].Id' /><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ParameterId' name='OfferAttributes[" + itemIndex + "].ParameterId' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__DisplayName' name='OfferAttributes[" + itemIndex + "].DisplayName' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Description' name='OfferAttributes[" + itemIndex + "].Description' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ValueTypeId' name='OfferAttributes[" + itemIndex + "].ValueTypeId' /></td><td><input type='checkbox' value='true' id='OfferAttributes_" + itemIndex + "__FromList' name='OfferAttributes[" + itemIndex + "].FromList' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ValuesList' name='OfferAttributes[" + itemIndex + "].ValuesList' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Max' name='OfferAttributes[" + itemIndex + "].Max' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Min' name='OfferAttributes[" + itemIndex + "].Min' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__OfferID' name='OfferAttributes[" + itemIndex + "].OfferID' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Type' name='OfferAttributes[" + itemIndex + "].Type' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__DisplaySequence' name='OfferAttributes[" + itemIndex + "].DisplaySequence' /></td><td><input type='checkbox' value='true' id='OfferAttributes_" + itemIndex + "__Isactive' name='OfferAttributes[" + itemIndex + "].Isactive' /></td> <td><input id='btnRemoveBook' class='cm-button-default mt0' type='button' value='Remove' onclick='removeRow(" + itemIndex + ");' /></td><input type='hidden' value='' id='OfferAttributes_" + itemIndex + "__IsRemove' name='OfferAttributes[" + itemIndex + "].IsRemove' /></tr>");
+            $("#tblbody").append(newItem);
+        });
+    });
+    function removeRow(id) {
+        var controlToBeRemoved = "#tr_OfferAttributes_" + id;
+        var attributeId = "#OfferAttributes_AttributeID_" + id;
+        if ($(attributeId).val() > 0)
+            $("#OfferAttributes_IsDelete_" + id).val(true);
+        else
+            $("#OfferAttributes_IsRemove_" + id).val(true);
+        $(controlToBeRemoved).hide();
+    }
+
+    function dropdownChange(id) {
+        var res = id.split("_");
+        var index = res.pop();
+        if (id.includes("ValueTypeId")) {
+            var datatype = $("#OfferAttributes_ValueTypeId_" + index + " option:selected").text();
+            //var datatype = $("#OfferAttributes_ValueTypeId_" + index).text();
+            if (datatype == "String") {
+                $("#OfferAttributes_Max_" + index).attr("disabled", "disabled");
+                $("#OfferAttributes_Min_" + index).attr("disabled", "disabled");
+            }
+            else {
+                $("#OfferAttributes_Max_" + index).removeAttr("disabled");
+                $("#OfferAttributes_Min_" + index).removeAttr("disabled");
+            }
+
+        }
+
+    }
+
+    function successconfirmDialog() {
+        swal({
+            title: "Saved",
+            text: "Offer parameters saved successfully.",
+            icon: "success",
+            timer: 1000
+        })
+    }
+    function errorconfirmDialog() {
+        swal({
+            title: "Error",
+            text: "An error has occured, please check the log.",
+            icon: "error",
+            timer: 1000
+        })
+    }
+    function saveOfferParameters() {
+        debugger;
+        var formobject = $('#frmOfferattributes').serialize();
+        $.ajax({
+            url: 'Offers/OfferDetails',
+            type: 'POST',
+            data: formobject,
+            cache: false,
+            success: function (result) {
+                debugger;
+                successconfirmDialog();
+                $('#myModal').html(result);
+            },
+            Error:
+                function (result) {
+                    errorconfirmDialog();
+                    $('#myModal').html(result);
+                }
+        });
+    }
+
+    //function validate(formData, jqForm, options) {
+    //    alert(formData);
+    //    return false;
+    //}
+
+</script>

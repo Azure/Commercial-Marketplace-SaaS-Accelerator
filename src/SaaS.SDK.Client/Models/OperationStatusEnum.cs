@@ -3,7 +3,7 @@
     using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Shows Operation Status
+    /// Shows Operation Status.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum OperationStatusEnum
@@ -31,6 +31,6 @@
         /// <summary>
         /// The conflict
         /// </summary>
-        Conflict
+        Conflict,
     }
 }

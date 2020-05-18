@@ -1,16 +1,19 @@
-﻿using Microsoft.Marketplace.SaasKit.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaasKit.Exceptions
+﻿namespace Microsoft.Marketplace.SaasKit.Exceptions
 {
+    using System;
+    using Microsoft.Marketplace.SaasKit.Models;
+
+    /// <summary>
+    /// Metered Billing Exception.
+    /// </summary>
+    /// <seealso cref="System.ApplicationException" />
     public class MeteredBillingException : ApplicationException
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MeteredBillingException"/> class.
         /// </summary>
-        public MeteredBillingException() : base()
+        public MeteredBillingException()
+            : base()
         {
         }
 
@@ -18,7 +21,8 @@ namespace Microsoft.Marketplace.SaasKit.Exceptions
         /// Initializes a new instance of the <see cref="MeteredBillingException" /> class.
         /// </summary>
         /// <param name="message">A message that describes the error.</param>
-        public MeteredBillingException(string message) : base(message)
+        public MeteredBillingException(string message)
+            : base(message)
         {
         }
 
@@ -27,7 +31,8 @@ namespace Microsoft.Marketplace.SaasKit.Exceptions
         /// </summary>
         /// <param name="message">A message that describes the error.</param>
         /// <param name="errorCode">The error code.</param>
-        public MeteredBillingException(string message, string errorCode) : base(message)
+        public MeteredBillingException(string message, string errorCode)
+            : base(message)
         {
             this.ErrorCode = errorCode;
         }
@@ -38,7 +43,8 @@ namespace Microsoft.Marketplace.SaasKit.Exceptions
         /// <param name="message">A message that describes the error.</param>
         /// <param name="errorCode">The error code.</param>
         /// <param name="meteredBillingErrorDetail">The metered billing error detail.</param>
-        public MeteredBillingException(string message, string errorCode, MeteringErrorResult meteredBillingErrorDetail): this(message, errorCode)
+        public MeteredBillingException(string message, string errorCode, MeteringErrorResult meteredBillingErrorDetail)
+            : this(message, errorCode)
         {
             this.MeteredBillingErrorDetail = meteredBillingErrorDetail;
         }
@@ -48,7 +54,8 @@ namespace Microsoft.Marketplace.SaasKit.Exceptions
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="inner">The inner.</param>
-        public MeteredBillingException(string message, System.Exception inner) : base(message, inner)
+        public MeteredBillingException(string message, System.Exception inner)
+            : base(message, inner)
         {
         }
 
@@ -59,7 +66,8 @@ namespace Microsoft.Marketplace.SaasKit.Exceptions
         /// <param name="errorCode">The error code.</param>
         /// <param name="meteredBillingErrorDetail">The metered billing error detail.</param>
         /// <param name="inner">The inner.</param>
-        public MeteredBillingException(string message, string errorCode, MeteringErrorResult meteredBillingErrorDetail, System.Exception inner) : this(message, inner)
+        public MeteredBillingException(string message, string errorCode, MeteringErrorResult meteredBillingErrorDetail, System.Exception inner)
+            : this(message, inner)
         {
             this.ErrorCode = errorCode;
             this.MeteredBillingErrorDetail = meteredBillingErrorDetail;
@@ -73,6 +81,12 @@ namespace Microsoft.Marketplace.SaasKit.Exceptions
         /// </value>
         public string ErrorCode { get; set; }
 
+        /// <summary>
+        /// Gets or sets the metered billing error detail.
+        /// </summary>
+        /// <value>
+        /// The metered billing error detail.
+        /// </value>
         public MeteringErrorResult MeteredBillingErrorDetail { get; set; }
     }
 }

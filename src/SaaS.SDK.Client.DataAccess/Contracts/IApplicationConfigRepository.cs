@@ -1,18 +1,24 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
+    using System.Collections.Generic;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
+    /// <summary>
+    /// Repository to access application configuration.
+    /// </summary>
     public interface IApplicationConfigRepository
     {
-        string GetValuefromApplicationConfig(string name);
+        /// <summary>
+        /// Gets the value from application configuration.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns>value corresponding to the application configuration key.</returns>
+        string GetValueByName(string name);
 
         /// <summary>
-        /// Gets the valuefrom application configuration.
+        /// Gets all the  values from application configuration.
         /// </summary>
-        /// <returns></returns>
-        IEnumerable<ApplicationConfiguration> GetValuefromApplicationConfig();
+        /// <returns>List of key value pairs stored in application configuration.</returns>
+        IEnumerable<ApplicationConfiguration> GetAll();
     }
 }

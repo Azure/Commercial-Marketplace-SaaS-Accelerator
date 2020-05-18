@@ -1,12 +1,13 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
     /// <summary>
-    ///  SubscriptionsRepository Interface
+    /// SubscriptionsRepository Interface.
     /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IBaseRepository{Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Subscriptions}" />
     /// <seealso cref="System.IDisposable" />
     /// <seealso cref="Microsoft.Marketplace.SaasKit.DataAccess.Contracts.IBaseRepository{Microsoft.Marketplace.SaasKit.DataAccess.Entities.Subscriptions}" />
     public interface ISubscriptionsRepository : IDisposable, IBaseRepository<Subscriptions>
@@ -17,7 +18,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// <param name="partnerEmailAddress">The partner email address.</param>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="isIncludeDeactvated">if set to <c>true</c> [is include deactvated].</param>
-        /// <returns></returns>
+        /// <returns> Subscriptions.</returns>
         IEnumerable<Subscriptions> GetSubscriptionsByEmailAddress(string partnerEmailAddress, Guid subscriptionId, bool isIncludeDeactvated = false);
 
         /// <summary>
@@ -25,8 +26,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="isIncludeDeactvated">if set to <c>true</c> [is include deactvated].</param>
-        /// <returns></returns>
-        Subscriptions GetSubscriptionsByScheduleId(Guid subscriptionId, bool isIncludeDeactvated = false);
+        /// <returns> Subscriptions.</returns>
+        Subscriptions GetById(Guid subscriptionId, bool isIncludeDeactvated = false);
 
         /// <summary>
         /// Updates the status for subscription.
@@ -49,5 +50,19 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="quantity">The quantity identifier.</param>
         void UpdateQuantityForSubscription(Guid subscriptionId, int quantity);
+
+        /// <summary>
+        /// Gets the subscriptions parameters by identifier.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns>List of parameters related to the subscription.</returns>
+        List<SubscriptionParametersOutput> GetSubscriptionsParametersById(Guid subscriptionId, Guid planId);
+
+        /// <summary>
+        /// Adds the subscription parameters.
+        /// </summary>
+        /// <param name="subscriptionParametersOutput">The subscription parameters output.</param>
+        void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput);
     }
 }
