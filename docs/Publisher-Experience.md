@@ -201,7 +201,7 @@ A button is enabled to post usage events against the subscription if it's plan s
 
 The following interface in the **Publisher portal** allows the user to manual report the usage against a selected dimension.
 
-> In this example, suppose the SaaS service is offering a notification service that helps its customers send out emails / text. Email and Text are modeled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
+> In this example, suppose the SaaS solution is a notification service that helps its customers send out emails / text. Email and Text are modeled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
 
 ![Report usage](./images/post-usage-event.png)
 
