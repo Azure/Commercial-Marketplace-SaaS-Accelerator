@@ -1,0 +1,110 @@
+﻿@using Microsoft.Marketplace.SaaS.SDK.Services.Models
+
+@model Microsoft.Marketplace.SaaS.SDK.Services.Models.SubscriptionResultExtension
+@{
+    //ViewData["Title"] = "Home";
+}
+
+<div class="container">
+    <form method="post">
+
+        <div>
+            <div class="text-left mt40">
+                <span class="cm-section-heading">Subscription Details</span>
+            </div>
+            @if (Model != null && !string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger partner-card-body">
+                    <strong>Error!</strong> Some Error Occurred During Operation!
+                </div>
+            }
+            else
+            {
+                <div class="cm-panel-default mt20">
+                    <dl class="row text-left">
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Customer Email")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.CustomerEmailAddress)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Customer Name ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.CustomerName)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("ID ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Id)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Name ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Status ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.SaasSubscriptionStatus)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Purchaser Email ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Purchaser.EmailId)
+                            @Html.HiddenFor(model => model.Purchaser.EmailId)
+                        </dd>
+
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Azure Tenant ID ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Purchaser.TenantId)
+                            @Html.HiddenFor(model => model.Purchaser.TenantId)
+                        </dd>
+
+
+
+                        @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
+                        {
+
+                            for (int i = 0; i < Model.SubscriptionParameters.Count(); i++)
+                            {
+
+                                    if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
+                                    {
+                                    <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
+                                        @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
+
+
+                                    </dt>
+                                    <dd class="col-sm-9 p-2 p10">
+                                        @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
+                                        @Html.HiddenFor(model => model.SubscriptionParameters[i].Value)
+                                    </dd>
+                                }
+                            }
+                        }
+                    </dl>
+                </div>
+                <div class="text-right">
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed)
+                    {
+                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
+                        <button type="submit" asp-action="Subscriptions" class="cm-button-default mt40 text-right">Go to Subscription List</button>
+                    }
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
+                    {
+                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default mt40 text-right">Activate</button>
+                    }
+                </div>
+
+            }
+        </div>
+    </form>
+</div>

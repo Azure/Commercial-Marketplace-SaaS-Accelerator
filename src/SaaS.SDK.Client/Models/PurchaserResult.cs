@@ -1,10 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
     using System;
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Purchaser Result
+    /// Purchaser Result.
     /// </summary>
     public class PurchaserResult
     {
@@ -14,7 +14,25 @@
         /// <value>
         /// The tenant identifier.
         /// </value>
-        [JsonProperty("tenantId")]
+        [JsonPropertyName("tenantId")]
         public Guid TenantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email identifier.
+        /// </summary>
+        /// <value>
+        /// The email identifier.
+        /// </value>
+        [JsonPropertyName("emailId")]
+        public string EmailId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the object identifier.
+        /// </summary>
+        /// <value>
+        /// The object identifier.
+        /// </value>
+        [JsonPropertyName("objectId")]
+        public Guid ObjectId { get; set; }
     }
 }

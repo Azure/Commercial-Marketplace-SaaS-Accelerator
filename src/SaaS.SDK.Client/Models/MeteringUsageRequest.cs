@@ -3,7 +3,7 @@
     using System;
 
     /// <summary>
-    /// Subscription Usage Request
+    /// Subscription Usage Request.
     /// </summary>
     public class MeteringUsageRequest
     {
@@ -13,7 +13,7 @@
 
         /// <summary>Gets or sets the resource identifier.</summary>
         /// <value>The resource identifier.</value>
-        public Guid ResourceId{ get; set; }
+        public Guid ResourceId { get; set; }
 
         /// <summary>Gets or sets the dimension.</summary>
         /// <value>The dimension.</value>

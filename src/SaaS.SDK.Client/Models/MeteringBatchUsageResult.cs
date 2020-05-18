@@ -1,11 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
-    using Newtonsoft.Json;
-    using System;
     using System.Collections.Generic;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Subscription Batch Usage Result
+    /// Subscription Batch Usage Result.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Models.SaaSApiResult" />
     public class MeteringBatchUsageResult : SaaSApiResult
@@ -16,7 +15,7 @@
         /// <value>
         /// The count.
         /// </value>
-        [JsonProperty("count")]
+        [JsonPropertyName("count")]
         public int Count { get; set; }
 
         /// <summary>
@@ -25,19 +24,7 @@
         /// <value>
         /// The result.
         /// </value>
-        [JsonProperty("result")]
+        [JsonPropertyName("result")]
         public IEnumerable<ResultBatchUsageResult> Result { get; set; }
-    }
-
-    public class ResultBatchUsageResult : MeteringUsageResult
-    {
-        /// <summary>
-        /// Gets or sets the error.
-        /// </summary>
-        /// <value>
-        /// The Error.
-        /// </value>
-        [JsonProperty("error")]
-        public object Error { get; set; }
     }
 }

@@ -12,43 +12,50 @@ namespace Microsoft.Marketplace.SaasKit.Client
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
+    using Microsoft.Marketplace.SaasKit.Client.WebHook;
+    using Microsoft.Marketplace.SaasKit.Configurations;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Services;
-    using Microsoft.Marketplace.SaasKit.Configurations;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
     using Microsoft.Marketplace.SaasKit.WebHook;
-    using Microsoft.Marketplace.SaasKit.Client.WebHook;
-    using Microsoft.Marketplace.SaasKit.Client.Utilities;
 
     /// <summary>
-    /// Defines the <see cref="Startup" />
+    /// Defines the <see cref="Startup" />.
     /// </summary>
     public class Startup
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Startup"/> class.
         /// </summary>
-        /// <param name="configuration">The configuration<see cref="IConfiguration"/></param>
+        /// <param name="configuration">The configuration<see cref="IConfiguration"/>.</param>
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         /// <summary>
-        /// Gets the Configuration
+        /// Gets the Configuration.
         /// </summary>
         public IConfiguration Configuration { get; }
 
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         /// <summary>
-        /// The ConfigureServices
+        /// The ConfigureServices.
         /// </summary>
-        /// <param name="services">The services<see cref="IServiceCollection"/></param>
+        /// <param name="services">The services<see cref="IServiceCollection"/>.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder
+                    .AddConsole();
+            });
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -67,7 +74,11 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 Resource = this.Configuration["SaaSApiConfiguration:Resource"],
                 SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
-                TenantId = this.Configuration["SaaSApiConfiguration:TenantId"]
+                TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
+            };
+            var cloudConfig = new CloudStorageConfigs
+            {
+                AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
             };
 
             services.AddAuthentication(options =>
@@ -76,7 +87,6 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-            ///OPEN ID Authentication
    .AddOpenIdConnect(options =>
    {
        options.Authority = $"{config.AdAuthenticationEndPoint}/common";
@@ -89,40 +99,24 @@ namespace Microsoft.Marketplace.SaasKit.Client
    })
    .AddCookie();
 
-            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));            
+            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
-
+            services.AddSingleton<CloudStorageConfigs>(cloudConfig);
             services.AddDbContext<SaasKitContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+               options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
             InitializeRepositoryServices(services);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddMvc(option => option.EnableEndpointRouting = false);
-            // Add our Config object so it can be injected
         }
 
-        private static void InitializeRepositoryServices(IServiceCollection services)
-        {
-            services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
-            services.AddScoped<IPlansRepository, PlansRepository>();
-            services.AddScoped<IUsersRepository, UsersRepository>();
-            services.AddScoped<ISubscriptionLogRepository, SubscriptionLogRepository>();
-            services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
-            services.AddScoped<IWebhookProcessor, WebhookProcessor>();
-            services.AddScoped<IWebhookHandler, WebHookHandler>();
-            services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
-            services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
-            services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// <summary>
-        /// The Configure
+        /// The Configure.
         /// </summary>
-        /// <param name="app">The app<see cref="IApplicationBuilder"/></param>
-        /// <param name="env">The env<see cref="IWebHostEnvironment"/></param>
-        /// <param name="loggerFactory">The loggerFactory<see cref="ILoggerFactory"/></param>
+        /// <param name="app">The app<see cref="IApplicationBuilder" />.</param>
+        /// <param name="env">The env<see cref="IWebHostEnvironment" />.</param>
+        /// <param name="loggerFactory">The loggerFactory<see cref="ILoggerFactory" />.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
@@ -145,6 +139,23 @@ namespace Microsoft.Marketplace.SaasKit.Client
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private static void InitializeRepositoryServices(IServiceCollection services)
+        {
+            services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
+            services.AddScoped<IPlansRepository, PlansRepository>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<ISubscriptionLogRepository, SubscriptionLogRepository>();
+            services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
+            services.AddScoped<IWebhookProcessor, WebhookProcessor>();
+            services.AddScoped<IWebhookHandler, WebHookHandler>();
+            services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
+            services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
+            services.AddScoped<IOffersRepository, OffersRepository>();
+            services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
+            services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
+            services.AddScoped<IEventsRepository, EventsRepository>();
         }
     }
 }

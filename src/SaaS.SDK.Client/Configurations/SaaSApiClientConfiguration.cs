@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Configurations
 {
     /// <summary>
-    /// Fulfillment Client Configuration
+    /// Fulfillment Client Configuration.
     /// </summary>
     public class SaaSApiClientConfiguration
     {
@@ -20,7 +20,7 @@
         /// The client identifier.
         /// </value>
         public string ClientId { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the client secret.
         /// </summary>
@@ -52,7 +52,7 @@
         /// The signed out redirect URI.
         /// </value>
         public string SignedOutRedirectUri { get; set; }
-       
+
         /// <summary>
         /// Gets or sets the tenant identifier.
         /// </summary>
@@ -60,7 +60,7 @@
         /// The tenant identifier.
         /// </value>
         public string TenantId { get; set; }
-       
+
         /// <summary>
         /// Gets or sets the API version.
         /// </summary>
@@ -76,7 +76,6 @@
         /// The Authentication end point.
         /// </value>
         public string AdAuthenticationEndPoint { get; set; }
-
 
         /// <summary>
         /// Gets or sets the saa s application URL.

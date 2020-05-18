@@ -5,7 +5,7 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// Program
+    /// Program.
     /// </summary>
     public class Program
     {
@@ -26,6 +26,11 @@ namespace Microsoft.Marketplace.Saas.Web
             logger.LogInformation("Publisher portal initialized!!");
         }
 
+        /// <summary>
+        /// Creates the host builder.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        /// <returns> host bulder.</returns>
         public static IHostBuilder CreateHostBuilder(string[] args) =>
     Host.CreateDefaultBuilder(args)
         .ConfigureLogging(logging =>

@@ -1,11 +1,10 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Models
 {
-    using Microsoft.Marketplace.SaasKit.Models;
-    using Newtonsoft.Json;
     using System;
+    using System.Text.Json.Serialization;
 
     /// <summary>
-    /// Subscription Usage Result
+    /// Subscription Usage Result.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Models.SaaSApiResult" />
     public class MeteringUsageResult : SaaSApiResult
@@ -16,7 +15,7 @@
         /// <value>
         /// The status.
         /// </value>
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public string Status { get; set; }
 
         /// <summary>
@@ -25,7 +24,7 @@
         /// <value>
         /// The usage posted date.
         /// </value>
-        [JsonProperty("effectiveStartTime")]
+        [JsonPropertyName("effectiveStartTime")]
         public DateTime? UsagePostedDate { get; set; }
 
         /// <summary>
@@ -34,7 +33,7 @@
         /// <value>
         /// The usage event identifier.
         /// </value>
-        [JsonProperty("usageEventId")]
+        [JsonPropertyName("usageEventId")]
         public Guid UsageEventId { get; set; }
 
         /// <summary>
@@ -43,7 +42,7 @@
         /// <value>
         /// The message time.
         /// </value>
-        [JsonProperty("messageTime")]
+        [JsonPropertyName("messageTime")]
         public DateTime MessageTime { get; set; }
 
         /// <summary>
@@ -52,7 +51,7 @@
         /// <value>
         /// The resource identifier.
         /// </value>
-        [JsonProperty("resourceId")]
+        [JsonPropertyName("resourceId")]
         public Guid ResourceId { get; set; }
 
         /// <summary>
@@ -61,7 +60,7 @@
         /// <value>
         /// The quantity.
         /// </value>
-        [JsonProperty("quantity")]
+        [JsonPropertyName("quantity")]
         public long Quantity { get; set; }
 
         /// <summary>
@@ -70,7 +69,7 @@
         /// <value>
         /// The dimension.
         /// </value>
-        [JsonProperty("dimension")]
+        [JsonPropertyName("dimension")]
         public string Dimension { get; set; }
 
         /// <summary>
@@ -79,7 +78,7 @@
         /// <value>
         /// The plan identifier.
         /// </value>
-        [JsonProperty("planId")]
+        [JsonPropertyName("planId")]
         public string PlanId { get; set; }
     }
 }

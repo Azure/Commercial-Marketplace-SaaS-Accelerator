@@ -1,13 +1,13 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
+    using System;
+    using System.Collections.Generic;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
     /// <summary>
-    /// ISubscriptionLogRepository Interface
+    /// ISubscriptionLogRepository Interface.
     /// </summary>
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IBaseRepository{Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SubscriptionAuditLogs}" />
     /// <seealso cref="Microsoft.Marketplace.SaasKit.DataAccess.Contracts.IBaseRepository{Microsoft.Marketplace.SaasKit.DataAccess.Entities.SubscriptionAuditLogs}" />
     public interface ISubscriptionLogRepository : IBaseRepository<SubscriptionAuditLogs>
     {
@@ -15,7 +15,15 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// Gets the subscription by subscription identifier.
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
-        /// <returns></returns>
+        /// <returns> Subscription Audit Logs.</returns>
         IEnumerable<SubscriptionAuditLogs> GetSubscriptionBySubscriptionId(Guid subscriptionId);
+
+        /// <summary>
+        /// Logs the status during provisioning.
+        /// </summary>
+        /// <param name="subscriptionID">The subscription identifier.</param>
+        /// <param name="errorDescription">The error description.</param>
+        /// <param name="subscriptionStatus">The subscription status.</param>
+        void LogStatusDuringProvisioning(Guid subscriptionID, string errorDescription, string subscriptionStatus);
     }
 }
