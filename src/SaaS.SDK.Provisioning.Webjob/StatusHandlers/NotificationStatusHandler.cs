@@ -189,12 +189,19 @@
             {
                 var emailContent = this.emailHelper.PrepareEmailContent(subscriptionID, planDetails.PlanGuid, processStatus, planEventName, subscription.SubscriptionStatus);
 
-                this.emailService.SendEmail(emailContent);
+                if (!string.IsNullOrWhiteSpace(emailContent.ToEmails) || !string.IsNullOrWhiteSpace(emailContent.BCCEmails))
+                {
+                    this.emailService.SendEmail(emailContent);
+                }
 
                 if (emailContent.CopyToCustomer && !string.IsNullOrEmpty(userdeatils.EmailAddress))
                 {
                     emailContent.ToEmails = userdeatils.EmailAddress;
-                    this.emailService.SendEmail(emailContent);
+
+                    if (!string.IsNullOrWhiteSpace(emailContent.ToEmails) || !string.IsNullOrWhiteSpace(emailContent.BCCEmails))
+                    {
+                        this.emailService.SendEmail(emailContent);
+                    }
                 }
             }
         }
