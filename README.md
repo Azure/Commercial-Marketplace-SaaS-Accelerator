@@ -83,6 +83,8 @@ Ensure the following prerequisites are met before getting started:
 ## Releases
 
 - **February 2020 - v1.0** Current Release. It includes the full implementation of the Fulfillment V2 and metering service APIs with web applications that demonstrate customer and publisher portals.
+- **March 2020 - v2.0** Current Release. Includes delayed activations and subscriptions actions on Admin Page.
+- **May 2020 - v2.1** //Build Release. Bug fixes and additional walk-through documentation.
 
 ## Contributing
 
