@@ -122,7 +122,7 @@ namespace Microsoft.Marketplace.Saas.Web
         {
             if (env.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage();
             }
             else
             {

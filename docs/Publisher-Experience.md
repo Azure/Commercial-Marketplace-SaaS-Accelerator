@@ -1,74 +1,24 @@
 # Publisher Experience
 
-* [Overview](#overview)
-* [Test purchase to download the offer and plan details](#test-purchase-to-download-the-offer-and-plan-details)
-* [Manage Offers](#manage-offers)
-  * [Manage offer parameters](#manage-offer-parameters)
-* [Manage Plans](#manage-plans)
-  * [Subscription input parameters](#subscription-input-parameters)
-  * [Subscription events](#subscription-events)
-* [Subscriptions](#subscriptions)
-* [Activate](#activate)
-* [Change plan](#change-plan)
-* [Unsubscribe](#unsubscribe)
-* [Change Quantity](#change-quantity)
-* [View activity log](#view-activity-log)
-* [Metering](#metering)
-* [Emit usage events](#emit-usage-events)
-  
+## Table of contents
+  - [Table of contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Manage new subscription landing page input fields](#manage-new-subscription-landing-page-input-fields)
+  - [Manage existing subscription landing page input fields](#manage-existing-subscription-landing-page-input-fields)
+  - [Subscription events](#subscription-events)
+  - [Manage subscriptions](#manage-subscriptions)
+  - [Activate a subscription](#activate-a-subscription)
+  - [Change plan](#change-plan)
+  - [Change quantity](#change-quantity)
+  - [Emit usage events](#emit-usage-events)
+  - [Unsubscribe](#unsubscribe)
+  - [View activity log](#view-activity-log)
+
 ## Overview
 
-The Publisher web application is the admin console for the publisher to help:
+The publisher web application is the admin console for the publisher for defining the input fields on the landing page, and managing subscriptions.
 
-* Manage offers - define the input fields that can appear on the landing page for the customer when an offer is purchased
-* Manage plans
-  * control the fields that can appear on the landing page
-  * configure events and email recipients  
-* Manage subscriptions
-  * Activate
-  * Emit usage events
-  * Change plan
-  * Unsubscribe
-
-## Test purchase to download the offer and plan details
-
-SaaS offers that is published in Azure Market Place can be extracted and managed from the publisher portal.
-
-* Log on to [Azure](https://portal.azure.com)
-
-* Click **All Services** menu option on the left
-
-![AllServices](./images/All-Services.png)
-
-* Search for resources of type **Software as a Service**.
-* The page enlists all the SaaS offers that were previously purchased.
-![SaaS Subscriptions](./images/CloudSaasOfferList.png)
-* Click **Add** to proceed to purchase a new SaaS offer.
-
-> If you don't have prior subscriptions against SaaS offers, the list would be blank and you would get an option to **Create Software as a Service** button to help you proceed with the purchase.
-![Create SaaS Subscription](./images/Create-SaaS-resource.png)
-
-* Clicking **Add** ( or **Create Software as a Service**) leads you to a page that lists down SaaS offers available for purchase.
-
-* Search for **Cloud SaaS** and locate our SaaS offer in the listing
-![SaaS Offer](./images/Search-Results-SaaS.png)
-
-* Click on the tile to view the details of the offer
-![SaaS Offer detail](./images/SaaS-Offer-Detail.png)
-* **Select a software plan** and click **Create**
-* Fill out the form and click **Subscribe**
-![SaaS Offer](./images/Subscribe-to-Plan.png)
-* A new resource gets created and appears in the listing
-![SaaS Subscriptions](./images/CloudSaasOfferList.png)
-* Click the text under **Name** to view the details of the resource
-* Click **Configure Account** option in the header bar. You will now be redirected to the SaaS offer landing page offered by the **Customer portal** in a new tab / window
-* The landing page presents the details of the offer that was purchased with an option to **Activate** the subscription.
-
-> In a real scenario, the landing page would collect additional details relevant for provisioning the target SaaS application and any additional custom information from customer if required .
-
-## Manage Offers
-
-### Manage offer parameters
+## Manage new subscription landing page input fields
 
 * Log on to the **Publisher Portal**
 * Click **Offers** in the menu
@@ -77,10 +27,10 @@ SaaS offers that is published in Azure Market Place can be extracted and managed
 
 ![Offer Parameters](./images/offer-parameters.png)
 
-> Each row in the screen correlates to a field in the form on the Landing page.
+> Each row in the screen corresponds to a field in the form on the Landing page.
 
-* Click on **Add New Row** to add a new row and fill the details using the below information
-  * *ParameterId* : Usually the name of the field without spaces.
+* Click on **Add New Row** to add a new row and fill the details using the information below 
+  * *ParameterId* : The name of the field without spaces.
   * *DisplayName* : Label for the field that should appear on the landing page
   * *Description* : Description for the field (this will not be shown on the screen and is only for internal purposes)
   * *ValueTypeId* : Datatype of the field
@@ -96,22 +46,20 @@ SaaS offers that is published in Azure Market Place can be extracted and managed
 * Click **Save** after adding the desired number of rows / changes
 * The set of the fields here are the global defaults available for override at the plans that are part of the offer
 
-## Manage Plans
+## Manage existing subscription landing page input fields
 
 * Log on to the **Publisher Portal**
 * Click **Plans** in the menu
 * The page lists down the plans against all the subscriptions created against the SaaS offers
 * Click **Edit** under the **Action** column to navigate to the details of the plan and manage plan parameters and events
-
-### Subscription input parameters
-
 * Click **Parameters** tab to see a list of input parameters that can be configured to appear on the subscription landing page for the customer at the time of purchase
 * Check the box under the column **Enable** to make the field appear on the landing page. Uncheck it to hide the input from appearing on the landing page
+
 ![Plan Parameters](./images/plan-parameters.png)
 
 ![Landing page](./images/subscription-landingpage.png)
 
-### Subscription events
+## Subscription events
 
 * Click **Events** tab in the plan detail to see the email recipients by events that are relevant in the provisioning of a SaaS subscription
 ![Plan Parameters](./images/plan-events.png)
@@ -120,7 +68,7 @@ SaaS offers that is published in Azure Market Place can be extracted and managed
 
 * Check the box - **Copy to Customer** to include customer email address in the email notifications relevant to the event
 
-## Subscriptions
+## Manage subscriptions
 
 * All the subscriptions purchased will be availabe under the subscriptions screen.
 * The status of each subscription will be availbe in the list.
@@ -128,15 +76,15 @@ SaaS offers that is published in Azure Market Place can be extracted and managed
 
 ![SaaS Subscriptions](./images/customer-subscriptions.png)
 
-## Activate
+## Activate a subscription
 
-The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
+The diagram below illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 ![Information flow between Azure and Provisioning application](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-post-provisioning-api-v2-calls.png)
 
-* On the landing page, review the details presented and click **Activate**
+* On the subscription page, review the details presented and click **Activate**
 ![SaaS Subscriptions](./images/activate-subscription.png)
 
-> The Publisher portal calls the following SaaS SDK API methods in the background.
+> The Publisher portal calls the following API client methods in the background.
 
 ```csharp
 // Determine the details of the offer using the marketplace token that is available in the URL during the redirect from Azure to the landing page.
@@ -147,27 +95,30 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 
 ```
 
-* Upon successful activation of the subscription, the landing page switches to a view that enlists the subscriptions against the offer.
+* Upon successful activation of the subscription, the subscription detail page switches to a view that lists the subscriptions against the offer.
 
-> You can switch to Azure and note that the **Configure Account** button is replaced by **Manage Account** button indicating that the subscription has been materialized.
+> The subscription for the offer on the Azure portal will display  **Manage Account** on the button for the landing page.
+
 > **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the application would put the subscription in PendingActivation status and the Fulfillment API to activate the subscription is not called. Publisher has the option to activate the subscription via the action menu in the subscription listing in the Publisher Portal.
 
 ## Change plan
 
-The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
+The diagram below illustrates the flow of information between Azure and the Azure marketplace SDK client application.
+
 ![Update subscription](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-update-api-v2-calls-from-saas-service-a.png)
 
 * Log on to **Publisher portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
-* The table on this page enlists all the subscriptions and their status.
+* The table on this page lists all the subscriptions and their status.
 * Click **Change Plan** option in the dropdown menu that appears when the icon under the **Actions** column against any of the active subscriptions is clicked.
 ![SaaS Subscriptions](./images/customer-subscriptions.png)
 
 * A popup appears with a list of plans that you can switch to.
 * Select a desired plan and click **Change Plan**.
-![SaaS Subscriptions](./images/change-plan.png)
+  
+  ![SaaS Subscriptions](./images/change-plan.png)
 
-> The Publisher portal calls the following SaaS SDK API methods in the background.
+> The Publisher portal calls the following API client methods in the background.
 
 ```csharp
 // Initiate the change plan process
@@ -184,16 +135,99 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 > **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Change Plan** is disabled for customers. Publisher has the option to change the plan of the subscription via the action menu in the subscription listing in the Publisher Portal.
 
+## Change quantity
+
+The update to quantity is applicable only for the plans with *per user* pricing model.
+  
+![Per user pricing](./images/per-user-plan-pricing.png)
+
+The record for the plan needs to reflect the *per user* pricing model. To update the record, sse the following script as an example / template to update the records in **Plans**
+
+```sql
+UPDATE Plans SET IsPerUser = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
+```
+
+The Plan ID is available in the **Plan overview** tab of the offer as shown here:
+
+![Plan ID](./images/plan-id-for-metering.png)
+* Log on to **Publisher portal**.
+* Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
+* The table on this page lists all the subscriptions and their status.
+* Click **Change quantity** in the menu as shown in the below picture
+![Change quantity](./images/change-quantity-menu.png)
+
+* Provide the new quantity and click **Change Quantity** to update the quantity on the subscription
+  ![Update quantity](./images/update-quantity-popup.png)
+
+
+> The Publisher portal calls the following API client methods in the background.
+
+```csharp
+Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, int? subscriptionQuantity);
+```
+
+> The operation is asynchronous and the call to **Change quantity** comes back with an operation location that should be queried for status.
+
+```csharp
+// Get the latest status of the subscription due to an operation / action.
+Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
+```
+
+## Emit usage events
+
+If the plan has custom metering dimensions, the record on the data store needs to reflect it. Use the following script as an example / template to update the records in **Plans**
+
+```sql
+UPDATE Plans SET IsmeteringSupported = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
+```
+
+The Plan ID is available in the **Plan overview** tab of the offer as shown here:
+
+![Plan ID](./images/plan-id-for-metering.png)
+
+After marking the plan to reflect the support of meters, use the following script as an example / template to initialize meters in **MeteredDimensions** table
+
+```sql
+INSERT INTO MeteredDimensions ( Dimension, PlanId, Description, CreatedDate)
+SELECT '<dimension-as-in-partner-center', '<id-of-the-plan>', '<description>', GETDATE()
+```
+
+The **Dimension** in the above example should be the attribute of a meter in the plan as shown in the below image:
+![Meter dimension](./images/meter-dimension.png)
+
+A button is enabled to post usage events against the subscription if it's plan supports metering.
+
+> Please see the [frequently asked question document](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis-faq) for the details about timing of emitting usage events.
+
+The following interface in the **Publisher portal** allows the user to manual report the usage against a selected dimension.
+
+> In this example, suppose the SaaS solution is a notification service that helps its customers send out emails / text. Email and Text are modeled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
+
+![Report usage](./images/post-usage-event.png)
+
+The SaaS metering service calls the below API to emit usage events
+
+```csharp
+/// <summary>
+/// Emits the usage event asynchronous.
+/// </summary>
+/// <param name="usageEventRequest">The usage event request.</param>
+/// <returns></returns>
+Task<MeteringUsageResult> EmitUsageEventAsync(MeteringUsageRequest usageEventRequest);
+```
+
+The service tracks the requests sent and the response received from the marketplace metering APIs for auditing purposes.
+
 ## Unsubscribe
 
 * Log on to **Publisher portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
-* The table on this page enlists all the subscriptions and their status.
+* The table on this page lists all the subscriptions and their status.
 * Click **Unsubscribe** against an active subscription.
 ![SaaS Subscriptions](./images/unsubscribe.png)
 * Confirm your action to trigger the deletion of the subscription.
 
-> The Publisher portal calls the following SaaS SDK API methods in the background.
+> The Publisher portal calls the following API client methods in the background.
 
 ```csharp
 // Initiate the delete subscription process
@@ -209,109 +243,12 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 > **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Unsubscribe** is disabled for customers. Publisher has the option to delete the subscription via the action menu in the subscription listing in the Publisher Portal.
 
-## Change Quantity
-
-* Log on to **Publisher portal**.
-* Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
-* The table on this page enlists all the subscriptions and their status.
-* Click **Change quantity** in the menu as shown in the below picture
-![Change quantity](./images/change-quantity-menu.png)
-
-* Provide the new quantity and click **Change Quantity** to update the quantity on the subscription
-
-![Update quantity](./images/update-quantity-popup.png)
-
-> Note: The update to quantity is applicable if only the subscription is against a Plan that is set to be billed per user
-  
-![Per user pricing](./images/per-user-plan-pricing.png)
-
-> The Publisher portal calls the following SaaS SDK API methods in the background.
-
-```csharp
-Task<SubscriptionUpdateResult> ChangeQuantityForSubscriptionAsync(Guid subscriptionId, int? subscriptionQuantity);
-```
-
-> The operation is asynchronous and the call to **Change quantity** comes back with an operation location that should be queried for status.
-
-```csharp
-// Get the latest status of the subscription due to an operation / action.
-Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
-```
-
-### Update Plan to indicate per user pricing
-
-Use the following script as an example / template to update the records in **Plans**
-
-```sql
-UPDATE Plans SET IsPerUser = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
-```
-
-The Plan ID is available in the **Plan overview** tab of the offer as shown here:
-
-![Plan ID](./images/plan-id-for-metering.png)
 
 ## View activity log
 
 * Log on to **Publisher portal**.
 * Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions.
-* The table on this page enlists all the subscriptions and their status.
+* The table on this page lists all the subscriptions and their status.
 * Click **Activity Log** to view the log of activity that happened against the subscription.
  ![SaaS Subscriptions](./images/activity-log-menu.png)
  ![SaaS Subscriptions](./images/activity-log-popup.png)
-
-## Metering
-
-For subscriptions against the plans that support metered billing, a button is enabled to post usage events against the subscription.
-
-> Only one usage event is accepted for the hour interval. The hour interval starts at minute 0 and ends at minute 59. If more than one usage event is emitted for the same hour interval, any subsequent usage events are dropped as duplicates.
-> Usage can be emitted with a delay and the maximum delay allowed between is 24 hours.
-The usage / consumption is consolidated
-
-## Emit usage events
-
-The following interface in the **Publisher portal** allows the user to manual report the usage against a selected dimension.
-
-> In this example, suppose the SaaS service is offering a notification service that helps its customers send out emails / text. Email and Text are modeled as dimensions and the plan in the marketplace offer captures the definition for charges by these dimensions.
-
-![Report usage](./images/post-usage-event.png)
-
->Note:
->
-> * The option - Manage Usage is available against active subscriptions against a plan that supports metering. You are required to manually update the Plan record in the database to indicate that it supports metering. Besides, the meters for the plan should be initialized in the **MeteredDimensions** table
-
-### Update Plan to indicate support for metering
-
-Use the following script as an example / template to update the records in **Plans**
-
-```sql
-UPDATE Plans SET IsmeteringSupported = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
-```
-
-The Plan ID is available in the **Plan overview** tab of the offer as shown here:
-
-![Plan ID](./images/plan-id-for-metering.png)
-
-### Initialize meters for plan
-
-Use the following script as an example / template to initialize meters in **MeteredDimensions** table
-
-```sql
-INSERT INTO MeteredDimensions ( Dimension, PlanId, Description, CreatedDate)
-SELECT '<dimension-as-in-partner-center', '<id-of-the-plan>', '<description>', GETDATE()
-```
-
-The **Dimension** in the above example should be the attribute of a meter in the plan as shown in the below image:
-![Meter dimension](./images/meter-dimension.png)
-
-> The SaaS metering service calls the below API to emit usage events
-
-```csharp
-/// <summary>
-/// Emits the usage event asynchronous.
-/// </summary>
-/// <param name="usageEventRequest">The usage event request.</param>
-/// <returns></returns>
-Task<MeteringUsageResult> EmitUsageEventAsync(MeteringUsageRequest usageEventRequest);
-```
-
-The service tracks the requests sent and the response received from the marketplace metering APIs for auditing purposes.

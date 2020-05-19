@@ -121,7 +121,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
         {
             if (env.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage();
             }
             else
             {
