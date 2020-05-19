@@ -41,6 +41,7 @@
         /// <value>
         /// The quantity.
         /// </value>
+        [JsonPropertyName("quantity")]
         public int Quantity { get; set; }
 
         /// <summary>
