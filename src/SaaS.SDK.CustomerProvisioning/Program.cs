@@ -40,6 +40,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
         })
         .ConfigureWebHostDefaults(webBuilder =>
         {
+            webBuilder.UseUrls("https://*:5001", "http://*:5000");
             webBuilder.UseStartup<Startup>();
         });
     }
