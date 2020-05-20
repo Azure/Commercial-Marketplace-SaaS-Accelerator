@@ -565,7 +565,6 @@
                                 {
                                     this.pendingFulfillmentStatusHandlers.Process(subscriptionId);
                                 }
-
                             }
                             catch (FulfillmentException fex)
                             {
