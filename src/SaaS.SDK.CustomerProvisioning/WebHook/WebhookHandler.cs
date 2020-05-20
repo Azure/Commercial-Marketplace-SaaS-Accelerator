@@ -89,8 +89,6 @@
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
 
-        private UserService userService;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="WebHookHandler" /> class.
         /// </summary>

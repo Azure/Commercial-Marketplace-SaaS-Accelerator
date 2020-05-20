@@ -92,8 +92,6 @@
 
         private readonly ILoggerFactory loggerFactory;
 
-        private readonly IOptions<SaaSApiClientConfiguration> options;
-
         private readonly IOffersRepository offersRepository;
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
