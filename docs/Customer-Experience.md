@@ -10,6 +10,8 @@
     - [Unsubscribe](#unsubscribe)
     - [Change Quantity](#change-quantity)
     - [View activity log](#view-activity-log)
+- [Next steps](#next-steps)
+  - [Configuring the Publisher Provisioning web application](./Publisher-Experience.md)
 
 ## Overview
 
@@ -173,3 +175,8 @@ The Plan ID is available in the **Plan overview** tab of the offer as shown here
 4. Click **Activity Log** to view the log of activity that happened against the subscription.
  ![SaaS Subscriptions](./images/activity-log-menu.png)
  ![SaaS Subscriptions](./images/activity-log-popup.png)
+ 
+ 
+## Next steps
+
+* [Publisher provisioning experience](./Publisher-Experience.md): This document shows how to configure the web solution that enables the activation of a customer purchasing your SaaS Service and how to send Mettered based billing back to the Commercial Marketplace API.
