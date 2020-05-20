@@ -10,8 +10,10 @@
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
@@ -19,8 +21,6 @@
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Exceptions;
     using Microsoft.Marketplace.SaasKit.Models;
-    using Microsoft.WindowsAzure.Storage;
-    using Microsoft.WindowsAzure.Storage.Queue;
 
     /// <summary>
     /// Home Controller.
@@ -64,8 +64,6 @@
         /// </summary>
         private readonly IUsersRepository userRepository;
 
-        private readonly IUsersRepository usersRepository;
-
         private readonly IFulfillmentApiClient fulfillApiClient;
 
         private readonly IApplicationLogRepository applicationLogRepository;
@@ -82,17 +80,29 @@
 
         private readonly IEventsRepository eventsRepository;
 
+        private readonly IEmailService emailService;
+
+        private readonly ISubscriptionStatusHandler pendingFulfillmentStatusHandlers;
+
+        private readonly ISubscriptionStatusHandler pendingActivationStatusHandlers;
+
+        private readonly ISubscriptionStatusHandler unsubscribeStatusHandlers;
+
+        private readonly ISubscriptionStatusHandler notificationStatusHandlers;
+
+        private readonly ILoggerFactory loggerFactory;
+
         private readonly IOptions<SaaSApiClientConfiguration> options;
 
-        private readonly CloudStorageConfigs cloudConfigs;
+        private readonly IOffersRepository offersRepository;
+
+        private readonly IOfferAttributesRepository offersAttributeRepository;
 
         private UserService userService;
 
         private SubscriptionService subscriptionService = null;
 
         private ApplicationLogService applicationLogService = null;
-
-        private string azureWebJobsStorage;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
@@ -113,10 +123,13 @@
         /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
         /// <param name="eventsRepository">The events repository.</param>
         /// <param name="options">The options.</param>
-        /// <param name="subscriptionTemplateParametersRepository">The subscription template parameters repository.</param>
         /// <param name="cloudConfigs">The cloud configs.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
+        /// <param name="emailService">The email service.</param>
+        /// <param name="offersRepository">The offers repository.</param>
+        /// <param name="offersAttributeRepository">The offers attribute repository.</param>
         public HomeController(
-                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, CloudStorageConfigs cloudConfigs)
+                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepo = subscriptionRepo;
@@ -126,7 +139,6 @@
             this.dimensionsRepository = dimensionsRepository;
             this.logger = logger;
             this.applicationConfigRepository = applicationConfigRepository;
-            this.usersRepository = usersRepository;
             this.userRepository = userRepository;
             this.userService = new UserService(userRepository);
             this.fulfillApiClient = fulfillApiClient;
@@ -138,9 +150,49 @@
             this.emailTemplateRepository = emailTemplateRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.eventsRepository = eventsRepository;
-            this.options = options;
-            this.cloudConfigs = cloudConfigs;
-            this.azureWebJobsStorage = cloudConfigs.AzureWebJobsStorage;
+            this.emailService = emailService;
+            this.offersRepository = offersRepository;
+            this.offersAttributeRepository = offersAttributeRepository;
+            this.loggerFactory = loggerFactory;
+
+            this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
+                                                                          fulfillApiClient,
+                                                                          subscriptionRepo,
+                                                                          subscriptionLogsRepo,
+                                                                          planRepository,
+                                                                          userRepository,
+                                                                          loggerFactory.CreateLogger<PendingActivationStatusHandler>());
+
+            this.pendingFulfillmentStatusHandlers = new PendingFulfillmentStatusHandler(
+                                                                           fulfillApiClient,
+                                                                           applicationConfigRepository,
+                                                                           subscriptionRepo,
+                                                                           subscriptionLogsRepo,
+                                                                           planRepository,
+                                                                           userRepository,
+                                                                           this.loggerFactory.CreateLogger<PendingFulfillmentStatusHandler>());
+
+            this.notificationStatusHandlers = new NotificationStatusHandler(
+                                                                        fulfillApiClient,
+                                                                        planRepository,
+                                                                        applicationConfigRepository,
+                                                                        emailTemplateRepository,
+                                                                        planEventsMappingRepository,
+                                                                        offersAttributeRepository,
+                                                                        eventsRepository,
+                                                                        subscriptionRepo,
+                                                                        userRepository,
+                                                                        offersRepository,
+                                                                        emailService,
+                                                                        this.loggerFactory.CreateLogger<NotificationStatusHandler>());
+
+            this.unsubscribeStatusHandlers = new UnsubscribeStatusHandler(
+                                                                        fulfillApiClient,
+                                                                        subscriptionRepo,
+                                                                        subscriptionLogsRepo,
+                                                                        planRepository,
+                                                                        userRepository,
+                                                                        this.loggerFactory.CreateLogger<UnsubscribeStatusHandler>());
         }
 
         /// <summary>
@@ -352,10 +404,7 @@
                         this.subscriptionLogRepository.Save(auditLog);
                     }
 
-                    queueObject.SubscriptionID = subscriptionId;
-                    queueObject.TriggerEvent = "Activate";
-                    queueObject.UserId = userDetails.UserId;
-                    queueObject.PortalName = "Admin";
+                    this.pendingActivationStatusHandlers.Process(subscriptionId);
                 }
 
                 if (operation == "Deactivate")
@@ -372,26 +421,10 @@
                     };
                     this.subscriptionLogRepository.Save(auditLog);
 
-                    queueObject.SubscriptionID = subscriptionId;
-                    queueObject.TriggerEvent = "Unsubscribe";
-                    queueObject.UserId = userDetails.UserId;
-                    queueObject.PortalName = "Admin";
+                    this.unsubscribeStatusHandlers.Process(subscriptionId);
                 }
 
-                string queueMessage = JsonSerializer.Serialize(queueObject);
-                string storageConnectionString = this.cloudConfigs.AzureWebJobsStorage ?? this.azureWebJobsStorage;
-                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
-
-                //// Create the queue client.
-                CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-                CloudQueue queue = queueClient.GetQueueReference("saas-provisioning-queue");
-
-                ////Create the queue if it doesn't already exist
-                queue.CreateIfNotExistsAsync();
-
-                //// Create a message and add it to the queue.
-                CloudQueueMessage message = new CloudQueueMessage(queueMessage);
-                queue.AddMessageAsync(message);
+                this.notificationStatusHandlers.Process(subscriptionId);
 
                 return this.RedirectToAction(nameof(this.ActivatedMessage));
             }
@@ -498,7 +531,7 @@
             {
                 if (subscriptionData != null && subscriptionData.SubscriptionDetail != null)
                 {
-                    var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                    var currentUserDetail = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                     var subscriptionUsageRequest = new MeteringUsageRequest()
                     {
                         Dimension = subscriptionData.SelectedDimension,

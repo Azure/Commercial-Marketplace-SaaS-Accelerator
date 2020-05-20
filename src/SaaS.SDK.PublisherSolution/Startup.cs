@@ -12,7 +12,9 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -75,11 +77,6 @@ namespace Microsoft.Marketplace.Saas.Web
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
             };
-            var cloudConfig = new CloudStorageConfigs
-            {
-                AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
-            };
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -102,7 +99,6 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new MeteringApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
-            services.AddSingleton<CloudStorageConfigs>(cloudConfig);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -164,6 +160,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<KnownUserAttribute>();
+            services.AddScoped<IEmailService, SMTPEmailService>();
         }
     }
 }
