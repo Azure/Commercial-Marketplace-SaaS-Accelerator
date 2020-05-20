@@ -76,10 +76,6 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
             };
-            var cloudConfig = new CloudStorageConfigs
-            {
-                AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
-            };
 
             services.AddAuthentication(options =>
             {
@@ -101,7 +97,6 @@ namespace Microsoft.Marketplace.SaasKit.Client
 
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
-            services.AddSingleton<CloudStorageConfigs>(cloudConfig);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -156,6 +151,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
+            services.AddScoped<IEmailService, SMTPEmailService>();
         }
     }
 }

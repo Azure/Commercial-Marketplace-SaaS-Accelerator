@@ -1,16 +1,17 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.WebHook
 {
     using System;
-    using System.Text.Json;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Models;
     using Microsoft.Marketplace.SaasKit.WebHook;
-    using Microsoft.WindowsAzure.Storage;
-    using Microsoft.WindowsAzure.Storage.Queue;
 
     /// <summary>
     /// Handler For the WebHook Actions.
@@ -44,13 +45,49 @@
         private readonly ApplicationLogService applicationLogService;
 
         /// <summary>
+        /// The application configuration repository.
+        /// </summary>
+        private readonly IApplicationConfigRepository applicationConfigRepository;
+
+        /// <summary>
+        /// The email template repository.
+        /// </summary>
+        private readonly IEmailTemplateRepository emailTemplateRepository;
+
+        /// <summary>
+        /// The plan events mapping repository.
+        /// </summary>
+        private readonly IPlanEventsMappingRepository planEventsMappingRepository;
+
+        /// <summary>
+        /// The events repository.
+        /// </summary>
+        private readonly IEventsRepository eventsRepository;
+
+        /// <summary>
+        /// The fulfill API client.
+        /// </summary>
+        private readonly IFulfillmentApiClient fulfillApiClient;
+
+        /// <summary>
+        /// The users repository.
+        /// </summary>
+        private readonly IUsersRepository usersRepository;
+
+        /// <summary>
         /// The subscriptions log repository.
         /// </summary>
         private readonly ISubscriptionLogRepository subscriptionsLogRepository;
 
-        private readonly CloudStorageConfigs cloudConfigs;
+        private readonly ISubscriptionStatusHandler notificationStatusHandlers;
 
-        private string azureWebJobsStorage;
+        private readonly ILoggerFactory loggerFactory;
+
+        private readonly IEmailService emailService;
+
+        private readonly IOffersRepository offersRepository;
+
+        private readonly IOfferAttributesRepository offersAttributeRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WebHookHandler" /> class.
@@ -59,8 +96,17 @@
         /// <param name="subscriptionsLogRepository">The subscriptions log repository.</param>
         /// <param name="subscriptionsRepository">The subscriptions repository.</param>
         /// <param name="planRepository">The plan repository.</param>
-        /// <param name="cloudConfigs">The cloud configs.</param>
-        public WebHookHandler(IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionsLogRepository, ISubscriptionsRepository subscriptionsRepository, IPlansRepository planRepository, CloudStorageConfigs cloudConfigs)
+        /// <param name="offersAttributeRepository">The offers attribute repository.</param>
+        /// <param name="offersRepository">The offers repository.</param>
+        /// <param name="fulfillApiClient">The fulfill API client.</param>
+        /// <param name="usersRepository">The users repository.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
+        /// <param name="emailService">The email service.</param>
+        /// <param name="eventsRepository">The events repository.</param>
+        /// <param name="applicationConfigRepository">The application configuration repository.</param>
+        /// <param name="emailTemplateRepository">The email template repository.</param>
+        /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
+        public WebHookHandler(IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionsLogRepository, ISubscriptionsRepository subscriptionsRepository, IPlansRepository planRepository, IOfferAttributesRepository offersAttributeRepository, IOffersRepository offersRepository, IFulfillmentApiClient fulfillApiClient, IUsersRepository usersRepository, ILoggerFactory loggerFactory, IEmailService emailService, IEventsRepository eventsRepository, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository)
         {
             this.applicationLogRepository = applicationLogRepository;
             this.subscriptionsRepository = subscriptionsRepository;
@@ -68,8 +114,29 @@
             this.subscriptionsLogRepository = subscriptionsLogRepository;
             this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
             this.subscriptionService = new SubscriptionService(this.subscriptionsRepository, this.planRepository);
-            this.cloudConfigs = cloudConfigs;
-            this.azureWebJobsStorage = cloudConfigs.AzureWebJobsStorage;
+            this.emailService = emailService;
+            this.loggerFactory = loggerFactory;
+            this.usersRepository = usersRepository;
+            this.eventsRepository = eventsRepository;
+            this.offersAttributeRepository = offersAttributeRepository;
+            this.fulfillApiClient = fulfillApiClient;
+            this.applicationConfigRepository = applicationConfigRepository;
+            this.emailTemplateRepository = emailTemplateRepository;
+            this.planEventsMappingRepository = planEventsMappingRepository;
+            this.offersRepository = offersRepository;
+            this.notificationStatusHandlers = new NotificationStatusHandler(
+                                                                        fulfillApiClient,
+                                                                        planRepository,
+                                                                        applicationConfigRepository,
+                                                                        emailTemplateRepository,
+                                                                        planEventsMappingRepository,
+                                                                        offersAttributeRepository,
+                                                                        eventsRepository,
+                                                                        subscriptionsRepository,
+                                                                        usersRepository,
+                                                                        offersRepository,
+                                                                        emailService,
+                                                                        this.loggerFactory.CreateLogger<NotificationStatusHandler>());
         }
 
         /// <summary>
@@ -161,28 +228,7 @@
                 this.subscriptionsLogRepository.Save(auditLog);
             }
 
-            SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
-
-            queueObject.SubscriptionID = payload.SubscriptionId;
-            queueObject.TriggerEvent = "Unsubscribe";
-            queueObject.UserId = 0;
-            queueObject.PortalName = "Admin";
-            await Task.CompletedTask;
-
-            string queueMessage = JsonSerializer.Serialize(queueObject);
-            string storageConnectionString = this.cloudConfigs.AzureWebJobsStorage ?? this.azureWebJobsStorage;
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(storageConnectionString);
-
-            //// Create the queue client.
-            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
-            CloudQueue queue = queueClient.GetQueueReference("saas-provisioning-queue");
-
-            ////Create the queue if it doesn't already exist
-            queue.CreateIfNotExistsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-
-            //// Create a message and add it to the queue.
-            CloudQueueMessage message = new CloudQueueMessage(queueMessage);
-            queue.AddMessageAsync(message).ConfigureAwait(false).GetAwaiter().GetResult();
+            this.notificationStatusHandlers.Process(payload.SubscriptionId);
         }
     }
 }
