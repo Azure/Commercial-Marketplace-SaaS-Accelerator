@@ -6,8 +6,9 @@
   - [Create Web Apps on Azure and deploy the code](#create-web-apps-on-azure-and-deploy-the-code)
     - [Running the solution locally](#running-the-solution-locally)
   - [Landing page and webhook settings for the SaaS offer on Partner Center](#landing-page-and-webhook-settings-for-the-saas-offer-on-partner-center)
-    - [Next steps](#next-steps)
-
+  - [Next steps](#next-steps)
+    - [Configuring the Customer Provisioning web application](./Customer-Experience.md)
+    - [Configuring the Publisher Provisioning web application](./Publisher-Experience.md)
 ## Overview
 
 This document describes how to implement the required components to enable the SDK for the SaaS Fulfillment API (v2), Marketplace Metering Service API, and additional components that demonstrate how to build a customer provisioning interface, logging, and administration of the customer's subscriptions.
@@ -123,5 +124,5 @@ The **Technical Configuration** section of the Marketplace offer with the values
 
 ## Next steps
 
-* [Customer purchase experience](./Customer-Experience.md)
-* [Publisher experience](./Publisher-Experience.md)
+* [Customer provisioning experience](./Customer-Experience.md): This document shows how to configure the web solution that enables the registration of a customer purchasing your SaaS Service and how a customer would manage their subscriptions and plans.
+* [Publisher provisioning experience](./Publisher-Experience.md): This document shows how to configure the web solution that enables the activation of a customer purchasing your SaaS Service and how to send Mettered based billing back to the Commercial Marketplace API.
