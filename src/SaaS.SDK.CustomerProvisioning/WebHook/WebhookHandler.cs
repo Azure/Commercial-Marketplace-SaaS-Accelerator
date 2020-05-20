@@ -229,6 +229,8 @@
             }
 
             this.notificationStatusHandlers.Process(payload.SubscriptionId);
+
+            await Task.CompletedTask;
         }
     }
 }
