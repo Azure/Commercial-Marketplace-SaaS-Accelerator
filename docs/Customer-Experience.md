@@ -84,10 +84,11 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 2. Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions. The table on this page lists all the subscriptions and their status.
 3. Click **Change Plan** option in the dropdown menu that appears when the icon under the **Actions** column against any of the active subscriptions is clicked.
 ![SaaS Subscriptions](./images/customer-subscriptions.png)
-A popup appears with a list of plans that you can switch to.
+
+  A popup appears with a list of plans that you can switch to.
 
 4. Select a desired plan and click **Change Plan**.
-![SaaS Subscriptions](./images/change-plan.png)
+5. ![SaaS Subscriptions](./images/change-plan.png)
 
 > The sample application calls the following client methods in the background
 
