@@ -51,7 +51,7 @@ The source **(src)** directory offers the following components:
 | **Publisher portal - Sample web application** | Demonstrates how to generate usage events used in metered billing transactions, and how to emit these events to the Marketplace Metering Service API. |SaaS.SDK.PublisherSolution|
 | **Client data access library** | Demonstrates how to persist plans, marketplace subscriptions, and related transaction attributes when using the SaaS Fulfillment API (v2) and Marketplace Metering Service API. |SaaS.SDK.Client.DataAccess |
 | **Services client library** | Contains the services used by the Customer and Publisher portals, including the POCO classes to orchestrate calls to the marketplace APIs / database.|SaaS.SDK.Services |
-| **[Unit tests project](./src/SaaS.SDK.UnitTest)** | Helps validate and test the SDKs codebase. | SaaS.SDK.UnitTest |
+| **Unit tests project** | Helps validate and test the SDKs codebase. | SaaS.SDK.UnitTest |
 
 The sample code and SDK in this repository run in the Publisher's environment as illustrated below. The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) and correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
 
