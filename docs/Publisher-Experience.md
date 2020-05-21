@@ -1,4 +1,4 @@
-# Publisher Experience
+# Publisher Portal - Sample Web Application
 
 ## Table of contents
   - [Table of contents](#table-of-contents)
@@ -16,7 +16,7 @@
 
 ## Overview
 
-The publisher web application is the admin console for the publisher for defining the input fields on the landing page, and managing subscriptions.
+The publisher web application is the admin console for the publisher for defining the input fields on the landing page and managing marketplace subscriptions.
 
 ## Manage new subscription landing page input fields
 
