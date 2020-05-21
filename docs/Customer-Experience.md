@@ -1,4 +1,4 @@
-# Customer experience
+# Customer Portal - Sample Web Application
 
 ## Table of contents
 - [Customer experience](#customer-experience)
@@ -15,7 +15,7 @@
 
 ## Overview
 
-Customers may subscribe to Marketplace offer from different storefronts. This example covers Azure Marketplace storefront with Azure Portal experience.
+Customers may subscribe to marketplace offer from different storefronts. This example covers Azure Marketplace storefront with Azure Portal experience.
 
 ## Subscribing to the offer
  

@@ -6,12 +6,14 @@ The project offers the service layer that is leveraged by the **Customer portal*
 
 ## Source Code
 
-The Project is located in the **SaaS.SDK.Services** folder. The project is composed of the following sections:
+The project is located in the **SaaS.SDK.Services** folder. The project is composed of the following sections:
 
 | Section Name | Description |
 | --- | --- |  
+| Contracts| Interfaces and contracts for the services
+| Helpers | Email helper |
 | Dependencies | Microsoft.AspNetCore.Mvc.ViewFeatures, Microsoft.Azure.Management.ResourceManager, Microsoft.Extensions.Logging.Console, Microsoft.IdentityModel.Clients.ActiveDirectory and Microsoft.Rest.ClientRuntime.Azure.Authentication|
-| Contracts| Interfaces / contracts for the services|
-| Services | Implementation of the interfaces |
 | Models |  POCO classes - instances participate as parameters / return types from the services
-| Helpers & Utilities| Utility classes |
+| Services | Implementation of the interfaces |
+| Status Handlers | Status handlers to support notifications including: AbstractSubscription, ISubscription, Notification, PendingActivation, PendingFulfillment, Unsubscribe |
+| Utilities| Utility classes |

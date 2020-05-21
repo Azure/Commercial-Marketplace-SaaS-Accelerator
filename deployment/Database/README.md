@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Provisioning and the Publisher applications use SQL Server database as the data source to store subscriptions and the status, metered dimensions by plans and activity against subscriptions.
+The customer portal and the publisher portal sample web applications use SQL Server database as the data source to store marketplace subscriptions and the status, metered dimensions by plans, and activity against subscriptions.
 
 ## Install Using SQL Scripts
 
