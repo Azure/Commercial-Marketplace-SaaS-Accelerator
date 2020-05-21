@@ -46,12 +46,12 @@ The source **(src)** directory offers the following components:
 
 | Project | Description | Directory Name |
 | --- | --- | --- |
-| **Transactable SaaS client library** | Implements the SaaS Fulfillment API (v2), Marketplace Metering Service API, and the webhook that handles messages from the marketplace billing system. |SaaS.SDK.Client|
-| **Customer portal - Sample web application** | Demonstrates how to register, provision, and activate the marketplace subscription. Implemented using ASP.Net Core 3.1, the sample web application uses the SaaS client library and data access library to invoke and persist API interactions and provides an example user interface to demonstrate how a customer would manage their subscriptions and plans. |SaaS.SDK.CustomerProvisioning|
-| **Publisher portal - Sample web application** | Demonstrates how to generate usage events used in metered billing transactions, and how to emit these events to the Marketplace Metering Service API. |SaaS.SDK.PublisherSolution|
-| **Client data access library** | Demonstrates how to persist plans, marketplace subscriptions, and related transaction attributes when using the SaaS Fulfillment API (v2) and Marketplace Metering Service API. |SaaS.SDK.Client.DataAccess |
-| **Services client library** | Contains the services used by the Customer and Publisher portals, including the POCO classes to orchestrate calls to the marketplace APIs / database.|SaaS.SDK.Services |
-| **Unit tests project** | Helps validate and test the SDKs codebase. | SaaS.SDK.UnitTest |
+| [**Transactable SaaS client library**](./src/SaaS.SDK.Client) | Implements the SaaS Fulfillment API (v2), Marketplace Metering Service API, and the webhook that handles messages from the marketplace billing system. |SaaS.SDK.Client|
+| [**Customer portal - Sample web application**](./src/SaaS.SDK.CustomerProvisioning) | Demonstrates how to register, provision, and activate the marketplace subscription. Implemented using ASP.Net Core 3.1, the sample web application uses the SaaS client library and data access library to invoke and persist API interactions and provides an example user interface to demonstrate how a customer would manage their subscriptions and plans. |SaaS.SDK.CustomerProvisioning|
+| [**Publisher portal - Sample web application**](./src/SaaS.SDK.PublisherSolution) | Demonstrates how to generate usage events used in metered billing transactions, and how to emit these events to the Marketplace Metering Service API. |SaaS.SDK.PublisherSolution|
+| [**Client data access library**](./src/SaaS.SDK.Client.DataAccess) | Demonstrates how to persist plans, marketplace subscriptions, and related transaction attributes when using the SaaS Fulfillment API (v2) and Marketplace Metering Service API. |SaaS.SDK.Client.DataAccess |
+| [**Services client library**](./src/SaaS.SDK.Services) | Contains the services used by the Customer and Publisher portals, including the POCO classes to orchestrate calls to the marketplace APIs / database.|SaaS.SDK.Services |
+| [**Unit tests project**](./src/SaaS.SDK.UnitTest) | Helps validate and test the SDKs codebase. | SaaS.SDK.UnitTest |
 
 The sample code and SDK in this repository run in the Publisher's environment as illustrated below. The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) and correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
 
