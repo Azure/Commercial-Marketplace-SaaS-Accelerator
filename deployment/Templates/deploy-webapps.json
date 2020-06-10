@@ -1,37 +1,39 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "webAppNamePrefix": {
       "type": "string",
       "metadata": {
-        "description": "Prefix used while creating web applications"
+        "description": "Prefix used for creating web applications"
       }
     },
     "TenantID": {
       "type": "string",
+      "defaultValue": "t1",
       "metadata": {
         "description": "The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center"
       }
     },
     "ADApplicationID": {
       "type": "string",
+      "defaultValue": "t1",
       "metadata": {
         "description": "The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center"
       }
     },
     "ADApplicationSecret": {
-      "type": "string",
+      "type": "securestring",
+      "defaultValue": "t1",
       "metadata": {
         "description": "Secret key of the AD Application"
       }
     }
-
   },
   "variables": {
     "hostingEnvironment": "",
     "serverFarmResourceGroup": "[resourceGroup().name]",
-    "alwaysOn": false,
+    "alwaysOn": true,
     "sku": "Basic",
     "skuCode": "B1",
     "workerSize": "0",
@@ -42,9 +44,13 @@
     "location": "[resourceGroup().location]",
     "hostingPlanName": "[concat(parameters('webAppNamePrefix'),'AmpSvcPlan')]",
     "ProvisioningServiceAppName": "[concat(parameters('webAppNamePrefix'),'-portal')]",
-    "PublisherServiceAppName": "[concat(parameters('webAppNamePrefix'),'-admin')]"
+    "PublisherServiceAppName": "[concat(parameters('webAppNamePrefix'),'-admin')]",
+    "collation": "SQL_Latin1_General_CP1_CI_AS",
+    "sqlDBName": "AMPSaaSDB"
   },
   "resources": [
+
+
     {
       "apiVersion": "2018-11-01",
       "name": "[variables('ProvisioningServiceAppName')]",
@@ -58,72 +64,6 @@
       ],
       "properties": {
         "name": "[variables('ProvisioningServiceAppName')]",
-        "siteConfig": {
-          "appSettings": [
-            {
-              "name": "ASPNETCORE_ENVIRONMENT",
-              "value": "Development",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__AdAuthenticationEndPoint",
-              "value": "https://login.microsoftonline.com",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__ClientId",
-              "value": "[parameters('ADApplicationID')]",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__ClientSecret",
-              "value": "[parameters('ADApplicationSecret')]",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__FulFillmentAPIBaseURL",
-              "value": "https://marketplaceapi.microsoft.com/api",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__FulFillmentAPIVersion",
-              "value": "2018-08-31",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__GrantType",
-              "value": "client_credentials",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__Resource",
-              "value": "62d94f6c-d599-489b-a797-3e10e42fbe22",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__SaaSAppUrl",
-              "value": "",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__SignedOutRedirectUri",
-              "value": "[concat('https://', variables('ProvisioningServiceAppName'), '.azurewebsites.net/Home/Index')]",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__TenantId",
-              "value": "[parameters('TenantID')]",
-              "slotSetting": false
-            },
-            {
-              "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
-              "value": "1",
-              "slotSetting": false
-            }
-          ],
-          "linuxFxVersion": "[variables('linuxFxVersion')]",
-          "alwaysOn": "[variables('alwaysOn')]"
-        },
         "serverFarmId": "[concat('/subscriptions/', variables('subscriptionId'),'/resourcegroups/', variables('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', variables('hostingPlanName'))]",
         "hostingEnvironment": "[variables('hostingEnvironment')]",
         "clientAffinityEnabled": false
@@ -142,87 +82,21 @@
       ],
       "properties": {
         "name": "[variables('PublisherServiceAppName')]",
-        "siteConfig": {
-          "appSettings": [
-            {
-              "name": "ASPNETCORE_ENVIRONMENT",
-              "value": "Development",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__AdAuthenticationEndPoint",
-              "value": "https://login.microsoftonline.com",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__ClientId",
-              "value": "[parameters('ADApplicationID')]",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__ClientSecret",
-              "value": "[parameters('ADApplicationSecret')]",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__FulFillmentAPIBaseURL",
-              "value": "https://marketplaceapi.microsoft.com/api",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__FulFillmentAPIVersion",
-              "value": "2018-08-31",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__GrantType",
-              "value": "client_credentials",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__Resource",
-              "value": "62d94f6c-d599-489b-a797-3e10e42fbe22",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__SaaSAppUrl",
-              "value": "",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__SignedOutRedirectUri",
-              "value": "[concat('https://', variables('PublisherServiceAppName'), '.azurewebsites.net/Home/Index')]",
-              "slotSetting": false
-            },
-            {
-              "name": "SaaSApiConfiguration__TenantId",
-              "value": "[parameters('TenantID')]",
-              "slotSetting": false
-            },
-            {
-              "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
-              "value": "1",
-              "slotSetting": false
-            }
-          ],
-          "linuxFxVersion": "[variables('linuxFxVersion')]",
-          "alwaysOn": "[variables('alwaysOn')]"
-        },
         "serverFarmId": "[concat('/subscriptions/', variables('subscriptionId'),'/resourcegroups/', variables('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', variables('hostingPlanName'))]",
         "hostingEnvironment": "[variables('hostingEnvironment')]",
         "clientAffinityEnabled": false
       }
     },
     {
-      "apiVersion": "2018-11-01",
+      "apiVersion": "2018-02-01",
       "name": "[variables('hostingPlanName')]",
       "type": "Microsoft.Web/serverfarms",
       "location": "[variables('location')]",
-      "kind": "linux",
+      "kind": "",
       "tags": {
-
       },
-      "dependsOn": [],
+      "dependsOn": [
+      ],
       "properties": {
         "name": "[variables('hostingPlanName')]",
         "workerSize": "[variables('workerSize')]",
@@ -235,6 +109,26 @@
         "Tier": "[variables('sku')]",
         "Name": "[variables('skuCode')]"
       }
+    },
+    {
+      "name": "[concat(variables('PublisherServiceAppName'),'/MSDeploy')]",
+      "type": "Microsoft.Web/Sites/Extensions",
+      "apiVersion": "2015-08-01",
+      "dependsOn": [
+        "[concat('Microsoft.Web/sites/', variables('PublisherServiceAppName'))]"
+      ],
+      "tags": {
+        "displayName": "Web App MSDeploy"
+      },
+      "properties": {
+        "packageUri": "https://msampbuilddbresources.blob.core.windows.net/msampcontainer/PAN-Admin.zip",
+        "dbType": "None",
+        "connectionString": "",
+        "setParameters": {
+          "IIS Web Application Name": "[variables('PublisherServiceAppName')]"
+        }
+      }
     }
+
   ]
 }
