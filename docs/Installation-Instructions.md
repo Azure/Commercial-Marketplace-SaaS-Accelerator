@@ -17,6 +17,35 @@ Learn more about what's included and how to-use the SDK [here.](https://github.c
 
 Please note: this SDK is community-supported. If you need help or have questions using this SDK, please create a GitHub issue. Do not contact the marketplace pubisher support alias directly regarding use of this SDK. Thank you.
 
+## Deploy web applications and SQL Azure database using an ARM template
+
+- Log on to [Azure](https://portal.azure.com)
+- Search for **Custom Template** and select the option - **Deploy a custom template**
+![Custom template](./images/search-custom-template.png)
+- Click the link **Build your own template in the editor**
+![Build your own template](./images/build-your-own-template.png)
+- Copy the content from the ARM template - [deploy.json](../deployment/Templates/deploy.json) and paste the text in the text area after clearing the existing content
+- Click **Save**
+- The template is validated and you are navigated to a page that presents a form for you to fill in the parameters used to deploy the resources
+![Deployment parameters](./images/custom-deployment-input-parameters.png)
+
+> Note: 
+> - You can leave the **Path to Web Application Packages** as is to use the build packages from this repository
+> - Make sure that you download the bacpac file from [here](../deployment/Database/AMPSaaSDB.bacpac) and upload it to an Azure blob storage. Use the URL to the file in the storage as the link to Github is not currently supported.
+- Click **Purchase** to initiate the deployment of resources
+> **Note**
+>  - The template uses the **Web App Name Prefix** to create two web applications. For example, if the value provided for this field is **contoso**, the deployment creates the customer portal - https://contoso-portal.azurewebsites.net and the publisher portal - https://contoso-admin.azurewebsites.net.
+> - **_Important_** For the login to the portals to work, it is important that you configure the **Redirect URIs** in the AD application to use these web applications. Here are the redirect Uris that should be in place:
+
+> - https://contoso-portal.azurewebsites.net    
+> - https://contoso-portal.azurewebsites.net/
+> - https://contoso-portal.azurewebsites.net/Home/Index
+> - https://contoso-portal.azurewebsites.net/Home/Index/
+> - https://contoso-admin.azurewebsites.net
+> - https://contoso-admin.azurewebsites.net/
+> - https://contoso-admin.azurewebsites.net/Home/Index
+> - https://contoso-admin.azurewebsites.net/Home/Index/
+
 
 ## Clone the repository, create an Azure SQL Database single database and prepare
  Create a single database following the instructions on the SQL Database service [quickstart] (https://docs.microsoft.com/en-us/azure/sql-database/sql-database-single-database-get-started?tabs=azure-portal) document.
