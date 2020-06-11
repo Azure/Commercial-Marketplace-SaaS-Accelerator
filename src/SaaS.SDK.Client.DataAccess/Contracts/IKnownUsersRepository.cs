@@ -19,5 +19,11 @@
         /// An instance of KnownUser.
         /// </returns>
         KnownUsers GetKnownUserDetail(string emailAddress, int roleId);
+
+        /// <summary>
+        /// Adds the know users from application configuration.
+        /// </summary>
+        /// <param name="knownUsers">The known users.</param>
+        void AddKnowUsersFromAppConfig(string knownUsers);
     }
 }
