@@ -45,7 +45,6 @@
             return this.context.KnownUsers.Where(s => s.UserEmail == emailAddress && s.RoleId == roleId).FirstOrDefault();
         }
 
-
         /// <summary>
         /// Adds the know users from application configuration.
         /// </summary>
@@ -60,17 +59,13 @@
                 {
                     var users = new KnownUsers()
                     {
-
                         UserEmail = user.Trim(),
-                        RoleId = 1,
-
+                        RoleId = 1, // Publisher Admin
                     };
                     this.context.KnownUsers.Add(users);
                     this.context.SaveChanges();
                 }
-
             }
-
         }
 
         /// <summary>
