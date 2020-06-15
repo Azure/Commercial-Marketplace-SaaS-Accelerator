@@ -2,10 +2,11 @@
 
   - [Overview](#overview)
   - [Deploy web applications and SQL Azure database using an ARM template](#deploy-web-applications-and-sql-azure-database-using-an-arm-template)
-  - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository-create-an-azure-sql-database-single-database-and-prepare)
+  - [Deploy web applications and SQL Azure database using Powershell](#deploy-web-applications-and-sql-azure-database-using-powershell)
+  - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository--create-an-azure-sql-database-single-database-and-prepare)
   - [Change configuration](#change-configuration)
   - [Create Web Apps on Azure and deploy the code](#create-web-apps-on-azure-and-deploy-the-code)
-    - [Running the solution locally](#running-the-solution-locally)
+    + [Running the solution locally](#running-the-solution-locally)
   - [Landing page and webhook settings for the SaaS offer on Partner Center](#landing-page-and-webhook-settings-for-the-saas-offer-on-partner-center)
   - [Next steps](#next-steps)
     - [Configuring the Customer Provisioning web application](./Customer-Experience.md)
@@ -47,6 +48,37 @@ Please note: this SDK is community-supported. If you need help or have questions
 > - https://contoso-admin.azurewebsites.net/Home/Index
 > - https://contoso-admin.azurewebsites.net/Home/Index/
 
+## Deploy web applications and SQL Azure database using Powershell
+
+   1. Install Powershell
+   2. Clone the repository
+   2. Start a Windows PowerShell window as administrator and run the following commands to install Azure modules:
+```powershell
+Install-Module -Name Az -AllowClobber
+```
+
+   3. Navigate to the folder **.\deployment\Templates**
+   4. Set the priorities running Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass. Choose "A", to change the policy to Yes to All. If you get a permission error, you can try:
+        * Run the PowerShell terminal as an Administrator
+        * Set the priorities running Set-ExecutionPolicy -ExecutionPolicy unrestricted.
+   5. Run the command **.\Deploy.ps1** with the following paramters
+
+| Parameter | Description |
+|-----------| -------------|
+| WebAppNamePrefix | Prefix used for creating web applications. Example: contoso |
+| TenantID | The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center |
+| ADApplicationID | The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center |
+| ADApplicationSecret | Secret key of the AD Application |
+| SQLServerName | Name of the database server (without database.windows.net) |
+| SQLAdminLogin | SQL Admin login |
+| SQLAdminLoginPassword | SQL Admin password |
+| PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
+| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/ |
+| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac |
+| ResourceGroupForDeployment | Name of the resource group to deploy the resources |
+| Location | Location of the resource group |
+| AzureSubscriptionID | Subscription where the resources be deployed |
+| PathToARMTemplate | Local Path to the ARM Template |
 
 ## Clone the repository, create an Azure SQL Database single database and prepare
  Create a single database following the instructions on the SQL Database service [quickstart] (https://docs.microsoft.com/en-us/azure/sql-database/sql-database-single-database-get-started?tabs=azure-portal) document.
