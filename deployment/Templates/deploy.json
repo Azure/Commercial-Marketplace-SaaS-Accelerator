@@ -411,5 +411,19 @@
         }
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "CustomerPortal": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Web/sites/', variables('ProvisioningServiceAppName'))).hostnames[0]]"
+    },
+    "PublisherPortal": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Web/sites/', variables('PublisherServiceAppName'))).hostnames[0]]"
+    },
+    "DefaultConnection": {
+      "value": "[concat('Data Source=tcp:', parameters('SQLServerName'), '.database.windows.net,1433;Initial Catalog=AMPSaaSDB', ';User Id=', parameters('SQLAdminLogin'), '@', parameters('SQLServerName'), ';Password=', parameters('SQLAdminLoginPassword'), ';')]",
+      "type": "string"
+    }
+  }
 }
