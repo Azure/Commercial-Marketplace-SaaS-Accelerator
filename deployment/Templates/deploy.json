@@ -49,7 +49,7 @@
       "metadata": {
         "description": "The base URI where artifacts required by this template are located."
       },
-      "defaultValue": "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Build"
+      "defaultValue": "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/"
     },
     "bacpacUrl": {
       "type": "string",
@@ -288,7 +288,7 @@
             "displayName": "Web Deploy for Customer Portal"
           },
           "properties": {
-            "packageUri": "[uri(parameters('PathToWebApplicationPackages'), concat('/CustomerPortal.zip'))]",
+            "packageUri": "[uri(concat(parameters('PathToWebApplicationPackages'),'/'), concat('CustomerPortal.zip'))]",
             "dbType": "None"
           }
         }
@@ -405,7 +405,7 @@
             "displayName": "Web Deploy for Publisher Portal"
           },
           "properties": {
-            "packageUri": "[uri(parameters('PathToWebApplicationPackages'), concat('/PublisherPortal.zip'))]",
+            "packageUri": "[uri(concat(parameters('PathToWebApplicationPackages'),'/'), concat('PublisherPortal.zip'))]",
             "dbType": "None"
           }
         }
@@ -415,7 +415,7 @@
   "outputs": {
     "CustomerPortal": {
       "type": "string",
-      "value": "[reference(concat('Microsoft.Web/sites/', variables('ProvisioningServiceAppName'))).hostnames[0]]"
+      "value": "[reference(concat('Microsoft.Web/sites/', variables('PublisherServiceAppName'))).hostnames[0]]"
     },
     "PublisherPortal": {
       "type": "string",
