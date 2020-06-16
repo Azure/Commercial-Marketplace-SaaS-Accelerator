@@ -49,7 +49,7 @@
       "metadata": {
         "description": "The base URI where artifacts required by this template are located."
       },
-      "defaultValue": "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/"
+      "defaultValue": "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Build"
     },
     "bacpacUrl": {
       "type": "string",
@@ -288,7 +288,7 @@
             "displayName": "Web Deploy for Customer Portal"
           },
           "properties": {
-            "packageUri": "[uri(parameters('PathToWebApplicationPackages'), concat('Build/CustomerPortal.zip'))]",
+            "packageUri": "[uri(parameters('PathToWebApplicationPackages'), concat('/CustomerPortal.zip'))]",
             "dbType": "None"
           }
         }
@@ -405,7 +405,7 @@
             "displayName": "Web Deploy for Publisher Portal"
           },
           "properties": {
-            "packageUri": "[uri(parameters('PathToWebApplicationPackages'), concat('Build/PublisherPortal.zip'))]",
+            "packageUri": "[uri(parameters('PathToWebApplicationPackages'), concat('/PublisherPortal.zip'))]",
             "dbType": "None"
           }
         }
