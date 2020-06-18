@@ -78,10 +78,10 @@ After making all of the above changes, the **appSettings.json** would look like 
 - [Enable Managed Identity on Apps(App Service)](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
 ![Enable Managed Identity on App Service](./images/keyvault-add-managed-identity.png)
 
-- [Grant Apps access to Key Vault](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references#granting-your-app-access-to-key-vault)
+- [Grant Apps access to Key Vault by setting Access Policies on Key Vault](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references#granting-your-app-access-to-key-vault)
 ![Enable Managed Identity on App Service](./images/keyvault-add-accesspolicies.png)
 
-- [Add App Settings in App Service using Key Vault Reference Syntax](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references#reference-syntax)
+- [Add App Service - Configuration - AppSettings using Key Vault Reference Syntax](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references#reference-syntax)
 ![Enable Managed Identity on App Service](./images/keyvault-add-appsetting.png)
 
 
