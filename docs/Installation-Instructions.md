@@ -74,7 +74,7 @@ After making all of the above changes, the **appSettings.json** would look like 
 }
 ```
 
-### (Optional but recommended) Using KeyVault for setting up above configuration values
+### (Optional but recommended) Setting and Loading above configuration values from KeyVault 
 - [Enable Managed Identity on Apps (App Services created in the next section)](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references)
 ![Enable Managed Identity on App Service](./images/keyvault-add-managed-identity.png)
 
