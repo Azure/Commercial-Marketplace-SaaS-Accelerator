@@ -48,8 +48,7 @@
       "type": "string",
       "metadata": {
         "description": "The base URI where artifacts required by this template are located."
-      },
-      "defaultValue": "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/"
+      }
     },
     "bacpacUrl": {
       "type": "string",
