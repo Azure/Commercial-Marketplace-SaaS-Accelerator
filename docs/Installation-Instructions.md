@@ -50,7 +50,7 @@ Please note: this SDK is community-supported. If you need help or have questions
 
 ## Deploy web applications and SQL Azure database using Powershell
 
-   1. Install Powershell
+   1. Install [Powershell 7.0.2](https://github.com/PowerShell/PowerShell/releases)
    2. Clone the repository
    2. Start a Windows PowerShell window as administrator and run the following commands to install Azure modules:
 ```powershell
@@ -91,8 +91,7 @@ Install-Module -Name Az -AllowClobber
             -SQLServerName "contososqlsrv" 
             -SQLAdminLogin "adminlogin" 
             -SQLAdminLoginPassword "password" 
-            -PublisherAdminUsers "user@contoso.com"  
-            -PathToWebApplicationPackages "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Build"  
+            -PublisherAdminUsers "user@contoso.com"              
             -BacpacUrl "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac" 
             -AzureSubscriptionID "subscriptionId" 
             -ResourceGroupForDeployment "resourcegroup" 
