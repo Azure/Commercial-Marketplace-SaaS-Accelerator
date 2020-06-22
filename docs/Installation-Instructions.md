@@ -53,6 +53,7 @@ Please note: this SDK is community-supported. If you need help or have questions
    1. Install [Powershell 7.0.2](https://github.com/PowerShell/PowerShell/releases)
    2. Clone the repository
    2. Start a Windows PowerShell window as administrator and run the following commands to install Azure modules:
+> Note: Make sure that you are using the latest Powershell to avoid issues in Compress-Archive in 5.1 that got resolved in latest version.
 ```powershell
 Install-Module -Name Az -AllowClobber
 ```
