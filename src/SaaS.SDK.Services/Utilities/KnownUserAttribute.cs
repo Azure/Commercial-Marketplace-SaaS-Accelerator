@@ -5,6 +5,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Filters;
     using Microsoft.AspNetCore.Routing;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 
     /// <summary>
@@ -19,13 +20,17 @@
         /// </summary>
         private readonly IKnownUsersRepository knownUsersRepository;
 
+        private KnownUsersModel knownUsers;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="KnownUserAttribute"/> class.
+        /// Initializes a new instance of the <see cref="KnownUserAttribute" /> class.
         /// </summary>
         /// <param name="knownUsersRepository">The known users repository.</param>
-        public KnownUserAttribute(IKnownUsersRepository knownUsersRepository)
+        /// <param name="knownUsers">The known users.</param>
+        public KnownUserAttribute(IKnownUsersRepository knownUsersRepository, KnownUsersModel knownUsers)
         {
             this.knownUsersRepository = knownUsersRepository;
+            this.knownUsers = knownUsers;
         }
 
         /// <summary>
@@ -36,6 +41,12 @@
         {
             var isKnownuser = false;
             string email = string.Empty;
+
+            if (this.knownUsers != null && !string.IsNullOrWhiteSpace(this.knownUsers.KnownUsers))
+            {
+                this.knownUsersRepository.AddKnowUsersFromAppConfig(this.knownUsers.KnownUsers);
+            }
+
             if (context.HttpContext != null && context.HttpContext.User.Claims.Count() > 0)
             {
                 email = context.HttpContext.User.Claims.Where(s => s.Type == ClaimConstants.CLAIM_EMAILADDRESS).FirstOrDefault().Value;

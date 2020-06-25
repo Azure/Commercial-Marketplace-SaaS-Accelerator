@@ -1,10 +1,12 @@
  # Installation instructions
 
   - [Overview](#overview)
-  - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository-create-an-azure-sql-database-single-database-and-prepare)
+  - [Deploy web applications and SQL Azure database using an ARM template](#deploy-web-applications-and-sql-azure-database-using-an-arm-template)
+  - [Deploy web applications and SQL Azure database using Powershell](#deploy-web-applications-and-sql-azure-database-using-powershell)
+  - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository--create-an-azure-sql-database-single-database-and-prepare)
   - [Change configuration](#change-configuration)
   - [Create Web Apps on Azure and deploy the code](#create-web-apps-on-azure-and-deploy-the-code)
-    - [Running the solution locally](#running-the-solution-locally)
+    + [Running the solution locally](#running-the-solution-locally)
   - [Landing page and webhook settings for the SaaS offer on Partner Center](#landing-page-and-webhook-settings-for-the-saas-offer-on-partner-center)
   - [Next steps](#next-steps)
     - [Configuring the Customer Provisioning web application](./Customer-Experience.md)
@@ -17,7 +19,86 @@ Learn more about what's included and how to-use the SDK [here.](https://github.c
 
 Please note: this SDK is community-supported. If you need help or have questions using this SDK, please create a GitHub issue. Do not contact the marketplace pubisher support alias directly regarding use of this SDK. Thank you.
 
+## Deploy web applications and SQL Azure database using an ARM template
 
+- Log on to [Azure](https://portal.azure.com)
+- Search for **Custom Template** and select the option - **Deploy a custom template**
+![Custom template](./images/search-custom-template.png)
+- Click the link **Build your own template in the editor**
+![Build your own template](./images/build-your-own-template.png)
+- Copy the content from the ARM template - [deploy.json](../deployment/Templates/deploy.json) and paste the text in the text area after clearing the existing content
+- Click **Save**
+- The template is validated and you are navigated to a page that presents a form for you to fill in the parameters used to deploy the resources
+![Deployment parameters](./images/custom-deployment-input-parameters.png)
+
+> Note: 
+> - You can leave the **Path to Web Application Packages** as is to use the build packages from this repository
+> - Make sure that you download the bacpac file from [here](../deployment/Database/AMPSaaSDB.bacpac) and upload it to an Azure blob storage. Use the URL to the file in the storage as the link to Github is not currently supported.
+- Click **Purchase** to initiate the deployment of resources
+> **Note**
+>  - The template uses the **Web App Name Prefix** to create two web applications. For example, if the value provided for this field is **contoso**, the deployment creates the customer portal - https://contoso-portal.azurewebsites.net and the publisher portal - https://contoso-admin.azurewebsites.net.
+> - **_Important_** For the login to the portals to work, it is important that you configure the **Redirect URIs** in the AD application to use these web applications. Here are the redirect Uris that should be in place:
+
+> - https://contoso-portal.azurewebsites.net    
+> - https://contoso-portal.azurewebsites.net/
+> - https://contoso-portal.azurewebsites.net/Home/Index
+> - https://contoso-portal.azurewebsites.net/Home/Index/
+> - https://contoso-admin.azurewebsites.net
+> - https://contoso-admin.azurewebsites.net/
+> - https://contoso-admin.azurewebsites.net/Home/Index
+> - https://contoso-admin.azurewebsites.net/Home/Index/
+
+## Deploy web applications and SQL Azure database using Powershell
+
+   1. Install [Powershell 7.0.2](https://github.com/PowerShell/PowerShell/releases)
+   2. Clone the repository
+   2. Start a Windows PowerShell window as administrator and run the following commands to install Azure modules:
+> Note: Make sure that you are using the latest Powershell to avoid issues in Compress-Archive in 5.1 that got resolved in latest version.
+```powershell
+Install-Module -Name Az -AllowClobber
+```
+
+   3. Navigate to the folder **.\deployment\Templates**
+   4. Set the priorities running Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass. Choose "A", to change the policy to Yes to All. If you get a permission error, you can try:
+        * Run the PowerShell terminal as an Administrator
+        * Set the priorities running Set-ExecutionPolicy -ExecutionPolicy unrestricted.
+   5. Run the command **.\Deploy.ps1** with the following paramters
+
+| Parameter | Description |
+|-----------| -------------|
+| WebAppNamePrefix | Prefix used for creating web applications. Example: contoso |
+| TenantID | The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center |
+| ADApplicationID | The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center |
+| ADApplicationSecret | Secret key of the AD Application |
+| SQLServerName | Name of the database server (without database.windows.net) |
+| SQLAdminLogin | SQL Admin login |
+| SQLAdminLoginPassword | SQL Admin password |
+| PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
+| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/ |
+| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac |
+| ResourceGroupForDeployment | Name of the resource group to deploy the resources |
+| Location | Location of the resource group |
+| AzureSubscriptionID | Subscription where the resources be deployed |
+| PathToARMTemplate | Local Path to the ARM Template |
+
+
+> **Example** 
+```powershell
+.\Deploy.ps1 
+            -WebAppNamePrefix "contoso" 
+            -TenantID "tenandId" 
+            -ADApplicationID "clientId" 
+            -ADApplicationSecret "secret" 
+            -SQLServerName "contososqlsrv" 
+            -SQLAdminLogin "adminlogin" 
+            -SQLAdminLoginPassword "password" 
+            -PublisherAdminUsers "user@contoso.com"              
+            -BacpacUrl "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac" 
+            -AzureSubscriptionID "subscriptionId" 
+            -ResourceGroupForDeployment "resourcegroup" 
+            -Location "East US" 
+            -PathToARMTemplate ".\deploy.json"
+```
 ## Clone the repository, create an Azure SQL Database single database and prepare
  Create a single database following the instructions on the SQL Database service [quickstart] (https://docs.microsoft.com/en-us/azure/sql-database/sql-database-single-database-get-started?tabs=azure-portal) document.
 
