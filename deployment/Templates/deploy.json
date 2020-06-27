@@ -414,7 +414,7 @@
   "outputs": {
     "CustomerPortal": {
       "type": "string",
-      "value": "[reference(concat('Microsoft.Web/sites/', variables('PublisherServiceAppName'))).hostnames[0]]"
+      "value": "[reference(concat('Microsoft.Web/sites/', variables('ProvisioningServiceAppName'))).hostnames[0]]"
     },
     "PublisherPortal": {
       "type": "string",
