@@ -1,0 +1,428 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "webAppNamePrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Prefix used for creating web applications"
+      }
+    },
+    "TenantID": {
+      "type": "string",
+      "metadata": {
+        "description": "The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center"
+      }
+    },
+    "ADApplicationID": {
+      "type": "string",
+      "metadata": {
+        "description": "The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center"
+      }
+    },
+    "ADApplicationSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Secret key of the AD Application"
+      }
+    },
+    "SQLServerName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the database server (without database.windows.net)"
+      }
+    },
+    "SQLAdminLogin": {
+      "type": "string",
+      "metadata": {
+        "description": "SQL Admin login"
+      }
+    },
+    "SQLAdminLoginPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SQL Admin password"
+      }
+    },
+    "PathToWebApplicationPackages": {
+      "type": "string",
+      "metadata": {
+        "description": "The base URI where artifacts required by this template are located."
+      }
+    },
+    "bacpacUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "The url to the blob storage where the SaaS DB bacpac is stored"
+      },
+      "defaultValue": ""
+    },
+    "SAASKeyForBacpac": {
+      "type": "securestring",
+      "metadata": {
+        "description": "SAAS token to access the bacpac file from storage account"
+      },
+      "defaultValue": ""
+    },
+    "PublisherAdminUsers": {
+      "type": "string",
+      "metadata": {
+        "description": "Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal"
+      },
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "hostingEnvironment": "",
+    "serverFarmResourceGroup": "[resourceGroup().name]",
+    "alwaysOn": true,
+    "sku": "Basic",
+    "skuCode": "B1",
+    "workerSize": "0",
+    "workerSizeId": "0",
+    "numberOfWorkers": "1",
+    "linuxFxVersion": "DOTNETCORE|3.1",
+    "subscriptionId": "[subscription().subscriptionId]",
+    "location": "[resourceGroup().location]",
+    "appServicePlanName": "[concat(parameters('webAppNamePrefix'),'AmpSvcPlan')]",
+    "ProvisioningServiceAppName": "[concat(parameters('webAppNamePrefix'),'-portal')]",
+    "PublisherServiceAppName": "[concat(parameters('webAppNamePrefix'),'-admin')]",
+    "collation": "SQL_Latin1_General_CP1_CI_AS",
+    "sqlDBName": "AMPSaaSDB"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2015-05-01-preview",
+      "name": "[parameters('SQLServerName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "administratorLogin": "[parameters('SQLAdminLogin')]",
+        "administratorLoginPassword": "[parameters('SQLAdminLoginPassword')]",
+        "version": "12.0"
+      },
+      "resources": [
+        {
+          "type": "firewallrules",
+          "name": "AllowAllAzureIps",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-05-01-preview",
+          "dependsOn": [
+            "[parameters('SQLServerName')]"
+          ],
+          "properties": {
+            "startIpAddress": "0.0.0.0",
+            "endIpAddress": "255.255.255.255"
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases",
+      "apiVersion": "2017-03-01-preview",
+      "name": "[concat(string(parameters('SQLServerName')), '/', string(variables('sqlDBName')))]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('SQLServerName'))]"
+      ],
+      "sku": {
+        "name": "S0",
+        "tier": "Standard"
+      },
+      "kind": "v12.0,user",
+      "properties": {
+        "collation": "SQL_Latin1_General_CP1_CI_AS",
+        "maxSizeBytes": 268435456000,
+        "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+        "zoneRedundant": false
+      },
+      "resources": [
+        {
+          "name": "Import",
+          "type": "extensions",
+          "apiVersion": "2014-04-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers/databases', parameters('SQLServerName'), variables('sqlDBName'))]"
+          ],
+          "properties": {
+            "storageKeyType": "SharedAccessKey",
+            "storageKey": "[concat('?',parameters('SAASKeyForbacpac'))]",
+            "storageUri": "[parameters('bacpacUrl')]",
+            "administratorLogin": "[parameters('SQLAdminLogin')]",
+            "administratorLoginPassword": "[parameters('SQLAdminLoginPassword')]",
+            "operationMode": "Import"
+          }
+        }
+      ]
+    },
+
+    // App service plan and web apps
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2019-08-01",
+      "name": "[variables('appServicePlanName')]",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "[variables('skuCode')]",
+        "capacity": "1"
+      },
+      "tags": {
+        "displayName": "[variables('appServicePlanName')]"
+      },
+      "properties": {
+        "name": "[variables('appServicePlanName')]"
+      },
+      "kind": "linux"
+    },
+    {
+      "name": "[variables('ProvisioningServiceAppName')]",
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2019-08-01",
+      "location": "[variables('location')]",
+      "tags": {
+        "displayName": "[variables('ProvisioningServiceAppName')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('SQLServerName'), variables('sqlDBName'))]"
+      ],
+      "properties": {
+        "name": "[variables('ProvisioningServiceAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+
+        "siteConfig": {
+          "connectionStrings": [
+            {
+              "name": "DefaultConnection",
+              "connectionString": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=AMPSaaSDB', ';User Id=', parameters('SQLAdminLogin'), '@', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ';Password=', parameters('SQLAdminLoginPassword'), ';')]"
+            }
+          ],
+          "appSettings": [
+            {
+              "name": "ASPNETCORE_ENVIRONMENT",
+              "value": "Development",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__AdAuthenticationEndPoint",
+              "value": "https://login.microsoftonline.com",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__ClientId",
+              "value": "[parameters('ADApplicationID')]",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__ClientSecret",
+              "value": "[parameters('ADApplicationSecret')]",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__FulFillmentAPIBaseURL",
+              "value": "https://marketplaceapi.microsoft.com/api",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__FulFillmentAPIVersion",
+              "value": "2018-08-31",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__GrantType",
+              "value": "client_credentials",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__Resource",
+              "value": "62d94f6c-d599-489b-a797-3e10e42fbe22",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__SaaSAppUrl",
+              "value": "",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__SignedOutRedirectUri",
+              "value": "[concat('https://', variables('ProvisioningServiceAppName'), '.azurewebsites.net/Home/Index')]",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__TenantId",
+              "value": "[parameters('TenantID')]",
+              "slotSetting": false
+            },
+            {
+              "name": "KnownUsers",
+              "value": "[parameters('PublisherAdminUsers')]",
+              "slotSetting": false
+            },
+            {
+              "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
+              "value": "1",
+              "slotSetting": false
+            }
+          ],
+          "metadata": [
+            {
+              "name": "CURRENT_STACK",
+              "value": "dotnetcore"
+            }
+          ],
+          "alwaysOn": "[variables('alwaysOn')]"
+
+        }
+      },
+      "resources": [
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "apiVersion": "2019-08-01",
+          "location": "[variables('location')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('ProvisioningServiceAppName'))]"
+          ],
+          "tags": {
+            "displayName": "Web Deploy for Customer Portal"
+          },
+          "properties": {
+            "packageUri": "[uri(concat(parameters('PathToWebApplicationPackages'),'/'), concat('CustomerPortal.zip'))]",
+            "dbType": "None"
+          }
+        }
+      ]
+    },
+    {
+      "name": "[variables('PublisherServiceAppName')]",
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2019-08-01",
+      "location": "[variables('location')]",
+      "tags": {
+        "displayName": "[variables('PublisherServiceAppName')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('SQLServerName'), variables('sqlDBName'))]"
+      ],
+      "properties": {
+        "name": "[variables('PublisherServiceAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "siteConfig": {
+          "connectionStrings": [
+            {
+              "name": "DefaultConnection",
+              "connectionString": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=AMPSaaSDB', ';User Id=', parameters('SQLAdminLogin'), '@', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ';Password=', parameters('SQLAdminLoginPassword'), ';')]"
+            }
+          ],
+          "appSettings": [
+            {
+              "name": "ASPNETCORE_ENVIRONMENT",
+              "value": "Development",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__AdAuthenticationEndPoint",
+              "value": "https://login.microsoftonline.com",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__ClientId",
+              "value": "[parameters('ADApplicationID')]",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__ClientSecret",
+              "value": "[parameters('ADApplicationSecret')]",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__FulFillmentAPIBaseURL",
+              "value": "https://marketplaceapi.microsoft.com/api",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__FulFillmentAPIVersion",
+              "value": "2018-08-31",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__GrantType",
+              "value": "client_credentials",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__Resource",
+              "value": "62d94f6c-d599-489b-a797-3e10e42fbe22",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__SaaSAppUrl",
+              "value": "",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__SignedOutRedirectUri",
+              "value": "[concat('https://', variables('ProvisioningServiceAppName'), '.azurewebsites.net/Home/Index')]",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__TenantId",
+              "value": "[parameters('TenantID')]",
+              "slotSetting": false
+            },
+            {
+              "name": "KnownUsers",
+              "value": "[parameters('PublisherAdminUsers')]",
+              "slotSetting": false
+            },
+            {
+              "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
+              "value": "1",
+              "slotSetting": false
+            }
+          ],
+          "metadata": [
+            {
+              "name": "CURRENT_STACK",
+              "value": "dotnetcore"
+            }
+          ],
+          "alwaysOn": "[variables('alwaysOn')]"
+        }
+      },
+      "resources": [
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "apiVersion": "2019-08-01",
+          "location": "[variables('location')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('PublisherServiceAppName'))]"
+          ],
+          "tags": {
+            "displayName": "Web Deploy for Publisher Portal"
+          },
+          "properties": {
+            "packageUri": "[uri(concat(parameters('PathToWebApplicationPackages'),'/'), concat('PublisherPortal.zip'))]",
+            "dbType": "None"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "CustomerPortal": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Web/sites/', variables('PublisherServiceAppName'))).hostnames[0]]"
+    },
+    "PublisherPortal": {
+      "type": "string",
+      "value": "[reference(concat('Microsoft.Web/sites/', variables('PublisherServiceAppName'))).hostnames[0]]"
+    },
+    "DefaultConnection": {
+      "value": "[concat('Data Source=tcp:', parameters('SQLServerName'), '.database.windows.net,1433;Initial Catalog=AMPSaaSDB', ';User Id=', parameters('SQLAdminLogin'), '@', parameters('SQLServerName'), ';Password=', parameters('SQLAdminLoginPassword'), ';')]",
+      "type": "string"
+    }
+  }
+}

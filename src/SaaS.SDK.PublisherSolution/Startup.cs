@@ -77,6 +77,11 @@ namespace Microsoft.Marketplace.Saas.Web
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
             };
+            var knownUsers = new KnownUsersModel()
+            {
+                KnownUsers = this.Configuration["KnownUsers"],
+
+            };
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -99,6 +104,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new MeteringApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
+            services.AddSingleton<KnownUsersModel>(knownUsers);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
