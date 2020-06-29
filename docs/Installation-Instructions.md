@@ -116,7 +116,7 @@ Open the files **appsettings.json** under the project **SaaS.SDK.CustomerProvisi
 - **GrantType** - Leave this as `client_credentials`
 - **ClientId** - Azure Active Directory Application ID (the value for marketplace offer in Partner Center, under technical configuration tab). Steps to register an Azure AD application are [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration)
 - **ClientSecret** - Secret from the Azure Active Directory Application
-- **Resource** - Set this to *62d94f6c-d599-489b-a797-3e10e42fbe22* **this value is important, it is the resource ID for the fulfillment API**
+- **Resource** - Set this to *20e940b3-4c77-4b0b-9a53-9e16a1b010a7* **this value is important, it is the resource ID for the fulfillment API**
 - **FulFillmentAPIBaseURL** - https://marketplaceapi.microsoft.com/api
 - **SignedOutRedirectUri** - Set the path to the page the user should be redirected to after signing out from the application
 - **TenantId** - Provide the tenant ID detail that was submitted in the. **Technical configuration** section of your marketplace offer in Partner Center.
@@ -140,7 +140,7 @@ After making all of the above changes, the **appSettings.json** would look like 
     "GrantType": "client_credentials",
     "ClientId": "<Azure AD application ID>",
     "ClientSecret": "<client secret>",
-    "Resource": "62d94f6c-d599-489b-a797-3e10e42fbe22",
+    "Resource": "20e940b3-4c77-4b0b-9a53-9e16a1b010a7",
     "FulFillmentAPIBaseURL": "https://marketplaceapi.microsoft.com/api",
     "SignedOutRedirectUri": "<provisioning_or_publisher_web_app_base_path>/Home/Index",
     "TenantId": "<TenantID of AD application>",
