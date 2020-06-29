@@ -46,6 +46,29 @@
         }
 
         /// <summary>
+        /// Adds the know users from application configuration.
+        /// </summary>
+        /// <param name="knownUsers">The known users.</param>
+        public void AddKnowUsersFromAppConfig(string knownUsers)
+        {
+            var existingUsers = this.context.KnownUsers;
+            if (existingUsers != null && existingUsers.ToList().Count() == 0)
+            {
+                List<string> knownUsersList = knownUsers.Split(',').ToList();
+                foreach (var user in knownUsersList)
+                {
+                    var users = new KnownUsers()
+                    {
+                        UserEmail = user.Trim(),
+                        RoleId = 1, // Publisher Admin
+                    };
+                    this.context.KnownUsers.Add(users);
+                    this.context.SaveChanges();
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets this instance.
         /// </summary>
         /// <returns> Exception.</returns>
