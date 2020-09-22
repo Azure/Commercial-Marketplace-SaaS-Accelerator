@@ -8,7 +8,7 @@
       + [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository-create-an-azure-sql-database-single-database-and-prepare)
       + [Create Web Apps on Azure and deploy the code](#create-web-apps-on-azure-and-deploy-the-code)
   - [Change configuration](#change-configuration)
-    * [(Optional but recommended) Setting and Loading above configuration values from KeyVault](#(optional-but-recommended)-setting-and-loading-above-configuration-values-from-keyvault)
+    * [(Optional but recommended) Setting and Loading above configuration values from KeyVault](#optional-but-recommended-setting-and-loading-above-configuration-values-from-keyvault)
   - [Running the solution locally](#running-the-solution-locally)
   - [Landing page and webhook settings for the SaaS offer on Partner Center](#landing-page-and-webhook-settings-for-the-saas-offer-on-partner-center)
   - [Next steps](#next-steps)
