@@ -38,6 +38,7 @@ $storagepostfix = Get-Random -Minimum 1 -Maximum 1000
 $StorageAccountName = "amptmpstorage" + $storagepostfix       #enter storage account name
 
 $ContainerName = "packagefiles" #container name for uploading SQL DB file 
+$BlobName = "blob"
 $resourceGroupForStorageAccount = "amptmpstorage"   #resource group name for the storage account.
                                                       
 
