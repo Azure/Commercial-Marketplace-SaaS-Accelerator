@@ -54,9 +54,9 @@ $key = $StorageAccountKey[0]
 $ctx = New-AzstorageContext -StorageAccountName $StorageAccountName  -StorageAccountKey $key
 
 New-AzStorageContainer -Name $ContainerName -Context $ctx -Permission Blob 
-Set-AzStorageBlobContent -File $LocalPathToBacpacFile -Container $ContainerName -Blob $BlobName -Context $ctx -Force
+Set-AzStorageBlobContent -File $LocalPathToBacpacFile -Container $ContainerName -Blob $BacpacFileName -Context $ctx -Force
 
-$URLToBacpacFromStorage = (Get-AzStorageBlob -blob $BlobName -Container $ContainerName -Context $ctx).ICloudBlob.uri.AbsoluteUri
+$URLToBacpacFromStorage = (Get-AzStorageBlob -blob $BacpacFileName -Container $ContainerName -Context $ctx).ICloudBlob.uri.AbsoluteUri
 
 Write-host "Uploaded the bacpac file to $URLToBacpacFromStorage"    
 
