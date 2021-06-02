@@ -201,7 +201,7 @@ The landing page and the webhook endpoint are implemented in the **SaaS.SDK.Cust
 
 The landing page is the home page of the solution, for example, if you have deployed the solution to \<yourappname\>, the landing page value should be **https://\<yourappname\>.azurewebsites.net**.
 
-Webhook endpoint is at **https://\<yourappname\>.azurewebsites.net/AzureWebhook**
+Webhook endpoint is at **https://\<yourappname\>.azurewebsites.net/api/AzureWebhook**
 
 The **Technical Configuration** section of the Marketplace offer with the values filled using the web app names would look like as shown here.
 
