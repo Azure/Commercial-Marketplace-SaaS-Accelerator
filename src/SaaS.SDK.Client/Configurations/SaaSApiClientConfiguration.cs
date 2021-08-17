@@ -32,11 +32,28 @@ namespace Microsoft.Marketplace.SaasKit.Configurations
         public string ClientSecret { get; set; }
 
         /// <summary>
+        /// Gets or sets the AAD Client ID resource.
+        /// </summary>
+        /// <value>
+        /// The resource.
+        /// </value>
+        public string MTClientId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the multi-tenant client secret.
+        /// </summary>
+        /// <value>
+        /// The client secret.
+        /// </value>
+        public string MTClientSecret { get; set; }
+
+        /// <summary>
         /// Gets or sets the resource.
         /// </summary>
         /// <value>
         /// The resource.
         /// </value>
+
         public string Resource { get; set; }
 
         /// <summary>

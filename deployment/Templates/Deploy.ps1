@@ -7,6 +7,8 @@ Param(
    [string]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
    [string]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
    [string]$ADApplicationSecret, # Secret key of the AD Application
+   [string]$ADMTApplicationID, # The value should match the value provided for Multi-Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string]$ADMTApplicationSecret, # Secret key of the Multi-Tenant AD Application
    [string]$SQLServerName, # Name of the database server (without database.windows.net)
    [string]$SQLAdminLogin, # SQL Admin login
    [string]$SQLAdminLoginPassword, # SQL Admin password
@@ -87,6 +89,8 @@ $ARMTemplateParams = @{
    TenantID                     = "$TenantID"
    ADApplicationID              = "$ADApplicationID"
    ADApplicationSecret          = "$ADApplicationSecret"
+   ADMTApplicationID            = "$ADMTApplicationID"
+   ADMTApplicationSecret        = "$ADMTApplicationSecret"
    SQLServerName                = "$SQLServerName"
    SQLAdminLogin                = "$SQLAdminLogin"
    SQLAdminLoginPassword        = "$SQLAdminLoginPassword"
@@ -108,7 +112,22 @@ New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -Te
 Write-host "Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
 Remove-AzResourceGroup -Name $resourceGroupForStorageAccount -Force 
-Remove-Item –path $TempFolderToStoreBacpac –recurse
-Remove-Item -path "..\..\Publish" -recurse
+Remove-Item –path $TempFolderToStoreBacpac –recurse 
+Remove-Item -path ["..\..\Publish"] -recurse
 
 Write-host "Done!"
+
+Write-host "Add The following URLs to the multi-tenant AAD App Registration in Azure Portal:"
+Write-host "https://$webAppNamePrefix-portal.azurewebsites.net"
+Write-host "https://$webAppNamePrefix-admin.azurewebsites.net"
+
+Write-host "Add The following URL in PartnerCenter SaaS Technical Configuration Landing Page"
+Write-host "https://$webAppNamePrefix-portal.azurewebsites.net/"
+Write-host "Add The following URL in PartnerCenter SaaS Technical Configuration Webhook"
+Write-host "https://$webAppNamePrefix-portal.azurewebsites.net/api/AzureWebhook"
+Write-host "Add The following URL in PartnerCenter SaaS Technical Configuration TenantID"
+Write-host "$TenantID"
+Write-host "Add The following URL in PartnerCenter SaaS Technical Configuration Secret"
+Write-host "$ADApplicationID"
+
+
