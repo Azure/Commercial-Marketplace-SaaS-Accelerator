@@ -64,7 +64,7 @@ Install-Module -Name Az -AllowClobber
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
-Choose "A", to change the policy to Yes to All. If you get a permission error, you can try:
+    Choose "A", to change the policy to Yes to All. If you get a permission error, you can try:
         * Run the PowerShell terminal as an Administrator
         * Set the priorities running Set-ExecutionPolicy -ExecutionPolicy unrestricted.
    6. Run the command **.\Deploy.ps1** with the following paramters
