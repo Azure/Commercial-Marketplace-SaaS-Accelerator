@@ -32,12 +32,6 @@
         "description": "The value should match the value provided for Single Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center"
       }
     },
-    "ADMTApplicationSecret": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Secret key of the Single Tenant AD Application"
-      }
-    },
     "SQLServerName": {
       "type": "string",
       "metadata": {
