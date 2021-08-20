@@ -3,20 +3,20 @@
 #
 
 Param(  
-   [string]$WebAppNamePrefix, # Prefix used for creating web applications
-   [string]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string]$ADApplicationSecret, # Secret key of the AD Application
-   [string]$ADMTApplicationID, # The value should match the value provided for Multi-Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string]$SQLServerName, # Name of the database server (without database.windows.net)
-   [string]$SQLAdminLogin, # SQL Admin login
-   [string]$SQLAdminLoginPassword, # SQL Admin password
-   [string]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
-   [string]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
-   [string]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
-   [string]$Location, # Location of the resource group
-   [string]$AzureSubscriptionID, # Subscription where the resources be deployed
-   [string]$PathToARMTemplate              # Local Path to the ARM Template
+   [string][Parameter(Mandatory)]$WebAppNamePrefix, # Prefix used for creating web applications
+   [string][Parameter(Mandatory)]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter(Mandatory)]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter(Mandatory)]$ADApplicationSecret, # Secret key of the AD Application
+   [string][Parameter(Mandatory)]$ADMTApplicationID, # The value should match the value provided for Multi-Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter(Mandatory)]$SQLServerName, # Name of the database server (without database.windows.net)
+   [string][Parameter(Mandatory)]$SQLAdminLogin, # SQL Admin login
+   [string][Parameter(Mandatory)]$SQLAdminLoginPassword, # SQL Admin password
+   [string][Parameter(Mandatory)]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
+   [string][Parameter(Mandatory)]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
+   [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
+   [string][Parameter(Mandatory)]$Location, # Location of the resource group
+   [string][Parameter(Mandatory)]$AzureSubscriptionID, # Subscription where the resources be deployed
+   [string][Parameter(Mandatory)]$PathToARMTemplate              # Local Path to the ARM Template
 )
 
 #   Make sure to install Az Module before running this script
