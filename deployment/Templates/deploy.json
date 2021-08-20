@@ -230,11 +230,6 @@
               "slotSetting": false
             },
             {
-              "name": "SaaSApiConfiguration__MTClientSecret",
-              "value": "[parameters('ADMTApplicationSecret')]",
-              "slotSetting": false
-            },
-            {
               "name": "SaaSApiConfiguration__FulFillmentAPIBaseURL",
               "value": "https://marketplaceapi.microsoft.com/api",
               "slotSetting": false
