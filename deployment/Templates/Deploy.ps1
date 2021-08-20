@@ -89,7 +89,6 @@ $ARMTemplateParams = @{
    ADApplicationID              = "$ADApplicationID"
    ADApplicationSecret          = "$ADApplicationSecret"
    ADMTApplicationID            = "$ADMTApplicationID"
-   ADMTApplicationSecret        = "$ADMTApplicationSecret"
    SQLServerName                = "$SQLServerName"
    SQLAdminLogin                = "$SQLAdminLogin"
    SQLAdminLoginPassword        = "$SQLAdminLoginPassword"
