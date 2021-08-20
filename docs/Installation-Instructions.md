@@ -50,6 +50,19 @@ Please note: this SDK is community-supported. If you need help or have questions
 
 ## Deploy web applications and SQL Azure database using Powershell
 
+### Using Azure Cloud Shell
+   
+   1. Open Powershell in the Azure Cloud and run the following commands to install Azure modules:
+> Note: Make sure that you are using the latest Powershell to avoid issues in Compress-Archive in 5.1 that got resolved in latest version.
+```powershell
+Install-Module -Name Az -AllowClobber
+```
+   2. Clone the repository
+   3. Navigate to the folder **.\deployment\Templates**
+   4. Run the command **.\Deploy.ps1** with the parameters below
+
+### Local deployment
+
    1. Install Powershell 7.0.2
    - [Windows Store](https://www.microsoft.com/store/productId/9MZ1SNWT0N5D)
    - [GitHub](https://github.com/PowerShell/PowerShell/releases)
