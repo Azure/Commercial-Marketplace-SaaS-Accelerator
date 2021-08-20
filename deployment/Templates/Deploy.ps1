@@ -8,7 +8,6 @@ Param(
    [string]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
    [string]$ADApplicationSecret, # Secret key of the AD Application
    [string]$ADMTApplicationID, # The value should match the value provided for Multi-Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string]$ADMTApplicationSecret, # Secret key of the Multi-Tenant AD Application
    [string]$SQLServerName, # Name of the database server (without database.windows.net)
    [string]$SQLAdminLogin, # SQL Admin login
    [string]$SQLAdminLoginPassword, # SQL Admin password
