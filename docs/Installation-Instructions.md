@@ -95,7 +95,6 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
             -ADApplicationID "single-tenant clientId" `
             -ADApplicationSecret "single-tenant secret" `
             -ADMTApplicationID "multi-tenant clientId" `
-            -ADMTApplicationSecret "multi-tenant secret" `
             -SQLServerName "contososqlsrv_change_me" `
             -SQLAdminLogin "adminlogin" `
             -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `

@@ -40,14 +40,6 @@ namespace Microsoft.Marketplace.SaasKit.Configurations
         public string MTClientId { get; set; }
 
         /// <summary>
-        /// Gets or sets the multi-tenant client secret.
-        /// </summary>
-        /// <value>
-        /// The client secret.
-        /// </value>
-        public string MTClientSecret { get; set; }
-
-        /// <summary>
         /// Gets or sets the resource.
         /// </summary>
         /// <value>

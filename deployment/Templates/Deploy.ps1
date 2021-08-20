@@ -24,15 +24,15 @@ Param(
 
 #   Install-Module Az
 
-$TempFolderToStoreBacpac = 'C:\AMPSaaSDatabase'
+$TempFolderToStoreBacpac = '.\AMPSaaSDatabase'
 $BacpacFileName = "AMPSaaSDB.bacpac"
 $LocalPathToBacpacFile = $TempFolderToStoreBacpac + "\" + $BacpacFileName  
 
 # Create a temporary folder
 New-Item -Path $TempFolderToStoreBacpac -ItemType Directory -Force
 
-$WebClient = New-Object System.Net.WebClient
-$WebClient.DownloadFile($BacpacUrl, $LocalPathToBacpacFile)
+# Download Bacpac
+Invoke-WebRequest -Uri $BacpacUrl -OutFile $LocalPathToBacpacFile
 
 Connect-AzAccount
 $storagepostfix = Get-Random -Minimum 1 -Maximum 1000
@@ -115,29 +115,28 @@ Remove-AzResourceGroup -Name $resourceGroupForStorageAccount -Force
 Remove-Item –path $TempFolderToStoreBacpac –recurse 
 Remove-Item -path ["..\..\Publish"] -recurse
 
-Write-host "🏁 Installation Completed!\n"
+Write-host "🏁 If the intallation completed without error complete the folllowing checklist:\n"
 
-Write-host "⬜ Add The following URLs to the multi-tenant AAD App Registration in Azure Portal:"
+Write-host "__ Add The following URLs to the multi-tenant AAD App Registration in Azure Portal:"
 Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net"
 Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/"
 Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/Home/Index"
 Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/Home/Index/"
-Write-host "⬜ Verify ID Tokens checkbox has been checked-out ✅"
+Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
 
-Write-host "⬜ Add The following URLs to the single-tenant AAD App Registration in Azure Portal:"
+Write-host "__ Add The following URLs to the single-tenant AAD App Registration in Azure Portal:"
 Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net"
 Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net/"
 Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net/Home/Index"
 Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net/Home/Index/"
-Write-host "⬜  Verify ID Tokens checkbox has been checked-out ✅"
+Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
 
-Write-host "⬜ Add The following URL in PartnerCenter SaaS Technical Configuration Landing Page"
+Write-host "__ Add The following URL in PartnerCenter SaaS Technical Configuration Landing Page"
 Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/"
-Write-host "⬜ Add The following URL in PartnerCenter SaaS Technical Configuration Webhook"
+Write-host "__ Add The following URL in PartnerCenter SaaS Technical Configuration Webhook"
 Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/api/AzureWebhook"
-Write-host "⬜ Add The following URL in PartnerCenter SaaS Technical Configuration TenantID"
+Write-host "__ Add The following URL in PartnerCenter SaaS Technical Configuration TenantID"
 Write-host "   $TenantID"
-Write-host "⬜ Add The following URL in PartnerCenter SaaS Technical Configuration Secret"
+Write-host "__ Add The following URL in PartnerCenter SaaS Technical Configuration Secret"
 Write-host "   $ADApplicationID"
-
 
