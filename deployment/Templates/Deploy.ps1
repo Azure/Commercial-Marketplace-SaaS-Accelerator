@@ -3,34 +3,35 @@
 #
 
 Param(  
-   [string]$WebAppNamePrefix, # Prefix used for creating web applications
-   [string]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string]$ADApplicationSecret, # Secret key of the AD Application
-   [string]$SQLServerName, # Name of the database server (without database.windows.net)
-   [string]$SQLAdminLogin, # SQL Admin login
-   [string]$SQLAdminLoginPassword, # SQL Admin password
-   [string]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
-   [string]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
-   [string]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
-   [string]$Location, # Location of the resource group
-   [string]$AzureSubscriptionID, # Subscription where the resources be deployed
-   [string]$PathToARMTemplate              # Local Path to the ARM Template
+   [string][Parameter(Mandatory)]$WebAppNamePrefix, # Prefix used for creating web applications
+   [string][Parameter(Mandatory)]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter(Mandatory)]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter(Mandatory)]$ADApplicationSecret, # Secret key of the AD Application
+   [string][Parameter(Mandatory)]$ADMTApplicationID, # The value should match the value provided for Multi-Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter(Mandatory)]$SQLServerName, # Name of the database server (without database.windows.net)
+   [string][Parameter(Mandatory)]$SQLAdminLogin, # SQL Admin login
+   [string][Parameter(Mandatory)]$SQLAdminLoginPassword, # SQL Admin password
+   [string][Parameter(Mandatory)]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
+   [string][Parameter(Mandatory)]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
+   [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
+   [string][Parameter(Mandatory)]$Location, # Location of the resource group
+   [string][Parameter(Mandatory)]$AzureSubscriptionID, # Subscription where the resources be deployed
+   [string][Parameter(Mandatory)]$PathToARMTemplate              # Local Path to the ARM Template
 )
 
 #   Make sure to install Az Module before running this script
 
 #   Install-Module Az
 
-$TempFolderToStoreBacpac = 'C:\AMPSaaSDatabase'
+$TempFolderToStoreBacpac = '.\AMPSaaSDatabase'
 $BacpacFileName = "AMPSaaSDB.bacpac"
 $LocalPathToBacpacFile = $TempFolderToStoreBacpac + "\" + $BacpacFileName  
 
 # Create a temporary folder
 New-Item -Path $TempFolderToStoreBacpac -ItemType Directory -Force
 
-$WebClient = New-Object System.Net.WebClient
-$WebClient.DownloadFile($BacpacUrl, $LocalPathToBacpacFile)
+# Download Bacpac
+Invoke-WebRequest -Uri $BacpacUrl -OutFile $LocalPathToBacpacFile
 
 Connect-AzAccount
 $storagepostfix = Get-Random -Minimum 1 -Maximum 1000
@@ -87,6 +88,7 @@ $ARMTemplateParams = @{
    TenantID                     = "$TenantID"
    ADApplicationID              = "$ADApplicationID"
    ADApplicationSecret          = "$ADApplicationSecret"
+   ADMTApplicationID            = "$ADMTApplicationID"
    SQLServerName                = "$SQLServerName"
    SQLAdminLogin                = "$SQLAdminLogin"
    SQLAdminLoginPassword        = "$SQLAdminLoginPassword"
@@ -105,10 +107,34 @@ Write-host "Deploying the ARM template to set up resources"
 New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -TemplateFile $PathToARMTemplate -TemplateParameterObject $ARMTemplateParams
 
 
-Write-host "Cleaning things up!"
+Write-host "🧹 Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
 Remove-AzResourceGroup -Name $resourceGroupForStorageAccount -Force 
-Remove-Item –path $TempFolderToStoreBacpac –recurse
-Remove-Item -path "..\..\Publish" -recurse
+Remove-Item –path $TempFolderToStoreBacpac –recurse 
+Remove-Item -path ["..\..\Publish"] -recurse
 
-Write-host "Done!"
+Write-host "🏁 If the intallation completed without error complete the folllowing checklist:\n"
+
+Write-host "__ Add The following URLs to the multi-tenant AAD App Registration in Azure Portal:"
+Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net"
+Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/"
+Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/Home/Index"
+Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/Home/Index/"
+Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
+
+Write-host "__ Add The following URLs to the single-tenant AAD App Registration in Azure Portal:"
+Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net"
+Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net/"
+Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net/Home/Index"
+Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net/Home/Index/"
+Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
+
+Write-host "__ Add The following URL in PartnerCenter SaaS Technical Configuration->Landing Page section"
+Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/"
+Write-host "__ Add The following URL in PartnerCenter SaaS Technical Configuration->Connection Webhook section"
+Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/api/AzureWebhook"
+Write-host "__ Add The following TenantID in PartnerCenter SaaS Technical Configuration Tenant ID"
+Write-host "   $TenantID"
+Write-host "__ Add The following ApplicationID in PartnerCenter SaaS Technical Configuration->AAD Application ID section"
+Write-host "   $ADApplicationID"
+

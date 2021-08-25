@@ -50,27 +50,45 @@ Please note: this SDK is community-supported. If you need help or have questions
 
 ## Deploy web applications and SQL Azure database using Powershell
 
-   1. Install [Powershell 7.0.2](https://github.com/PowerShell/PowerShell/releases)
+### Using Azure Cloud Shell
+   
+   1. Open Powershell in the Azure Cloud and run the following commands to install Azure modules:
+> Note: Make sure that you are using the latest Powershell to avoid issues in Compress-Archive in 5.1 that got resolved in latest version.
+```powershell
+Install-Module -Name Az -AllowClobber
+```
    2. Clone the repository
+   3. Navigate to the folder **.\deployment\Templates**
+   4. Run the command **.\Deploy.ps1** with the parameters below
+
+### Local deployment
+
+   1. Install Powershell 7.0.2
+   - [Windows Store](https://www.microsoft.com/store/productId/9MZ1SNWT0N5D)
+   - [GitHub](https://github.com/PowerShell/PowerShell/releases)
    2. Start a Windows PowerShell window as administrator and run the following commands to install Azure modules:
 > Note: Make sure that you are using the latest Powershell to avoid issues in Compress-Archive in 5.1 that got resolved in latest version.
 ```powershell
 Install-Module -Name Az -AllowClobber
 ```
-
-   3. Navigate to the folder **.\deployment\Templates**
-   4. Set the priorities running Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass. Choose "A", to change the policy to Yes to All. If you get a permission error, you can try:
+   3. Clone the repository
+   4. Navigate to the folder **.\deployment\Templates**
+   5. Set the priorities running
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+   6. Choose "A", to change the policy to Yes to All. If you get a permission error, you can try:
         * Run the PowerShell terminal as an Administrator
         * Set the priorities running Set-ExecutionPolicy -ExecutionPolicy unrestricted.
-   5. Run the command **.\Deploy.ps1** with the following paramters
+   7. Run the command **.\Deploy.ps1** with the following paramters
 
 | Parameter | Description |
 |-----------| -------------|
-| WebAppNamePrefix | Prefix used for creating web applications. Example: contoso |
+| WebAppNamePrefix | A unique prefix used for creating web applications. Example: contoso |
 | TenantID | The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center |
 | ADApplicationID | The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center |
 | ADApplicationSecret | Secret key of the AD Application |
-| SQLServerName | Name of the database server (without database.windows.net) |
+| SQLServerName | A unique name of the database server (without database.windows.net) |
 | SQLAdminLogin | SQL Admin login |
 | SQLAdminLoginPassword | SQL Admin password |
 | PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
@@ -84,20 +102,21 @@ Install-Module -Name Az -AllowClobber
 
 > **Example** 
 ```powershell
-.\Deploy.ps1 
-            -WebAppNamePrefix "contoso" 
-            -TenantID "tenandId" 
-            -ADApplicationID "clientId" 
-            -ADApplicationSecret "secret" 
-            -SQLServerName "contososqlsrv" 
-            -SQLAdminLogin "adminlogin" 
-            -SQLAdminLoginPassword "password" 
-            -PublisherAdminUsers "user@contoso.com"              
-            -BacpacUrl "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac" 
-            -AzureSubscriptionID "subscriptionId" 
-            -ResourceGroupForDeployment "resourcegroup" 
-            -Location "East US" 
-            -PathToARMTemplate ".\deploy.json"
+.\Deploy.ps1 `
+            -WebAppNamePrefix "contoso" `
+            -TenantID "tenandId" `
+            -ADApplicationID "single-tenant clientId" `
+            -ADApplicationSecret "single-tenant secret" `
+            -ADMTApplicationID "multi-tenant clientId" `
+            -SQLServerName "contososqlsrv_change_me" `
+            -SQLAdminLogin "adminlogin" `
+            -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `
+            -PublisherAdminUsers "user@contoso.com" `              
+            -BacpacUrl "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac" `
+            -AzureSubscriptionID "subscriptionId" `
+            -ResourceGroupForDeployment "resourcegroup" `
+            -Location "East US" `
+            -PathToARMTemplate ".\deploy.json" `
 ```
 ## Clone the repository, create an Azure SQL Database single database and prepare
  Create a single database following the instructions on the SQL Database service [quickstart] (https://docs.microsoft.com/en-us/azure/sql-database/sql-database-single-database-get-started?tabs=azure-portal) document.
