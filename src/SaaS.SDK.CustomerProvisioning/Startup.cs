@@ -68,6 +68,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 AdAuthenticationEndPoint = this.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
                 ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
                 ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
+                MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],                
                 FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
                 FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
                 GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
@@ -86,7 +87,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
    .AddOpenIdConnect(options =>
    {
        options.Authority = $"{config.AdAuthenticationEndPoint}/common";
-       options.ClientId = config.ClientId;
+       options.ClientId = config.MTClientId;
        options.ResponseType = OpenIdConnectResponseType.IdToken;
        options.CallbackPath = "/Home/Index";
        options.SignedOutRedirectUri = config.SignedOutRedirectUri;

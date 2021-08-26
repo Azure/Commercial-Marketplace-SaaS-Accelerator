@@ -26,6 +26,12 @@
         "description": "Secret key of the AD Application"
       }
     },
+    "ADMTApplicationID": {
+      "type": "string",
+      "metadata": {
+        "description": "The value should match the value provided for Single Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center"
+      }
+    },
     "SQLServerName": {
       "type": "string",
       "metadata": {
@@ -219,6 +225,11 @@
               "slotSetting": false
             },
             {
+              "name": "SaaSApiConfiguration__MTClientId",
+              "value": "[parameters('ADMTApplicationID')]",
+              "slotSetting": false
+            },
+            {
               "name": "SaaSApiConfiguration__FulFillmentAPIBaseURL",
               "value": "https://marketplaceapi.microsoft.com/api",
               "slotSetting": false
@@ -235,7 +246,7 @@
             },
             {
               "name": "SaaSApiConfiguration__Resource",
-              "value": "62d94f6c-d599-489b-a797-3e10e42fbe22",
+              "value": "20e940b3-4c77-4b0b-9a53-9e16a1b010a7",
               "slotSetting": false
             },
             {
@@ -353,7 +364,7 @@
             },
             {
               "name": "SaaSApiConfiguration__Resource",
-              "value": "62d94f6c-d599-489b-a797-3e10e42fbe22",
+              "value": "20e940b3-4c77-4b0b-9a53-9e16a1b010a7",
               "slotSetting": false
             },
             {
@@ -414,7 +425,7 @@
   "outputs": {
     "CustomerPortal": {
       "type": "string",
-      "value": "[reference(concat('Microsoft.Web/sites/', variables('PublisherServiceAppName'))).hostnames[0]]"
+      "value": "[reference(concat('Microsoft.Web/sites/', variables('ProvisioningServiceAppName'))).hostnames[0]]"
     },
     "PublisherPortal": {
       "type": "string",
