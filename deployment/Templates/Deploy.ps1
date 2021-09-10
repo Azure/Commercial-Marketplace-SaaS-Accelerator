@@ -99,7 +99,7 @@ $restbody = "{ `"displayName`": `"LandingpageAppReg`"," `
 Write-Host $restbody
 
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
-    $landingpageLoginAppReg = $(az rest --method POST --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
+    $landingpageLoginAppReg = $(az rest --method POST --headers --headers \"Content-Type=application/json\" --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
 }
 
 # AAD App Registration - Create Single Tenant App Registration
