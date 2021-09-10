@@ -91,7 +91,7 @@ $restbody = '{ \"displayName\": \"LandingpageAppReg\",' `
                   +'\"https://$WebAppNamePrefix-portal.azurewebsites.net\",' `
                   +'\"https://$WebAppNamePrefix-portal.azurewebsites.net/\",' `
                   +'\"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index\",' `
-                  +'\"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/\",' `
+                  +'\"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/\"' `
                   +'],' `
                 +' \"logoutUrl\": \"https://$WebAppNamePrefix-portal.azurewebsites.net/logout\",' `
                 +'\"implicitGrantSettings\": ' `
