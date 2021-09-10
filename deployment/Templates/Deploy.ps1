@@ -100,7 +100,7 @@ Write-Host $restbody
 
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
     try {
-        $landingpageLoginAppReg = $(az rest --method POST --headers --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
+        $landingpageLoginAppReg = $(az rest --method POST --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         [Environment]::Exit(1)
