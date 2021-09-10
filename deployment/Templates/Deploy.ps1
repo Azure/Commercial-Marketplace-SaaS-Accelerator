@@ -73,7 +73,6 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
         Connect-AzAccount
     }    
     $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" | %{ $_.ObjectId }
-    sleep 1
     Write-Host "AAD Single Tenant Application ID:" $ADApplicationID    
 
     if(!($RunningLocal)) {
