@@ -100,7 +100,7 @@ Write-Host $restbody
 Write-Host $restbody | ConvertTo-Json
 
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
-    $landingpageLoginAppReg = $(az rest --method POST --headers \"Content-Type=application/json\" --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
+    $landingpageLoginAppReg = $(az rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
 }
 
 # AAD App Registration - Create Single Tenant App Registration
