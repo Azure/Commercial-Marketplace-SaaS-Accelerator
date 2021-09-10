@@ -73,11 +73,12 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
         Connect-AzAccount
     }    
     $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
+    sleep 1
 
     if(!($RunningLocal)) {
         Connect-AzAccount
     }
-    $PasswordCredential = New-AzureADApplicationPasswordCredential -ObjectId $ADApplicationID.ObjectId -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
+    New-AzureADApplicationPasswordCredential -ObjectId $ADApplicationID.ObjectId -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
    
 }
 
