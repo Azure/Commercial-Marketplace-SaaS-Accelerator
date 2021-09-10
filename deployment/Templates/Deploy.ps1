@@ -44,7 +44,7 @@ if(!($TenantID)) {
 # Get Azure Subscription
 if(!($AzureSubscriptionID)) {
     Get-AzSubscription -TenantId $TenantID | Format-Table
-    $AzureSubscriptionID = Read-Host -Prompt "Enter your subscriptionID: "
+    $AzureSubscriptionID = Read-Host -Prompt "Enter your SubscriptionID: "
 }
 Write-host "Select subscription : $AzureSubscriptionID"     
 Select-AzSubscription -SubscriptionId $AzureSubscriptionID
@@ -94,7 +94,7 @@ $restbody = '{ \"displayName\": \"LandingpageAppReg\",' `
                   +' [{\"resourceAppId\": \"00000003-0000-0000-c000-000000000000\", ' `
                   +' \"resourceAccess\": ' `
                   +' [{ \"id\": \"e1fe6dd8-ba31-4d61-89e7-88639da4683d\",' `
-                  +' \"type\": \"Scope\" }]}] }' `
+                  +' \"type\": \"Scope\" }]}] }' 
 Write-Host $restbody
 
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
