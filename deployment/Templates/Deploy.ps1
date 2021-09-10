@@ -96,6 +96,7 @@ $restbody = '{ \"displayName\": \"LandingpageAppReg\",' `
                   +' [{ \"id\": \"e1fe6dd8-ba31-4d61-89e7-88639da4683d\",' `
                   +' \"type\": \"Scope\" }]}] }' 
 Write-Host $restbody
+Write-Host $restbody | ConvertTo-Json
 
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
     $landingpageLoginAppReg = $(az rest --method POST --headers \"Content-Type=application/json\" --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
