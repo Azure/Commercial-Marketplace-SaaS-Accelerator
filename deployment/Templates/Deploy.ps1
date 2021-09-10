@@ -16,7 +16,8 @@ Param(
    [string][Parameter(Mandatory)]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
    [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
-   [string][Parameter(Mandatory)]$PathToARMTemplate              # Local Path to the ARM Template
+   [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
+   [string][Parameter()]$RunningLocal  # Is this script running local?
 )
 
 #   Make sure to install Az Module before running this script
@@ -25,7 +26,11 @@ Param(
 # Install-Module -Name AzureAD
 
 # Azure Login
+if(!($RunningLocal)) {
 Connect-AzAccount -UseDeviceAuthentication
+} else {
+Connect-AzAccount
+}
 
 # Get TenantID if not set as argument
 if(!($TenantID)) {
@@ -61,9 +66,13 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     #$PasswordCredential.Value = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
     $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
 
-    Connect-AzAccount
+    if(!($RunningLocal)) {
+        Connect-AzAccount
+    }
     $PasswordCredential =New-AzureADApplicationPasswordCredential -ObjectId $Guid -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI "
-    Connect-AzAccount
+    if(!($RunningLocal)) {
+        Connect-AzAccount
+    }    
     $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" -PasswordCredentials $PasswordCredential | %{  $_.AppId }
 }
 
