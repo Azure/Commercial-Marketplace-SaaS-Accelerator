@@ -69,15 +69,9 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     #$PasswordCredential.Value = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
     $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
 
-    if(!($RunningLocal)) {
-        #Connect-AzAccount
-    }    
     $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" | %{ $_.ObjectId }
     Write-Host "AAD Single Tenant Application ID:" $ADApplicationID    
-
-    if(!($RunningLocal)) {
-        #Connect-AzAccount
-    }
+    
     New-AzureADApplicationPasswordCredential -ObjectId $ADApplicationID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
    
 }
@@ -101,6 +95,7 @@ $restbody = '{ \"displayName\": \"LandingpageAppReg\",' `
                   +' \"resourceAccess\": ' `
                   +' [{ \"id\": \"e1fe6dd8-ba31-4d61-89e7-88639da4683d\",' `
                   +' \"type\": \"Scope\" }]}] }' `
+Write-Host $restbody
 
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
     $landingpageLoginAppReg = $(az rest --method POST --headers \"Content-Type=application/json\" --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
