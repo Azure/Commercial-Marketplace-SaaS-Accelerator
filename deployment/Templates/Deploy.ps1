@@ -4,10 +4,11 @@
 
 Param(  
    [string][Parameter(Mandatory)]$WebAppNamePrefix, # Prefix used for creating web applications
-   [string][Parameter(Mandatory)]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string][Parameter(Mandatory)]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string][Parameter(Mandatory)]$ADApplicationSecret, # Secret key of the AD Application
-   [string][Parameter(Mandatory)]$ADMTApplicationID, # The value should match the value provided for Multi-Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter()]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter()]$AzureSubscriptionID, # Subscription where the resources be deployed
+   [string][Parameter()]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter()]$ADApplicationSecret, # Secret key of the AD Application
+   [string][Parameter()]$ADMTApplicationID, # The value should match the value provided for Multi-Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
    [string][Parameter(Mandatory)]$SQLServerName, # Name of the database server (without database.windows.net)
    [string][Parameter(Mandatory)]$SQLAdminLogin, # SQL Admin login
    [string][Parameter(Mandatory)]$SQLAdminLoginPassword, # SQL Admin password
@@ -15,13 +16,89 @@ Param(
    [string][Parameter(Mandatory)]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
    [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
-   [string][Parameter(Mandatory)]$AzureSubscriptionID, # Subscription where the resources be deployed
    [string][Parameter(Mandatory)]$PathToARMTemplate              # Local Path to the ARM Template
 )
 
 #   Make sure to install Az Module before running this script
 
-#   Install-Module Az
+# Install-Module Az
+# Install-Module -Name AzureAD
+
+# Azure Login
+Connect-AzAccount
+
+# Get TenantID if not set as argument
+if(!($TenantID)) {
+    Get-AzTenant | Format-Table
+    $TenantID = Read-Host -Prompt "Enter your TenantID: "  
+}
+                                                   
+# Get Azure Subscription
+if(!($AzureSubscriptionID)) {
+    Get-AzSubscription -TenantId $TenantID | Format-Table
+    $AzureSubscriptionID = Read-Host -Prompt "Enter your subscriptionID: "
+}
+Write-host "Select subscription : $AzureSubscriptionID"     
+Select-AzSubscription -SubscriptionId $AzureSubscriptionID
+
+# Create AAD App Registration
+
+# AAD App Registration - Create Multi-Tenant App Registration Requst
+#$req = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
+#$req.ResourceAccess = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "e1fe6dd8-ba31-4d61-89e7-88639da4683d","Scope"
+#$req.ResourceAppId = "00000003-0000-0000-c000-000000000000"
+#$ADMTApplicationID = New-AzureADApplication -DisplayName "landingpageapp" -Oauth2RequirePostResponse $true -AvailableToOtherTenants $true -RequiredResourceAccess $req
+# if (!Test-Path 'env:ADApplicationID ') {
+if (!($ADApplicationID)) {
+# AAD App Registration - Create Single Tenant App Registration
+$Guid = New-Guid
+$startDate = Get-Date
+$endDate = $startDate.AddYears(2)
+#$PasswordCredential = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordCredential
+#$PasswordCredential.StartDate = $startDate
+#$PasswordCredential.EndDate = $startDate.AddYears(2)
+#$PasswordCredential.KeyId = $Guid
+#$PasswordCredential.Value = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
+$password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
+$PasswordCredential =New-AzureADApplicationPasswordCredential -ObjectId $Guid -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI "
+$ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" -PasswordCredentials $PasswordCredential | %{  $_.AppId }
+}
+
+if (!($ADMTApplicationID)) {
+# AAD App Registration - Create Multi-Tenant App Registration Requst 
+    $landingpageLoginAppReg = $(az rest `
+            --method POST `
+            --headers \"Content-Type=application/json\" `
+            --uri https://graph.microsoft.com/v1.0/applications `
+            --body '{\"displayName\": \"LandingpageAppReg\",'`
+              +' \"api\":{\"requestedAccessTokenVersion\": 2},'`
+              +' \"signInAudience\" : \"AzureADandPersonalMicrosoftAccount\",'`
+              +' \"web\": '`
+                +'{ \"redirectUris\": '`
+                  +'['`
+                  +'\"https://$WebAppNamePrefix-portal.azurewebsites.net\",'`
+                  +'\"https://$WebAppNamePrefix-portal.azurewebsites.net/\",'`
+                  +'\"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index\",'`
+                  +'\"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/\",'`
+                  +'],'`
+                +' \"logoutUrl\": \"https://$WebAppNamePrefix-portal.azurewebsites.net/logout\",'`
+                +'\"implicitGrantSettings\": '`
+                  +'{ \"enableIdTokenIssuance\": true }},'`
+                +' \"requiredResourceAccess\": '`
+                  +' [{\"resourceAppId\": \"00000003-0000-0000-c000-000000000000\", '`
+                  +' \"resourceAccess\": '`
+                  +' [{ \"id\": \"e1fe6dd8-ba31-4d61-89e7-88639da4683d\",'`
+                  +' \"type\": \"Scope\" }]}] }' `
+            | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
+}
+
+# AAD App Registration - Create Single Tenant App Registration
+#fulfillAppObjectId=$(az ad app create --display-name FulfillmentAppReg | jq -r '.objectId') 
+#fulfillAppDetails=$(az ad app credential reset --id $fulfillAppObjectId)
+#jq --slurp 'add' <(echo \"$landingpageLoginAppReg\"
+
+#TODO Add Logo 96x96
+#Set-AzureADApplicationLogo -ObjectId  -FilePath D:\applogo.jpg
 
 $TempFolderToStoreBacpac = '.\AMPSaaSDatabase'
 $BacpacFileName = "AMPSaaSDB.bacpac"
@@ -33,7 +110,6 @@ New-Item -Path $TempFolderToStoreBacpac -ItemType Directory -Force
 # Download Bacpac
 Invoke-WebRequest -Uri $BacpacUrl -OutFile $LocalPathToBacpacFile
 
-Connect-AzAccount
 $storagepostfix = Get-Random -Minimum 1 -Maximum 1000
 
 $StorageAccountName = "amptmpstorage" + $storagepostfix       #enter storage account name
@@ -41,11 +117,6 @@ $StorageAccountName = "amptmpstorage" + $storagepostfix       #enter storage acc
 $ContainerName = "packagefiles" #container name for uploading SQL DB file 
 $BlobName = "blob"
 $resourceGroupForStorageAccount = "amptmpstorage"   #resource group name for the storage account.
-                                                      
-
-Write-host "Select subscription : $AzureSubscriptionID" 
-Select-AzSubscription -SubscriptionId $AzureSubscriptionID
-
 
 Write-host "Creating a temporary resource group and storage account - $resourceGroupForStorageAccount"
 New-AzResourceGroup -Name $resourceGroupForStorageAccount -Location $location -Force
@@ -110,29 +181,29 @@ New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -Te
 Write-host "🧹 Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
 Remove-AzResourceGroup -Name $resourceGroupForStorageAccount -Force 
-Remove-Item –path $TempFolderToStoreBacpac –recurse 
-Remove-Item -path ["..\..\Publish"] -recurse
+Remove-Item –path $TempFolderToStoreBacpac –recurse -Force
+Remove-Item -path ["..\..\Publish"] -recurse -Force
 
 Write-host "🏁 If the intallation completed without error complete the folllowing checklist:\n"
 
 Write-host "__ Add The following URLs to the multi-tenant AAD App Registration in Azure Portal:"
-Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net"
-Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/"
-Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/Home/Index"
-Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/Home/Index/"
+Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net"
+Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/"
+Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index"
+Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/"
 Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
 
 Write-host "__ Add The following URLs to the single-tenant AAD App Registration in Azure Portal:"
-Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net"
-Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net/"
-Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net/Home/Index"
-Write-host "   https://$webAppNamePrefix-admin.azurewebsites.net/Home/Index/"
+Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net"
+Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/"
+Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index"
+Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
 Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
 
 Write-host "__ Add The following URL in PartnerCenter SaaS Technical Configuration->Landing Page section"
-Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/"
+Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/"
 Write-host "__ Add The following URL in PartnerCenter SaaS Technical Configuration->Connection Webhook section"
-Write-host "   https://$webAppNamePrefix-portal.azurewebsites.net/api/AzureWebhook"
+Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/api/AzureWebhook"
 Write-host "__ Add The following TenantID in PartnerCenter SaaS Technical Configuration Tenant ID"
 Write-host "   $TenantID"
 Write-host "__ Add The following ApplicationID in PartnerCenter SaaS Technical Configuration->AAD Application ID section"
