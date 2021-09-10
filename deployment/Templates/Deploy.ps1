@@ -69,9 +69,16 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     #$PasswordCredential.Value = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
     $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
 
-    $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" | %{ $_.ObjectId }
+    if(!($RunningLocal)) {
+        Connect-AzAccount
+    }
+    #$ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" | %{ $_.ObjectId }
+    $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" -signInAudience "AzureADandPersonalMicrosoftAccount" -ReplyUrls [ "https://$WebAppNamePrefix-portal.azurewebsites.net" ] | %{ $_.ObjectId }
     Write-Host "AAD Single Tenant Application ID:" $ADApplicationID    
-    
+
+    if(!($RunningLocal)) {
+        Connect-AzAccount
+    }
     New-AzureADApplicationPasswordCredential -ObjectId $ADApplicationID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
    
 }
@@ -100,7 +107,7 @@ Write-Host $restbody
 
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
     try {
-        $landingpageLoginAppReg = $(az rest --method POST --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
+        #$landingpageLoginAppReg = $(az rest --method POST --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         [Environment]::Exit(1)
