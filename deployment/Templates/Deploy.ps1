@@ -72,7 +72,7 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     if(!($RunningLocal)) {
         Connect-AzAccount
     }    
-    $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" | %{  $_.AppId }
+    $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
 
     if(!($RunningLocal)) {
         Connect-AzAccount
