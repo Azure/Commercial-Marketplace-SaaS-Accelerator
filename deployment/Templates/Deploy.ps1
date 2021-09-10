@@ -49,23 +49,25 @@ Select-AzSubscription -SubscriptionId $AzureSubscriptionID
 #$req.ResourceAppId = "00000003-0000-0000-c000-000000000000"
 #$ADMTApplicationID = New-AzureADApplication -DisplayName "landingpageapp" -Oauth2RequirePostResponse $true -AvailableToOtherTenants $true -RequiredResourceAccess $req
 # if (!Test-Path 'env:ADApplicationID ') {
-if (!($ADApplicationID)) {
-# AAD App Registration - Create Single Tenant App Registration
-$Guid = New-Guid
-$startDate = Get-Date
-$endDate = $startDate.AddYears(2)
-#$PasswordCredential = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordCredential
-#$PasswordCredential.StartDate = $startDate
-#$PasswordCredential.EndDate = $startDate.AddYears(2)
-#$PasswordCredential.KeyId = $Guid
-#$PasswordCredential.Value = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
-$password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
-$PasswordCredential =New-AzureADApplicationPasswordCredential -ObjectId $Guid -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI "
-$ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" -PasswordCredentials $PasswordCredential | %{  $_.AppId }
+if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App Registration
+    
+    $Guid = New-Guid
+    $startDate = Get-Date
+    $endDate = $startDate.AddYears(2)
+    #$PasswordCredential = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordCredential
+    #$PasswordCredential.StartDate = $startDate
+    #$PasswordCredential.EndDate = $startDate.AddYears(2)
+    #$PasswordCredential.KeyId = $Guid
+    #$PasswordCredential.Value = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
+    $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
+
+    Connect-AzAccount
+    $PasswordCredential =New-AzureADApplicationPasswordCredential -ObjectId $Guid -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI "
+    Connect-AzAccount
+    $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" -PasswordCredentials $PasswordCredential | %{  $_.AppId }
 }
 
-if (!($ADMTApplicationID)) {
-# AAD App Registration - Create Multi-Tenant App Registration Requst 
+if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
     $landingpageLoginAppReg = $(az rest `
             --method POST `
             --headers \"Content-Type=application/json\" `
@@ -185,20 +187,23 @@ Remove-Item –path $TempFolderToStoreBacpac –recurse -Force
 Remove-Item -path ["..\..\Publish"] -recurse -Force
 
 Write-host "🏁 If the intallation completed without error complete the folllowing checklist:\n"
-
+if ($ADMTApplicationID) {  #If provided then show the user where to add the landing page in AAD, otherwise script did this already for the user.
 Write-host "__ Add The following URLs to the multi-tenant AAD App Registration in Azure Portal:"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/"
 Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
+}
 
+if ($ADApplicationID) {  #If provided then show the user where to add the admin page in AAD, otherwise script did this already for the user.
 Write-host "__ Add The following URLs to the single-tenant AAD App Registration in Azure Portal:"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
 Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
+}
 
 Write-host "__ Add The following URL in PartnerCenter SaaS Technical Configuration->Landing Page section"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/"
