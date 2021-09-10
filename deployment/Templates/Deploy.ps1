@@ -25,7 +25,7 @@ Param(
 # Install-Module -Name AzureAD
 
 # Azure Login
-Connect-AzAccount
+Connect-AzAccount -UseDeviceAuthentication
 
 # Get TenantID if not set as argument
 if(!($TenantID)) {
