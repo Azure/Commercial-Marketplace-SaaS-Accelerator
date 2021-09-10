@@ -20,6 +20,9 @@ Param(
    [string][Parameter()]$RunningLocal  # Is this script running local?
 )
 
+# Record the current ADApps to reduce deployment instructions at the end
+$IsADApplicationIDProvided = $ADApplicationIDProvided
+$ISADMTApplicationIDProvided = $ADMTApplicationID
 #   Make sure to install Az Module before running this script
 
 # Install-Module Az
@@ -68,12 +71,14 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
 
     if(!($RunningLocal)) {
         Connect-AzAccount
-    }
-    $PasswordCredential =New-AzureADApplicationPasswordCredential -ObjectId $Guid -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI "
+    }    
+    $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" | %{  $_.AppId }
+
     if(!($RunningLocal)) {
         Connect-AzAccount
-    }    
-    $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" -PasswordCredentials $PasswordCredential | %{  $_.AppId }
+    }
+    $PasswordCredential = New-AzureADApplicationPasswordCredential -ObjectId $ADApplicationID.ObjectId -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
+   
 }
 
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
@@ -196,7 +201,7 @@ Remove-Item –path $TempFolderToStoreBacpac –recurse -Force
 Remove-Item -path ["..\..\Publish"] -recurse -Force
 
 Write-host "🏁 If the intallation completed without error complete the folllowing checklist:\n"
-if ($ADMTApplicationID) {  #If provided then show the user where to add the landing page in AAD, otherwise script did this already for the user.
+if ($ISADMTApplicationIDProvided) {  #If provided then show the user where to add the landing page in AAD, otherwise script did this already for the user.
 Write-host "__ Add The following URLs to the multi-tenant AAD App Registration in Azure Portal:"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/"
@@ -205,7 +210,7 @@ Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/"
 Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
 }
 
-if ($ADApplicationID) {  #If provided then show the user where to add the admin page in AAD, otherwise script did this already for the user.
+if ($IsADApplicationIDProvided) {  #If provided then show the user where to add the admin page in AAD, otherwise script did this already for the user.
 Write-host "__ Add The following URLs to the single-tenant AAD App Registration in Azure Portal:"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/"
