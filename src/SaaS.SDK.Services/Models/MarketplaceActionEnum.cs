@@ -18,9 +18,19 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         ACTIVATE,
 
         /// <summary>
-        /// The List All Plan
+        /// The delete
         /// </summary>
-        LISTALLPLAN,
+        DELETE,
+
+        /// <summary>
+        /// The change plan
+        /// </summary>
+        CHANGE_PLAN,
+
+        /// <summary>
+        /// The change quantity
+        /// </summary>
+        CHANGE_QUANTITY,
 
         /// <summary>
         /// The default
@@ -33,9 +43,19 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         OPERATION_STATUS,
 
         /// <summary>
+        /// The a Subscription
+        /// </summary>
+        GET_SUBSCRIPTION,
+
+        /// <summary>
+        /// The a Subscription
+        /// </summary>
+        GET_ALL_PLANS,
+
+        /// <summary>
         /// The All Subscriptions
         /// </summary>
-        ALL_SUBSCRIPTIONS,
+        GET_ALL_SUBSCRIPTIONS,
 
         /// <summary>
         /// The subscription usageevent

@@ -1,3 +1,5 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
 namespace Microsoft.Marketplace.SaasKit.Client
 {
     using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,17 +15,15 @@ namespace Microsoft.Marketplace.SaasKit.Client
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
-    using Microsoft.Marketplace.SaasKit.Client.WebHook;
-    using Microsoft.Marketplace.SaasKit.Configurations;
-    using Microsoft.Marketplace.SaasKit.Contracts;
-    using Microsoft.Marketplace.SaasKit.Services;
-    using Microsoft.Marketplace.SaasKit.WebHook;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
+    using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
+    using global::Azure.Identity;
+    using Microsoft.Marketplace.SaaS;
 
     /// <summary>
     /// Defines the <see cref="Startup" />.
@@ -83,19 +83,20 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-   .AddOpenIdConnect(options =>
-   {
-       options.Authority = $"{config.AdAuthenticationEndPoint}/common";
-       options.ClientId = config.ClientId;
-       options.ResponseType = OpenIdConnectResponseType.IdToken;
-       options.CallbackPath = "/Home/Index";
-       options.SignedOutRedirectUri = config.SignedOutRedirectUri;
-       options.TokenValidationParameters.NameClaimType = "name";
-       options.TokenValidationParameters.ValidateIssuer = false;
-   })
-   .AddCookie();
+           .AddOpenIdConnect(options =>
+           {
+               options.Authority = $"{config.AdAuthenticationEndPoint}/common";
+               options.ClientId = config.ClientId;
+               options.ResponseType = OpenIdConnectResponseType.IdToken;
+               options.CallbackPath = "/Home/Index";
+               options.SignedOutRedirectUri = config.SignedOutRedirectUri;
+               options.TokenValidationParameters.NameClaimType = "name";
+               options.TokenValidationParameters.ValidateIssuer = false;
+           })
+           .AddCookie();
 
-            services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
+            var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
+            services.AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));

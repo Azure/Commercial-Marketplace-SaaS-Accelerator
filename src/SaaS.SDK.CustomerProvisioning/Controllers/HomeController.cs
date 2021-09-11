@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.Controllers
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
+namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -16,9 +18,6 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Contracts;
-    using Microsoft.Marketplace.SaasKit.Models;
-    using SaasKitModels = Microsoft.Marketplace.SaasKit.Models;
 
     /// <summary>Home Controller.</summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Web.Controllers.BaseController"/>
@@ -27,7 +26,7 @@
         /// <summary>
         /// Defines the  API Client.
         /// </summary>
-        private readonly IFulfillmentApiClient apiClient;
+        private readonly IFulfillmentApiService apiService;
 
         /// <summary>
         /// The subscription repository..
@@ -113,9 +112,9 @@
         /// <param name="cloudConfigs">The cloud configs.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="emailService">The email service.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiService apiService, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService)
         {
-            this.apiClient = apiClient;
+            this.apiService = apiService;
             this.subscriptionRepository = subscriptionRepo;
             this.subscriptionLogRepository = subscriptionLogsRepo;
             this.applicationLogRepository = applicationLogRepository;
@@ -136,7 +135,7 @@
             this.loggerFactory = loggerFactory;
 
             this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
-                                                                          apiClient,
+                                                                          apiService,
                                                                           subscriptionRepo,
                                                                           subscriptionLogsRepo,
                                                                           planRepository,
@@ -144,7 +143,7 @@
                                                                           loggerFactory.CreateLogger<PendingActivationStatusHandler>());
 
             this.pendingFulfillmentStatusHandlers = new PendingFulfillmentStatusHandler(
-                                                                           apiClient,
+                                                                           apiService,
                                                                            applicationConfigRepository,
                                                                            subscriptionRepo,
                                                                            subscriptionLogsRepo,
@@ -153,7 +152,7 @@
                                                                            this.loggerFactory.CreateLogger<PendingFulfillmentStatusHandler>());
 
             this.notificationStatusHandlers = new NotificationStatusHandler(
-                                                                        apiClient,
+                                                                        apiService,
                                                                         planRepository,
                                                                         applicationConfigRepository,
                                                                         emailTemplateRepository,
@@ -167,7 +166,7 @@
                                                                         this.loggerFactory.CreateLogger<NotificationStatusHandler>());
 
             this.unsubscribeStatusHandlers = new UnsubscribeStatusHandler(
-                                                                        apiClient,
+                                                                        apiService,
                                                                         subscriptionRepo,
                                                                         subscriptionLogsRepo,
                                                                         planRepository,
@@ -187,7 +186,7 @@
             try
             {
                 this.logger.LogInformation($"Landing page with token {token}");
-                SubscriptionResult subscriptionDetail = new SaasKitModels.SubscriptionResult();
+                SubscriptionResult subscriptionDetail = new SubscriptionResult();
                 SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
 
                 if (this.User.Identity.IsAuthenticated)
@@ -200,10 +199,10 @@
                     {
                         this.TempData["ShowWelcomeScreen"] = null;
                         token = token.Replace(' ', '+');
-                        var newSubscription = this.apiClient.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
+                        var newSubscription = this.apiService.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
                         if (newSubscription != null && newSubscription.SubscriptionId != default)
                         {
-                            var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            var subscriptionPlanDetail = this.apiService.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             Offers offers = new Offers()
                             {
                                 OfferId = newSubscription.OfferId,
@@ -223,7 +222,7 @@
                             });
                             this.subscriptionService.AddPlanDetailsForSubscription(planList);
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
-                            var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            var subscriptionData = this.apiService.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
                             if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                             {
@@ -301,7 +300,7 @@
                         subscription.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                     }
 
-                    subscriptionDetail.SaaSAppUrl = this.apiClient.GetSaaSAppURL();
+                    subscriptionDetail.SaaSAppUrl = this.apiService.GetSaaSAppURL();
 
                     if (this.TempData["ErrorMsg"] != null)
                     {
@@ -637,14 +636,14 @@
                         {
                             var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
 
-                            var jsonResult = await this.apiClient.ChangePlanForSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false);
+                            var jsonResult = await this.apiService.ChangePlanForSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false);
 
                             var changePlanOperationStatus = OperationStatusEnum.InProgress;
                             if (jsonResult != null && jsonResult.OperationId != default)
                             {
                                 while (OperationStatusEnum.InProgress.Equals(changePlanOperationStatus) || OperationStatusEnum.NotStarted.Equals(changePlanOperationStatus))
                                 {
-                                    var changePlanOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                    var changePlanOperationResult = await this.apiService.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
                                     changePlanOperationStatus = changePlanOperationResult.Status;
 
                                     this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId));
@@ -712,14 +711,14 @@
 
                             var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
 
-                            var jsonResult = await this.apiClient.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
+                            var jsonResult = await this.apiService.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
 
                             var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
                             if (jsonResult != null && jsonResult.OperationId != default)
                             {
                                 while (OperationStatusEnum.InProgress.Equals(changeQuantityOperationStatus) || OperationStatusEnum.NotStarted.Equals(changeQuantityOperationStatus))
                                 {
-                                    var changeQuantityOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                    var changeQuantityOperationResult = await this.apiService.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
                                     changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
                                     this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(quantity));

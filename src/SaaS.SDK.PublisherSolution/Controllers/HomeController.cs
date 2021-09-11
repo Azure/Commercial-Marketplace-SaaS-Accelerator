@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Marketplace.Saas.Web.Controllers
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
+namespace Microsoft.Marketplace.Saas.Web.Controllers
 {
     using System;
     using System.Collections.Generic;
@@ -10,17 +12,15 @@
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Configurations;
-    using Microsoft.Marketplace.SaasKit.Contracts;
-    using Microsoft.Marketplace.SaasKit.Exceptions;
-    using Microsoft.Marketplace.SaasKit.Models;
 
     /// <summary>
     /// Home Controller.
@@ -64,11 +64,11 @@
         /// </summary>
         private readonly IUsersRepository userRepository;
 
-        private readonly IFulfillmentApiClient fulfillApiClient;
+        private readonly IFulfillmentApiService fulfillApiService;
 
         private readonly IApplicationLogRepository applicationLogRepository;
 
-        private readonly IMeteredBillingApiClient apiClient;
+        private readonly IMeteredBillingApiService billingApiService;
 
         private readonly IApplicationConfigRepository applicationConfigRepository;
 
@@ -106,7 +106,7 @@
         /// Initializes a new instance of the <see cref="HomeController" /> class.
         /// </summary>
         /// <param name="usersRepository">The users repository.</param>
-        /// <param name="apiClient">The API client.</param>
+        /// <param name="billingApiService">The billing API service.</param>
         /// <param name="logger">The logger.</param>
         /// <param name="subscriptionRepo">The subscription repo.</param>
         /// <param name="planRepository">The plan repository.</param>
@@ -115,7 +115,7 @@
         /// <param name="subscriptionLogsRepo">The subscription logs repo.</param>
         /// <param name="applicationConfigRepository">The application configuration repository.</param>
         /// <param name="userRepository">The user repository.</param>
-        /// <param name="fulfillApiClient">The fulfill API client.</param>
+        /// <param name="fulfillApiService">The fulfill API client.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="emailTemplateRepository">The email template repository.</param>
         /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
@@ -127,9 +127,9 @@
         /// <param name="offersRepository">The offers repository.</param>
         /// <param name="offersAttributeRepository">The offers attribute repository.</param>
         public HomeController(
-                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository)
+                        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository)
         {
-            this.apiClient = apiClient;
+            this.billingApiService = billingApiService;
             this.subscriptionRepo = subscriptionRepo;
             this.subscriptionLogRepository = subscriptionLogsRepo;
             this.planRepository = planRepository;
@@ -139,7 +139,7 @@
             this.applicationConfigRepository = applicationConfigRepository;
             this.userRepository = userRepository;
             this.userService = new UserService(userRepository);
-            this.fulfillApiClient = fulfillApiClient;
+            this.fulfillApiService = fulfillApiService;
             this.applicationLogRepository = applicationLogRepository;
             this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
             this.applicationConfigRepository = applicationConfigRepository;
@@ -154,7 +154,7 @@
             this.loggerFactory = loggerFactory;
 
             this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
-                                                                          fulfillApiClient,
+                                                                          fulfillApiService,
                                                                           subscriptionRepo,
                                                                           subscriptionLogsRepo,
                                                                           planRepository,
@@ -162,7 +162,7 @@
                                                                           loggerFactory.CreateLogger<PendingActivationStatusHandler>());
 
             this.pendingFulfillmentStatusHandlers = new PendingFulfillmentStatusHandler(
-                                                                           fulfillApiClient,
+                                                                           fulfillApiService,
                                                                            applicationConfigRepository,
                                                                            subscriptionRepo,
                                                                            subscriptionLogsRepo,
@@ -171,7 +171,7 @@
                                                                            this.loggerFactory.CreateLogger<PendingFulfillmentStatusHandler>());
 
             this.notificationStatusHandlers = new NotificationStatusHandler(
-                                                                        fulfillApiClient,
+                                                                        fulfillApiService,
                                                                         planRepository,
                                                                         applicationConfigRepository,
                                                                         emailTemplateRepository,
@@ -185,7 +185,7 @@
                                                                         this.loggerFactory.CreateLogger<NotificationStatusHandler>());
 
             this.unsubscribeStatusHandlers = new UnsubscribeStatusHandler(
-                                                                        fulfillApiClient,
+                                                                        fulfillApiService,
                                                                         subscriptionRepo,
                                                                         subscriptionLogsRepo,
                                                                         planRepository,
@@ -544,7 +544,7 @@
                     try
                     {
                         this.logger.LogInformation("EmitUsageEventAsync");
-                        meteringUsageResult = this.apiClient.EmitUsageEventAsync(subscriptionUsageRequest).ConfigureAwait(false).GetAwaiter().GetResult();
+                        meteringUsageResult = this.billingApiService.EmitUsageEventAsync(subscriptionUsageRequest).ConfigureAwait(false).GetAwaiter().GetResult();
                         responseJson = JsonSerializer.Serialize(meteringUsageResult);
                         this.logger.LogInformation(responseJson);
                     }
@@ -655,14 +655,14 @@
                     {
                         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
 
-                        var jsonResult = await this.fulfillApiClient.ChangePlanForSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false);
+                        var jsonResult = await this.fulfillApiService.ChangePlanForSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false);
 
                         var changePlanOperationStatus = OperationStatusEnum.InProgress;
                         if (jsonResult != null && jsonResult.OperationId != default)
                         {
                             while (OperationStatusEnum.InProgress.Equals(changePlanOperationStatus) || OperationStatusEnum.NotStarted.Equals(changePlanOperationStatus))
                             {
-                                var changePlanOperationResult = await this.fulfillApiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                var changePlanOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
                                 changePlanOperationStatus = changePlanOperationResult.Status;
                                 this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId));
                                 this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
@@ -725,14 +725,14 @@
 
                             var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
 
-                            var jsonResult = await this.fulfillApiClient.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
+                            var jsonResult = await this.fulfillApiService.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
 
                             var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
                             if (jsonResult != null && jsonResult.OperationId != default)
                             {
                                 while (OperationStatusEnum.InProgress.Equals(changeQuantityOperationStatus) || OperationStatusEnum.NotStarted.Equals(changeQuantityOperationStatus))
                                 {
-                                    var changeQuantityOperationResult = await this.fulfillApiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                    var changeQuantityOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
                                     changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
                                     this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(quantity));
