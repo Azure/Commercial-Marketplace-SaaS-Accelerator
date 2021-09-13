@@ -84,11 +84,13 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     #$PasswordCredential.Value = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
     $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
 
-    try {
-    $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" | %{ $_.AppId }
-    Write-Host "🔑  AAD Single Tenant Application ID:" $ADApplicationID    
+    try {    
+    $ADApplication = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
+    $ADObjectID = $ADApplication | %{ $_.ObjectId }
+    $ADApplicationID = $ADApplication | %{ $_.AppId }
+    Write-Host "🔑  AAD Single Tenant Object ID:" $ObjectID    
 
-    New-AzureADApplicationPasswordCredential -ObjectId $ADApplicationID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
+    New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
     Write-Host "🔑  ADApplicationID created."
     }
     catch [System.Net.WebException],[System.IO.IOException] {
