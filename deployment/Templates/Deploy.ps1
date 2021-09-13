@@ -16,7 +16,7 @@ Param(
    [string][Parameter(Mandatory)]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
    [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
-   [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
+   [string][Parameter(Mandatory)]$PathToARMTemplate  # Local Path to the ARM Template
 )
 
 Write-Host "Starting SaaS Accelerator Deployment..."
