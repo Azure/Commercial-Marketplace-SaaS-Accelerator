@@ -20,6 +20,8 @@ Param(
    [string][Parameter()]$RunningLocal  # Is this script running local?
 )
 
+Write-Host "Starting SaaS Accelerator Deployment..."
+
 # Record the current ADApps to reduce deployment instructions at the end
 $IsADApplicationIDProvided = $ADApplicationIDProvided
 $ISADMTApplicationIDProvided = $ADMTApplicationID
@@ -30,17 +32,23 @@ $ISADMTApplicationIDProvided = $ADMTApplicationID
 
 # Azure Login
 if(!($RunningLocal)) {
+Write-Host "Authenticating using device..."
 Connect-AzAccount -UseDeviceAuthentication
 } else {
+Write-Host "Authenticating using AzAccount authentication..."
 Connect-AzAccount
 }
-
+Write-Host "Connecting to AzureAD..."
 Connect-AzureAD
+Write-Host "All Authentications Connected."
 
 # Get TenantID if not set as argument
 if(!($TenantID)) {
     Get-AzTenant | Format-Table
     $TenantID = Read-Host -Prompt "Enter your TenantID: "  
+}
+else {
+    Write-Host "TenantID provided: $TenantID"
 }
                                                    
 # Get Azure Subscription
@@ -48,8 +56,13 @@ if(!($AzureSubscriptionID)) {
     Get-AzSubscription -TenantId $TenantID | Format-Table
     $AzureSubscriptionID = Read-Host -Prompt "Enter your SubscriptionID: "
 }
-Write-host "Select subscription : $AzureSubscriptionID"     
+else {
+    Write-Host "AzureSubscriptionID provided: $AzureSubscriptionID"
+}
+
+Write-Host "Selecting Azure Subscription..."
 Select-AzSubscription -SubscriptionId $AzureSubscriptionID
+Write-Host "Azure Subscription selected."
 
 # Create AAD App Registration
 
@@ -60,7 +73,7 @@ Select-AzSubscription -SubscriptionId $AzureSubscriptionID
 #$ADMTApplicationID = New-AzureADApplication -DisplayName "landingpageapp" -Oauth2RequirePostResponse $true -AvailableToOtherTenants $true -RequiredResourceAccess $req
 # if (!Test-Path 'env:ADApplicationID ') {
 if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App Registration
-    
+    Write-Host "Creating ADApplicationID..."
     $Guid = New-Guid
     $startDate = Get-Date
     $endDate = $startDate.AddYears(2)
@@ -76,7 +89,7 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     Write-Host "AAD Single Tenant Application ID:" $ADApplicationID    
 
     New-AzureADApplicationPasswordCredential -ObjectId $ADApplicationID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
-   
+    Write-Host "ADApplicationID created."
 }
 
 $restbody = "{ `"displayName`": `"LandingpageAppReg`"," `
@@ -102,8 +115,10 @@ $restbody = "{ `"displayName`": `"LandingpageAppReg`"," `
 Write-Host $restbody
 
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
+    Write-Host "Mapping Landing paged mapped to AppRegistration..."
     try {
         $landingpageLoginAppReg = $(az rest --method POST --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
+        Write-Host "Landing paged mapped to AppRegistration."
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         [Environment]::Exit(1)
