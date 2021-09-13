@@ -31,16 +31,16 @@ $ISADMTApplicationIDProvided = $ADMTApplicationID
 
 # Azure Login
 if($env:ACC_CLOUD) {
-    Write-Host "🔑 Authenticating using device..."
+    Write-Host "🔑  Authenticating using device..."
     #Connect-AzAccount -UseDeviceAuthentication
 } else {
-    Write-Host "🔑 Authenticating using AzAccount authentication..."
+    Write-Host "🔑  Authenticating using AzAccount authentication..."
     Connect-AzAccount
 }
 
-Write-Host "🔑 Connecting to AzureAD..."
-Start-Job -ScriptBlock { Connect-AzureAD }
-Write-Host "🔑 All Authentications Connected."
+Write-Host "🔑  Connecting to AzureAD..."
+# Connect-AzureAD -Confirm   # TODO: Make this command works.  It fails when running from withing the script. 
+Write-Host "🔑  All Authentications Connected."
 
 # Get TenantID if not set as argument
 if(!($TenantID)) {
@@ -48,7 +48,7 @@ if(!($TenantID)) {
     $TenantID = Read-Host -Prompt "Enter your TenantID: "  
 }
 else {
-    Write-Host "🔑 TenantID provided: $TenantID"
+    Write-Host "🔑  TenantID provided: $TenantID"
 }
                                                    
 # Get Azure Subscription
@@ -57,12 +57,12 @@ if(!($AzureSubscriptionID)) {
     $AzureSubscriptionID = Read-Host -Prompt "Enter your SubscriptionID: "
 }
 else {
-    Write-Host "🔑 AzureSubscriptionID provided: $AzureSubscriptionID"
+    Write-Host "🔑  AzureSubscriptionID provided: $AzureSubscriptionID"
 }
 
-Write-Host "🔑 Selecting Azure Subscription..."
+Write-Host "🔑  Selecting Azure Subscription..."
 Select-AzSubscription -SubscriptionId $AzureSubscriptionID
-Write-Host "🔑 Azure Subscription selected."
+Write-Host "🔑  Azure Subscription selected."
 
 # Create AAD App Registration
 
@@ -73,7 +73,7 @@ Write-Host "🔑 Azure Subscription selected."
 #$ADMTApplicationID = New-AzureADApplication -DisplayName "landingpageapp" -Oauth2RequirePostResponse $true -AvailableToOtherTenants $true -RequiredResourceAccess $req
 # if (!Test-Path 'env:ADApplicationID ') {
 if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App Registration
-    Write-Host "🔑 Creating ADApplicationID..."
+    Write-Host "🔑  Creating ADApplicationID..."
     $Guid = New-Guid
     $startDate = Get-Date
     $endDate = $startDate.AddYears(2)
@@ -86,10 +86,10 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
 
     try {
     $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" | %{ $_.ObjectId }
-    Write-Host "🔑 AAD Single Tenant Application ID:" $ADApplicationID    
+    Write-Host "🔑  AAD Single Tenant Application ID:" $ADApplicationID    
 
     New-AzureADApplicationPasswordCredential -ObjectId $ADApplicationID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
-    Write-Host "🔑 ADApplicationID created."
+    Write-Host "🔑  ADApplicationID created."
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         [Environment]::Exit(1)
@@ -105,7 +105,7 @@ $restbody = "{ `"displayName`": `"LandingpageAppReg`"," `
                   +"`"https://$WebAppNamePrefix-portal.azurewebsites.net`"," `
                   +"`"https://$WebAppNamePrefix-portal.azurewebsites.net/`"," `
                   +"`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index`"," `
-                  +"`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/`"" `
+                  +"`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/`"," `
                   +"`"https://$WebAppNamePrefix-admin.azurewebsites.net`"," `
                   +"`"https://$WebAppNamePrefix-admin.azurewebsites.net/`"," `
                   +"`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index`"," `
@@ -123,10 +123,10 @@ $restbody = "{ `"displayName`": `"LandingpageAppReg`"," `
 Write-Host $restbody
 
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
-    Write-Host "🔑 Mapping Landing paged mapped to AppRegistration..."
+    Write-Host "🔑  Mapping Landing paged mapped to AppRegistration..."
     try {
         $landingpageLoginAppReg = $(az rest --method POST --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
-        Write-Host "🔑 Landing paged mapped to AppRegistration."
+        Write-Host "🔑  Landing paged mapped to AppRegistration."
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         [Environment]::Exit(1)
@@ -159,7 +159,7 @@ $ContainerName = "packagefiles" #container name for uploading SQL DB file
 $BlobName = "blob"
 $resourceGroupForStorageAccount = "amptmpstorage"   #resource group name for the storage account.
 
-Write-host "📜 Creating a temporary resource group and storage account - $resourceGroupForStorageAccount"
+Write-host "📜  Creating a temporary resource group and storage account - $resourceGroupForStorageAccount"
 New-AzResourceGroup -Name $resourceGroupForStorageAccount -Location $location -Force
 New-AzStorageAccount -ResourceGroupName $resourceGroupForStorageAccount -Name $StorageAccountName -Location $location -SkuName Standard_LRS -Kind StorageV2
 $StorageAccountKey = @((Get-AzStorageAccountKey -ResourceGroupName $resourceGroupForStorageAccount -Name $StorageAccountName).Value)
@@ -172,20 +172,20 @@ Set-AzStorageBlobContent -File $LocalPathToBacpacFile -Container $ContainerName 
 
 $URLToBacpacFromStorage = (Get-AzStorageBlob -blob $BlobName -Container $ContainerName -Context $ctx).ICloudBlob.uri.AbsoluteUri
 
-Write-host "📜 Uploaded the bacpac file to $URLToBacpacFromStorage"    
+Write-host "📜  Uploaded the bacpac file to $URLToBacpacFromStorage"    
 
 
-Write-host "☁ Prepare publish files for the web application"
+Write-host "☁  Prepare publish files for the web application"
 
-Write-host "☁ Preparing the publish files for PublisherPortal"  
+Write-host "☁  Preparing the publish files for PublisherPortal"  
 dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
 Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
 
-Write-host "☁ Preparing the publish files for CustomerPortal"
+Write-host "☁  Preparing the publish files for CustomerPortal"
 dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
 Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Publish\CustomerPortal.zip -Force
 
-Write-host "☁ Upload web application files to storage account"
+Write-host "☁  Upload web application files to storage account"
 Set-AzStorageBlobContent -File "..\..\Publish\PublisherPortal.zip" -Container $ContainerName -Blob "PublisherPortal.zip" -Context $ctx -Force
 Set-AzStorageBlobContent -File "..\..\Publish\CustomerPortal.zip" -Container $ContainerName -Blob "CustomerPortal.zip" -Context $ctx -Force
 
@@ -214,18 +214,18 @@ $ARMTemplateParams = @{
 # Create RG if not exists
 New-AzResourceGroup -Name $ResourceGroupForDeployment -Location $location -Force
 
-Write-host "📜 Deploying the ARM template to set up resources"
+Write-host "📜  Deploying the ARM template to set up resources"
 # Deploy resources using ARM template
 New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -TemplateFile $PathToARMTemplate -TemplateParameterObject $ARMTemplateParams
 
 
-Write-host "🧹 Cleaning things up!"
+Write-host "🧹  Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
 Remove-AzResourceGroup -Name $resourceGroupForStorageAccount -Force 
 Remove-Item –path $TempFolderToStoreBacpac –recurse -Force
 Remove-Item -path ["..\..\Publish"] -recurse -Force
 
-Write-host "🏁 If the intallation completed without error complete the folllowing checklist:\n"
+Write-host "🏁  If the intallation completed without error complete the folllowing checklist:"
 if ($ISADMTApplicationIDProvided) {  #If provided then show the user where to add the landing page in AAD, otherwise script did this already for the user.
 Write-host "__ Add The following URLs to the multi-tenant AAD App Registration in Azure Portal:"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net"
