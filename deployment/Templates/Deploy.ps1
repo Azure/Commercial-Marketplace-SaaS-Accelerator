@@ -32,12 +32,13 @@ $ISADMTApplicationIDProvided = $ADMTApplicationID
 
 # Azure Login
 if(!($RunningLocal)) {
-Write-Host "Authenticating using device..."
-Connect-AzAccount -UseDeviceAuthentication
+    Write-Host "Authenticating using device..."
+    #Connect-AzAccount -UseDeviceAuthentication
 } else {
-Write-Host "Authenticating using AzAccount authentication..."
-Connect-AzAccount
+    Write-Host "Authenticating using AzAccount authentication..."
+    Connect-AzAccount
 }
+
 Write-Host "Connecting to AzureAD..."
 Connect-AzureAD
 Write-Host "All Authentications Connected."
@@ -84,11 +85,16 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     #$PasswordCredential.Value = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
     $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
 
+    try {
     $ADApplicationID = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp" | %{ $_.ObjectId }
     Write-Host "AAD Single Tenant Application ID:" $ADApplicationID    
 
     New-AzureADApplicationPasswordCredential -ObjectId $ADApplicationID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
     Write-Host "ADApplicationID created."
+    }
+    catch [System.Net.WebException],[System.IO.IOException] {
+        [Environment]::Exit(1)
+    }
 }
 
 $restbody = "{ `"displayName`": `"LandingpageAppReg`"," `
