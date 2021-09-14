@@ -9,8 +9,7 @@ namespace Microsoft.Marketplace.SaasKit.UnitTest
     using Microsoft.Extensions.Configuration;
     using Microsoft.Marketplace.SaaS;
     using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -64,7 +63,7 @@ namespace Microsoft.Marketplace.SaasKit.UnitTest
         /// Gets the subscription by identifier exception.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [ExpectedException(typeof(FulfillmentException), "Subscription Not Found")]
+        [ExpectedException(typeof(MarketplaceException), "Subscription Not Found")]
         [TestMethod]
         public async Task GetSubscriptionByIDException()
         {

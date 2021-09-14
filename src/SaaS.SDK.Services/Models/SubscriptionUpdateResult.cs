@@ -4,6 +4,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     using System;
     using Microsoft.Marketplace.SaaS.SDK.Services.Attributes;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
 
     /// <summary>
     /// Subscription Update Result.
@@ -41,7 +42,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
                 Guid operationGuid;
                 if (!Guid.TryParse(OperationIdFromClientLib, out operationGuid))
                 {
-                    throw new FulfillmentException("Returned operation ID is not a Guid", SaasApiErrorCode.NotFound);
+                    throw new MarketplaceException("Returned operation ID is not a Guid", SaasApiErrorCode.NotFound);
                 }
 
                 return operationGuid;

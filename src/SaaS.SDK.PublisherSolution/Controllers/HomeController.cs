@@ -548,7 +548,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         responseJson = JsonSerializer.Serialize(meteringUsageResult);
                         this.logger.LogInformation(responseJson);
                     }
-                    catch (MeteredBillingException mex)
+                    catch (MarketplaceException mex)
                     {
                         responseJson = JsonSerializer.Serialize(mex.MeteredBillingErrorDetail);
                         meteringUsageResult.Status = mex.ErrorCode;
@@ -688,7 +688,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             }
                         }
                     }
-                    catch (FulfillmentException fex)
+                    catch (MarketplaceException fex)
                     {
                         this.TempData["ErrorMsg"] = fex.Message;
                     }
@@ -760,7 +760,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                                 }
                             }
                         }
-                        catch (FulfillmentException fex)
+                        catch (MarketplaceException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
                             this.logger.LogError("Message:{0} :: {1}   ", fex.Message, fex.InnerException);

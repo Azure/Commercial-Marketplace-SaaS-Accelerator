@@ -13,6 +13,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
@@ -565,7 +566,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                     this.pendingFulfillmentStatusHandlers.Process(subscriptionId);
                                 }
                             }
-                            catch (FulfillmentException fex)
+                            catch (MarketplaceException fex)
                             {
                                 this.logger.LogInformation(fex.Message);
                             }
@@ -671,7 +672,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                 }
                             }
                         }
-                        catch (FulfillmentException fex)
+                        catch (MarketplaceException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
                         }
@@ -746,7 +747,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                 }
                             }
                         }
-                        catch (FulfillmentException fex)
+                        catch (MarketplaceException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
                             this.logger.LogError("Message:{0} :: {1}   ", fex.Message, fex.InnerException);

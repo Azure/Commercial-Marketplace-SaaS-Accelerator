@@ -31,5 +31,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// Pending Activation
         /// </summary>
         PendingActivation,
+
+        /// <summary>
+        /// Pending Activation
+        /// </summary>
+        Suspended,
     }
 }

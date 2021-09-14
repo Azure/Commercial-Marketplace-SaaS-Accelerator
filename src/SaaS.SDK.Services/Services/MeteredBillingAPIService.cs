@@ -16,7 +16,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
     /// Metered Api Client.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IMeteredBillingApiService" />
-    public class MeteredBillingApiService : IMeteredBillingApiService
+    public class MeteredBillingApiService : BaseApiService, IMeteredBillingApiService
     {
         /// <summary>
         /// Gets or sets the logger.
@@ -47,7 +47,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// </summary>
         /// <param name="sdkSettings">The SDK settings.</param>
         /// <param name="logger">The logger.</param>
-        public MeteredBillingApiService(IMarketplaceMeteringClient meteringClient, SaaSApiClientConfiguration sdkSettings, ILogger logger)
+        public MeteredBillingApiService(IMarketplaceMeteringClient meteringClient, SaaSApiClientConfiguration sdkSettings, ILogger logger):base(logger)
         {
             this.meteringClient = meteringClient;
             this.ClientConfiguration = sdkSettings;
@@ -74,7 +74,15 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 EffectiveStartTime = subscriptionUsageRequest.EffectiveStartTime,
             };
 
-            var updateResult = (await this.meteringClient.Metering.PostUsageEventAsync(usage)).Value;
+            try
+            {
+                var updateResult = (await this.meteringClient.Metering.PostUsageEventAsync(usage)).Value;
+            }
+            catch (Exception ex)
+            {
+                this.ProcessErrorResponse(MarketplaceActionEnum.SUBSCRIPTION_USAGEEVENT, ex);
+                return null;
+            }
 
             return new MeteringUsageResult();
         }
@@ -102,7 +110,16 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                     EffectiveStartTime = usage.EffectiveStartTime,
                 });
             }
-            var updateResult = (await this.meteringClient.Metering.PostBatchUsageEventAsync(batchUsageEvent)).Value;
+
+            try
+            {
+                var updateResult = (await this.meteringClient.Metering.PostBatchUsageEventAsync(batchUsageEvent)).Value;
+            }
+            catch (Exception ex)
+            {
+                this.ProcessErrorResponse(MarketplaceActionEnum.SUBSCRIPTION_BATCHUSAGEEVENT, ex);
+                return null;
+            }
 
             return new MeteringBatchUsageResult();
         }

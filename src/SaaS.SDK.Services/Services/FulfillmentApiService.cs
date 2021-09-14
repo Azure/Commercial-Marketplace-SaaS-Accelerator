@@ -12,12 +12,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
     using SaaS.Models;
     using global::Azure;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
 
     /// <summary>
     /// Fulfillment API Client Action-List For Subscriptions.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IFulfilmentApiClient" />
-    public class FulfillmentApiService : IFulfillmentApiService
+    public class FulfillmentApiService : BaseApiService, IFulfillmentApiService
     {
 
 
@@ -52,7 +53,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <param name="logger">The logger.</param>
         public FulfillmentApiService(IMarketplaceSaaSClient marketplaceClient,
                                     SaaSApiClientConfiguration sdkSettings,
-                                    ILogger logger)
+                                    ILogger logger) : base(logger)
         {
             this.marketplaceClient = marketplaceClient;
             this.ClientConfiguration = sdkSettings;
@@ -139,7 +140,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 try
                 {
                     var availablePlans = (await this.marketplaceClient.Fulfillment.ListAvailablePlansAsync(subscriptionId)).Value;
-                    return availablePlans.planResults();
+                    return availablePlans.Plans.planResults();
                 }
                 catch (RequestFailedException ex)
                 {
@@ -148,7 +149,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 }
             }
 
-            throw new FulfillmentException("Invalid subscription ID", SaasApiErrorCode.BadRequest);
+            throw new MarketplaceException("Invalid subscription ID", SaasApiErrorCode.BadRequest);
         }
 
         /// <summary>
@@ -170,14 +171,14 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                     var operationId = await this.marketplaceClient.Fulfillment.UpdateSubscriptionAsync(subscriptionId, new SubscriberPlan { PlanId = subscriptionPlanID });
                     return new SubscriptionUpdateResult() { OperationIdFromClientLib = operationId };
                 }
-                catch (RequestFailedException ex)
+                catch (Exception ex)
                 {
                     this.ProcessErrorResponse(MarketplaceActionEnum.CHANGE_PLAN, ex);
                     return null;
                 }
             }
 
-            throw new FulfillmentException("Invalid subscription ID", SaasApiErrorCode.BadRequest);
+            throw new MarketplaceException("Invalid subscription ID", SaasApiErrorCode.BadRequest);
         }
 
         /// <summary>
@@ -206,7 +207,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 }
             }
 
-            throw new FulfillmentException("Invalid subscription ID", SaasApiErrorCode.BadRequest);
+            throw new MarketplaceException("Invalid subscription ID", SaasApiErrorCode.BadRequest);
         }
 
         /// <summary>
@@ -278,59 +279,53 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             }
         }
 
-        private void ProcessErrorResponse(MarketplaceActionEnum marketplaceAction, RequestFailedException ex)
-        {
-            this.Logger?.Error(string.Format($"An error occurred while processing client library request : {nameof(marketplaceAction)} - {ex.ToString()}"));
+        //private void ProcessErrorResponse(MarketplaceActionEnum marketplaceAction, Exception ex)
+        //{
+        //    int statusCode =0;
+        //    if(ex.InnerException != null && ex.InnerException is Identity.Client.MsalServiceException msalInnerException)
+        //    {
+        //        statusCode = msalInnerException.StatusCode;
+        //    }
+        //    else if(ex is RequestFailedException reqFailedInnerException)
+        //    {
+        //        statusCode = reqFailedInnerException.Status;
+        //    }
 
-            //var httpResponse = ex.;
-            //if (httpResponse != null)
-            //{
-            //    var webresponse = httpResponse as System.Net.HttpWebResponse;
-            //    if (webresponse != null)
-            //    {
-            //        this.Logger?.Info("Error :: " + new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
-            //        if (webresponse.StatusCode == HttpStatusCode.Unauthorized || webresponse.StatusCode == HttpStatusCode.Forbidden)
-            //        {
-            //            throw new FulfillmentException("Token expired or invalid. Please try again.", SaasApiErrorCode.Unauthorized);
-            //        }
-            //        else if (webresponse.StatusCode == HttpStatusCode.NotFound)
-            //        {
-            //            this.Logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Not Found" }));
-            //            throw new FulfillmentException(string.Format("Unable to find the request {0}", url), SaasApiErrorCode.NotFound);
-            //        }
-            //        else if (webresponse.StatusCode == HttpStatusCode.Conflict)
-            //        {
-            //            this.Logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Conflict" }));
-            //            throw new FulfillmentException(string.Format("Conflict came for {0}", url), SaasApiErrorCode.Conflict);
-            //        }
-            //        else if (webresponse.StatusCode == HttpStatusCode.BadRequest)
-            //        {
-            //            this.Logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Bad Request" }));
-            //            throw new FulfillmentException(string.Format("Unable to process the request {0}, server responding as BadRequest. Please verify the post data. ", url), SaasApiErrorCode.BadRequest);
-            //        }
-            //    }
-            //}
+        //    if (statusCode != 0)
+        //    {
+        //        Enum.TryParse<HttpStatusCode>(statusCode.ToString(), out HttpStatusCode httpStatusCode);
 
-            //if (httpResponse != null && httpResponse.GetResponseStream() != null)
-            //{
-            //    using (StreamReader reader = new StreamReader(httpResponse.GetResponseStream()))
-            //    {
-            //        var responseAsString = reader.ReadToEnd();
-            //        var errorFromAPI = JsonSerializer.Deserialize<FulfillmentErrorResult>(responseAsString);
+        //        this.Logger?.Error("Error while completing the request as " + JsonSerializer.Serialize(new { Error = ex.Message, }));
 
-            //        this.Logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = responseAsString }));
+        //        if (httpStatusCode == HttpStatusCode.Unauthorized || httpStatusCode == HttpStatusCode.Forbidden)
+        //        {
+        //            throw new FulfillmentException("Token invalid or expired. Please try again.", SaasApiErrorCode.Unauthorized);
+        //        }
+        //        else if (httpStatusCode == HttpStatusCode.NotFound)
+        //        {
+        //            this.Logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Not Found" }));
+        //            throw new FulfillmentException(string.Format("Unable to find the request {0}", marketplaceAction), SaasApiErrorCode.NotFound);
+        //        }
+        //        else if (httpStatusCode == HttpStatusCode.Conflict)
+        //        {
+        //            this.Logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Conflict" }));
+        //            throw new FulfillmentException(string.Format("Conflict came for {0}", marketplaceAction), SaasApiErrorCode.Conflict);
+        //        }
+        //        else if (httpStatusCode == HttpStatusCode.BadRequest)
+        //        {
+        //            this.Logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Bad Request" }));
+        //            throw new FulfillmentException(string.Format("Unable to process the request {0}, server responding as BadRequest. Please verify the post data. ", marketplaceAction), SaasApiErrorCode.BadRequest);
+        //        }
+        //        else
+        //        {
+        //            this.Logger?.Warn("Returning the error as " + JsonSerializer.Serialize(new { Error = "Unknown Error" }));
+        //            throw new FulfillmentException(string.Format("Unable to process the request {0}, server responding as BadRequest. Please verify the post data. ", marketplaceAction), httpStatusCode.ToString());
+        //        }
+        //    }
 
-            //        throw new FulfillmentException(errorFromAPI.Error.Message, SaasApiErrorCode.InternalServerError);
-            //    }
-            //}
-
-            //this.logger?.Error("Error while completing the request as " + JsonSerializer.Serialize(new
-            //{
-            //    Error = httpResponse,
-            //}));
-
-            //return null;
-        }
+        //    this.Logger?.Error("Error while completing the request as " + JsonSerializer.Serialize(new { Error = ex.Message, }));
+        //    throw new FulfillmentException("Something went wrong, please check logs!");
+        //}
 
         /// <summary>
         /// Gets the saas application URL.
