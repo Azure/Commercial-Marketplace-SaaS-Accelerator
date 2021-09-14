@@ -68,6 +68,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 AdAuthenticationEndPoint = this.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
                 ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
                 ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
+                MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],                
                 FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
                 FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
                 GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
@@ -83,17 +84,17 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-           .AddOpenIdConnect(options =>
-           {
-               options.Authority = $"{config.AdAuthenticationEndPoint}/common";
-               options.ClientId = config.ClientId;
-               options.ResponseType = OpenIdConnectResponseType.IdToken;
-               options.CallbackPath = "/Home/Index";
-               options.SignedOutRedirectUri = config.SignedOutRedirectUri;
-               options.TokenValidationParameters.NameClaimType = "name";
-               options.TokenValidationParameters.ValidateIssuer = false;
-           })
-           .AddCookie();
+   .AddOpenIdConnect(options =>
+   {
+       options.Authority = $"{config.AdAuthenticationEndPoint}/common";
+       options.ClientId = config.MTClientId;
+       options.ResponseType = OpenIdConnectResponseType.IdToken;
+       options.CallbackPath = "/Home/Index";
+       options.SignedOutRedirectUri = config.SignedOutRedirectUri;
+       options.TokenValidationParameters.NameClaimType = "name";
+       options.TokenValidationParameters.ValidateIssuer = false;
+   })
+   .AddCookie();
 
             var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
             services.AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()));

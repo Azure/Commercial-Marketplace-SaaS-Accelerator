@@ -26,6 +26,12 @@
         "description": "Secret key of the AD Application"
       }
     },
+    "ADMTApplicationID": {
+      "type": "string",
+      "metadata": {
+        "description": "The value should match the value provided for Single Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center"
+      }
+    },
     "SQLServerName": {
       "type": "string",
       "metadata": {
@@ -216,6 +222,11 @@
             {
               "name": "SaaSApiConfiguration__ClientSecret",
               "value": "[parameters('ADApplicationSecret')]",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__MTClientId",
+              "value": "[parameters('ADMTApplicationID')]",
               "slotSetting": false
             },
             {
