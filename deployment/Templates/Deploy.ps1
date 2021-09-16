@@ -1,4 +1,7 @@
-﻿#
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE file in the project root for license information.
+
+#
 # Powershell script to deploy the resources - Customer portal, Publisher portal and the Azure SQL Database
 #
 
