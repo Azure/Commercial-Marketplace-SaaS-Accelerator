@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
     using System;
     using System.Collections.Generic;
@@ -7,8 +9,6 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Models;
-    using SaasKitModels = Microsoft.Marketplace.SaasKit.Models;
 
     /// <summary>
     /// Subscriptions Service.
@@ -48,7 +48,7 @@
         /// </summary>
         /// <param name="subscriptionDetail">The subscription detail.</param>
         /// <returns>Subscription Id.</returns>
-        public int AddOrUpdatePartnerSubscriptions(SaasKitModels.SubscriptionResult subscriptionDetail)
+        public int AddOrUpdatePartnerSubscriptions(SubscriptionResult subscriptionDetail)
         {
             var isActive = this.IsSubscriptionDeleted(Convert.ToString(subscriptionDetail.SaasSubscriptionStatus));
             Subscriptions newSubscription = new Subscriptions()
@@ -249,12 +249,12 @@
         /// Get the plan details for subscription.
         /// </summary>
         /// <returns> Plan Details.</returns>
-        public List<SaasKitModels.PlanDetailResult> GetAllSubscriptionPlans()
+        public List<PlanDetailResult> GetAllSubscriptionPlans()
         {
             var allPlans = this.planRepository.Get();
 
             return (from plan in allPlans
-                    select new SaasKitModels.PlanDetailResult()
+                    select new PlanDetailResult()
                     {
                         Id = plan.Id,
                         PlanId = plan.PlanId,

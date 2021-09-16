@@ -1,13 +1,16 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
 namespace Microsoft.Marketplace.SaasKit.UnitTest
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using global::Azure.Identity;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Marketplace.SaasKit.Configurations;
-    using Microsoft.Marketplace.SaasKit.Helpers;
-    using Microsoft.Marketplace.SaasKit.Models;
-    using Microsoft.Marketplace.SaasKit.Services;
+    using Microsoft.Marketplace.SaaS;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
@@ -19,7 +22,7 @@ namespace Microsoft.Marketplace.SaasKit.UnitTest
         /// <summary>
         /// The client.
         /// </summary>
-        private FulfillmentApiClient client;
+        private FulfillmentApiService fulfillApiService;
 
         /// <summary>
         /// The configuration.
@@ -38,19 +41,8 @@ namespace Microsoft.Marketplace.SaasKit.UnitTest
                .Build();
 
             this.configuration = config.GetSection("AppSetting").Get<SaaSApiClientConfiguration>();
-            this.client = new FulfillmentApiClient(this.configuration, null);
-        }
-
-        /// <summary>
-        /// Checks the authentication.
-        /// </summary>
-        /// <returns> Check Authentication.</returns>
-        [TestMethod]
-        public async Task CheckAuthentication()
-        {
-            var accessTokenResult = await ADAuthenticationHelper.GetAccessToken(this.configuration).ConfigureAwait(false);
-            Assert.IsNotNull(accessTokenResult);
-            Assert.IsNotNull(accessTokenResult?.AccessToken);
+            var creds = new ClientSecretCredential(configuration.TenantId.ToString(), configuration.ClientId.ToString(), configuration.ClientSecret);
+            this.fulfillApiService = new FulfillmentApiService(new MarketplaceSaaSClient(creds), sdkSettings:this.configuration, null);
         }
 
         /// <summary>
@@ -60,9 +52,9 @@ namespace Microsoft.Marketplace.SaasKit.UnitTest
         [TestMethod]
         public async Task GetSubscriptionByID()
         {
-            var allSubscriptions = await this.client.GetAllSubscriptionAsync().ConfigureAwait(false);
+            var allSubscriptions = await this.fulfillApiService.GetAllSubscriptionAsync().ConfigureAwait(false);
             var subscriptionId = allSubscriptions.FirstOrDefault().Id;
-            var subscriptionDetail = await this.client.GetSubscriptionByIdAsync(subscriptionId);
+            var subscriptionDetail = await this.fulfillApiService.GetSubscriptionByIdAsync(subscriptionId);
             Assert.IsNotNull(subscriptionDetail);
             Assert.AreEqual(subscriptionId, subscriptionDetail?.Id);
         }
@@ -71,12 +63,12 @@ namespace Microsoft.Marketplace.SaasKit.UnitTest
         /// Gets the subscription by identifier exception.
         /// </summary>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [ExpectedException(typeof(FulfillmentException), "Subscription Not Found")]
+        [ExpectedException(typeof(MarketplaceException), "Subscription Not Found")]
         [TestMethod]
         public async Task GetSubscriptionByIDException()
         {
             var subscriptionId = Guid.NewGuid();
-            _ = await this.client.GetSubscriptionByIdAsync(subscriptionId);
+            _ = await this.fulfillApiService.GetSubscriptionByIdAsync(subscriptionId);
         }
     }
 }

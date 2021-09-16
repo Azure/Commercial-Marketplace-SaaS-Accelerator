@@ -27,11 +27,12 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
+	<PackageReference Include="Ercenk.Microsoft.Marketplace" Version="1.0.0-preview5" />
+	<PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.11.0-1.final" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj" />
-    <ProjectReference Include="..\SaaS.SDK.Client\SaaS.SDK.Client.csproj" />
     <ProjectReference Include="..\SaaS.SDK.Services\SaaS.SDK.Provisioning.Services.csproj" />
   </ItemGroup>
 
