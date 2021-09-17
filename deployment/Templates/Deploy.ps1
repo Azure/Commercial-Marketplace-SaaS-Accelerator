@@ -101,29 +101,29 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     }
 }
 
-$restbody = `
-"{ `"displayName`": `"LandingpageAppReg`"," `
-" `"api`":{`"requestedAccessTokenVersion`": 2}," `
-" `"signInAudience`" : `"AzureADandPersonalMicrosoftAccount`"," `
-" `"web`": " `
-"{ `"redirectUris`": " `
-"[" `
-"`"https://$WebAppNamePrefix-portal.azurewebsites.net`"," `
-"`"https://$WebAppNamePrefix-portal.azurewebsites.net/`"," `
-"`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index`"," `
-"`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/`"," `
-"`"https://$WebAppNamePrefix-admin.azurewebsites.net`"," `
-"`"https://$WebAppNamePrefix-admin.azurewebsites.net/`"," `
-"`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index`"," `
-"`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/`"" `
-"]," `
-" `"logoutUrl`": `"https://$WebAppNamePrefix-portal.azurewebsites.net/logout`"," `
-"`"implicitGrantSettings`": " `
-"{ `"enableIdTokenIssuance`": true }}," `
-" `"requiredResourceAccess`": " `
-" [{`"resourceAppId`": `"00000003-0000-0000-c000-000000000000`", " `
-" `"resourceAccess`": " `
-" [{ `"id`": `"$ADApplicationID`"," `
+$restbody = "" +`
+"{ `"displayName`": `"LandingpageAppReg`"," +`
+" `"api`":{`"requestedAccessTokenVersion`": 2}," +`
+" `"signInAudience`" : `"AzureADandPersonalMicrosoftAccount`"," +`
+" `"web`": " +`
+"{ `"redirectUris`": " +`
+"[" +`
+"`"https://$WebAppNamePrefix-portal.azurewebsites.net`"," +`
+"`"https://$WebAppNamePrefix-portal.azurewebsites.net/`"," +`
+"`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index`"," +`
+"`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/`"," +`
+"`"https://$WebAppNamePrefix-admin.azurewebsites.net`"," +`
+"`"https://$WebAppNamePrefix-admin.azurewebsites.net/`"," +`
+"`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index`"," +`
+"`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/`"" +`
+"]," +`
+" `"logoutUrl`": `"https://$WebAppNamePrefix-portal.azurewebsites.net/logout`"," +`
+"`"implicitGrantSettings`": " +`
+"{ `"enableIdTokenIssuance`": true }}," +`
+" `"requiredResourceAccess`": " +`
+" [{`"resourceAppId`": `"00000003-0000-0000-c000-000000000000`", " +`
+" `"resourceAccess`": " +`
+" [{ `"id`": `"$ADApplicationID`"," +`
 " `"type`": `"Scope`" }]}] }" 
 
 Write-Host $restbody
@@ -131,7 +131,7 @@ Write-Host $restbody
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
     Write-Host "🔑  Mapping Landing paged mapped to AppRegistration..."
     try {
-        $landingpageLoginAppReg = $(az rest --method POST --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
+        $landingpageLoginAppReg = $(az rest --method POST  --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
         Write-Host "🔑  Landing paged mapped to AppRegistration."
     }
     catch [System.Net.WebException],[System.IO.IOException] {
