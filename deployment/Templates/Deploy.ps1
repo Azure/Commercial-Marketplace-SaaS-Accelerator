@@ -102,29 +102,31 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
 }
 
 $restbody = "" +`
-"{ `"displayName`": `"LandingpageAppReg`"," +`
-" `"api`":{`"requestedAccessTokenVersion`": 2}," +`
-" `"signInAudience`" : `"AzureADandPersonalMicrosoftAccount`"," +`
-" `"web`": " +`
-"{ `"redirectUris`": " +`
+"{ \`"displayName\`": \`"LandingpageAppReg\`"," +`
+" \`"api\`":{\`"requestedAccessTokenVersion\`": 2}," +`
+" \`"signInAudience\`" : \`"AzureADandPersonalMicrosoftAccount\`"," +`
+" \`"web\`": " +`
+"{ \`"redirectUris\`": " +`
 "[" +`
-"`"https://$WebAppNamePrefix-portal.azurewebsites.net`"," +`
-"`"https://$WebAppNamePrefix-portal.azurewebsites.net/`"," +`
-"`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index`"," +`
-"`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/`"," +`
-"`"https://$WebAppNamePrefix-admin.azurewebsites.net`"," +`
-"`"https://$WebAppNamePrefix-admin.azurewebsites.net/`"," +`
-"`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index`"," +`
-"`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/`"" +`
+"\`"https://$WebAppNamePrefix-portal.azurewebsites.net\`"," +`
+"\`"https://$WebAppNamePrefix-portal.azurewebsites.net/\`"," +`
+"\`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index\`"," +`
+"\`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/\`"," +`
+"\`"https://$WebAppNamePrefix-admin.azurewebsites.net\`"," +`
+"\`"https://$WebAppNamePrefix-admin.azurewebsites.net/\`"," +`
+"\`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index\`"," +`
+"\`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/\`"" +`
 "]," +`
-" `"logoutUrl`": `"https://$WebAppNamePrefix-portal.azurewebsites.net/logout`"," +`
-"`"implicitGrantSettings`": " +`
-"{ `"enableIdTokenIssuance`": true }}," +`
-" `"requiredResourceAccess`": " +`
-" [{`"resourceAppId`": `"00000003-0000-0000-c000-000000000000`", " +`
-" `"resourceAccess`": " +`
-" [{ `"id`": `"$ADApplicationID`"," +`
-" `"type`": `"Scope`" }]}] }" 
+" \`"logoutUrl\`": \`"https://$WebAppNamePrefix-portal.azurewebsites.net/logout\`"," +`
+"\`"implicitGrantSettings\`": " +`
+"{ \`"enableIdTokenIssuance\`": true }}," +`
+" \`"requiredResourceAccess\`": " +`
+" [{\`"resourceAppId\`": \`"00000003-0000-0000-c000-000000000000\`", " +`
+" \`"resourceAccess\`": " +`
+" [{ \`"id\`": \`"$ADApplicationID\`"," +`
+" \`"type\`": \`"Scope\`" }]}] }" 
+
+
 
 Write-Host $restbody
 
