@@ -91,7 +91,8 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     $ADApplication = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
     $ADObjectID = $ADApplication | %{ $_.ObjectId }
     $ADApplicationID = $ADApplication | %{ $_.AppId }
-    Write-Host "🔑  AAD Single Tenant Object ID:" $ObjectID    
+    Write-Host "🔑  AAD Single Tenant Object ID:" $ADObjectID    
+    Write-Host "🔑  AAD Single Tenant Object ID:" $ADApplicationID  
 
     New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
     Write-Host "🔑  ADApplicationID created."
@@ -102,7 +103,7 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
 }
 
 $restbody = "" +`
-"{ \`"displayName\`": \`"LandingpageAppReg\`"," +`
+"{ \`"displayName\`": \`"$WebAppNamePrefix-LandingpageAppReg\`"," +`
 " \`"api\`":{\`"requestedAccessTokenVersion\`": 2}," +`
 " \`"signInAudience\`" : \`"AzureADandPersonalMicrosoftAccount\`"," +`
 " \`"web\`": " +`
@@ -123,7 +124,7 @@ $restbody = "" +`
 " \`"requiredResourceAccess\`": " +`
 " [{\`"resourceAppId\`": \`"00000003-0000-0000-c000-000000000000\`", " +`
 " \`"resourceAccess\`": " +`
-" [{ \`"id\`": \`"$ADApplicationID\`"," +`
+" [{ \`"id\`": \`"e1fe6dd8-ba31-4d61-89e7-88639da4683d\`"," +`
 " \`"type\`": \`"Scope\`" }]}] }" 
 
 
