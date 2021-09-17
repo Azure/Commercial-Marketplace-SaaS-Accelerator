@@ -45,19 +45,22 @@ Write-Host "🔑  Connecting to AzureAD..."
 # Connect-AzureAD -Confirm   # TODO: Make this command works.  It fails when running from withing the script. 
 Write-Host "🔑  All Authentications Connected."
 
+$currentContext = get-AzureRMContext
+$currentTenant = $currentContext.Account.ExtendedProperties.Tenants
+$currentSubscription = $currentContext.Account.ExtendedProperties.Subscriptions
 # Get TenantID if not set as argument
-if(!($TenantID)) {
+if(!($TenantID)) {    
     Get-AzTenant | Format-Table
-    $TenantID = Read-Host -Prompt "Enter your TenantID: "  
+    if (!($TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }    
 }
 else {
     Write-Host "🔑  TenantID provided: $TenantID"
 }
                                                    
 # Get Azure Subscription
-if(!($AzureSubscriptionID)) {
+if(!($AzureSubscriptionID)) {    
     Get-AzSubscription -TenantId $TenantID | Format-Table
-    $AzureSubscriptionID = Read-Host -Prompt "Enter your SubscriptionID: "
+    if (!($AzureSubscriptionID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentSubscription]")) { $AzureSubscriptionID = $currentSubscription }
 }
 else {
     Write-Host "🔑  AzureSubscriptionID provided: $AzureSubscriptionID"
