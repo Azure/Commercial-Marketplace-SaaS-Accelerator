@@ -136,7 +136,7 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
     try {
         $landingpageLoginAppReg = $(az rest --method POST  --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
         Write-Host "$landingpageLoginAppReg"
-        $ADMTApplicationID = $landingpageLoginAppReg | jq .lappID
+        $ADMTApplicationID = $landingpageLoginAppReg | jq .lappID | %{$_ -replace '"',''}
         Write-Host "🔑  Landing paged mapped to AppRegistration: $ADMTApplicationID"
     }
     catch [System.Net.WebException],[System.IO.IOException] {
