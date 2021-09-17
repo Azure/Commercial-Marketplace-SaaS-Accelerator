@@ -92,7 +92,7 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     $ADObjectID = $ADApplication | %{ $_.ObjectId }
     $ADApplicationID = $ADApplication | %{ $_.AppId }
     Write-Host "🔑  AAD Single Tenant Object ID:" $ADObjectID    
-    Write-Host "🔑  AAD Single Tenant Object ID:" $ADApplicationID  
+    Write-Host "🔑  AAD Single Tenant Application ID:" $ADApplicationID  
 
     New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
     Write-Host "🔑  ADApplicationID created."
