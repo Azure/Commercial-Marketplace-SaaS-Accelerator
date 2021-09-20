@@ -74,11 +74,6 @@ Write-Host "🔑  Azure Subscription selected."
 # Create AAD App Registration
 
 # AAD App Registration - Create Multi-Tenant App Registration Requst
-#$req = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
-#$req.ResourceAccess = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "e1fe6dd8-ba31-4d61-89e7-88639da4683d","Scope"
-#$req.ResourceAppId = "00000003-0000-0000-c000-000000000000"
-#$ADMTApplicationID = New-AzureADApplication -DisplayName "landingpageapp" -Oauth2RequirePostResponse $true -AvailableToOtherTenants $true -RequiredResourceAccess $req
-# if (!Test-Path 'env:ADApplicationID ') {
 if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App Registration
     Write-Host "🔑  Creating ADApplicationID..."
     $Guid = New-Guid
