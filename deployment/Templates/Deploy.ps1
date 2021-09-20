@@ -145,10 +145,10 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
 
 # Download Publisher logo
 if($LogoURLpng) { 
-    Write-Host "📷 Downloading logo images..."
+    Write-Host "📷  Downloading logo images..."
     Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\contoso-sales.png"
     Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.PublisherSolution\wwwroot\contoso-sales.png"
-    Write-Host "📷 Logo images downloaded."
+    Write-Host "📷  Logo images downloaded."
 }
 
 # Setup Bacpac
@@ -170,7 +170,7 @@ $ContainerName = "packagefiles" #container name for uploading SQL DB file
 $BlobName = "blob"
 $resourceGroupForStorageAccount = "amptmpstorage"   #resource group name for the storage account.
 
-Write-host "📜  Creating a temporary resource group and storage account - $resourceGroupForStorageAccount"
+Write-host "🕒  Creating a temporary resource group and storage account - $resourceGroupForStorageAccount"
 New-AzResourceGroup -Name $resourceGroupForStorageAccount -Location $location -Force
 New-AzStorageAccount -ResourceGroupName $resourceGroupForStorageAccount -Name $StorageAccountName -Location $location -SkuName Standard_LRS -Kind StorageV2
 $StorageAccountKey = @((Get-AzStorageAccountKey -ResourceGroupName $resourceGroupForStorageAccount -Name $StorageAccountName).Value)
