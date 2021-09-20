@@ -144,9 +144,6 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
 }
 
 # AAD App Registration - Create Single Tenant App Registration
-#fulfillAppObjectId=$(az ad app create --display-name FulfillmentAppReg | jq -r '.objectId') 
-#fulfillAppDetails=$(az ad app credential reset --id $fulfillAppObjectId)
-#jq --slurp 'add' <(echo \"$landingpageLoginAppReg\"
 
 #TODO Add Logo 96x96
 #Set-AzureADApplicationLogo -ObjectId  -FilePath D:\applogo.jpg
