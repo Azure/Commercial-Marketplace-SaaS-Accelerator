@@ -145,8 +145,10 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
 
 # Download Publisher logo
 if(!($LogoURLpng)) { 
+    Write-Host "📷 Downloading logo images..."
     Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\contoso-sales.png"
     Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.PublisherSolution\wwwroot\contoso-sales.png"
+    Write-Host "📷 Logo images downloaded."
 }
 
 # Setup Bacpac
