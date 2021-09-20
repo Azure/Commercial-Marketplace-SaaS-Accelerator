@@ -20,6 +20,7 @@ Param(
    [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
    [string][Parameter(Mandatory)]$PathToARMTemplate  # Local Path to the ARM Template
+   [string][Parameter(Mandatory)]$LogoURLpng  # URL for Publisher .PNG logo
 )
 
 Write-Host "Starting SaaS Accelerator Deployment..."
@@ -155,6 +156,11 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
 #TODO Add Logo 96x96
 #Set-AzureADApplicationLogo -ObjectId  -FilePath D:\applogo.jpg
 
+# Download Publisher logo
+Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\contoso-sales.png"
+Invoke-WebRequest -Uri Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.PublisherSolution\wwwroot\contoso-sales.png"
+
+# Setup Bacpac
 $TempFolderToStoreBacpac = '.\AMPSaaSDatabase'
 $BacpacFileName = "AMPSaaSDB.bacpac"
 $LocalPathToBacpacFile = $TempFolderToStoreBacpac + "\" + $BacpacFileName  
