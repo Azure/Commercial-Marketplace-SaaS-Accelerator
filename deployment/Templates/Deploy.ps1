@@ -79,11 +79,6 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     $Guid = New-Guid
     $startDate = Get-Date
     $endDate = $startDate.AddYears(2)
-    #$PasswordCredential = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordCredential
-    #$PasswordCredential.StartDate = $startDate
-    #$PasswordCredential.EndDate = $startDate.AddYears(2)
-    #$PasswordCredential.KeyId = $Guid
-    #$PasswordCredential.Value = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
     $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
 
     try {    
