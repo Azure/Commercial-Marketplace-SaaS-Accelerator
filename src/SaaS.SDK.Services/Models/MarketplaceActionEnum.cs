@@ -48,7 +48,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         GET_SUBSCRIPTION,
 
         /// <summary>
-        /// The a Subscription
+        /// The list plans
         /// </summary>
         GET_ALL_PLANS,
 

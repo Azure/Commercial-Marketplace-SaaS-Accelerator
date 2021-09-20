@@ -32,6 +32,11 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             this.Logger = logger;
         }
 
+        /// <summary>
+        /// Process errors when calling the client library.
+        /// </summary>
+        /// <param name="marketplaceAction">The MarketplaceActionEnum.</param>
+        /// <param name="ex">The exception from the client library.</param>
         public void ProcessErrorResponse(MarketplaceActionEnum marketplaceAction, Exception ex)
         {
             int statusCode = 0;
