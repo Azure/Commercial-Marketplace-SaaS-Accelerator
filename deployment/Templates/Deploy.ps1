@@ -144,7 +144,7 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
 #Set-AzureADApplicationLogo -ObjectId  -FilePath D:\applogo.jpg
 
 # Download Publisher logo
-if(!($LogoURLpng)) { 
+if($LogoURLpng) { 
     Write-Host "📷 Downloading logo images..."
     Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\contoso-sales.png"
     Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.PublisherSolution\wwwroot\contoso-sales.png"
