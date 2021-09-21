@@ -144,7 +144,7 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
 
             Write-Host "🔑  Attaching Image to SSO AAD AppRegistration ObjectID: $ADMTObjectID ..."
             $LogoURLpngPath = Resolve-Path "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.png"
-             Invoke-WebRequest -Uri $LogoURLpng -OutFile $LogoURLpngPath
+            Set-AzureADApplicationLogo -ObjectId $ADMTObjectID -FilePath $LogoURLpngPath
             Write-Host "🔑  Image attached to SSO AAD AppRegistration."
         }
     }
