@@ -141,12 +141,15 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
             Write-Host "📷  Downloading SSO AAD AppRegistration logo image..."
             Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.png"
             Write-Host "📷  SSO AAD AppRegistration logo image downloaded."    
+
+            Write-Host "🔑  Attaching Image to SSO AAD AppRegistration ObjectID: $ADMTObjectID ..."
             $LogoURLpngPath = Resolve-Path "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.png"
-            Set-AzureADApplicationLogo -ObjectId $ADMTObjectID -FilePath $LogoURLpngPath.Path
+             Invoke-WebRequest -Uri $LogoURLpng -OutFile $LogoURLpngPath
+            Write-Host "🔑  Image attached to SSO AAD AppRegistration."
         }
     }
     catch [System.Net.WebException],[System.IO.IOException] {
-        #[Environment]::Exit(1)
+        Write-Host "🚨🚨   $PSItem.Exception"
         break;
     }
 }
