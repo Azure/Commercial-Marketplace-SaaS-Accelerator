@@ -143,8 +143,8 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
             Write-Host "📷  SSO AAD AppRegistration logo image downloaded."    
 
             Write-Host "🔑  Attaching Image to SSO AAD AppRegistration ObjectID: $ADMTObjectID ..."
-            $LogoURLpngPath = Resolve-Path "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.png"
-            Set-AzureADApplicationLogo -ObjectId $ADMTObjectID -FilePath $LogoURLpngPath
+            $LogoURLpngPath = $(Resolve-Path "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.png").Path
+            #TODO: This is broken in PS CLI:  Set-AzureADApplicationLogo -ObjectId $ADMTObjectID -FilePath $LogoURLpngPath
             Write-Host "🔑  Image attached to SSO AAD AppRegistration."
         }
     }
