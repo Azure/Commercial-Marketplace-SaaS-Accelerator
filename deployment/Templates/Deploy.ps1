@@ -139,9 +139,9 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
         # Download Publisher's AppRegistration logo
         if($LogoURLpng) { 
             Write-Host "📷  Downloading SSO AAD AppRegistration logo image..."
-            Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.jpg"
+            Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.png"
             Write-Host "📷  SSO AAD AppRegistration logo image downloaded."            
-            Set-AzureADApplicationLogo -ObjectId $ADMTObjectID -FilePath "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.jpg"
+            Set-AzureADApplicationLogo -ObjectId $ADMTObjectID -FilePath "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.png"
         }
     }
     catch [System.Net.WebException],[System.IO.IOException] {
