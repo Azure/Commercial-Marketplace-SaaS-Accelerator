@@ -145,7 +145,8 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
         }
     }
     catch [System.Net.WebException],[System.IO.IOException] {
-        [Environment]::Exit(1)
+        #[Environment]::Exit(1)
+        break;
     }
 }
 
