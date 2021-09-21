@@ -129,7 +129,7 @@ Write-Host $restbody
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
     Write-Host "🔑  Mapping Landing paged mapped to AppRegistration..."
     try {
-        $landingpageLoginAppReg = $(az rest --method POST  --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain, objectID: .objectId}')
+        $landingpageLoginAppReg = $(az rest --method POST  --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain, objectID: .id}')
         Write-Host "$landingpageLoginAppReg"
         $ADMTApplicationID = $landingpageLoginAppReg | jq .lappID | %{$_ -replace '"',''}
         Write-Host "🔑  Landing paged mapped to AppRegistration: $ADMTApplicationID"
@@ -137,7 +137,7 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
         Write-Host "🔑  Landing paged AppRegistration ObjectID: $ADMTObjectID"
 
         # Download Publisher's AppRegistration logo
-        if($LogoURL96x96jpg) { 
+        if($LogoURLpng) { 
             Write-Host "📷  Downloading SSO AAD AppRegistration logo image..."
             Invoke-WebRequest -Uri $LogoURL96x96jpg -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.jpg"
             Write-Host "📷  SSO AAD AppRegistration logo image downloaded."            
