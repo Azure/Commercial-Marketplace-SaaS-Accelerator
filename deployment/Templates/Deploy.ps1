@@ -20,7 +20,8 @@ Param(
    [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
    [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
-   [string][Parameter()]$LogoURLpng  # URL for Publisher .PNG logo
+   [string][Parameter()]$LogoURLpng  # URL for Publisher .png logo
+   [string][Parameter()]$LogoURLico  # URL for Publisher .ico logo
 )
 
 Write-Host "Starting SaaS Accelerator Deployment..."
@@ -128,27 +129,40 @@ Write-Host $restbody
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
     Write-Host "🔑  Mapping Landing paged mapped to AppRegistration..."
     try {
-        $landingpageLoginAppReg = $(az rest --method POST  --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain}')
+        $landingpageLoginAppReg = $(az rest --method POST  --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain, objectID: .objectId}')
         Write-Host "$landingpageLoginAppReg"
         $ADMTApplicationID = $landingpageLoginAppReg | jq .lappID | %{$_ -replace '"',''}
         Write-Host "🔑  Landing paged mapped to AppRegistration: $ADMTApplicationID"
+        $ADMTObjectID = $landingpageLoginAppReg | jq .objectID | %{$_ -replace '"',''}
+        Write-Host "🔑  Landing paged AppRegistration ObjectID: $ADMTObjectID"
+
+        # Download Publisher's AppRegistration logo
+        if($LogoURL96x96jpg) { 
+            Write-Host "📷  Downloading SSO AAD AppRegistration logo image..."
+            Invoke-WebRequest -Uri $LogoURL96x96jpg -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.jpg"
+            Write-Host "📷  SSO AAD AppRegistration logo image downloaded."            
+            Set-AzureADApplicationLogo -ObjectId $LogoURLpng -FilePath "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.jpg"
+        }
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         [Environment]::Exit(1)
     }
 }
 
-# AAD App Registration - Create Single Tenant App Registration
-
-#TODO Add Logo 96x96
-#Set-AzureADApplicationLogo -ObjectId  -FilePath D:\applogo.jpg
-
-# Download Publisher logo
+# Download Publisher's PNG logo
 if($LogoURLpng) { 
-    Write-Host "📷  Downloading logo images..."
+    Write-Host "📷  Downloading PNG logo images..."
     Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\contoso-sales.png"
     Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.PublisherSolution\wwwroot\contoso-sales.png"
-    Write-Host "📷  Logo images downloaded."
+    Write-Host "📷  Logo images PNG downloaded."
+}
+
+# Download Publisher's FAVICON logo
+if($LogoURLico) { 
+    Write-Host "📷  Downloading ICO logo images..."
+    Invoke-WebRequest -Uri $LogoURLico -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\favicon.ico"
+    Invoke-WebRequest -Uri $LogoURLico -OutFile "..\..\src\SaaS.SDK.PublisherSolution\wwwroot\favicon.ico"
+    Write-Host "📷  Logo images ICO downloaded."
 }
 
 # Setup Bacpac
