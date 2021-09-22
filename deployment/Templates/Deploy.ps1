@@ -16,7 +16,7 @@ Param(
    [string][Parameter(Mandatory)]$SQLAdminLogin, # SQL Admin login
    [string][Parameter(Mandatory)]$SQLAdminLoginPassword, # SQL Admin password
    [string][Parameter(Mandatory)]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
-   [string][Parameter(Mandatory)]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
+   [string][Parameter()]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
    [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
    [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
@@ -175,6 +175,12 @@ if($LogoURLico) {
 }
 
 # Setup Bacpac
+
+# If there is no backpack use the default from main
+if (!($BacpacUrl)) {
+    $BacpacUrl = "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac"
+}
+
 $TempFolderToStoreBacpac = '.\AMPSaaSDatabase'
 $BacpacFileName = "AMPSaaSDB.bacpac"
 $LocalPathToBacpacFile = $TempFolderToStoreBacpac + "\" + $BacpacFileName  
