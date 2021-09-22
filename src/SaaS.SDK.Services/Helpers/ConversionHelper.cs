@@ -9,8 +9,19 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
     using System.Collections.Generic;
     using System.Linq;
 
+    /// <summary>
+    /// Conversion Helper.
+    /// </summary>
     static class ConversionHelper
     {
+
+        /// <summary>
+        /// Convert Subscription model to SubscriptionResult model.
+        /// </summary>
+        /// <param name="subscription">The subscription model.</param>
+        /// <returns>
+        /// SubscriptionResult.
+        /// </returns>
         public static SubscriptionResult subscriptionResult(this Subscription subscription)
         {
             var subscriptionResult = new SubscriptionResult()
@@ -41,12 +52,25 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             return subscriptionResult;
         }
 
+        /// <summary>
+        /// Convert Subscription model list to SubscriptionResult model list.
+        /// </summary>
+        /// <param name="subscriptions">The subscription model list.</param>
+        /// <returns>
+        /// SubscriptionResult list.
+        /// </returns>
         public static List<SubscriptionResult> subscriptionResultList(this List<Subscription> subscriptions) 
         {
             return subscriptions.Select(x => x.subscriptionResult()).ToList();
         }
 
-
+        /// <summary>
+        /// Convert ResolvedSubscription model to ResolvedSubscriptionResult model.
+        /// </summary>
+        /// <param name="resolvedSubscription">The ResolvedSubscription model.</param>
+        /// <returns>
+        /// ResolvedSubscriptionResult.
+        /// </returns>
         public static ResolvedSubscriptionResult resolvedSubscriptionResult(this ResolvedSubscription resolvedSubscription)
         {
             return new ResolvedSubscriptionResult() 
@@ -59,11 +83,25 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             };
         }
 
+        /// <summary>
+        /// Convert Plan model list to PlanResult model list.
+        /// </summary>
+        /// <param name="plans">The Plan model list.</param>
+        /// <returns>
+        /// PlanDetailResult List.
+        /// </returns>
         public static List<PlanDetailResult> planResults(this IReadOnlyList<Plan> plans)
         {
             return plans.Select(x => x.planResult()).ToList();
         }
 
+        /// <summary>
+        /// Convert Plan model  to PlanResult model .
+        /// </summary>
+        /// <param name="plan">The plan model.</param>
+        /// <returns>
+        /// PlanDetailResult.
+        /// </returns>
         public static PlanDetailResult planResult(this Plan plan)
         {
             return new PlanDetailResult()
@@ -74,6 +112,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             };
         }
 
+        /// <summary>
+        /// Convert operation model to operationResult model.
+        /// </summary>
+        /// <param name="operation">The operation model.</param>
+        /// <returns>
+        /// OperationResult Model.
+        /// </returns>
         public static OperationResult operationResult(this Operation operation)
         {
             return new OperationResult() 

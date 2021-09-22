@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Marketplace.SaaS.Client" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="3.7.1-preview" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0-preview.3.20215.2" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.7" />
     <PackageReference Include="Microsoft.Rest.ClientRuntime.Azure.Authentication" Version="2.4.0" />
-	<PackageReference Include="Ercenk.Microsoft.Marketplace" Version="1.0.0-preview5" />
 	<PackageReference Include="System.Linq.Async" Version="5.0.0" />
   </ItemGroup>
 
