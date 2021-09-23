@@ -43,30 +43,101 @@
             </div>
         </div>
     </nav>
+    <div class="mycontainer">
+        <div class="class1">
+            <div>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="true" color="#c2c2c2" aria-label="Toggle navigation">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                         width="24" height="24"
+                         viewBox="0 0 172 172"
+                         style=" fill:#000000;">
+                        <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,172v-172h172v172z" fill="none"></path><g fill="#c2c2c2"><path d="M21.5,35.83333c-2.58456,-0.03655 -4.98858,1.32136 -6.29153,3.55376c-1.30295,2.2324 -1.30295,4.99342 0,7.22582c1.30295,2.2324 3.70697,3.59031 6.29153,3.55376h129c2.58456,0.03655 4.98858,-1.32136 6.29153,-3.55376c1.30295,-2.2324 1.30295,-4.99342 0,-7.22582c-1.30295,-2.2324 -3.70697,-3.59031 -6.29153,-3.55376zM21.5,78.83333c-2.58456,-0.03655 -4.98858,1.32136 -6.29153,3.55376c-1.30295,2.2324 -1.30295,4.99342 0,7.22582c1.30295,2.2324 3.70697,3.59031 6.29153,3.55376h129c2.58456,0.03655 4.98858,-1.32136 6.29153,-3.55376c1.30295,-2.2324 1.30295,-4.99342 0,-7.22582c-1.30295,-2.2324 -3.70697,-3.59031 -6.29153,-3.55376zM21.5,121.83333c-2.58456,-0.03655 -4.98858,1.32136 -6.29153,3.55376c-1.30295,2.2324 -1.30295,4.99342 0,7.22582c1.30295,2.2324 3.70697,3.59031 6.29153,3.55376h129c2.58456,0.03655 4.98858,-1.32136 6.29153,-3.55376c1.30295,-2.2324 1.30295,-4.99342 0,-7.22582c-1.30295,-2.2324 -3.70697,-3.59031 -6.29153,-3.55376z"></path></g></g>
+                    </svg>
+                </button>
 
-    <div class="nav-scroller bg-white shadow-sm cm-menu-bar">
-        <nav class="container pb-3 nav nav-underline">
-            <a class="nav-link active">
-                @if (this.User.Identity.IsAuthenticated)
-                {
-                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
-                    <a class="nav-link" asp-area="" asp-controller="Plans" asp-action="Index">Plans</a>
-                    <a class="nav-link" asp-area="" asp-controller="Offers" asp-action="Index">Offers</a>
-                }
-            </a>
-        </nav>
+                <nav class="container pb-3 nav flex-column nav-underline">
+                    <!--<a class="nav-link active">-->
+                    @if (this.User.Identity.IsAuthenticated)
+                    {
+
+
+                        <div>
+                            <ul class="navbar-nav mr-auto">
+                                <li class="container-fluid nav-item nav-link minline">
+                                    <div class=" minline">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                                 width="25" height="25"
+                                                 viewBox="0 0 172 172"
+                                                 style=" fill:#000000;">
+                                                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,172v-172h172v172z" fill="none"></path><g fill="#c2c2c2"><path d="M85.82503,14.33333c-1.14611,0.03914 -2.24966,0.44378 -3.14941,1.15479l-50.92953,40.12353c-6.46397,5.09418 -10.24609,12.87841 -10.24609,21.10807v68.40527c0,4.88621 4.07212,8.95833 8.95833,8.95833h35.83333c4.88621,0 8.95833,-4.07212 8.95833,-8.95833v-35.83333c0,-1.05724 0.73442,-1.79167 1.79167,-1.79167h17.91667c1.05724,0 1.79167,0.73442 1.79167,1.79167v35.83333c0,4.88621 4.07212,8.95833 8.95833,8.95833h35.83333c4.88621,0 8.95833,-4.07212 8.95833,-8.95833v-68.40527c0,-8.22966 -3.78213,-16.01389 -10.24609,-21.10807l-50.92953,-40.12353c-0.99396,-0.7852 -2.23327,-1.19417 -3.49935,-1.15479zM86,26.55306l47.60514,37.50602c3.8847,3.06149 6.14486,7.71798 6.14486,12.66064v66.61361h-32.25v-34.04167c0,-6.86192 -5.67974,-12.54167 -12.54167,-12.54167h-17.91667c-6.86192,0 -12.54167,5.67974 -12.54167,12.54167v34.04167h-32.25v-66.61361c0,-4.94267 2.26016,-9.59916 6.14486,-12.66064z"></path></g></g>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                    <div class="minline"><a class="nav-link collapse navbar-collapse navbar-text" id="navbarCollapse" asp-area="" asp-controller="Home" asp-action="Index">Home</a></div>
+
+                                </li>
+                                <li class="container nav-item nav-link minline">
+                                    <div class="minline">
+                                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Subscriptions">
+                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                                 width="25" height="25"
+                                                 viewBox="0 0 172 172"
+                                                 style=" fill:#000000;">
+                                                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,172v-172h172v172z" fill="none"></path><g fill="#c2c2c2"><path d="M24.08,6.88v158.24h123.84v-114.9175l-0.9675,-1.075l-41.28,-41.28l-1.075,-0.9675zM30.96,13.76h68.8v41.28h41.28v103.2h-110.08zM106.64,18.705l29.455,29.455h-29.455z"></path></g></g>
+                                            </svg>
+                                        </a>
+                                    </div>
+
+                                    <div class="minline"><a class="nav-link collapse navbar-collapse navbar-text" id="navbarCollapse" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a></div>
+
+                                </li>
+                                <li class="nav-item nav-link minline">
+                                    <div class="minline">
+                                        <a class="nav-link" asp-area="" asp-controller="Plans" asp-action="Index">
+                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                                 width="25" height="25"
+                                                 viewBox="0 0 172 172"
+                                                 style=" fill:#000000;">
+                                                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,172v-172h172v172z" fill="none"></path><g fill="#c2c2c2"><path d="M50.16667,78.83333h107.5v14.33333h-107.5zM50.16667,35.83333h107.5v14.33333h-107.5zM50.16667,121.83333h107.5v14.33333h-107.5zM21.5,75.25c-5.93706,0 -10.75,4.81294 -10.75,10.75c0,5.93706 4.81294,10.75 10.75,10.75c5.93706,0 10.75,-4.81294 10.75,-10.75c0,-5.93706 -4.81294,-10.75 -10.75,-10.75zM21.5,118.25c-5.93706,0 -10.75,4.81294 -10.75,10.75c0,5.93706 4.81294,10.75 10.75,10.75c5.93706,0 10.75,-4.81294 10.75,-10.75c0,-5.93706 -4.81294,-10.75 -10.75,-10.75zM21.5,32.25c-5.93706,0 -10.75,4.81294 -10.75,10.75c0,5.93706 4.81294,10.75 10.75,10.75c5.93706,0 10.75,-4.81294 10.75,-10.75c0,-5.93706 -4.81294,-10.75 -10.75,-10.75z"></path></g></g>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                    <div class="minline"><a class="left-nav nav-link collapse navbar-collapse navbar-text" id="navbarCollapse" asp-area="" asp-controller="Plans" asp-action="Index">Plans</a></div>
+
+                                </li>
+                                <li class="nav-item nav-link minline">
+                                    <div class="minline">
+                                        <a class="nav-link" asp-area="" asp-controller="Offers" asp-action="Index">
+                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                                 width="25" height="25"
+                                                 viewBox="0 0 172 172"
+                                                 style=" fill:#000000;">
+                                                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,172v-172h172v172z" fill="none"></path><g fill="#c2c2c2"><path d="M17.2,13.76c-5.66077,0 -10.32,4.66306 -10.32,10.32v30.96v34.4v58.48c0,5.65694 4.65923,10.32 10.32,10.32h137.6c5.65902,0 10.32,-4.66098 10.32,-10.32v-58.48v-34.4v-17.2c0,-5.65902 -4.66098,-10.32 -10.32,-10.32h-92.88c0.2978,0 -0.10667,0.00125 -0.94735,-0.9675c-0.84067,-0.96875 -1.87545,-2.5759 -2.95625,-4.3c-1.08079,-1.7241 -2.21349,-3.5637 -3.64156,-5.18016c-1.42807,-1.61645 -3.39833,-3.31234 -6.21485,-3.31234zM17.2,20.64h30.96c-0.20898,0 0.21032,0.02411 1.06156,0.98766c0.85125,0.96355 1.88731,2.56394 2.96297,4.27984c1.07566,1.7159 2.18958,3.54875 3.58781,5.16c1.39823,1.61125 3.32316,3.3325 6.14765,3.3325h92.88c1.9365,0 3.44,1.5035 3.44,3.44v7.525c-1.08323,-0.39065 -2.22966,-0.645 -3.44,-0.645h-137.6c-1.21034,0 -2.35677,0.25435 -3.44,0.645v-21.285c0,-1.93858 1.49837,-3.44 3.44,-3.44zM17.2,51.6h137.6c1.9437,0 3.44,1.4963 3.44,3.44v34.4v58.48c0,1.9365 -1.5035,3.44 -3.44,3.44h-137.6c-1.94163,0 -3.44,-1.50142 -3.44,-3.44v-58.48v-34.4c0,-1.9437 1.4963,-3.44 3.44,-3.44z"></path></g></g>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                    <div class="minline"><a class="left-nav nav-link collapse navbar-collapse navbar-text" id="navbarCollapse" asp-area="" asp-controller="Offers" asp-action="Index">Offers</a></div>
+
+                                </li>
+                            </ul>
+                        </div>
+                        @*</div>*@
+                    }
+                    <!--</a>-->
+                </nav>
+            </div>
+        </div>
+
+        <div class="class2">
+            <div class="pb-3 container-fluid">
+                <partial name="_CookieConsentPartial" />
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
     </div>
-
-
-
-    <div class="container pb-3">
-        <partial name="_CookieConsentPartial" />
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
     <footer class="cm-footer">
         <div class="container text-center">
             &copy; 2020 - SaasKit - Demo
