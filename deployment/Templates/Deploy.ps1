@@ -29,8 +29,7 @@ Write-Host "Starting SaaS Accelerator Deployment..."
 # Record the current ADApps to reduce deployment instructions at the end
 $IsADApplicationIDProvided = $ADApplicationIDProvided
 $ISADMTApplicationIDProvided = $ADMTApplicationID
-#   Make sure to install Az Module before running this script
-
+# Make sure to install Az Module before running this script
 # Install-Module Az
 # Install-Module -Name AzureAD
 
@@ -121,8 +120,6 @@ $restbody = "" +`
 " \`"resourceAccess\`": " +`
 " [{ \`"id\`": \`"e1fe6dd8-ba31-4d61-89e7-88639da4683d\`"," +`
 " \`"type\`": \`"Scope\`" }]}] }" 
-
-
 
 Write-Host $restbody
 
@@ -292,4 +289,3 @@ Write-host "__ Add The following TenantID in PartnerCenter SaaS Technical Config
 Write-host "   $TenantID"
 Write-host "__ Add The following ApplicationID in PartnerCenter SaaS Technical Configuration->AAD Application ID section"
 Write-host "   $ADApplicationID"
-
