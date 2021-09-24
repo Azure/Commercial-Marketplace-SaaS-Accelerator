@@ -145,7 +145,7 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
             #Write-Host "🔑  Attaching Image to SSO AAD AppRegistration ObjectID: $ADMTObjectID ..."
             #$LogoURLpngPath = $(Resolve-Path "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.png").Path
 
-            #TODO: This is broken in PS CLI:  
+            #TODO: This is broken in PS CLI:  https://stackoverflow.microsoft.com/questions/276511
             # $LogoByteArray = [System.IO.File]::ReadAllBytes($LogoURLpngPath)
             # Set-AzureADApplicationLogo -ObjectId $ADMTObjectID -ImageByteArray $LogoByteArray 
             # Set-AzureADApplicationLogo -ObjectId $ADMTObjectID -FilePath $LogoURLpngPath
