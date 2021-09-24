@@ -2,7 +2,9 @@
 
 You can install the SaaS Accelerator code using a single command line within the Azure Portal.
   
-   1. Open Powershell in the Azure Cloud (PowerShell) and run the following commands to install Azure modules:
+   1. Open Powershell in the Azure Cloud (PowerShell)
+![CloudShell Imge](images/portal-cloudshell.png) 
+   2. Run the following commands to install Azure modules:
 
 ``` powershell
 git clone https://github.com/code4clouds/Microsoft-commercial-marketplace-SaaS-offer-billing-SDK.git -b main --depth 1; `
@@ -52,4 +54,4 @@ git clone https://github.com/code4clouds/Microsoft-commercial-marketplace-SaaS-o
 | LogoURLico | The url of the company logo image in .ico format |
 
 ## Alternative Deployments
-There are other ways to deploy the SaaS Accelerator environment (e.g. development, maual deployment, etc).  Additional instruction can be found [here]("Advanced-Instructions.md).
+There are other ways to deploy the SaaS Accelerator environment (e.g. development, maual deployment, etc).  Additional instruction can be found [here]("Advanced-Instructions.md").
