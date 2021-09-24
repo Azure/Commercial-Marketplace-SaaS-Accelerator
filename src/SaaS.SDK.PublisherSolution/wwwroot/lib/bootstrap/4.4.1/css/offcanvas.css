@@ -232,14 +232,17 @@ body {
 
         #homepage-programs > li .programCardIcon1.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
             background-color: #d13438;
+            margin-bottom: 10px;
         }
 
         #homepage-programs > li .programCardIcon2.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
             background-color: #881798;
+            margin-bottom: 10px;
         }
 
         #homepage-programs > li .programCardIcon3.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
             background-color: #004e8c;
+            margin-bottom: 10px;
         }
 
         #homepage-programs > li .programCardIcon1 {
