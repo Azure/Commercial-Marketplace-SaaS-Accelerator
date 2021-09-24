@@ -11,11 +11,11 @@
             <div class="text-center ">
                 <form method="post" id="frmOfferattributes" asp-action="OfferDetails" asp-controller="Offers">
                     @*action="Offers/OfferDetails"*@
-                    <div class="container mrtop maxwidth" style="float:left;">
-                        <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
+                    <div class="container mrtop maxwidth" style="float:left;margin-left:-20px;">
+                        @*<div calss="text-right maxwidth" style="text-align:right; width:1300px;">
                             <input class="cm-button-default mt0" style="line-height:10px; background-color: #333;" type="button" id="btnAdd" value="Add New Row" />
                             <input class="cm-button-default mt0" style="line-height:10px; background-color: #333;" type="button" onclick="saveOfferParameters()" value="Save Changes" />
-                        </div>
+                        </div>*@
                         @*<div calss="text-right maxwidth" style="text-align:right; width:1300px;">
                                 <p>
 
@@ -28,7 +28,7 @@
                             <input type='hidden' id='Id' name='Id' value="@Model.Id" />
                             <dl class="row">
 
-                                <dt class="col-2 text-right"><b>Offer name</b></dt>
+                                <dt class="col-2 text-right" style="margin-left:-100px;"><span>Offer name</span></dt>
                                 <dd class="col-3 text-left">@Model.OfferID</dd>
                                 @*<dt class="col-3 text-right"><b>Offer name</b></dt>
                                     <dd class="col-4 text-left">@Model.OfferName</dd>*@
