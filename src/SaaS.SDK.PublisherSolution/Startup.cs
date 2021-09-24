@@ -92,7 +92,7 @@ namespace Microsoft.Marketplace.Saas.Web
    .AddOpenIdConnect(options =>
    {
        options.Authority = $"{config.AdAuthenticationEndPoint}/common";
-       options.ClientId = config.ClientId;
+       options.ClientId = config.MTClientId;
        options.ResponseType = OpenIdConnectResponseType.IdToken;
        options.CallbackPath = "/Home/Index";
        options.SignedOutRedirectUri = config.SignedOutRedirectUri;
