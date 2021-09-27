@@ -72,6 +72,7 @@ namespace Microsoft.Marketplace.Saas.Web
                 ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
                 ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
                 FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
+                MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],
                 FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
                 GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
                 Resource = this.Configuration["SaaSApiConfiguration:Resource"],
