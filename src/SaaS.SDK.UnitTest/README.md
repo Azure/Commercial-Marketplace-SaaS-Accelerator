@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Unit test project that validates and tests the marketplace API calls generated from the SaaS SDK client library.
+Unit test project that validates and tests the marketplace API calls generated from the Services client library.
 
 ## Description
 

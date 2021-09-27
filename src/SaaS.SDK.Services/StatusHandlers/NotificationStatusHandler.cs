@@ -1,15 +1,12 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text.Json;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Contracts;
 
     /// <summary>
     /// Status handler to send out notifications based on the last status of the subscription.
@@ -20,7 +17,7 @@
         /// <summary>
         /// The fulfillment API client.
         /// </summary>
-        private readonly IFulfillmentApiClient fulfillmentApiClient;
+        private readonly IFulfillmentApiService fulfillmentApiService;
 
         /// <summary>
         /// The subscription repository.
@@ -85,7 +82,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="NotificationStatusHandler"/> class.
         /// </summary>
-        /// <param name="fulfillApiClient">The fulfill API client.</param>
+        /// <param name="fulfillApiService">The fulfill API client.</param>
         /// <param name="planRepository">The plan repository.</param>
         /// <param name="applicationConfigRepository">The application configuration repository.</param>
         /// <param name="emailTemplateRepository">The email template repository.</param>
@@ -100,7 +97,7 @@
         /// <param name="emailHelper">The email helper.</param>
         /// <param name="logger">The logger.</param>
         public NotificationStatusHandler(
-                                            IFulfillmentApiClient fulfillApiClient,
+                                            IFulfillmentApiService fulfillApiService,
                                             IPlansRepository planRepository,
                                             IApplicationConfigRepository applicationConfigRepository,
                                             IEmailTemplateRepository emailTemplateRepository,
@@ -114,7 +111,7 @@
                                             ILogger<NotificationStatusHandler> logger)
                                             : base(subscriptionRepository, planRepository, usersRepository)
         {
-            this.fulfillmentApiClient = fulfillApiClient;
+            this.fulfillmentApiService = fulfillApiService;
             this.applicationConfigRepository = applicationConfigRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.offerAttributesRepository = offerAttributesRepository;

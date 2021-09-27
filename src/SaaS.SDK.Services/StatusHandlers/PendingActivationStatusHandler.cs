@@ -1,12 +1,14 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
+namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
 {
     using System;
     using System.Text.Json;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Contracts;
 
     /// <summary>
     /// Status handler to handle the subscriptions that are in PendingActivation status.
@@ -17,7 +19,7 @@
         /// <summary>
         /// The fulfillment apiclient.
         /// </summary>
-        private readonly IFulfillmentApiClient fulfillmentApiClient;
+        private readonly IFulfillmentApiService fulfillmentApiService;
 
         /// <summary>
         /// The subscription log repository.
@@ -32,7 +34,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="PendingActivationStatusHandler"/> class.
         /// </summary>
-        /// <param name="fulfillApiClient">The fulfill API client.</param>
+        /// <param name="fulfillApiService">The fulfill API client.</param>
         /// <param name="subscriptionsRepository">The subscriptions repository.</param>
         /// <param name="subscriptionLogRepository">The subscription log repository.</param>
         /// <param name="subscriptionTemplateParametersRepository">The subscription template parameters repository.</param>
@@ -40,7 +42,7 @@
         /// <param name="usersRepository">The users repository.</param>
         /// <param name="logger">The logger.</param>
         public PendingActivationStatusHandler(
-                                                IFulfillmentApiClient fulfillApiClient,
+                                                IFulfillmentApiService fulfillApiService,
                                                 ISubscriptionsRepository subscriptionsRepository,
                                                 ISubscriptionLogRepository subscriptionLogRepository,
                                                 IPlansRepository plansRepository,
@@ -48,7 +50,7 @@
                                                 ILogger<PendingActivationStatusHandler> logger)
                                                 : base(subscriptionsRepository, plansRepository, usersRepository)
         {
-            this.fulfillmentApiClient = fulfillApiClient;
+            this.fulfillmentApiService = fulfillApiService;
             this.subscriptionLogRepository = subscriptionLogRepository;
             this.logger = logger;
         }
@@ -72,7 +74,7 @@
                 {
                     this.logger?.LogInformation("Get attributelsit");
 
-                    var subscriptionData = this.fulfillmentApiClient.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
+                    var subscriptionData = this.fulfillmentApiService.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
 
                     this.logger?.LogInformation("UpdateWebJobSubscriptionStatus");
 

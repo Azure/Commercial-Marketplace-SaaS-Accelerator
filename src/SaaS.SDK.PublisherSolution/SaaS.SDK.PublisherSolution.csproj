@@ -44,7 +44,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Marketplace.SaaS.Client" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.11.0-1.final" />
     <PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="3.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.1" />
@@ -59,7 +61,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj" />
-    <ProjectReference Include="..\SaaS.SDK.Client\SaaS.SDK.Client.csproj" />
     <ProjectReference Include="..\SaaS.SDK.Services\SaaS.SDK.Provisioning.Services.csproj" />
   </ItemGroup>
 
