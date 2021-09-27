@@ -1,13 +1,15 @@
 ﻿@{
     ViewData["Title"] = "Welcome";
 }
-<div class="pt-5">
-    <div class="card p-3 ">
+<div class="pt-5 custom">
+    <div class="page-title text-capitalize"><h1>Home</h1></div>
+
+    <div class="card p-3 customcards">
         <div class="text-center">
-            <h1 class="display-4">Welcome</h1>
+            <h4 class="display-4" style="font-size:35px;">Welcome to the SaaS accelerator Admin page</h4>
         </div>
         <div class="text-left">
-            <p>This is the publisher solution.</p>
+            <!--<p>This is the publisher solution.</p>-->
             @if (!this.User.Identity.IsAuthenticated)
             {
                 <p> Please sign in to continue.</p>
@@ -15,4 +17,98 @@
 
         </div>
     </div>
+    <div class="pagequicklink text-capitalize"><h3>Quicklinks</h3></div>
+    <ul id="homepage-programs">
+        <li id="onedash-menu-homepage1">
+            <a class="programCardLink text-capitalize" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
+            <div class="programCard">
+                <div class="programCardContentWrapper">
+                    <div class="programCardTitle minline">
+                        <div class="programCardIcon1 wrap-win-icon-RecruitmentManagement">
+                            <div class="win-icon win-icon-RecruitmentManagement">
+
+                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                     width="25" height="25"
+                                     viewBox="0 0 172 172"
+                                     style=" fill:#000000;">
+                                    <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,172v-172h172v172z" fill="none"></path><g fill="#ffffff"><path d="M24.08,6.88v158.24h123.84v-114.9175l-0.9675,-1.075l-41.28,-41.28l-1.075,-0.9675zM30.96,13.76h68.8v41.28h41.28v103.2h-110.08zM106.64,18.705l29.455,29.455h-29.455z"></path></g></g>
+                                </svg>
+
+                            </div>
+                        </div>
+                        <div class="programCardTitleLeft">
+                            <h5>Subscriptions</h5>
+                        </div>
+
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="programCardContent">
+                    </div>
+                    <div class="programCardHelp pull-right">
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="onedash-menu-homepage2">
+            <a class="programCardLink text-capitalize" asp-area="" asp-controller="Plans" asp-action="Index">Plans</a>
+            <div class="programCard">
+                <div class="programCardContentWrapper">
+                    <div class="programCardTitle minline">
+                        <div class="programCardIcon2 wrap-win-icon-RecruitmentManagement">
+                            <div class="win-icon win-icon-RecruitmentManagement">
+                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                     width="25" height="25"
+                                     viewBox="0 0 172 172"
+                                     style=" fill:#000000;">
+                                    <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,172v-172h172v172z" fill="none"></path><g fill="#ffffff"><path d="M21.5,32.25c-5.93706,0 -10.75,4.81294 -10.75,10.75c0,5.93706 4.81294,10.75 10.75,10.75c5.93706,0 10.75,-4.81294 10.75,-10.75c0,-5.93706 -4.81294,-10.75 -10.75,-10.75zM57.33333,35.83333c-2.58456,-0.03655 -4.98858,1.32136 -6.29153,3.55376c-1.30295,2.2324 -1.30295,4.99342 0,7.22582c1.30295,2.2324 3.70697,3.59031 6.29153,3.55376h93.16667c2.58456,0.03655 4.98858,-1.32136 6.29153,-3.55376c1.30295,-2.2324 1.30295,-4.99342 0,-7.22582c-1.30295,-2.2324 -3.70697,-3.59031 -6.29153,-3.55376zM21.5,75.25c-5.93706,0 -10.75,4.81294 -10.75,10.75c0,5.93706 4.81294,10.75 10.75,10.75c5.93706,0 10.75,-4.81294 10.75,-10.75c0,-5.93706 -4.81294,-10.75 -10.75,-10.75zM57.33333,78.83333c-2.58456,-0.03655 -4.98858,1.32136 -6.29153,3.55376c-1.30295,2.2324 -1.30295,4.99342 0,7.22582c1.30295,2.2324 3.70697,3.59031 6.29153,3.55376h93.16667c2.58456,0.03655 4.98858,-1.32136 6.29153,-3.55376c1.30295,-2.2324 1.30295,-4.99342 0,-7.22582c-1.30295,-2.2324 -3.70697,-3.59031 -6.29153,-3.55376zM21.5,118.25c-5.93706,0 -10.75,4.81294 -10.75,10.75c0,5.93706 4.81294,10.75 10.75,10.75c5.93706,0 10.75,-4.81294 10.75,-10.75c0,-5.93706 -4.81294,-10.75 -10.75,-10.75zM57.33333,121.83333c-2.58456,-0.03655 -4.98858,1.32136 -6.29153,3.55376c-1.30295,2.2324 -1.30295,4.99342 0,7.22582c1.30295,2.2324 3.70697,3.59031 6.29153,3.55376h93.16667c2.58456,0.03655 4.98858,-1.32136 6.29153,-3.55376c1.30295,-2.2324 1.30295,-4.99342 0,-7.22582c-1.30295,-2.2324 -3.70697,-3.59031 -6.29153,-3.55376z"></path></g></g>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="programCardTitleLeft">
+                            <h5>Plans</h5>
+                        </div>
+
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="programCardContent">
+                    </div>
+                    <div class="programCardHelp pull-right">
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="onedash-menu-homepage3">
+            <a class="programCardLink text-capitalize" asp-area="" asp-controller="Offers" asp-action="Index">Offers</a>
+            <div class="programCard">
+                <div class="programCardContentWrapper">
+                    <div class="programCardTitle minline">
+                        <div class="programCardIcon3 wrap-win-icon-RecruitmentManagement">
+
+
+                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+                                 width="25" height="25"
+                                 viewBox="0 0 172 172"
+                                 style=" fill:#000000;">
+                                <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,172v-172h172v172z" fill="none"></path><g fill="#ffffff"><path d="M17.2,13.76c-5.66077,0 -10.32,4.66306 -10.32,10.32v30.96v34.4v58.48c0,5.65694 4.65923,10.32 10.32,10.32h137.6c5.65902,0 10.32,-4.66098 10.32,-10.32v-58.48v-34.4v-17.2c0,-5.65902 -4.66098,-10.32 -10.32,-10.32h-92.88c0.2978,0 -0.10667,0.00125 -0.94735,-0.9675c-0.84067,-0.96875 -1.87545,-2.5759 -2.95625,-4.3c-1.08079,-1.7241 -2.21349,-3.5637 -3.64156,-5.18016c-1.42807,-1.61645 -3.39833,-3.31234 -6.21485,-3.31234zM17.2,20.64h30.96c-0.20898,0 0.21032,0.02411 1.06156,0.98766c0.85125,0.96355 1.88731,2.56394 2.96297,4.27984c1.07566,1.7159 2.18958,3.54875 3.58781,5.16c1.39823,1.61125 3.32316,3.3325 6.14765,3.3325h92.88c1.9365,0 3.44,1.5035 3.44,3.44v7.525c-1.08323,-0.39065 -2.22966,-0.645 -3.44,-0.645h-137.6c-1.21034,0 -2.35677,0.25435 -3.44,0.645v-21.285c0,-1.93858 1.49837,-3.44 3.44,-3.44zM17.2,51.6h137.6c1.9437,0 3.44,1.4963 3.44,3.44v34.4v58.48c0,1.9365 -1.5035,3.44 -3.44,3.44h-137.6c-1.94163,0 -3.44,-1.50142 -3.44,-3.44v-58.48v-34.4c0,-1.9437 1.4963,-3.44 3.44,-3.44z"></path></g></g>
+                            </svg>
+
+                        </div>
+                        <div class="programCardTitleLeft">
+                            <h5>Offers</h5>
+                        </div>
+
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="programCardContent">
+                    </div>
+                    <div class="programCardHelp pull-right">
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+
 </div>
