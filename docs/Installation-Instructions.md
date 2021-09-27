@@ -54,4 +54,4 @@ git clone https://github.com/code4clouds/Microsoft-commercial-marketplace-SaaS-o
 | LogoURLico | The url of the company logo image in .ico format |
 
 ## Alternative Deployments
-There are other ways to deploy the SaaS Accelerator environment (e.g. development, maual deployment, etc).  Additional instruction can be found [here]("Advanced-Instructions.md").
+There are other ways to deploy the SaaS Accelerator environment (e.g. development, maual deployment, etc).  Additional instruction can be found [here](Advanced-Instructions.md).
