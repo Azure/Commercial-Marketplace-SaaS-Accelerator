@@ -348,6 +348,11 @@
               "slotSetting": false
             },
             {
+              "name": "SaaSApiConfiguration__MTClientId",
+              "value": "[parameters('ADMTApplicationID')]",
+              "slotSetting": false
+            },
+            {
               "name": "SaaSApiConfiguration__FulFillmentAPIBaseURL",
               "value": "https://marketplaceapi.microsoft.com/api",
               "slotSetting": false
