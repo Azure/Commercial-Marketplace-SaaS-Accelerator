@@ -1,14 +1,17 @@
-﻿namespace Microsoft.Marketplace.SaasKit.UnitTest
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
+namespace Microsoft.Marketplace.SaaS.SDK.Services.UnitTest
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using global::Azure.Identity;
     using Microsoft.Extensions.Configuration;
-    using Microsoft.Marketplace.SaasKit.Configurations;
-    using Microsoft.Marketplace.SaasKit.Helpers;
-    using Microsoft.Marketplace.SaasKit.Models;
-    using Microsoft.Marketplace.SaasKit.Services;
+    using Microsoft.Marketplace.Metering;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
@@ -18,10 +21,12 @@
     public class MeteredApiTest
     {
         /// <summary>The client.</summary>
-        private MeteredBillingApiClient client;
+        private MeteredBillingApiService merteringService;
 
-        /// <summary>The client.</summary>
-        private FulfillmentApiClient fulfillmentClient;
+        /// <summary>
+        /// The client.
+        /// </summary>
+        private FulfillmentApiService fulfillApiService;
 
         /// <summary>The configuration.</summary>
         private SaaSApiClientConfiguration configuration = new SaaSApiClientConfiguration();
@@ -36,20 +41,9 @@
                .Build();
 
             this.configuration = config.GetSection("AppSetting").Get<SaaSApiClientConfiguration>();
-            this.client = new MeteredBillingApiClient(this.configuration, null);
-            this.fulfillmentClient = new FulfillmentApiClient(this.configuration, null);
-        }
-
-        /// <summary>
-        /// Check Authentication.
-        /// </summary>
-        /// <returns>Test Authentication.</returns>
-        [TestMethod]
-        public async Task CheckAuthentication()
-        {
-            var accessTokenResult = await ADAuthenticationHelper.GetAccessToken(this.configuration).ConfigureAwait(false);
-            Assert.IsNotNull(accessTokenResult);
-            Assert.IsNotNull(accessTokenResult?.AccessToken);
+            var creds = new ClientSecretCredential(configuration.TenantId.ToString(), configuration.ClientId.ToString(), configuration.ClientSecret);
+            this.merteringService = new MeteredBillingApiService(new MarketplaceMeteringClient(creds), this.configuration, null);
+            this.fulfillApiService = new FulfillmentApiService(new MarketplaceSaaSClient(creds), sdkSettings: this.configuration, null);
         }
 
         /// <summary>
@@ -59,7 +53,7 @@
         [TestMethod]
         public async Task TestSubscriptionUsage()
         {
-            var allSubscriptions = await this.fulfillmentClient.GetAllSubscriptionAsync().ConfigureAwait(false);
+            var allSubscriptions = await this.fulfillApiService.GetAllSubscriptionAsync().ConfigureAwait(false);
             var defaultSubscription = allSubscriptions.FirstOrDefault();
 
             MeteringUsageRequest subscriptionUsageRequest = new MeteringUsageRequest()
@@ -70,7 +64,7 @@
                 Quantity = 5,
                 ResourceId = defaultSubscription.Id,
             };
-            var response = this.client.EmitUsageEventAsync(subscriptionUsageRequest).Result;
+            var response = this.merteringService.EmitUsageEventAsync(subscriptionUsageRequest).Result;
             Assert.AreEqual(response.Status, "Accepted");
             Assert.AreEqual(response.ResourceId, defaultSubscription?.Id);
             Assert.AreEqual(response.PlanId, defaultSubscription?.PlanId);
@@ -83,7 +77,7 @@
         [TestMethod]
         public async Task TestSubscriptionBatchUsage()
         {
-            var allSubscriptions = await this.fulfillmentClient.GetAllSubscriptionAsync().ConfigureAwait(false);
+            var allSubscriptions = await this.fulfillApiService.GetAllSubscriptionAsync().ConfigureAwait(false);
             var defaultSubscription = allSubscriptions.FirstOrDefault();
 
             var subscriptionUsageRequest = new List<MeteringUsageRequest>
@@ -105,7 +99,7 @@
                     ResourceId = defaultSubscription.Id,
                 },
             };
-            var response = await this.client.EmitBatchUsageEventAsync(subscriptionUsageRequest);
+            var response = await this.merteringService.EmitBatchUsageEventAsync(subscriptionUsageRequest);
             Assert.AreEqual(response.Count, 2);
         }
     }

@@ -1,10 +1,12 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
+namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
 {
     using System.Text.Json;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.WebHook;
+    using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
 
     /// <summary>
     /// Azure Web hook.

@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
+namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
 {
     using System;
     using System.Text.Json;
@@ -6,7 +8,7 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
 
     /// <summary>
     /// Status handler to handle the subscription in PendingFulfillment.
@@ -17,7 +19,7 @@
         /// <summary>
         /// The fulfillment API client.
         /// </summary>
-        private readonly IFulfillmentApiClient fulfillmentApiClient;
+        private readonly IFulfillmentApiService fulfillmentApiService;
 
         /// <summary>
         /// The application configuration repository.
@@ -37,7 +39,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="PendingFulfillmentStatusHandler" /> class.
         /// </summary>
-        /// <param name="fulfillApiClient">The fulfill API client.</param>
+        /// <param name="fulfillApiService">The fulfill API client.</param>
         /// <param name="applicationConfigRepository">The application configuration repository.</param>
         /// <param name="subscriptionsRepository">The subscriptions repository.</param>
         /// <param name="subscriptionLogRepository">The subscription log repository.</param>
@@ -45,7 +47,7 @@
         /// <param name="usersRepository">The users repository.</param>
         /// <param name="logger">The logger.</param>
         public PendingFulfillmentStatusHandler(
-                                                IFulfillmentApiClient fulfillApiClient,
+                                                IFulfillmentApiService fulfillApiService,
                                                 IApplicationConfigRepository applicationConfigRepository,
                                                 ISubscriptionsRepository subscriptionsRepository,
                                                 ISubscriptionLogRepository subscriptionLogRepository,
@@ -54,7 +56,7 @@
                                                 ILogger<PendingFulfillmentStatusHandler> logger)
             : base(subscriptionsRepository, plansRepository, usersRepository)
         {
-            this.fulfillmentApiClient = fulfillApiClient;
+            this.fulfillmentApiService = fulfillApiService;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
             this.logger = logger;

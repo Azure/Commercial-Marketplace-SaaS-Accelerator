@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.WebHook
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
+namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
 {
     using System;
     using System.Threading.Tasks;
@@ -7,11 +9,9 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
+    using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaasKit.Contracts;
-    using Microsoft.Marketplace.SaasKit.Models;
-    using Microsoft.Marketplace.SaasKit.WebHook;
 
     /// <summary>
     /// Handler For the WebHook Actions.
@@ -67,7 +67,7 @@
         /// <summary>
         /// The fulfill API client.
         /// </summary>
-        private readonly IFulfillmentApiClient fulfillApiClient;
+        private readonly IFulfillmentApiService fulfillApiService;
 
         /// <summary>
         /// The users repository.
@@ -106,7 +106,7 @@
         /// <param name="applicationConfigRepository">The application configuration repository.</param>
         /// <param name="emailTemplateRepository">The email template repository.</param>
         /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
-        public WebHookHandler(IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionsLogRepository, ISubscriptionsRepository subscriptionsRepository, IPlansRepository planRepository, IOfferAttributesRepository offersAttributeRepository, IOffersRepository offersRepository, IFulfillmentApiClient fulfillApiClient, IUsersRepository usersRepository, ILoggerFactory loggerFactory, IEmailService emailService, IEventsRepository eventsRepository, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository)
+        public WebHookHandler(IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionsLogRepository, ISubscriptionsRepository subscriptionsRepository, IPlansRepository planRepository, IOfferAttributesRepository offersAttributeRepository, IOffersRepository offersRepository, IFulfillmentApiService fulfillApiService, IUsersRepository usersRepository, ILoggerFactory loggerFactory, IEmailService emailService, IEventsRepository eventsRepository, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository)
         {
             this.applicationLogRepository = applicationLogRepository;
             this.subscriptionsRepository = subscriptionsRepository;
@@ -119,13 +119,13 @@
             this.usersRepository = usersRepository;
             this.eventsRepository = eventsRepository;
             this.offersAttributeRepository = offersAttributeRepository;
-            this.fulfillApiClient = fulfillApiClient;
+            this.fulfillApiService = fulfillApiService;
             this.applicationConfigRepository = applicationConfigRepository;
             this.emailTemplateRepository = emailTemplateRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.offersRepository = offersRepository;
             this.notificationStatusHandlers = new NotificationStatusHandler(
-                                                                        fulfillApiClient,
+                                                                        fulfillApiService,
                                                                         planRepository,
                                                                         applicationConfigRepository,
                                                                         emailTemplateRepository,

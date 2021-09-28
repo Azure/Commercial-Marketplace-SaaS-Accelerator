@@ -1,19 +1,21 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Utilities
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE file in the project root for license information.
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Utilities
 {
     using System;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaasKit.Services;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 
     /// <summary>
     /// Logger.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaasKit.Contracts.ILogger" />
-    public class MeteringApiClientLogger : SaasKit.Contracts.ILogger
+    /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.ILogger" />
+    public class MeteringApiClientLogger : Microsoft.Marketplace.SaaS.SDK.Services.Contracts.ILogger
     {
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger<MeteredBillingApiClient> logger;
+        private readonly ILogger<MeteredBillingApiService> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MeteringApiClientLogger"/> class.
@@ -26,7 +28,7 @@
                     .AddConsole();
             });
 
-            this.logger = loggerFactory.CreateLogger<MeteredBillingApiClient>();
+            this.logger = loggerFactory.CreateLogger<MeteredBillingApiService>();
         }
 
         /// <summary>
