@@ -15,12 +15,13 @@
     background-color: #004578 !important;
     margin-bottom: 0px;
     border: 0px;
+    height:48px;
     border-radius: 0;
 }
 
 .cm-menu-bar {
     background-color: #F9F9F9 !important;
-    margin-top: -142px;
+    margin-top: -168px;
 }
 
 .cm-signin {
@@ -58,11 +59,16 @@
 }
 
 .cm-logo {
-    border-style: none;
+    /*border-style: none;
     width: auto;
     padding: 8px;
-    max-width: 100%;
-    width: 30%;
+    
+    width: 30%;*/
+    border-style: none;
+    width: auto;
+    margin-left: -10px;
+    padding: 8px;
+    max-height: 50px;
 }
 
 .cm-panel-default {
