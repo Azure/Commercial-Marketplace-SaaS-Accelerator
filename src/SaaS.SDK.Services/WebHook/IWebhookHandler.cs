@@ -43,5 +43,12 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// <param name="payload">The payload.</param>
         /// <returns>Unsubscribed Async</returns>
         Task UnsubscribedAsync(WebhookPayload payload);
+
+        /// <summary>
+        /// Unknowstate the asynchronous.
+        /// </summary>
+        /// <param name="payload">The payload.</param>
+        /// <returns>Unsubscribed Async</returns>
+        Task UnknownActionAsync(WebhookPayload payload);        
     }
 }
