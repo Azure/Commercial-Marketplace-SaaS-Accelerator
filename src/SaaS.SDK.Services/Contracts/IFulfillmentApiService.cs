@@ -47,7 +47,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns>Get All Plans For Subscription.</returns>
-        Task<List<PlanDetailResult>> GetAllPlansForSubscriptionAsync(Guid subscriptionId);
+        Task<List<PlanDetailResultExtension>> GetAllPlansForSubscriptionAsync(Guid subscriptionId);
 
         /// <summary>
         /// Activates the subscription.

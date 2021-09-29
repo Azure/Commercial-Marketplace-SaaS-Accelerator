@@ -25,5 +25,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// The plan unique identifier.
         /// </value>
         public Guid PlanGUID { get; set; }
+
+        /// <summary>
+        /// Gets or sets the plan per seat or not.
+        /// </summary>
+        /// <value>
+        /// The plan unique identifier.
+        /// </value>
+        public bool IsPerUserPlan { get; set; }
     }
 }

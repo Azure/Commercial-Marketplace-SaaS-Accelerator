@@ -241,6 +241,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                     Description = planDetail.DisplayName,
                     OfferId = planDetail.OfferId,
                     PlanGuid = planDetail.PlanGUID,
+                    IsPerUser = planDetail.IsPerUserPlan,
                 });
             }
         }
