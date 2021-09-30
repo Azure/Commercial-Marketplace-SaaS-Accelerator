@@ -82,17 +82,18 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
 
     try {    
-    $ADApplication = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
-    $ADObjectID = $ADApplication | %{ $_.ObjectId }
-    $ADApplicationID = $ADApplication | %{ $_.AppId }
-    Write-Host "🔑  AAD Single Tenant Object ID:" $ADObjectID    
-    Write-Host "🔑  AAD Single Tenant Application ID:" $ADApplicationID  
-
-    New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
-    Write-Host "🔑  ADApplicationID created."
+        $ADApplication = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
+        $ADObjectID = $ADApplication | %{ $_.ObjectId }
+        $ADApplicationID = $ADApplication | %{ $_.AppId }
+        Write-Host "🔑  AAD Single Tenant Object ID:" $ADObjectID    
+        Write-Host "🔑  AAD Single Tenant Application ID:" $ADApplicationID  
+        sleep 5 #this is to give time to AAD to register
+        New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
+        Write-Host "🔑  ADApplicationID created."
     }
     catch [System.Net.WebException],[System.IO.IOException] {
-        [Environment]::Exit(1)
+        Write-Host "🚨🚨   $PSItem.Exception"
+        break;
     }
 }
 

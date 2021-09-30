@@ -3,9 +3,6 @@
 You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal.
   
    1. Copy the following section to an editor and update it to match your company preference.
-   2. Open Powershell in the Azure Cloud (PowerShell)
-![CloudShell Imge](images/portal-cloudshell.png) 
-   3. Copy the new single command and run the command to install the SaaS Accelerator:
 
 ``` powershell
 git clone https://github.com/Azure/Microsoft-commercial-marketplace-SaaS-offer-billing-SDK.git -b main --depth 1; `
@@ -21,7 +18,7 @@ git clone https://github.com/Azure/Microsoft-commercial-marketplace-SaaS-offer-b
  -PathToARMTemplate ".\deploy.json" `
  ```
 
- The following lines are optional:
+  The following lines are optional:
  ``` powershell
  -TenantID "xxxx-xxx-xxx-xxx-xxxx" `
  -AzureSubscriptionID "xxx-xx-xx-xx-xxxx" `
@@ -31,6 +28,11 @@ git clone https://github.com/Azure/Microsoft-commercial-marketplace-SaaS-offer-b
  -LogoURLpng "https://company_com/company_logo.png" `
  -LogoURLico "https://company_com/company_logo.ico"
  ```
+
+   2. Open Powershell in the Azure Cloud (PowerShell)
+![CloudShell Imge](images/portal-cloudshell.png) 
+   3. Paste the new single command and run the command to install the SaaS Accelerator:
+
 
 ## Parameters
 
