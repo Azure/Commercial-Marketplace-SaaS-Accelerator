@@ -28,7 +28,7 @@ Before using this sample code and SDK, please review the commercial marketplace 
 
 - [SaaS fulfillment API FAQ.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq) Frequently-asked questions about the SaaS Fulfillment APIs.
 
-## Sample Code and SDK Documentation
+## Installation
 
 The documentation **(docs)** directory contains [installation instructions](./docs/Installation-Instructions.md) to help understand, implement, and deploy the sample code and SDK components.
 
