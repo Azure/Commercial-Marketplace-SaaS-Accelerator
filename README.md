@@ -1,6 +1,6 @@
 # Microsoft Commercial Marketplace - Community Sample Code and SDK for SaaS Applications
 
-![.NET Core](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/workflows/.NET%20Core/badge.svg)
+![.NET Core](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/workflows/.NET%20Core/badge.svg)
 
 ## Introduction
 
@@ -12,7 +12,7 @@ The sample code uses a .NET-based SDK published as a part of this project. The S
 
 The sample code and SDK in this project are for reference purposes only and are meant to complement the existing commercial marketplace documentation by demonstrating common API interactions required for publishing and managing SaaS application offers. The intent of this project is to accelerate the onboarding experience by providing code samples for developers. Although the sample code leverages the SDK, developers are encouraged to work with the SaaS Fulfillment API and Marketplace Metering Service API directly rather than rely on the SDK for production use.
 
-Please note: this is not a Microsoft-supported Azure SDK project. Support for this project is community-based and contributions are welcome. Details on contributing can be found [below.](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK#contributing)
+Please note: this is not a Microsoft-supported Azure SDK project. Support for this project is community-based and contributions are welcome. Details on contributing can be found [below.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator#contributing)
 
 ## Commercial Marketplace Documentation
 
@@ -46,7 +46,7 @@ The source **(src)** directory offers the following components:
 
 | Project | Description | Directory Name |
 | --- | --- | --- |
-| [**Customer portal - Sample web application**](./src/SaaS.SDK.CustomerProvisioning) | Demonstrates how to register, provision, and activate the marketplace subscription. Implemented using ASP.Net Core 3.1, the sample web application uses the Services client library and data access library to invoke and persist API interactions and provides an example user interface to demonstrate how a customer would manage their subscriptions and plans. |SaaS.SDK.CustomerProvisioning|
+| [**Customer portal - Sample web application**](./src/SaaS.SDK.CustomerProvisioning) | Demonstrates how to register, provision, and activate the marketplace subscription. Implemented using ASP.Net Core 5.0, the sample web application uses the Services client library and data access library to invoke and persist API interactions and provides an example user interface to demonstrate how a customer would manage their subscriptions and plans. |SaaS.SDK.CustomerProvisioning|
 | [**Publisher portal - Sample web application**](./src/SaaS.SDK.PublisherSolution) | Demonstrates how to generate usage events used in metered billing transactions, and how to emit these events to the Marketplace Metering Service API. |SaaS.SDK.PublisherSolution|
 | [**Client data access library**](./src/SaaS.SDK.Client.DataAccess) | Demonstrates how to persist plans, marketplace subscriptions, and related transaction attributes when using the SaaS Fulfillment API (v2) and Marketplace Metering Service API. |SaaS.SDK.Client.DataAccess |
 | [**Services client library**](./src/SaaS.SDK.Services) | Contains the services used by the Customer and Publisher portals, including the POCO classes to orchestrate calls to the marketplace APIs on [client library](https://github.com/microsoft/commercial-marketplace-client-dotnet) / database.|SaaS.SDK.Services |
@@ -60,8 +60,8 @@ The sample code and SDK in this repository run in the Publisher's environment as
 
 This SDK has been developed using the following technologies and versions:
 
-- [.NET Core 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
-- [ASP.NET Core Runtime 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+- [.NET Core 5.0](https://dotnet.microsoft.com/download/dotnet-core/5.0)
+- [ASP.NET Core Runtime 5.0](https://dotnet.microsoft.com/download/dotnet-core/5.0)
 - [Entity Framework](https://docs.microsoft.com/ef/)
 
 ## Security
@@ -75,7 +75,7 @@ Ensure the following prerequisites are met before getting started:
 - You must have an active Azure subscription for development and testing purposes. Create an Azure subscription [here.](https://azure.microsoft.com/free/)
 - You must have a Partner Center account enabled for use with the commercial marketplace. Create an account [here.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-account)
 - We recommend using an Integrated Development Environment (IDE):  [Visual Studio Code](https://code.visualstudio.com/),  [Visual Studio 2019](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16#), etc...
-- The SDK has been implemented using [.NET Core 3.1.1](https://dotnet.microsoft.com/download/dotnet-core/3.1)
+- The SDK has been implemented using [.NET Core 5.0](https://dotnet.microsoft.com/download/dotnet-core/5.0)
 - For data persistence we are using [Azure SQL Database](https://azure.microsoft.com/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/ef/). However, feel free to use any data repository you are comfortable with.  
 
 ## Releases

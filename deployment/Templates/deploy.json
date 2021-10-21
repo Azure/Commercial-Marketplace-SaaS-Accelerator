@@ -87,7 +87,7 @@
     "workerSize": "0",
     "workerSizeId": "0",
     "numberOfWorkers": "1",
-    "linuxFxVersion": "DOTNETCORE|3.1",
+    "linuxFxVersion": "DOTNETCORE|5.0",
     "subscriptionId": "[subscription().subscriptionId]",
     "location": "[resourceGroup().location]",
     "appServicePlanName": "[concat(parameters('webAppNamePrefix'),'AmpSvcPlan')]",

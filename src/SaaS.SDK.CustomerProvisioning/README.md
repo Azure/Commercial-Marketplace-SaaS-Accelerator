@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Demonstrates how to provision a customer (ASP.NET Core 3.1) using the SDK to invoke the APIs to create and manage marketplace SaaS subscriptions.
+Demonstrates how to provision a customer (ASP.NET Core 5.0) using the SDK to invoke the APIs to create and manage marketplace SaaS subscriptions.
 
 ## Description
 
