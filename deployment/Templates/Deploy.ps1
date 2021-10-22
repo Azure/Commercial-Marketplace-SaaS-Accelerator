@@ -270,11 +270,6 @@ Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/"
-Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
-}
-
-if ($IsADApplicationIDProvided) {  #If provided then show the user where to add the admin page in AAD, otherwise script did this already for the user.
-Write-host "__ Add The following URLs to the single-tenant AAD App Registration in Azure Portal:"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index"
