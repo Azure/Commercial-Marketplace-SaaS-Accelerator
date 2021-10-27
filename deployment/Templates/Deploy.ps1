@@ -178,8 +178,8 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
 # Download Publisher's PNG logo
 if($LogoURLpng) { 
     Write-Host "📷  Downloading PNG logo images..."
-    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\contoso-sales.png"
-    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.PublisherSolution\wwwroot\contoso-sales.png"
+    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\chef-progress-logo.png"
+    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.PublisherSolution\wwwroot\chef-progress-logo.png"
     Write-Host "📷  Logo images PNG downloaded."
 }
 
