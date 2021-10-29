@@ -11,7 +11,7 @@ git clone https://github.com/Azure/Microsoft-commercial-marketplace-SaaS-offer-b
  -WebAppNamePrefix "marketplacesaasgithub" `
  -SQLServerName "marketplacesaasgithub" `
  -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `
+ -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US" `
