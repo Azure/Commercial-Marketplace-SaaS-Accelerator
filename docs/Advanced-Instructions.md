@@ -15,7 +15,7 @@
 
 This document describes how to implement the required components to enable the SDK for the SaaS Fulfillment API (v2), Marketplace Metering Service API, and additional components that demonstrate how to build a customer provisioning interface, logging, and administration of the customer's subscriptions.
 
-Learn more about what's included and how to-use the SDK [here.](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/blob/master/README.md)
+Learn more about what's included and how to-use the SDK [here.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/master/README.md)
 
 Please note: this SDK is community-supported. If you need help or have questions using this SDK, please create a GitHub issue. Do not contact the marketplace pubisher support alias directly regarding use of this SDK. Thank you.
 
@@ -61,15 +61,15 @@ Install-Module -Name Az -AllowClobber
    3. Navigate to the folder **.\deployment\Templates**
    4. Run the command below with all the values in quotes updated.
 ```
-git clone https://github.com/code4clouds/Microsoft-commercial-marketplace-SaaS-offer-billing-SDK.git -b app-registration --depth 1; `
- cd ./Microsoft-commercial-marketplace-SaaS-offer-billing-SDK/deployment/Templates; `
+git clone https://github.com/code4clouds/Commercial-Marketplace-SaaS-Accelerator.git -b app-registration --depth 1; `
+ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
  Connect-AzureAD -Confirm; .\Deploy.ps1 `
  -WebAppNamePrefix "marketplacesaasgithub" `
  -SQLServerName "marketplacesaasgithub" `
  -SQLAdminLogin "adminlogin" `
  -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `
  -PublisherAdminUsers "user@email.com" `
- -BacpacUrl "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac" `
+ -BacpacUrl "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US" `
  -PathToARMTemplate ".\deploy.json"
@@ -107,8 +107,8 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | SQLAdminLogin | SQL Admin login |
 | SQLAdminLoginPassword | SQL Admin password |
 | PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
-| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/ |
-| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac |
+| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/ |
+| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac |
 | ResourceGroupForDeployment | Name of the resource group to deploy the resources |
 | Location | Location of the resource group |
 | AzureSubscriptionID | Subscription where the resources be deployed |
@@ -127,7 +127,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
     -SQLAdminLogin "adminlogin" `
     -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `
     -PublisherAdminUsers "user@contoso.com" `              
-    -BacpacUrl "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac" `
+    -BacpacUrl "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac" `
     -AzureSubscriptionID "subscriptionId" `
     -ResourceGroupForDeployment "resourcegroup" `
     -Location "East US" `
