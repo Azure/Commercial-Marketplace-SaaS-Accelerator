@@ -90,7 +90,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
         /// <returns>
         /// PlanDetailResult List.
         /// </returns>
-        public static List<PlanDetailResult> planResults(this IReadOnlyList<Plan> plans)
+        public static List<PlanDetailResultExtension> planResults(this IReadOnlyList<Plan> plans)
         {
             return plans.Select(x => x.planResult()).ToList();
         }
@@ -102,13 +102,14 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
         /// <returns>
         /// PlanDetailResult.
         /// </returns>
-        public static PlanDetailResult planResult(this Plan plan)
+        public static PlanDetailResultExtension planResult(this Plan plan)
         {
-            return new PlanDetailResult()
+            return new PlanDetailResultExtension()
             {
                 DisplayName = plan.DisplayName,
                 PlanId = plan.PlanId,
-                IsPrivate = plan.IsPrivate ?? false
+                IsPrivate = plan.IsPrivate ?? false,
+                IsPerUserPlan = plan.IsPricePerSeat ?? false,
             };
         }
 
