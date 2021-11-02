@@ -8,7 +8,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
+    using MeteringDimension = Models.MeteringDimension;
+    using RecurrentBillingTerm = Models.RecurrentBillingTerm;
+    using MeteringedQuantityIncluded = Models.MeteringedQuantityIncluded;
     /// <summary>
     /// Conversion Helper.
     /// </summary>
@@ -106,11 +108,64 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
         {
             return new PlanDetailResultExtension()
             {
+                Description = plan.Description,
                 DisplayName = plan.DisplayName,
                 PlanId = plan.PlanId,
                 IsPrivate = plan.IsPrivate ?? false,
+                HasFreeTrials = plan.HasFreeTrials ?? false,
                 IsPerUserPlan = plan.IsPricePerSeat ?? false,
+                IsStopSell = plan.IsStopSell ?? false,
+                Market = plan.Market,
+                PlanComponents = getPlanComponentsFromPlan(plan)
             };
+        }
+        /// <summary>
+        /// Exctract Meter and Billing dimi
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <returns></returns>
+        public static Models.PlanComponents getPlanComponentsFromPlan(this Plan plan)
+        {
+            Models.PlanComponents components = new Models.PlanComponents();
+            components.RecurrentBillingTerms = new List<RecurrentBillingTerm>();
+            components.MeteringDimensions = new List<MeteringDimension>();
+            //Map MeteringDimesion array
+
+            foreach (SaaS.Models.MeteringDimension meterDim in plan.PlanComponents.MeteringDimensions)
+            {
+                components.MeteringDimensions.Add(
+                                        new MeteringDimension()
+                                        {
+                                            Currency = meterDim.Currency,
+                                            PricePerUnit = meterDim.PricePerUnit,
+                                            UnitOfMeasure = meterDim.UnitOfMeasure,
+                                            DisplayName = meterDim.DisplayName,
+                                            Id = meterDim.Id
+                                        });
+            }
+
+            //Map RecurrentBillingTerms array
+            foreach (SaaS.Models.RecurrentBillingTerm recurrentBilling in plan.PlanComponents.RecurrentBillingTerms)
+            {
+                RecurrentBillingTerm recurrentBillingTerm = new RecurrentBillingTerm();
+                recurrentBillingTerm.MeteredQuantityIncluded = new List<MeteringedQuantityIncluded>();
+                recurrentBillingTerm.Currency = recurrentBilling.Currency;
+                recurrentBillingTerm.Price = recurrentBilling.Price;
+                recurrentBillingTerm.TermDescription = recurrentBilling.TermDescription;
+                recurrentBillingTerm.TermUnit = recurrentBilling.TermUnit.ToString();
+                foreach (SaaS.Models.MeteringedQuantityIncluded metering in recurrentBilling.MeteredQuantityIncluded)
+                {
+                    recurrentBillingTerm.MeteredQuantityIncluded.Add(new MeteringedQuantityIncluded()
+                    {
+                        DimensionId = metering.DimensionId,
+                        Units = metering.Units
+                    });
+                }
+
+                components.RecurrentBillingTerms.Add(recurrentBillingTerm);
+            }
+
+            return components;
         }
 
         /// <summary>

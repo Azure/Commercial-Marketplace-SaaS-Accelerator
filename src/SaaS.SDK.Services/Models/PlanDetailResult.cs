@@ -2,23 +2,27 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Text.Json.Serialization;
-
     /// <summary>
     /// Plan Details.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Models.SaaSApiResult" />
     public class PlanDetailResult : SaaSApiResult
     {
+
         /// <summary>
         /// Gets or sets the identifier.
         /// </summary>
         /// <value>
         /// The identifier.
         /// </value>
+        
         public int Id { get; set; }
-
+        
         /// <summary>
         /// Gets or sets the plan identifier.
         /// </summary>
@@ -40,6 +44,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         public string DisplayName { get; set; }
 
         /// <summary>
+        /// Gets or sets a value to describe the plan
+        /// </summary>
+        /// <value>
+        ///   Description
+        /// </value>
+        [JsonPropertyName("description")]
+        [DisplayName("description")]
+        public string Description { get; set; }
+
+
+        /// <summary>
         /// Gets or sets a value indicating whether this instance is private.
         /// </summary>
         /// <value>
@@ -48,5 +63,104 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         [JsonPropertyName("isPrivate")]
         [DisplayName("isPrivate")]
         public bool IsPrivate { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance has free trials.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is private; otherwise, <c>false</c>.
+        /// </value>
+        [JsonPropertyName("hasFreeTrials")]
+        [DisplayName("hasFreeTrials")]
+        public bool? HasFreeTrials { get; set; }
+
+/*
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is price per seat.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is private; otherwise, <c>false</c>.
+        /// </value>
+        [JsonPropertyName("isPricePerSeat")]
+        [DisplayName("isPricePerSeat")]
+        public bool? IsPricePerSeat { get; set; }
+*/
+
+
+
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is inactive
+        /// </summary>
+        ///  <value>
+        ///   <c>true</c> if this instance is private; otherwise, <c>false</c>.
+        /// </value>
+        [JsonPropertyName("isStopSell")]
+        [DisplayName("isStopSell")]
+        public bool? IsStopSell { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets value for market target
+        /// </summary>
+        ///  <value>
+        ///   target market
+        /// </value>
+        [JsonPropertyName("market")]
+        [DisplayName("market")]
+        public string Market { get; set; }
+
+
+
+        [JsonPropertyName("planComponents")]
+        [DisplayName("planComponents")]
+        /// <summary>
+        /// Gets or sets the plan component associate with the plan.
+        /// </summary>
+        /// <value>
+        /// The Plan Components list.
+        /// </value>
+        public  PlanComponents PlanComponents { get; set; }
+
+
+        /// <summary>
+        /// Get  IsmeteringSupported associate with the plan.
+        /// </summary>
+        public bool? IsmeteringSupported { 
+            get
+            {
+                return m_IsmeteringSupported;
+            }
+         }
+
+        /// <summary>
+        /// Set IsmeteringSupported  in case of MeterDimension is part of plan
+        /// </summary>
+        private bool m_IsmeteringSupported = false;
+        public List<MeteredDimensions> GetmeteredDimensions()
+        {
+            List<MeteredDimensions> meteredDimensions = new List<MeteredDimensions>();
+
+            if (this.PlanComponents != null && this.PlanComponents.MeteringDimensions.Count > 0)
+            {
+
+                foreach (MeteringDimension meterDim in PlanComponents.MeteringDimensions)
+                {
+                    meteredDimensions.Add(
+                                            new MeteredDimensions()
+                                            {
+                                                Dimension = meterDim.Id,
+                                                Description = meterDim.DisplayName
+                                            }) ;
+                    m_IsmeteringSupported = true;
+                }
+            }
+
+            return meteredDimensions;
+        }
+        
+
+
     }
 }

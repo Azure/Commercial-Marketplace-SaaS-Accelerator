@@ -197,7 +197,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             {
                 try 
                 { 
-                    var operationId = await this.marketplaceClient.Fulfillment.UpdateSubscriptionAsync(subscriptionId, new SubscriberPlan { PlanId = "" });
+                    var operationId = await this.marketplaceClient.Fulfillment.UpdateSubscriptionAsync(subscriptionId, new SubscriberPlan { Quantity = subscriptionQuantity });
                     return new SubscriptionUpdateResult() { OperationIdFromClientLib = operationId };
                 }
                 catch (RequestFailedException ex)

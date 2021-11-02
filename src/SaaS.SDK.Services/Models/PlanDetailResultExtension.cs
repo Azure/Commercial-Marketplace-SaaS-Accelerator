@@ -30,8 +30,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// Gets or sets the plan per seat or not.
         /// </summary>
         /// <value>
-        /// The plan unique identifier.
+        /// <c>true</c> if this instance is plan; otherwise, <c>false</c>..
         /// </value>
         public bool IsPerUserPlan { get; set; }
+
     }
+
 }
