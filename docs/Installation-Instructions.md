@@ -1,6 +1,6 @@
 ## Installating the Azure Marketplace SaaS Accelerator using Azure Cloud Shell
 
-You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal.
+You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal ([video tutorial](https://youtu.be/BVZTj6fssQ8)).
   
    1. Copy the following section to an editor and update it to match your company preference.
 
