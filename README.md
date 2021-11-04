@@ -26,6 +26,8 @@ Before using this sample code and SDK, please review the commercial marketplace 
 
 - [Marketplace metering service API.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) API details for the Marketplace Metering Service which, when used in conjunction with the SaaS Fulfillment API, enables event-based billing.
 
+- [Mastering the Marketpalce - SaaS Offers](https://github.com/microsoft/Mastering-the-Marketplace/blob/main/saas/README.md) Zero-to-Hero Training on Azure Marketplace SaaS Offers.
+
 - [SaaS fulfillment API FAQ.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq) Frequently-asked questions about the SaaS Fulfillment APIs.
 
 ## Installation
