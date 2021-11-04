@@ -82,17 +82,18 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
 
     try {    
-    $ADApplication = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
-    $ADObjectID = $ADApplication | %{ $_.ObjectId }
-    $ADApplicationID = $ADApplication | %{ $_.AppId }
-    Write-Host "🔑  AAD Single Tenant Object ID:" $ADObjectID    
-    Write-Host "🔑  AAD Single Tenant Application ID:" $ADApplicationID  
-
-    New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
-    Write-Host "🔑  ADApplicationID created."
+        $ADApplication = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
+        $ADObjectID = $ADApplication | %{ $_.ObjectId }
+        $ADApplicationID = $ADApplication | %{ $_.AppId }
+        Write-Host "🔑  AAD Single Tenant Object ID:" $ADObjectID    
+        Write-Host "🔑  AAD Single Tenant Application ID:" $ADApplicationID  
+        sleep 5 #this is to give time to AAD to register
+        New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
+        Write-Host "🔑  ADApplicationID created."
     }
     catch [System.Net.WebException],[System.IO.IOException] {
-        [Environment]::Exit(1)
+        Write-Host "🚨🚨   $PSItem.Exception"
+        break;
     }
 }
 
@@ -175,7 +176,7 @@ if($LogoURLico) {
 
 # If there is no backpack use the default from main
 if (!($BacpacUrl)) {
-    $BacpacUrl = "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac"
+    $BacpacUrl = "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac"
 }
 
 $TempFolderToStoreBacpac = '.\AMPSaaSDatabase'
@@ -269,11 +270,6 @@ Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/"
-Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
-}
-
-if ($IsADApplicationIDProvided) {  #If provided then show the user where to add the admin page in AAD, otherwise script did this already for the user.
-Write-host "__ Add The following URLs to the single-tenant AAD App Registration in Azure Portal:"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index"

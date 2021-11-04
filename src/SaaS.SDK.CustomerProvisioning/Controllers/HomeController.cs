@@ -203,7 +203,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                         var newSubscription = this.apiService.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
                         if (newSubscription != null && newSubscription.SubscriptionId != default)
                         {
-                            var subscriptionPlanDetail = this.apiService.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             Offers offers = new Offers()
                             {
                                 OfferId = newSubscription.OfferId,
@@ -213,15 +212,15 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                 OfferGuid = Guid.NewGuid(),
                             };
                             Guid newOfferId = this.offersRepository.Add(offers);
-                            List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
-                            var serializedPlans = JsonSerializer.Serialize(subscriptionPlanDetail);
-                            planList = JsonSerializer.Deserialize<List<PlanDetailResultExtension>>(serializedPlans);
-                            planList.ForEach(x =>
+
+                            var subscriptionPlanDetail = this.apiService.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            subscriptionPlanDetail.ForEach(x =>
                             {
                                 x.OfferId = newOfferId;
                                 x.PlanGUID = Guid.NewGuid();
                             });
-                            this.subscriptionService.AddPlanDetailsForSubscription(planList);
+                            this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail);
+                            
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
                             var subscriptionData = this.apiService.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);

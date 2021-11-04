@@ -132,7 +132,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// Get AllPlans For SubscriptionId.
         /// </returns>
         /// <exception cref="FulfillmentException">Invalid subscription ID.</exception>
-        public async Task<List<PlanDetailResult>> GetAllPlansForSubscriptionAsync(Guid subscriptionId)
+        public async Task<List<PlanDetailResultExtension>> GetAllPlansForSubscriptionAsync(Guid subscriptionId)
         {
             this.Logger?.Info($"Inside GetAllPlansForSubscriptionAsync() of FulfillmentApiService, trying to Get All Plans for {subscriptionId}");
             if (subscriptionId != default)

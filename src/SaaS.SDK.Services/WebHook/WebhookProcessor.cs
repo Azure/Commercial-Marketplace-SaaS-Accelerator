@@ -63,7 +63,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                     break;
 
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    await this.webhookHandler.UnknownActionAsync(payload).ConfigureAwait(false);
+                    break;
             }
         }
     }

@@ -232,5 +232,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
 
             await Task.CompletedTask;
         }
+
+        /// <summary>
+        /// Report unknow action from the webhook the asynchronous.
+        /// </summary>
+        /// <param name="payload">The payload.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task UnknownActionAsync(WebhookPayload payload)
+        {
+            this.applicationLogService.AddApplicationLog("Offer Received an unknow action: " + payload.Action);
+
+            await Task.CompletedTask;
+        }
     }
 }

@@ -3,25 +3,22 @@
 You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal.
   
    1. Copy the following section to an editor and update it to match your company preference.
-   2. Open Powershell in the Azure Cloud (PowerShell)
-![CloudShell Imge](images/portal-cloudshell.png) 
-   3. Copy the new single command and run the command to install the SaaS Accelerator:
 
 ``` powershell
-git clone https://github.com/Azure/Microsoft-commercial-marketplace-SaaS-offer-billing-SDK.git -b main --depth 1; `
- cd ./Microsoft-commercial-marketplace-SaaS-offer-billing-SDK/deployment/Templates; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b main --depth 1; `
+ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
  Connect-AzureAD -Confirm; .\Deploy.ps1 `
  -WebAppNamePrefix "marketplacesaasgithub" `
  -SQLServerName "marketplacesaasgithub" `
  -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `
+ -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US" `
  -PathToARMTemplate ".\deploy.json" `
  ```
 
- The following lines are optional:
+  The following lines are optional:
  ``` powershell
  -TenantID "xxxx-xxx-xxx-xxx-xxxx" `
  -AzureSubscriptionID "xxx-xx-xx-xx-xxxx" `
@@ -31,6 +28,11 @@ git clone https://github.com/Azure/Microsoft-commercial-marketplace-SaaS-offer-b
  -LogoURLpng "https://company_com/company_logo.png" `
  -LogoURLico "https://company_com/company_logo.ico"
  ```
+
+   2. Open Powershell in the Azure Cloud (PowerShell)
+![CloudShell Imge](images/portal-cloudshell.png) 
+   3. Paste the new single command and run the command to install the SaaS Accelerator:
+
 
 ## Parameters
 
@@ -45,8 +47,8 @@ git clone https://github.com/Azure/Microsoft-commercial-marketplace-SaaS-offer-b
 | SQLAdminLogin | SQL Admin login |
 | SQLAdminLoginPassword | SQL Admin password |
 | PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
-| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/ |
-| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac |
+| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/ |
+| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac |
 | ResourceGroupForDeployment | Name of the resource group to deploy the resources |
 | Location | Location of the resource group |
 | AzureSubscriptionID | Subscription where the resources be deployed |

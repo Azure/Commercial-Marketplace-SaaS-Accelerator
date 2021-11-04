@@ -360,3 +360,6 @@ src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/indexLayout.xml
 src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/modules.xml
 src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/projectSettingsUpdater.xml
 src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/vcs.xml
+
+# ignoring developer settings file
+appsettings.Development.json
