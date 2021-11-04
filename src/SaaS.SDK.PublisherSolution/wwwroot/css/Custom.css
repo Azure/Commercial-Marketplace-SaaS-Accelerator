@@ -428,3 +428,7 @@ input:checked + .slider:before {
 .red-star {
     color: red;
 }
+
+button.navbar-toggler:focus, button.navbar-toggler:hover {
+    outline: none
+}
