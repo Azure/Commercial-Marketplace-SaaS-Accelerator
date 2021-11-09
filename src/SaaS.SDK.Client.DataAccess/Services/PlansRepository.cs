@@ -76,6 +76,8 @@
                     existingPlan.Description = planDetails.Description;
                     existingPlan.DisplayName = planDetails.DisplayName;
                     existingPlan.OfferId = planDetails.OfferId;
+                    existingPlan.IsmeteringSupported = planDetails.IsmeteringSupported;
+                    existingPlan.MeteredDimensions = planDetails.MeteredDimensions;
                     this.context.Plans.Update(existingPlan);
                     this.context.SaveChanges();
                     return existingPlan.Id;

@@ -220,7 +220,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                 x.PlanGUID = Guid.NewGuid();
                             });
                             this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail);
-                            
+
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
                             var subscriptionData = this.apiService.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
