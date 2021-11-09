@@ -127,17 +127,34 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// <summary>
         /// Get  IsmeteringSupported associate with the plan.
         /// </summary>
-        public bool? IsmeteringSupported { 
+        public bool? IsmeteringSupported {
             get
             {
+                if (!m_IsmeteringSupported && this.PlanComponents != null && this.PlanComponents.MeteringDimensions.Count > 0)
+                {
+                    m_IsmeteringSupported = true;
+                }
+
                 return m_IsmeteringSupported;
             }
          }
 
         /// <summary>
-        /// Set IsmeteringSupported  in case of MeterDimension is part of plan
+        /// Set IsmeteringSupported  in case of Meter Dimension is part of plan
         /// </summary>
+        /// <value>
+        /// set true if there is Meter Dimension count greater than 1 otherwise it is false
+        /// </value>
         private bool m_IsmeteringSupported = false;
+
+
+
+        /// <summary>
+        /// Get Meter Dimensions list
+        /// </summary>
+        /// <returns>
+        /// A list of Meter Dimensions
+        /// </returns>
         public List<MeteredDimensions> GetmeteredDimensions()
         {
             List<MeteredDimensions> meteredDimensions = new List<MeteredDimensions>();
