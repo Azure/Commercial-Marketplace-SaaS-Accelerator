@@ -80,7 +80,7 @@ if ($SQLAdminLogin -eq "") {
 $storageAccountName = ($WebAppNamePrefix + "storage").ToLower()
 $containerName = "packagefiles" 
 
-# AAD App Registration - Create Single Tenant App Registration
+# AAD App Registration - Create Single Tenant App Registration (Used for marketplace API integration)
 if (!($ADApplicationID)) {   
     Write-Host "🔑  Creating ADApplicationID..."
     $endDate = $(Get-Date).AddYears(2)
@@ -101,7 +101,7 @@ if (!($ADApplicationID)) {
     }
 }
 
-# AAD App Registration - Create Multi-Tenant App Registration Requst 
+# AAD App Registration - Create Multi-Tenant App Registration Request (used for authenticating users to the landing page / publihser portal)
 if (!($ADMTApplicationID)) {   
     Write-Host "🔑  Mapping Landing paged mapped to AppRegistration..."
     try {
@@ -132,11 +132,12 @@ if (!($ADMTApplicationID)) {
 }
 
 # Setup deployment artifacts -> Packages for web apps and bacpac for database
-$localPathToBacpacFile = '..\Database\AMPSaaSDB.bacpac' 
 $localPathToPublisherPortalPackage = "..\..\Publish\publisherPortal.zip"
 $localPathToCustomerPortalPackage = "..\..\Publish\customerPortal.zip"
+$localPathToBacpacFile = '..\Database\AMPSaaSDB.bacpac' 
 $sqlBlobName = "sqlbackup.bacpac"
 
+#Compiling apps to produce packages
 Write-host "☁  Preparing the publish files for PublisherPortal"  
 dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal -v q
 Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath $localPathToPublisherPortalPackage -Force
@@ -144,9 +145,6 @@ Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath $localPa
 Write-host "☁  Preparing the publish files for CustomerPortal"
 dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal -v q
 Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath $localPathToCustomerPortalPackage -Force
-
-
-#Parameter for ARM template, Make sure to add values for parameters before running the script.
 
 
 # Create RG if not exists
@@ -171,6 +169,8 @@ az deployment group create `
         SQLAdminLoginPassword=$SQLAdminLoginPassword `
         PublisherAdminUsers=$PublisherAdminUsers 
 
+#Create a storage account for the SQL backup file and restore.
+#Upload the SQL backup file, generate a shorttimes SAS token, and use it to restore the database.
 az storage account create  `
     --resource-group $ResourceGroupForDeployment `
     --name $storageAccountName `
@@ -210,6 +210,7 @@ az sql db import `
     --storage-key-type SharedAccessKey `
     --storage-uri $sqlBlobPath
 
+#Deploy the web apps
 az webapp deployment source config-zip `
     --resource-group  $ResourceGroupForDeployment `
     --name "$WebAppNamePrefix-portal" `
