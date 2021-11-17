@@ -3,16 +3,16 @@
 
 @model Microsoft.Marketplace.SaaS.SDK.Services.Models.SubscriptionResultExtension
 
-@{
+<!--@{
     ViewData["Title"] = "Home";
-}
+}-->
 @if (!Model.ShowWelcomeScreen)
 {
     <div class="container" id="divHome">
         <form method="post" id="frmIndex">
 
             <div class="text-white mt20">
-                <span class="cm-section-heading">Subscription Details</span>
+                <span>Thanks you for accepting our offer for purchasing Chef. The details of your subscription are:</span>
             </div>
             @if (Model != null && !string.IsNullOrEmpty(Model.ErrorMessage))
             {
@@ -189,12 +189,16 @@
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == true)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Activate</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate'),sendToSlack('New offer configured. Please activate the offer')" id="btnActive" class="cm-button-default text-right">Activate</a>
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == false)
                     {
                         <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Subscribe</a>
                     }
+                </div>
+                <div class="text-right">
+                    <span>Your license key will be sent to your email, @Html.DisplayFor(model => model.Purchaser.EmailId), you will need this to activate your subscription</span>
+                    <
                 </div>
             }
         </form>
@@ -263,4 +267,25 @@ else
         });
         return valid;
     }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "https://hooks.slack.com/services/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", true);
+    xhr.onload = function (e) {
+    if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+        console.log(xhr.responseText);
+        console.log("response: " + xhr.responseText);
+        } else {
+        console.error(xhr.statusText);
+        }
+    }
+    };
+    xhr.onerror = function (e) {
+    console.error(xhr.statusText);
+    };
+
+    function sendToSlack (s) {
+        xhr.send(JSON.stringify({ "text": s}));
+    }
+
 </script>
