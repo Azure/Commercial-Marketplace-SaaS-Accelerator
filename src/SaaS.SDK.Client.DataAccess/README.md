@@ -49,3 +49,11 @@ The project is composed of the following sections:
 | Contracts | Interface that defines the methods to manage the entities |
 | Entities | Table entities |
 | Services | Implementations for the interfaces to manage the persistence and query over entities |
+
+
+##Entity Framework
+This project uses Entity Framework as a SQL ORM. It uses Code-First migrations to ensure database schema is consistent with code
+When changing anything in the Entity Folder, please ensure you create the appropriate migration.
+
+From the developer Powershell command, from the src root directory run the following command to create a new migration:
+  `dotnet ef migrations add <NAME> --context SaasKitContext --project .\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj --startup-project .\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj
