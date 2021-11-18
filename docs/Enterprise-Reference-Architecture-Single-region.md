@@ -8,7 +8,7 @@
 
 There are different options for deploying SaaS over in production:
 - Single Region Deployment based on SaaS Accelerator solution
-- [Single Region Deployment SaaS Accelerator solution with Custom SaaS solution](Enterprise-Reference-Architecture-single-region-saas-rg.md)
+- [Single Region Deployment SaaS Accelerator solution with Custom SaaS solution](Enterprise-Reference-Architecture-Single-region-saas-rg.md)
 - [High Availability Deployment i.e Multi Region Deployment](Enterprise-Reference-Architecture-multi-region-saas-rg.md) 
 
 
@@ -100,8 +100,6 @@ The following technologies provide identity management capabilities in the Azure
 
 
 ## Other Reference Architect Examples
-Single Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-Single-region-saas-rg.md)
-
-
-High Availability Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-Single-region-saas-rg.md)
+- Single Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-Single-region-saas-rg.md)
+- High Availability Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-Single-region-saas-rg.md)
  
