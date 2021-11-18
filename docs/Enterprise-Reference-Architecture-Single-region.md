@@ -1,46 +1,50 @@
-# Enterpise Reference Architect Example
-The following diagram is a **sample** refernce archtiect for SaaS offer at production level.  [The Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/) is a set of guiding tenets that can be used to improve the quality of a workload. The framework consists of five pillars of architectural excellence:
+# Production Reference Architect Examples:
+ Deploying SaaS Offer to production requirements following  [The Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/) which is a set of guiding tenets that can be used to improve the quality of a workload. The framework consists of five pillars of architectural excellence:
 - Reliability
 - Security
 - Cost Optimization
 - Operational Excellence
 - Performance Efficiency
 
-## Architecture
-![SaaS Enterprise](./images/saas-enterpise-scale.png)
+There are different options for deploying SaaS over in production:
+- Single Region Deployment based on SaaS Accelerator solution
+- [Single Region Deployment SaaS Accelerator solution with Custom SaaS solution](Enterprise-Reference-Architecture-single-region-saas-rg.md)
+- [High Availability Deployment i.e Multi Region Deployment](Enterprise-Reference-Architecture-multi-region-saas-rg.md) 
 
-This example uses the following Azure services. Details of the deployment 
-architecture are located in the deployment architecture section.
+
+## Single Region Architecture
+This example is useful where publisher will use the SaaS Accelerator portal site as base code to build thier SaaS offer. SaaS Accelerator has an Admin site to manage the subscribers where publisher will be able to active, deactive and change subscription plan or quantity. The solution follows [Azure Security Center](https://azure.microsoft.com/en-us/services/security-center/) and [The Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/) recommendation.
+
+
+In case of custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-Single-region-saas-rg.md)
+
+![SaaS Enterprise](./images/single-region.png)
+
+
+ This deployment uses the following Azure services.
 - Azure Active Directory
-- Azure Key Vault
+- App Service Plan
+- App Service app
 - Azure SQL Database
 - Application Gateway
-  - Web Application Firewall
-  - Firewall mode: prevention
-  - Rule set: OWASP 3.0
-  - Listener: port 443
 - Azure virtual network
 - Network security groups
-- Azure DNS
+- Azure Private DNS
 - Azure Storage
-- Azure Monitor
-- App Service Plan
-- Azure Load Balancer
-- Azure Web App
+- Appplication Insight
+- Azure Key Vault
 
 **App Service plan**: An App Service plan provides the managed virtual machines (VMs) that host your app. All apps associated with a plan run on the same VM instances.
 
 **App Service app**: Azure App Service is a fully managed platform for creating and deploying cloud applications.
 
-**Deployment slots**: A deployment slot lets you stage a deployment and then swap it with the production deployment. That way, you avoid deploying directly into production. See the Manageability section for specific recommendations.
-
-**IP address**: The App Service app has a public IP address and a domain name. The domain name is a subdomain of azurewebsites.net, such as contoso.azurewebsites.net.
-
-**Azure DNS**: Azure DNS is a hosting service for DNS domains, providing name resolution using Microsoft Azure infrastructure. By hosting your domains in Azure, you can manage your DNS records using the same credentials, APIs, tools, and billing as your other Azure services. To use a custom domain name (such as contoso.com) create DNS records that map the custom domain name to the IP address. For more information, see Configure a custom domain name in Azure App Service.
-
 **Azure SQL Database**: SQL Database is a relational database-as-a-service in the cloud. SQL Database shares its code base with the Microsoft SQL Server database engine.
 
-**Azure Load Balancer**: Azure Load Balancer allows customers to scale their applications and create high availability for services. Load Balancer supports inbound as well as outbound scenarios, and provides low latency, high throughput, and scales up to millions of flows for all TCP and UDP applications.
+**Azure Storage**: An Azure Storage Account used to host Microsoft Azure file shares, Blob, table and queues.
+
+**Appplication Insight**: An cloud Service can monitor Azure cloud service apps for availability, performance, failures, and usage by combining data from Application Insights SDKs with Azure Diagnostics data from your cloud services. 
+
+**Azure Key Vault**: Azure Key Vault is a cloud service for securely storing and accessing secrets. A secret is anything that you want to tightly control access to, such as API keys, passwords, certificates, or cryptographic keys.
 
 ## Virtual Network
 The architecture defines a private virtual network with default address space.
@@ -61,6 +65,8 @@ Each of the NSGs have specific ports and protocols open so that the solution can
 **Subnets**: Each subnet is associated with its corresponding NSG.
 
 **Private Link**:Azure Private Link enables you to access Azure PaaS Services (for example, Azure Storage and SQL Database) and Azure hosted customer-owned/partner services over a Private Endpoint in your virtual network. Traffic between your virtual network and the service traverses over the Microsoft backbone network, eliminating exposure from the public Internet.
+
+**Azure Private DNS**: Azure Private DNS manages and resolves domain names in the virtual network without the need to configure a custom DNS solution. By using private DNS zones, you can use your own custom domain name instead of the Azure-provided names during deployment. Using a custom domain name helps you tailor your virtual network architecture to best suit your organization's needs. It provides a naming resolution for virtual machines (VMs) within a virtual network and connected virtual networks. Additionally, you can configure zones names with a split-horizon view, which allows a private and a public DNS zone to share the name.
 
 ## Identity management
 The following technologies provide identity management capabilities in the Azure environment:
@@ -92,3 +98,10 @@ The following technologies provide identity management capabilities in the Azure
 - Custom health probes
 - Azure Security Center and Azure Advisor provide additional protection and notifications. Azure Security Center also provides a reputation system.
 
+
+## Other Reference Architect Examples
+Single Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-Single-region-saas-rg.md)
+
+
+High Availability Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-Single-region-saas-rg.md)
+ 
