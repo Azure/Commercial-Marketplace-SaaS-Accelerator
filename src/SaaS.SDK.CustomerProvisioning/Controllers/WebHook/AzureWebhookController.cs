@@ -76,12 +76,12 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
         /// <param name="request">The request.</param>
         public async void Post(WebhookPayload request)
         {
-            this.applicationLogService.AddApplicationLog("The azure Webhook Triggered.");
+            await this.applicationLogService.AddApplicationLog("The azure Webhook Triggered.").ConfigureAwait(false);
 
             if (request != null)
             {
                 var json = JsonSerializer.Serialize(request);
-                this.applicationLogService.AddApplicationLog("Webhook Serialize Object " + json);
+                await this.applicationLogService.AddApplicationLog("Webhook Serialize Object " + json).ConfigureAwait(false);
                 await this.webhookProcessor.ProcessWebhookNotificationAsync(request).ConfigureAwait(false);
             }
         }
