@@ -55,5 +55,10 @@ The project is composed of the following sections:
 This project uses Entity Framework as a SQL ORM. It uses Code-First migrations to ensure database schema is consistent with code
 When changing anything in the Entity Folder, please ensure you create the appropriate migration.
 
+if dotnet ef does not exist on the system run the follwing command to run it:
+ `dotnet tool install --global dotnet-ef 
+
 From the developer Powershell command, from the src root directory run the following command to create a new migration:
   `dotnet ef migrations add <NAME> --context SaasKitContext --project .\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj --startup-project .\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj
+
+  `dotnet ef database update --context SaasKitContext --project .\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj --startup-project .\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj

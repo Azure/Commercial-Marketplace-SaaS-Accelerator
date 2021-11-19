@@ -491,6 +491,11 @@ namespace SaaS.SDK.Client.DataAccess.Migrations
                 name: "IX_Subscriptions_UserId",
                 table: "Subscriptions",
                 column: "UserId");
+
+
+            migrationBuilder.SeedStoredProcedures();
+
+            migrationBuilder.SeedData();
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
