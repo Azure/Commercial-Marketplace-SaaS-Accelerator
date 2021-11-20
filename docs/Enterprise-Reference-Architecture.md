@@ -65,6 +65,7 @@ Please refer to Deployment checklist document [here](Enterprise-Reference-Archit
 
 
 # Other Reference Architect Examples
+- Single Region architecture please check [here](./Enterprise-Reference-Architecture-Single-region.md)
 - Single Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-Single-region-saas-rg.md)
 - High Availability Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-multi-region-saas-rg.md)
  
