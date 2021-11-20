@@ -61,7 +61,7 @@ Following Azure security Center recommendation for WebApp, the service will have
 
 
 ## Deployment
-Please refer to Deployment checklist docs[]
+Please refer to Deployment checklist document [here](Enterprise-Reference-Architecture-Checklist.md)
 
 
 # Other Reference Architect Examples
