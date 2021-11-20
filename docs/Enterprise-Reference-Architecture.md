@@ -48,6 +48,7 @@ In gneral SaaS Solution will required data layer and storage layer, each compone
 
 
  After deploying SaaS backend componentes, the front end is ready to deploy.
+ 
  ![saasresourcegroup4](./images/saasrg4.png)  
 
  The front-end contians a App Service Plan which represent the hosting machine. Also contains the WebApp service that present SaaS Solution front-end. 
