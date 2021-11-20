@@ -22,17 +22,17 @@ In case of custom SaaS solution architecture please check [here](./Enterprise-Re
 
 
  This deployment uses the following Azure services.
-- Azure Active Directory
-- App Service Plan
-- App Service app
-- Azure SQL Database
-- Application Gateway
-- Azure virtual network
-- Network security groups
-- Azure Private DNS
-- Azure Storage
-- Appplication Insight
-- Azure Key Vault
+- [Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-whatis)
+- [App Service Plan](https://docs.microsoft.com/en-us/azure/app-service/overview-hosting-plans)
+- [App Service app](https://docs.microsoft.com/en-us/azure/app-service/overview)
+- [Azure SQL Database](https://docs.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview)
+- [Application Gateway](https://docs.microsoft.com/en-us/azure/application-gateway/overview)
+- [Azure virtual network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview)
+- [Network security groups](https://docs.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)
+- [Azure Private DNS](https://docs.microsoft.com/en-us/azure/dns/private-dns-overview)
+- [Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction)
+- [Appplication Insight](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
+- [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/)
 
 **App Service plan**: An App Service plan provides the managed virtual machines (VMs) that host your app. All apps associated with a plan run on the same VM instances.
 
@@ -99,7 +99,10 @@ The following technologies provide identity management capabilities in the Azure
 - Azure Security Center and Azure Advisor provide additional protection and notifications. Azure Security Center also provides a reputation system.
 
 
+## Deployment
+Please refer to Deployment checklist document [here](Enterprise-Reference-Architecture-Checklist.md)
+
 ## Other Reference Architect Examples
 - Single Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-Single-region-saas-rg.md)
-- High Availability Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-Single-region-saas-rg.md)
+- High Availability Region with custom SaaS solution architecture please check [here](./Enterprise-Reference-Architecture-multi-region-saas-rg.md)
  
