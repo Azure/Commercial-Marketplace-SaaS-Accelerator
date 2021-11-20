@@ -49,8 +49,11 @@ For ARM Template steps are in the following order
 - Enable Application Gateway Private link
 - Enable Application Gateway Application Insight
 
+** These step for mutli region deployment only**. 
+- Deploy Azure Traffic Manager 
+- Enable Geo Replication for Storage Account 
+- Enable Geo Replication for SQL Server
 
-- Deploy Azure Traffic Manager ** This step for mutli region deployment only**. 
 
 
 
