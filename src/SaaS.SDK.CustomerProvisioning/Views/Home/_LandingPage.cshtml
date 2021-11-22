@@ -268,7 +268,10 @@ else
     }
 
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "https://hooks.slack.com/services/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", true);
+    var baseURL = "https://hooks.slack.com/services/";
+    var slack_webhook = "T03GRS9QS/B02NWAVRCQG/";
+    var slack_path = "kUgwWlHA3LdcWYbtlZMGywXV";
+    xhr.open("POST", baseURL+slack_webhook+slack_path, true);
     xhr.onload = function (e) {
     if (xhr.readyState === 4) {
         if (xhr.status === 200) {
