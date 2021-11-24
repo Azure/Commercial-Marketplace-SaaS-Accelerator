@@ -29,7 +29,6 @@ This example is useful where publisher will SaaS solution deployed to its Resour
 - [Azure virtual network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview)
 - [Network security groups](https://docs.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)
 - [Azure Private DNS](https://docs.microsoft.com/en-us/azure/dns/private-dns-overview)
-- [Azure Storage](https://docs.microsoft.com/en-us/azure/storage/common/storage-introduction)
 - [Appplication Insight](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/)
 
@@ -38,8 +37,6 @@ This example is useful where publisher will SaaS solution deployed to its Resour
 **App Service app**: Azure App Service is a fully managed platform for creating and deploying cloud applications.
 
 **Azure SQL Database**: SQL Database is a relational database-as-a-service in the cloud. SQL Database shares its code base with the Microsoft SQL Server database engine.
-
-**Azure Storage**: An Azure Storage Account used to host Microsoft Azure file shares, Blob, table and queues.
 
 **Appplication Insight**: An cloud Service can monitor Azure cloud service apps for availability, performance, failures, and usage by combining data from Application Insights SDKs with Azure Diagnostics data from your cloud services. 
 
@@ -53,7 +50,6 @@ The architecture defines a private virtual network with default address space.
 - 1 NSG for Application Gateway
 - 1 NSG for App Service
 - 1 NSG for Azure SQL Database
-- 1 NSG for Azure Storage Account
 - 1 NSG for Azure KeyVault
 
 Each of the NSGs have specific ports and protocols open so that the solution can work securely and correctly. In addition, the following configurations are enabled for each NSG:
@@ -63,7 +59,7 @@ Each of the NSGs have specific ports and protocols open so that the solution can
 
 **Subnets**: Each subnet is associated with its corresponding NSG.
 
-**Private Link**:Azure Private Link enables you to access Azure PaaS Services (for example, Azure Storage and SQL Database) and Azure hosted customer-owned/partner services over a Private Endpoint in your virtual network. Traffic between your virtual network and the service traverses over the Microsoft backbone network, eliminating exposure from the public Internet.
+**Private Link**:Azure Private Link enables you to access Azure PaaS Services (for example Azure SQL Database) and Azure hosted customer-owned/partner services over a Private Endpoint in your virtual network. Traffic between your virtual network and the service traverses over the Microsoft backbone network, eliminating exposure from the public Internet.
 
 **Azure Private DNS**: Azure Private DNS manages and resolves domain names in the virtual network without the need to configure a custom DNS solution. By using private DNS zones, you can use your own custom domain name instead of the Azure-provided names during deployment. Using a custom domain name helps you tailor your virtual network architecture to best suit your organization's needs. It provides a naming resolution for virtual machines (VMs) within a virtual network and connected virtual networks. Additionally, you can configure zones names with a split-horizon view, which allows a private and a public DNS zone to share the name.
 

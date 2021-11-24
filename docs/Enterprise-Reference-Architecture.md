@@ -23,8 +23,6 @@ The following diagram showing basic flow for the production deployment where eng
  Application gateway will act as first line of defense for SaaS Solution. It is highly recommended to deploy Application Gateway with VNET integration to the SaaS Solution VNET network and enabled Private Link so the service can communicate internally with SaaS Solution.
 
 
-
-
 ## Azure Active Directory
 ![aad](./images/aad.png) 
 
@@ -42,7 +40,7 @@ Following Azure security Center recommendation for KeyVault, it will be deployed
 
  ![saasresourcegroup2](./images/saasrg2.png) 
 
-In general SaaS Solution will required data layer and sometime storage layer. If the **SaaS Solution** needs components like SQL Server, Storage Account, Cosmos Db, Azure function etc, it will be deployed to to dedicated subnet and enable private link. **The Current SaaS Accelerator requires SQL Server Services only** 
+In general SaaS Solution will required data layer and sometime storage layer. If the **SaaS Solution** needs components like SQL Server, Storage Account, Cosmos Db, Azure function etc, each component will be deployed to a dedicated subnet and enable private link. **The Current SaaS Accelerator requires SQL Server Services only** 
 
  ![saasresourcegroup3](./images/saasrg3.png) 
 
