@@ -42,7 +42,7 @@ Following Azure security Center recommendation for KeyVault, it will be deployed
 
  ![saasresourcegroup2](./images/saasrg2.png) 
 
-In gneral SaaS Solution will required data layer and storage layer, each component will be deployed to to dedicated subnet and enable private link. 
+In general SaaS Solution will required data layer and sometime storage layer. If the **SaaS Solution** needs components like SQL Server, Storage Account, Cosmos Db, Azure function etc, it will be deployed to to dedicated subnet and enable private link. **The Current SaaS Accelerator requires SQL Server Services only** 
 
  ![saasresourcegroup3](./images/saasrg3.png) 
 
