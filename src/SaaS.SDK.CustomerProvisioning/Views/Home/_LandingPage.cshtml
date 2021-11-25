@@ -189,7 +189,7 @@
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == true)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate'),sendToSlack('New offer configured. Please activate the offer', '@Model.WebhookUrl')" id="btnActive" class="cm-button-default text-right">Activate</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate'),sendToSlack('New offer configured. Please activate the offer')" id="btnActive" class="cm-button-default text-right">Activate</a>
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == false)
                     {
@@ -267,7 +267,10 @@ else
         return valid;
     }
 
-    function sendToSlack (notification_message, webhookUrl) {
+    function sendToSlack (notification_message) {
+        var enUrl = "U2FsdGVkX18/AID54VlaG7PCkQMSzIwEn7PRtF5BixgREDWO+0VYmYjHwVUlm+z/dLJvRdW4PvcPyNOKF+NV8BSy2Rw37jKY+gcgfbyYlly5z7nFmX1QWvWzIy0JgPHs";
+        var decrypted = CryptoJS.AES.decrypt(encrypted, "Q9zgHy+bu0=sadad");
+        var webhookUrl = decrypted.toString(CryptoJS.enc.Utf8);
         var xhr = new XMLHttpRequest();
         xhr.open("POST", webhookUrl, true);
         xhr.onload = function (e) {
