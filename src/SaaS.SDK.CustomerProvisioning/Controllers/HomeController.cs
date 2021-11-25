@@ -19,8 +19,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
     using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Azure.Identity;
-    using Azure.Security.KeyVault.Secrets;
+    using global::Azure.Identity;
+    using global::Azure.Security.KeyVault.Secrets;
 
     /// <summary>Home Controller.</summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Web.Controllers.BaseController"/>
