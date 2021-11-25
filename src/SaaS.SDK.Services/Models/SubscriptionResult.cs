@@ -236,5 +236,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// <summary>Gets or sets the name of the customer.</summary>
         /// <value>The name of the customer.</value>
         public string CustomerName { get; set; }
+
+        /// <summary>Gets or sets the name of the customer.</summary>
+        /// <value>The name of the customer.</value>
+        public string WebhookUrl { get; set; }
     }
 }

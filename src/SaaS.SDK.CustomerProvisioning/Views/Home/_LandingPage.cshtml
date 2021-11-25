@@ -189,7 +189,7 @@
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == true)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate'),sendToSlack('New offer configured. Please activate the offer')" id="btnActive" class="cm-button-default text-right">ActivateMad</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate'),sendToSlack('New offer configured. Please activate the offer', '@Model.WebhookUrl')" id="btnActive" class="cm-button-default text-right">Activate</a>
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == false)
                     {
@@ -267,27 +267,25 @@ else
         return valid;
     }
 
-    var xhr = new XMLHttpRequest();
-    var baseURL = "https://hooks.slack.com/services/";
-    var slack_webhook = "T03GRS9QS/B02NWAVRCQG/";
-    var slack_path = "kUgwWlHA3LdcWYbtlZMGywXV";
-    xhr.open("POST", baseURL+slack_webhook+slack_path, true);
-    xhr.onload = function (e) {
-    if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-        console.log(xhr.responseText);
-        console.log("response: " + xhr.responseText);
-        } else {
-        console.error(xhr.statusText);
+    function sendToSlack (notification_message, webhookUrl) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", webhookUrl, true);
+        xhr.onload = function (e) {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            console.log("response: " + xhr.responseText);
+            } else {
+            console.error(xhr.statusText);
+            }
         }
-    }
-    };
-    xhr.onerror = function (e) {
-    console.error(xhr.statusText);
-    };
-
-    function sendToSlack (s) {
-        xhr.send(JSON.stringify({ "text": s}));
+        };
+        xhr.onerror = function (e) {
+        console.error(xhr.statusText);
+        };
+        console.log("testing sendtoslack function");
+        xhr.send(JSON.stringify({ "text": notification_message}));
+        console.log("testing reach sendtoslack function");
     }
 
 </script>
