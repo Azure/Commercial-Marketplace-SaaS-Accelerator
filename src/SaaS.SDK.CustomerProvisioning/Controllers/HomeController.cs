@@ -20,7 +20,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using global::Azure.Identity;
-    using global::Azure.Security.KeyVault.Secrets;
 
     /// <summary>Home Controller.</summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Web.Controllers.BaseController"/>
@@ -815,7 +814,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
         private static string Task()
         {
             const string secretName = "slack-webhook";
-            var kvUri = "https://chef-automate-kv.vault.azure.net";
+            var kvUri = $"https://chef-automate-kv.vault.azure.net";
             var client = new SecretClient(new Uri(kvUri), new DefaultAzureCredential());
             var secret = await client.GetSecretAsync(secretName); 
             return secret.Value.Value;
