@@ -269,7 +269,7 @@ else
 
     function sendToSlack (notification_message) {
         var enUrl = "U2FsdGVkX18/AID54VlaG7PCkQMSzIwEn7PRtF5BixgREDWO+0VYmYjHwVUlm+z/dLJvRdW4PvcPyNOKF+NV8BSy2Rw37jKY+gcgfbyYlly5z7nFmX1QWvWzIy0JgPHs";
-        var decrypted = CryptoJS.AES.decrypt(encrypted, "Q9zgHy+bu0=sadad");
+        var decrypted = CryptoJS.AES.decrypt(enUrl, "Q9zgHy+bu0=sadad");
         var webhookUrl = decrypted.toString(CryptoJS.enc.Utf8);
         var xhr = new XMLHttpRequest();
         xhr.open("POST", webhookUrl, true);
