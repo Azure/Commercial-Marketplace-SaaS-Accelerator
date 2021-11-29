@@ -58,6 +58,10 @@ The sample code and SDK in this repository run in the Publisher's environment as
 
 ![Usecase](./docs/images/sdk_overview.png)
 
+
+## Production Reference Architecture
+How-To deploy SaaS Accelerator to production environment? This [documents](./docs/Enterprise-Reference-Architecture.md) will provide recommendation on how to deploy the production. There are multiple samples for different architecture approaches and best practices to consider for each deployment.
+
 ## Technology and Versions
 
 This SDK has been developed using the following technologies and versions:
