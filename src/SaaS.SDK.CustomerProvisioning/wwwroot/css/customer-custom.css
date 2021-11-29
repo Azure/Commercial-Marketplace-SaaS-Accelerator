@@ -360,3 +360,27 @@ a.cm-dropdown-option {
 .red-star {
     color: red;
 }
+.progress-footer {
+    position: absolute;
+    left: 0px;
+    bottom: 0;
+    width: 100%;
+    background-color: #212C35;
+    font-size: 12px !important;
+    color: white !important;
+    height: 200px;
+    line-height: 20px;
+    font-family: Helvetica Neue;
+}
+
+.progress-container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+.progress-footer-link {
+    color: #F18A20;
+}

@@ -11,7 +11,7 @@
     <div class="container" id="divHome">
         <form method="post" id="frmIndex">
 
-            <div class="text-white mt20">
+            <div>
                 <span>Thanks you for accepting our offer for purchasing Chef. The details of your subscription are:</span>
             </div>
             @if (Model != null && !string.IsNullOrEmpty(Model.ErrorMessage))
@@ -196,9 +196,19 @@
                         <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Subscribe</a>
                     }
                 </div>
-                <div class="text-right">
-                    <span>Your license key will be sent to your email, @Html.DisplayFor(model => model.Purchaser.EmailId), you will need this to activate your subscription</span>
+                <div>
+                    <ul>
+                        <li>Your license key will be sent to your email, @Html.DisplayFor(model => model.Purchaser.EmailId), you will need this to activate your subscription</li>
+                        <li>Instructions for deploying Chef Automate and Infra Server into your Azure instance are available</li>
+                        <li>For assistance In case of any doubts feel free to contacontact us att <b>Chef-Azurestore@progress.com</b> and we are will be happy to help you</li>
+                    </ul>
+                <div>
+                    Additional resources you may find helpful with your Chef automation journey have been supplied below:
+                        <p><b>Blog :</b><a href="https://www.chef.io/blog/chef-infra-101-the-road-to-best-practices" target="_blank">Chef Infra 101: The Road to Best Practices</a></p>
+                        <p><b>User Guide :</b><a href="https://d1l5pp53ux74mz.cloudfront.net/docs/default-source/product-and-user-guides/getting-started-with-chef-automate.pdf?sfvrsn=2584ac91_2" target="_blank">Getting Started with Chef Automate</a></p>
+                        <p><a href="https://discourse.chef.io/" target="_blank">Chef Community Forum and Latest Product Announcements</a></p>
                 </div>
+                </div>  
             }
         </form>
     </div>
@@ -292,4 +302,3 @@ else
     }
 
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js" integrity="sha256-/H4YS+7aYb9kJ5OKhFYPUjSJdrtV6AeyJOtTkw6X72o=" crossorigin="anonymous"></script>
