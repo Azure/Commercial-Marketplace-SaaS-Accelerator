@@ -14,7 +14,7 @@ There are different options for deploying SaaS over in production:
 
 ## Single Region With Custom SaaS Solution Architecture
 
-This example is useful where publisher will SaaS solution deployed to its Resource Group and use SaaS Accelarator Portal and Admin site to manage subscribers activities and redirect subscribers to the SaaS solution site.
+This example is useful where publisher will SaaS solution deployed to its Resource Group and use SaaS Accelerator Portal and Admin site to manage subscribers activities and redirect subscribers to the SaaS solution site.
  The solution follows [Azure Security Center](https://azure.microsoft.com/en-us/services/security-center/) and [The Azure Well-Architected Framework](https://docs.microsoft.com/en-us/azure/architecture/framework/) recommendation.
 
 ![SaaS Enterprise](./images/single-region-saas-rg.png)
@@ -29,7 +29,7 @@ This example is useful where publisher will SaaS solution deployed to its Resour
 - [Azure virtual network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview)
 - [Network security groups](https://docs.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)
 - [Azure Private DNS](https://docs.microsoft.com/en-us/azure/dns/private-dns-overview)
-- [Appplication Insight](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
+- [Application Insight](https://docs.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
 - [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/)
 
 **App Service plan**: An App Service plan provides the managed virtual machines (VMs) that host your app. All apps associated with a plan run on the same VM instances.
@@ -38,7 +38,7 @@ This example is useful where publisher will SaaS solution deployed to its Resour
 
 **Azure SQL Database**: SQL Database is a relational database-as-a-service in the cloud. SQL Database shares its code base with the Microsoft SQL Server database engine.
 
-**Appplication Insight**: An cloud Service can monitor Azure cloud service apps for availability, performance, failures, and usage by combining data from Application Insights SDKs with Azure Diagnostics data from your cloud services. 
+**Application Insight**: An cloud Service can monitor Azure cloud service apps for availability, performance, failures, and usage by combining data from Application Insights SDKs with Azure Diagnostics data from your cloud services. 
 
 **Azure Key Vault**: Azure Key Vault is a cloud service for securely storing and accessing secrets. A secret is anything that you want to tightly control access to, such as API keys, passwords, certificates, or cryptographic keys.
 
