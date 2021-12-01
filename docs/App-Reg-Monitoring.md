@@ -93,4 +93,4 @@ This section shows How-To monitor Application Credentials using a workaround sol
 
 ### Other Monitor Recommendation 
 - [Web App Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
-- [SQL Server Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
+- [SQL Server Monitoring and Alert instruction](./docs/SQL-Server-Monitoring.md).

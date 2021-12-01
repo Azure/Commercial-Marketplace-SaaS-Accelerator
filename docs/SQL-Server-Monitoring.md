@@ -42,4 +42,4 @@ This section shows How-To
 
 ### Other Monitor Recommendation
 - [Web App Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
-- [App Registration Credentials Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
+- [App Registration Credentials Monitoring and Alert instruction](./docs/App-Reg-Monitoring.md).

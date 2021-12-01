@@ -76,5 +76,5 @@ This section shows How-To
 - Change Alert to notify group or person.
 
 ### Other Monitor Recommendation
-- [SQL Server Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
-- [App Registration Credentials Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
+- [SQL Server Monitoring and Alert instruction](./docs/SQL-Server-Monitoring.md).
+- [App Registration Credentials Monitoring and Alert instruction](./docs/App-Reg-Monitoring.md).
