@@ -35,7 +35,7 @@ Before using this sample code and SDK, please review the commercial marketplace 
 The documentation **(docs)** directory contains [installation instructions](./docs/Installation-Instructions.md) to help understand, implement, and deploy the sample code and SDK components.
 
 ## Monitoring
-The following documents provide HOW-TO implement Monitoring and Alert for SaaS Accelerator resouces 
+The following documents provide HOW-TOs setup Azure Monitoring and Alerting for the resources deployed by the SaaS Accelerator:
 - [Web App Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
 - [SQL Server Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
 - [App Registration Credentials Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
@@ -64,8 +64,8 @@ The sample code and SDK in this repository run in the Publisher's environment as
 ![Usecase](./docs/images/sdk_overview.png)
 
 
-## Production Reference Architecture
-How-To deploy SaaS Accelerator to production environment? This [document](./docs/Enterprise-Reference-Architecture.md) will provide recommendation on how to deploy the production. There are multiple samples for different architecture approaches and best practices to consider for each deployment.
+## Production Environment Reference Architecture
+How-To deploy SaaS Accelerator into a production environment? This [document](./docs/Enterprise-Reference-Architecture.md) provides recommendations on how to deploy the SaaS Accelerator into a production environtment. 
 
 ## Technology and Versions
 
