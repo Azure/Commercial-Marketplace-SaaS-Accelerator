@@ -189,7 +189,7 @@
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == true)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate'),sendToSlack('New offer configured. Please activate the offer')" id="btnActive" class="cm-button-default text-right">Activate</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate'),sendToSlack('New offer configured from @Model.Purchaser.EmailId. Please activate the offer')" id="btnActive" class="cm-button-default text-right">Activate</a>
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == false)
                     {
@@ -200,13 +200,13 @@
                     <ul>
                         <li>Your license key will be sent to your email, @Html.DisplayFor(model => model.Purchaser.EmailId), you will need this to activate your subscription</li>
                         <li>Instructions for deploying Chef Automate and Infra Server into your Azure instance are available</li>
-                        <li>For assistance In case of any doubts feel free to contacontact us att <b>Chef-Azurestore@progress.com</b> and we are will be happy to help you</li>
+                        <li>For assistance In case of any doubts feel free to contacontact us at <a href="mailto:Chef-Azurestore@progress.com">Chef-Azurestore@progress.com</a> and we are will be happy to help you</li>
                     </ul>
                 <div>
                     Additional resources you may find helpful with your Chef automation journey have been supplied below:
-                        <p><b>Blog :</b><a href="https://www.chef.io/blog/chef-infra-101-the-road-to-best-practices" target="_blank">Chef Infra 101: The Road to Best Practices</a></p>
-                        <p><b>User Guide :</b><a href="https://d1l5pp53ux74mz.cloudfront.net/docs/default-source/product-and-user-guides/getting-started-with-chef-automate.pdf?sfvrsn=2584ac91_2" target="_blank">Getting Started with Chef Automate</a></p>
-                        <p><a href="https://discourse.chef.io/" target="_blank">Chef Community Forum and Latest Product Announcements</a></p>
+                        <li><b>Blog :</b><a href="https://www.chef.io/blog/chef-infra-101-the-road-to-best-practices" target="_blank">Chef Infra 101: The Road to Best Practices</a></li>
+                        <li><b>User Guide :</b><a href="https://d1l5pp53ux74mz.cloudfront.net/docs/default-source/product-and-user-guides/getting-started-with-chef-automate.pdf?sfvrsn=2584ac91_2" target="_blank">Getting Started with Chef Automate</a></li>
+                        <li><a href="https://discourse.chef.io/" target="_blank">Chef Community Forum and Latest Product Announcements</a></li>
                 </div>
                 </div>  
             }
