@@ -41,5 +41,5 @@ This section shows How-To
 - Create Alert to notify group or person.
 
 ### Other Monitor Recommendation
-- [Web App Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
-- [App Registration Credentials Monitoring and Alert instruction](./docs/App-Reg-Monitoring.md).
+- [Web App Monitoring and Alert instruction](./WebApp-Monitoring.md).
+- [App Registration Credentials Monitoring and Alert instruction](./App-Reg-Monitoring.md).

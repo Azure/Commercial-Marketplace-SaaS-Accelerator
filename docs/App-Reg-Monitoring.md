@@ -92,5 +92,5 @@ This section shows How-To monitor Application Credentials using a workaround sol
 - Link Schedule to Runbook
 
 ### Other Monitor Recommendation 
-- [Web App Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
-- [SQL Server Monitoring and Alert instruction](./docs/SQL-Server-Monitoring.md).
+- [Web App Monitoring and Alert instruction](./WebApp-Monitoring.md).
+- [SQL Server Monitoring and Alert instruction](./SQL-Server-Monitoring.md).
