@@ -36,9 +36,10 @@ The documentation **(docs)** directory contains [installation instructions](./do
 
 ## Monitoring
 The following documents provide HOW-TOs setup Azure Monitoring and Alerting for the resources deployed by the SaaS Accelerator:
-- [Web App Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
-- [SQL Server Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
-- [App Registration Credentials Monitoring and Alert instruction](./docs/WebApp-Monitoring.md).
+- [Web App Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
+- [SQL Server Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
+- [App Registration Credentials Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
+
 ## Terminology
 
 - SDK: Software development kit. This refers to the SDK for the .NET language and incldues the Client and Data Access Libraries, as well as the Sample Web Applications used to excercise the SaaS Fulfillment API and Marketplace Metering Service API.
