@@ -82,6 +82,8 @@ Then Select The schedule
 ![Enable App](images/monitoring/app-reg/app-creds-15.png)
 
 
+The Job Section will show the rubbook run history
+![Enable App](images/monitoring/app-reg/app-creds-16.png)
 
 ### Summary
 This section shows How-To monitor Application Credentials using a workaround solution by implementing the following assests
