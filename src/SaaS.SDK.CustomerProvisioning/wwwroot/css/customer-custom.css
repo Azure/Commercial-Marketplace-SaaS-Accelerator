@@ -361,7 +361,6 @@ a.cm-dropdown-option {
     color: red;
 }
 .progress-footer {
-    position: absolute;
     left: 0px;
     bottom: 0;
     width: 100%;
@@ -383,4 +382,8 @@ a.cm-dropdown-option {
 
 .progress-footer-link {
     color: #F18A20;
+}
+
+.progress-footer-align {
+    min-height: calc(100vh - 355px);
 }
