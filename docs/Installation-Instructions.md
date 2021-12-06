@@ -2,14 +2,14 @@
 
 You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal ([video tutorial](https://youtu.be/BVZTj6fssQ8)).
   
-   1. Copy the following section to an editor and update it to match your company preference.
+   1. Copy the following section to an editor and update it to match your company preference. Replace `SOME-UNIQUE-STRING` with your Team name or some other random string.
 
 ``` powershell
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b main --depth 1; `
  cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
  Connect-AzureAD -Confirm; .\Deploy.ps1 `
  -WebAppNamePrefix "marketplacesaasgithub" `
- -SQLServerName "marketplacesaasgithub" `
+ -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
  -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
  -PublisherAdminUsers "user@email.com" `
