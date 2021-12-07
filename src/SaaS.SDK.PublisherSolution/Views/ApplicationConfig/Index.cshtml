@@ -32,7 +32,14 @@
                                         @item.Name
                                     </td>
                                     <td class="text-left">
-                                        @item.Value
+                                        @if (@item.Name.Equals("SMTPPassword") && @item.Value.Length > 5)
+                                        {
+                                            @String.Format("{0}{1}", @item.Value.Substring(0,5), "****************");
+                                        }
+                                        else
+                                        {
+                                            @item.Value
+                                        }
                                     </td>
                                     <td class="text-left">
                                         @item.Description

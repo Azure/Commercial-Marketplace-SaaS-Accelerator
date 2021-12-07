@@ -35,9 +35,16 @@
                         @Model.Name
                     </td>
                     <td>
-                        @Html.EditorFor(model => model.Value, new { htmlAttributes = new { @class = "form-control" } })
+                        @if (@Model.Name.Equals("SMTPPassword") && @Model.Value.Length >5)
+                        {
+                            @Html.EditorFor(model => model.Value, new { htmlAttributes = new { type ="password", @class = "form-control" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.Value, new { htmlAttributes = new { @class = "form-control" } })
+                        }
                     </td>
-                        <td>
+                    <td>
                         @Html.EditorFor(model => model.Description,new { htmlAttributes = new { @class = "form-control" } })
                     </td>
                 </tr>
