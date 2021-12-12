@@ -165,6 +165,12 @@
         color: #333;
     }
 
+.cm-button-default-small {
+    padding: 6px 16px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 .cm-button-error {
     color: #fff;
     background-color: #004578 !important;

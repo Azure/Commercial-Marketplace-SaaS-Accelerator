@@ -69,15 +69,32 @@
         {
             if (planDetails != null && !string.IsNullOrEmpty(planDetails.PlanId))
             {
-                var existingPlan = this.context.Plans.Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
+                var existingPlan = this.context.Plans.Include(p => p.MeteredDimensions).Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
                 if (existingPlan != null)
                 {
+                    //room for improvement as these values dont change we dont make a db trip if something changes?
                     existingPlan.PlanId = planDetails.PlanId;
                     existingPlan.Description = planDetails.Description;
                     existingPlan.DisplayName = planDetails.DisplayName;
                     existingPlan.OfferId = planDetails.OfferId;
                     existingPlan.IsmeteringSupported = planDetails.IsmeteringSupported;
-                    existingPlan.MeteredDimensions = planDetails.MeteredDimensions;
+
+                    foreach(MeteredDimensions meteredDimension in planDetails.MeteredDimensions)
+                    {
+                        var existingDimension = existingPlan.MeteredDimensions.Where(s => s.Dimension == meteredDimension.Dimension && s.PlanId == existingPlan.Id).FirstOrDefault();
+                        if (existingDimension != null)
+                        {
+                            existingDimension.Description = meteredDimension.Description;
+                            this.context.MeteredDimensions.Update(existingDimension);
+                        }
+                        else
+                        {
+                            meteredDimension.PlanId = existingPlan.Id;
+                            meteredDimension.CreatedDate = DateTime.Now;
+                            this.context.MeteredDimensions.Add(meteredDimension);
+                        }
+                    }
+
                     this.context.Plans.Update(existingPlan);
                     this.context.SaveChanges();
                     return existingPlan.Id;

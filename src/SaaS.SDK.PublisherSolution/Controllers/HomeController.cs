@@ -780,5 +780,67 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 return this.RedirectToAction(nameof(this.Index));
             }
         }
+
+        [HttpPost]
+        public IActionResult FetchAllSubscriptions()
+        {
+            var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+
+            try
+            {
+                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, currentUserId);
+
+                //get all subscirptions from api
+                var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
+                foreach (SubscriptionResult subscription in subscriptions)
+                {
+                    if(this.subscriptionRepo.GetById(subscription.Id) == null)
+                    {
+                        //room for improvement to use AddRange rather making mulitple db trips
+                        Offers offers = new Offers()
+                        {
+                            OfferId = subscription.OfferId,
+                            OfferName = subscription.OfferId,
+                            UserId = currentUserId,
+                            CreateDate = DateTime.Now,
+                            OfferGuid = Guid.NewGuid(),
+                        };
+                        Guid newOfferId = this.offersRepository.Add(offers);  // add offer
+
+                        var subscriptionPlanDetail = this.fulfillApiService.GetAllPlansForSubscriptionAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+                        subscriptionPlanDetail.ForEach(x =>
+                        {
+                            x.OfferId = newOfferId;
+                            x.PlanGUID = Guid.NewGuid();
+                        });
+                        this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail); // add plans
+
+                        //var subscriptionData = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+                        var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription);  // add subscription
+                        if (subscribeId > 0 && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                        {
+                            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                            {
+                                Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                                SubscriptionId = subscribeId,
+                                NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
+                                OldValue = "None",
+                                CreateBy = currentUserId,
+                                CreateDate = DateTime.Now,
+                            };
+                            this.subscriptionLogRepository.Save(auditLog);  // add audit log
+                        }
+                    }
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return this.View("Error", ex);
+            }
+
+            return this.RedirectToAction(nameof(this.Subscriptions));
+        }
     }
 }
