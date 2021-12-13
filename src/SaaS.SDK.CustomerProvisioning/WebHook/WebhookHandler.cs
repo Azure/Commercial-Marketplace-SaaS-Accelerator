@@ -176,9 +176,28 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// Change QuantityAsync.
         /// </returns>
         /// <exception cref="NotImplementedException"> Exception.</exception>
-        public Task ChangeQuantityAsync(WebhookPayload payload)
+        public async Task ChangeQuantityAsync(WebhookPayload payload)
         {
-            throw new NotImplementedException();
+            var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
+
+            this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
+            this.applicationLogService.AddApplicationLog("Plan Quantity Successfully Changed.");
+
+            if (oldValue != null)
+            {
+                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                {
+                    Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
+                    SubscriptionId = oldValue.SubscribeId,
+                    NewValue = payload.Quantity.ToString(),
+                    OldValue = oldValue.Quantity.ToString(),
+                    CreateBy = null,
+                    CreateDate = DateTime.Now,
+                };
+                this.subscriptionsLogRepository.Save(auditLog);
+            }
+
+            await Task.CompletedTask;
         }
 
         /// <summary>
