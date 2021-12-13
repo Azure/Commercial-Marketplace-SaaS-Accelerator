@@ -21,7 +21,7 @@ git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -
   The following lines are optional:
  ``` powershell
  -TenantID "xxxx-xxx-xxx-xxx-xxxx" `
- -AzureSubscriptionID "xxx-xx-xx-xx-xxxx" `.
+ -AzureSubscriptionID "xxx-xx-xx-xx-xxxx" `
  -ADApplicationID "xxxx-xxx-xxx-xxx-xxxx" `
  -ADApplicationSecret "xxxx-xxx-xxx-xxx-xxxx" `
  -ADMTApplicationID "xxxx-xxx-xxx-xxx-xxxx" `
