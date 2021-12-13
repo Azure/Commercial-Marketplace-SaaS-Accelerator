@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
     using System;
+    using System.Threading.Tasks;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
@@ -12,6 +13,6 @@
         /// Adds the log.
         /// </summary>
         /// <param name="logDetail">The log detail.</param>
-        void AddLog(ApplicationLog logDetail);
+        Task<int> AddLog(ApplicationLog logDetail);
     }
 }

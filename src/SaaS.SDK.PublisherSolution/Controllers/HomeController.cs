@@ -665,13 +665,13 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                                 var changePlanOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
                                 changePlanOperationStatus = changePlanOperationResult.Status;
                                 this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId));
-                                this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
+                                await this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId).ConfigureAwait(false);
                             }
 
                             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                             this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
                             this.logger.LogInformation("Plan Successfully Changed.");
-                            this.applicationLogService.AddApplicationLog("Plan Successfully Changed.");
+                            await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
 
                             if (oldValue != null)
                             {
@@ -736,14 +736,14 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                                     changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
                                     this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(quantity));
-                                    this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId);
+                                    await this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId).ConfigureAwait(false);
                                 }
 
                                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
 
                                 this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
                                 this.logger.LogInformation("Quantity Successfully Changed.");
-                                this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.");
+                                await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
 
                                 if (oldValue != null)
                                 {
