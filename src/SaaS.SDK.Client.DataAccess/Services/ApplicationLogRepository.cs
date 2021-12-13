@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
     using System;
+    using System.Threading.Tasks;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
@@ -44,10 +45,10 @@
         /// Adds the application logs.
         /// </summary>
         /// <param name="logDetail">The log detail.</param>
-        public void AddLog(ApplicationLog logDetail)
+        public Task<int> AddLog(ApplicationLog logDetail)
         {
             this.context.ApplicationLog.Add(logDetail);
-            this.context.SaveChanges();
+            return this.context.SaveChangesAsync();
         }
 
         /// <summary>

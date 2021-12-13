@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
     using System;
+    using System.Threading.Tasks;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
@@ -27,7 +28,7 @@
         /// Adds the application log.
         /// </summary>
         /// <param name="logMessage">The log message.</param>
-        public void AddApplicationLog(string logMessage)
+        public async Task AddApplicationLog(string logMessage)
         {
             ApplicationLog newLog = new ApplicationLog()
             {
@@ -35,7 +36,7 @@
                 LogDetail = logMessage,
             };
 
-            this.applicationLogRepository.AddLog(newLog);
+            await this.applicationLogRepository.AddLog(newLog);
         }
     }
 }

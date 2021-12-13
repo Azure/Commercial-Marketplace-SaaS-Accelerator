@@ -182,7 +182,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
         /// <returns>
         /// The <see cref="IActionResult" />.
         /// </returns>
-        public IActionResult Index(string token = null)
+        public async Task<IActionResult> Index(string token = null)
         {
             try
             {
@@ -200,7 +200,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     {
                         this.TempData["ShowWelcomeScreen"] = null;
                         token = token.Replace(' ', '+');
-                        var newSubscription = this.apiService.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
+                        var newSubscription = await this.apiService.ResolveAsync(token).ConfigureAwait(false);
                         if (newSubscription != null && newSubscription.SubscriptionId != default)
                         {
                             Offers offers = new Offers()
@@ -213,7 +213,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                             };
                             Guid newOfferId = this.offersRepository.Add(offers);
 
-                            var subscriptionPlanDetail = this.apiService.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            var subscriptionPlanDetail = await this.apiService.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false);
                             subscriptionPlanDetail.ForEach(x =>
                             {
                                 x.OfferId = newOfferId;
@@ -222,7 +222,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                             this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail);
 
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
-                            var subscriptionData = this.apiService.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            var subscriptionData = await this.apiService.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false);
                             var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
                             if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                             {
@@ -647,14 +647,14 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                     changePlanOperationStatus = changePlanOperationResult.Status;
 
                                     this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId));
-                                    this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
+                                    await this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId).ConfigureAwait(false);
                                 }
 
                                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
 
                                 this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
                                 this.logger.LogInformation("Plan Successfully Changed.");
-                                this.applicationLogService.AddApplicationLog("Plan Successfully Changed.");
+                                await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
 
                                 if (oldValue != null)
                                 {
@@ -722,14 +722,14 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                     changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
                                     this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(quantity));
-                                    this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId);
+                                    await this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId).ConfigureAwait(false);
                                 }
 
                                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
 
                                 this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
                                 this.logger.LogInformation("Quantity Successfully Changed.");
-                                this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.");
+                                await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
 
                                 if (oldValue != null)
                                 {
