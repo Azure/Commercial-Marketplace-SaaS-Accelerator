@@ -149,7 +149,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
 
             this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
-            this.applicationLogService.AddApplicationLog("Plan Successfully Changed.");
+            await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
 
             if (oldValue != null)
             {
@@ -231,7 +231,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         {
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
             this.subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Unsubscribed.ToString(), false);
-            this.applicationLogService.AddApplicationLog("Offer Successfully UnSubscribed.");
+            await this.applicationLogService.AddApplicationLog("Offer Successfully UnSubscribed.").ConfigureAwait(false);
 
             if (oldValue != null)
             {
@@ -259,7 +259,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task UnknownActionAsync(WebhookPayload payload)
         {
-            this.applicationLogService.AddApplicationLog("Offer Received an unknow action: " + payload.Action);
+            await this.applicationLogService.AddApplicationLog("Offer Received an unknow action: " + payload.Action).ConfigureAwait(false);
 
             await Task.CompletedTask;
         }
