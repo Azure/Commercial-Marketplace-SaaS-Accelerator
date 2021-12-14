@@ -6,7 +6,7 @@
 
 The goal of this project is to provide a reference example with sample code for developers interested in publishing transactable, Software as a-Service (SaaS) offers in Microsoft's commercial marketplace.
 
-The sample code uses a .NET-based SDK published as a part of this project. The SDK provides a framework for excercising the commercial marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) Leveraging the SDK, the sample code demonstrates how a typical SaaS platform interacts with the marketplace APIs in order to provision subscriptions for customers, enable logging, and manage commercial marketplace subscriptions.
+The sample code uses a .NET-based SDK published as a part of this project. The SDK provides a framework for exercising the commercial marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) Leveraging the SDK, the sample code demonstrates how a typical SaaS platform interacts with the marketplace APIs in order to provision subscriptions for customers, enable logging, and manage commercial marketplace subscriptions.
 
 ## Intended Use
 
@@ -14,11 +14,17 @@ The sample code and SDK in this project are for reference purposes only and are 
 
 Please note: this is not a Microsoft-supported Azure SDK project. Support for this project is community-based and contributions are welcome. Details on contributing can be found [below.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator#contributing)
 
+## Installation
+
+The documentation **(docs)** directory contains [installation instructions](./docs/Installation-Instructions.md) to help understand, implement, and deploy the sample code and SDK components.
+
+**Video instructions:** Additionally, there is a quick video on [how to install the SaaS Accelerator with the installer script](https://microsoft.github.io/Mastering-the-Marketplace/saas-accelerator/#installing-the-saas-accelerator-with-the-installer) available through the [Mastering the Marketplace Library](https://microsoft.github.io/Mastering-the-Marketplace).
+
 ## Commercial Marketplace Documentation
 
 Before using this sample code and SDK, please review the commercial marketplace documentation resources below to understand the important concepts, account setup, and offer configuration requirements for publishing SaaS SaaS application offers.
 
-- [Mastering the Marketpalce - SaaS Offers.](https://github.com/microsoft/Mastering-the-Marketplace/blob/main/saas/README.md) Zero-to-Hero Training on Azure Marketplace SaaS Offers.
+- [Mastering the Marketplace - SaaS Offers.](https://github.com/microsoft/Mastering-the-Marketplace/blob/main/saas/README.md) Zero-to-Hero Training on Azure Marketplace SaaS Offers.
 
 - [Commercial marketplace documentation.](https://docs.microsoft.com/azure/marketplace/) Getting started and top articles
 
@@ -30,10 +36,6 @@ Before using this sample code and SDK, please review the commercial marketplace 
 
 - [SaaS fulfillment API FAQ.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq) Frequently-asked questions about the SaaS Fulfillment APIs.
 
-## Installation
-
-The documentation **(docs)** directory contains [installation instructions](./docs/Installation-Instructions.md) to help understand, implement, and deploy the sample code and SDK components.
-
 ## Monitoring
 The following documents provide HOW-TOs setup Azure Monitoring and Alerting for the resources deployed by the SaaS Accelerator:
 - [Web App Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
@@ -42,7 +44,7 @@ The following documents provide HOW-TOs setup Azure Monitoring and Alerting for 
 
 ## Terminology
 
-- SDK: Software development kit. This refers to the SDK for the .NET language and incldues the Client and Data Access Libraries, as well as the Sample Web Applications used to excercise the SaaS Fulfillment API and Marketplace Metering Service API.
+- SDK: Software development kit. This refers to the SDK for the .NET language and includes the Client and Data Access Libraries, as well as the Sample Web Applications used to exercises the SaaS Fulfillment API and Marketplace Metering Service API.
 
 - Client library. This refers to a library (and associated tools, documentation, and samples) that customers/developers use to ease creating commercial marketplace SaaS SaaS application offers.
 
@@ -62,11 +64,11 @@ The source **(src)** directory offers the following components:
 
 The sample code and SDK in this repository run in the Publisher's environment as illustrated below. The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) and correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
 
-![Usecase](./docs/images/sdk_overview.png)
+![Use case](./docs/images/sdk_overview.png)
 
 
 ## Production Environment Reference Architecture
-How-To deploy SaaS Accelerator into a production environment? This [document](./docs/Enterprise-Reference-Architecture.md) provides recommendations on how to deploy the SaaS Accelerator into a production environtment. 
+How-To deploy SaaS Accelerator into a production environment? This [document](./docs/Enterprise-Reference-Architecture.md) provides recommendations on how to deploy the SaaS Accelerator into a production environment. 
 
 ## Technology and Versions
 
@@ -78,7 +80,7 @@ This SDK has been developed using the following technologies and versions:
 
 ## Security
 
-- The sample code and SDK have been scanned for vulnerabilities and use secure configurations. Versions have been reviewed to ensure compatibility with the lastest security guidelines.
+- The sample code and SDK have been scanned for vulnerabilities and use secure configurations. Versions have been reviewed to ensure compatibility with the latest security guidelines.
 
 ## Prerequisites
 
