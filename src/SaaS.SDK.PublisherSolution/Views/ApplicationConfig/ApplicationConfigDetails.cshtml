@@ -1,0 +1,101 @@
+﻿@using Microsoft.Marketplace.SaaS.SDK.Services.Models
+@using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+@model ApplicationConfiguration
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="~/css/jquery-ui/jquery-ui.css" rel="stylesheet" />
+    <link href="~/css/jquery-ui/style.css" rel="stylesheet" />
+    <script src="~/lib/jquery-ui/jquery-1.12.4.js"></script>
+    <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+</head>
+<body>
+
+    <div class="text-center mt20">
+        <div class="card card-header">
+            <dl class="row">
+                <dt class="col-2 text-right"><span>Edit App Config</span></dt>
+            </dl>
+        </div>
+        <form method="post" id="frmAppConfigDetails" asp-action="ApplicationConfigDetails" asp-controller="ApplicationConfig">
+            <div>
+                @Html.HiddenFor(model => model.Id)
+            </div>
+            <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
+                <theader>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>Description</th>
+                    </tr>
+                </theader>
+                <tbody>
+                <tr>
+                    <td>
+                        @Model.Name
+                    </td>
+                    <td>
+                        @if (@Model.Name.Equals("SMTPPassword") && @Model.Value.Length >5)
+                        {
+                            @Html.EditorFor(model => model.Value, new { htmlAttributes = new { type ="password", @class = "form-control" } })
+                        }
+                        else
+                        {
+                            @Html.EditorFor(model => model.Value, new { htmlAttributes = new { @class = "form-control" } })
+                        }
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => model.Description,new { htmlAttributes = new { @class = "form-control" } })
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="ac-save-d">
+                <p>
+                    <input class="cm-button-default mt0 ac-save-i" type="button" onclick="saveAppConfigDetails()" value="Save App Config" />
+                </p>
+            </div>
+        </form>
+    </div>
+
+
+</body>
+<script>
+
+    function successconfirmDialog() {
+        swal({
+            title: "Saved",
+            text: "App config details saved successfully.",
+            icon: "success",
+            timer: 1000
+        })
+    }
+    function errorconfirmDialog() {
+        swal({
+            title: "Error",
+            text: "An error has occured, please check the log.",
+            icon: "error",
+            timer: 1000
+        })
+    }
+    function saveAppConfigDetails() {
+        var formobject = $('#frmAppConfigDetails').serialize();
+        $.ajax({
+            url: 'ApplicationConfig/ApplicationConfigDetails',
+            type: 'POST',
+            data: formobject,
+            cache: false,
+            success: function (result) {
+                debugger;
+                successconfirmDialog();
+                $('#myModal').html(result);
+            },
+            Error:
+                function (result) {
+                    errorconfirmDialog();
+                    $('#myModal').html(result);
+                }
+        });
+    }
+
+</script>
