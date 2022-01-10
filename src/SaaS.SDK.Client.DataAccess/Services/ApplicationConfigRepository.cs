@@ -46,5 +46,27 @@
         {
             return this.context.ApplicationConfiguration;
         }
+
+        /// <summary>
+        /// Sets the value from application configuration.
+        /// </summary>
+        /// <returns>List of all application configuration items.</returns>
+        public int SaveById(ApplicationConfiguration applicationConfiguration)
+        {
+            var existingConfig = this.context.ApplicationConfiguration.Where(a => a.Id == applicationConfiguration.Id).FirstOrDefault();
+            existingConfig.Value = applicationConfiguration.Value;
+            existingConfig.Description = applicationConfiguration.Description;
+            this.context.SaveChanges();
+            return existingConfig.Id;
+        }
+
+        /// <summary>
+        /// Get the Appconfig by Id.
+        /// </summary>
+        /// <returns>An application configuration item.</returns>
+        public ApplicationConfiguration GetById(int Id)
+        {
+            return this.context.ApplicationConfiguration.Where(s => s.Id == Id).FirstOrDefault();
+        }
     }
 }

@@ -78,23 +78,7 @@
                     existingPlan.DisplayName = planDetails.DisplayName;
                     existingPlan.OfferId = planDetails.OfferId;
                     existingPlan.IsmeteringSupported = planDetails.IsmeteringSupported;
-
-                    foreach(MeteredDimensions meteredDimension in planDetails.MeteredDimensions)
-                    {
-                        var existingDimension = existingPlan.MeteredDimensions.Where(s => s.Dimension == meteredDimension.Dimension && s.PlanId == existingPlan.Id).FirstOrDefault();
-                        if (existingDimension != null)
-                        {
-                            existingDimension.Description = meteredDimension.Description;
-                            this.context.MeteredDimensions.Update(existingDimension);
-                        }
-                        else
-                        {
-                            meteredDimension.PlanId = existingPlan.Id;
-                            meteredDimension.CreatedDate = DateTime.Now;
-                            this.context.MeteredDimensions.Add(meteredDimension);
-                        }
-                    }
-
+                    this.CheckMeteredDimension(planDetails,existingPlan);
                     this.context.Plans.Update(existingPlan);
                     this.context.SaveChanges();
                     return existingPlan.Id;
@@ -108,6 +92,41 @@
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Check if there is Metered Dimensions exists or updated
+        /// </summary>
+        /// <param name="planDetails">Incoming Plans data from Payload</param>
+        /// <param name="existingPlan">Existing Plans data from database</param>
+        private void CheckMeteredDimension(Plans planDetails, Plans existingPlan)
+        {
+            // Check if Metered Dimension exists or new Metered Dimension to add
+            foreach (MeteredDimensions metered in planDetails.MeteredDimensions)
+            {
+                // Assign Plan.Id to metered PlandId
+                metered.PlanId = existingPlan.Id;
+
+                // Query DB for metered dimension using PlanID and Dimension ID
+                var existingMeteredDimensions = this.context.MeteredDimensions.Where(s => s.PlanId == existingPlan.Id && s.Dimension == metered.Dimension).FirstOrDefault();
+
+                // Check if Metered Dimensions exists
+                if (existingMeteredDimensions != null)
+                {
+                    // Metered Dimension exists. No needs to updated Keys. We could update description if it is modified.
+                    if (existingMeteredDimensions.Description != metered.Description)
+                    {
+                        var existingMetered = existingPlan.MeteredDimensions.Where(s => s.PlanId == existingPlan.Id && s.Dimension == metered.Dimension).FirstOrDefault();
+                        existingMetered.Description = metered.Description;
+                    }
+
+                }
+                else
+                {
+                    // Add new metered Dimension
+                    existingPlan.MeteredDimensions.Add(metered);
+                }
+            }
         }
 
         /// <summary>

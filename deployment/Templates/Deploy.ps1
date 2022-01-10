@@ -79,7 +79,7 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     $Guid = New-Guid
     $startDate = Get-Date
     $endDate = $startDate.AddYears(2)
-    $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
+    $ADApplicationSecret = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
 
     try {    
         $ADApplication = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
@@ -88,8 +88,9 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
         Write-Host "🔑  AAD Single Tenant Object ID:" $ADObjectID    
         Write-Host "🔑  AAD Single Tenant Application ID:" $ADApplicationID  
         sleep 5 #this is to give time to AAD to register
-        New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
+        New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $ADApplicationSecret -InformationVariable "SaaSAPI"
         Write-Host "🔑  ADApplicationID created."
+        
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         Write-Host "🚨🚨   $PSItem.Exception"
