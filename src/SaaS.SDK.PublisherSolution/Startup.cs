@@ -91,18 +91,17 @@ namespace Microsoft.Marketplace.Saas.Web
                 options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             })
-
-   .AddOpenIdConnect(options =>
-   {
-       options.Authority = $"{config.AdAuthenticationEndPoint}/common";
-       options.ClientId = config.MTClientId;
-       options.ResponseType = OpenIdConnectResponseType.IdToken;
-       options.CallbackPath = "/Home/Index";
-       options.SignedOutRedirectUri = config.SignedOutRedirectUri;
-       options.TokenValidationParameters.NameClaimType = "name";
-       options.TokenValidationParameters.ValidateIssuer = false;
-   })
-   .AddCookie();
+           .AddOpenIdConnect(options =>
+           {
+               options.Authority = $"{config.AdAuthenticationEndPoint}/common";
+               options.ClientId = config.MTClientId;
+               options.ResponseType = OpenIdConnectResponseType.IdToken;
+               options.CallbackPath = "/Home/Index";
+               options.SignedOutRedirectUri = config.SignedOutRedirectUri;
+               options.TokenValidationParameters.NameClaimType = "name";
+               options.TokenValidationParameters.ValidateIssuer = false;
+           })
+           .AddCookie();
 
             var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
             services.AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()));

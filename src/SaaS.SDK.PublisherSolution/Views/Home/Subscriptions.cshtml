@@ -19,6 +19,7 @@
                 <div class="card-body">
                     <div class="text-left">
                         <span class="cm-section-heading">Subscriptions</span>
+                        <button type="submit" onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}" class="cm-button-default text-right float-right">Fetch All Subscriptions</button>
                     </div>
                     <div>
                         @if (Model.Subscriptions.Count() > 0)
@@ -209,6 +210,19 @@
                     $("#frmSubscriptionQuantityDetailAdmin").submit();
                 }
             });
+    }
+    function fetchAllSubscriptions() {
+        $.ajax({
+            type: "Post",
+            url: "FetchAllSubscriptions",
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function() {
+                swal({ title:"Inprogress!", text: "Fetching subscriptions from SaaS fulfilment api.", icon: "info",  button: false, closeOnClickOutside: false });
+            },
+            error: function () {
+                swal({ title: "Error", text: "Content load failed.", icon: "Error" })
+            }
+        });
     }
 
 </script>

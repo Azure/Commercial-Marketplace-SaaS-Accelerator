@@ -69,9 +69,10 @@
         {
             if (planDetails != null && !string.IsNullOrEmpty(planDetails.PlanId))
             {
-                var existingPlan = this.context.Plans.Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
+                var existingPlan = this.context.Plans.Include(p => p.MeteredDimensions).Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
                 if (existingPlan != null)
                 {
+                    //room for improvement as these values dont change we dont make a db trip if something changes?
                     existingPlan.PlanId = planDetails.PlanId;
                     existingPlan.Description = planDetails.Description;
                     existingPlan.DisplayName = planDetails.DisplayName;
