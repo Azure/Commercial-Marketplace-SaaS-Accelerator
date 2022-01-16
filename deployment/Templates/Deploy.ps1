@@ -239,25 +239,6 @@ $URLToBacpacFromStorage = (Get-AzStorageBlob -blob $BlobName -Container $Contain
 Write-host "📜  Uploaded the bacpac file to $URLToBacpacFromStorage"    
 
 
-Write-host "☁  Prepare publish files for the web application"
-
-Write-host "☁  Preparing the publish files for PublisherPortal"  
-dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
-Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
-
-Write-host "☁  Preparing the publish files for CustomerPortal"
-dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
-Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Publish\CustomerPortal.zip -Force
-
-Write-host "☁  Upload web application files to storage account"
-Set-AzStorageBlobContent -File "..\..\Publish\PublisherPortal.zip" -Container $ContainerName -Blob "PublisherPortal.zip" -Context $ctx -Force
-Set-AzStorageBlobContent -File "..\..\Publish\CustomerPortal.zip" -Container $ContainerName -Blob "CustomerPortal.zip" -Context $ctx -Force
-
-# The base URI where artifacts required by this template are located
-$PathToWebApplicationPackages = ((Get-AzStorageContainer -Container $ContainerName -Context $ctx).CloudBlobContainer.uri.AbsoluteUri)
-
-Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
-
 #Parameter for ARM template, Make sure to add values for parameters before running the script.
 $ARMTemplateParams = @{
    webAppNamePrefix             = "$WebAppNamePrefix"
@@ -272,9 +253,7 @@ $ARMTemplateParams = @{
    bacpacUrl                    = "$URLToBacpacFromStorage"
    SAASKeyForbacpac             = ""
    PublisherAdminUsers          = "$PublisherAdminUsers"
-   PathToWebApplicationPackages = "$PathToWebApplicationPackages"
 }
-
 
 # Create RG if not exists
 New-AzResourceGroup -Name $ResourceGroupForDeployment -Location $location -Force
@@ -283,11 +262,27 @@ Write-host "📜  Deploying the ARM template to set up resources"
 # Deploy resources using ARM template
 New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -TemplateFile $PathToARMTemplate -TemplateParameterObject $ARMTemplateParams
 
+#Publish Apps
+Write-host "☁  Prepare publish packages for the web applications"
+
+Write-host "☁  Preparing the publish files for PublisherPortal"  
+dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
+Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
+Publish-AzWebApp -ResourceGroupName $ResourceGroupForDeployment -Name "$WebAppNamePrefix-admin" -ArchivePath $(Resolve-Path "..\..\Publish\PublisherPortal.zip").Path -Force
+Restart-AzWebApp -ResourceGroupName $ResourceGroupForDeployment -Name "$WebAppNamePrefix-admin"
+Write-host "☁  Published PublisherPortal"  
+
+Write-host "☁  Preparing the publish files for CustomerPortal"
+dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
+Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Publish\CustomerPortal.zip -Force
+Publish-AzWebApp -ResourceGroupName $ResourceGroupForDeployment -Name "$WebAppNamePrefix-portal" -ArchivePath $(Resolve-Path "..\..\Publish\CustomerPortal.zip").Path -Force
+Restart-AzWebApp -ResourceGroupName $ResourceGroupForDeployment -Name "$WebAppNamePrefix-portal"
+Write-host "☁  Published CustomerPortal"  
 
 Write-host "🧹  Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
 Remove-AzResourceGroup -Name $resourceGroupForStorageAccount -Force 
-Remove-Item –path $TempFolderToStoreBacpac –recurse -Force
+Remove-Item -path $TempFolderToStoreBacpac -recurse -Force
 Remove-Item -path ["..\..\Publish"] -recurse -Force
 
 Write-host "🏁  If the intallation completed without error complete the folllowing checklist:"

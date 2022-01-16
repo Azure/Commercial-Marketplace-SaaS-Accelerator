@@ -56,12 +56,6 @@
         "description": "Name of the database"
       }
     },
-    "PathToWebApplicationPackages": {
-      "type": "string",
-      "metadata": {
-        "description": "The base URI where artifacts required by this template are located."
-      }
-    },
     "bacpacUrl": {
       "type": "string",
       "metadata": {
@@ -331,25 +325,7 @@
           "alwaysOn": true
 
         }
-      },
-      "resources": [
-        {
-          "name": "MSDeploy",
-          "type": "extensions",
-          "apiVersion": "2019-08-01",
-          "location": "[variables('location')]",
-          "dependsOn": [
-            "[resourceId('Microsoft.Web/sites', variables('ProvisioningServiceAppName'))]"
-          ],
-          "tags": {
-            "displayName": "Web Deploy for Customer Portal"
-          },
-          "properties": {
-            "packageUri": "[uri(concat(parameters('PathToWebApplicationPackages'),'/'), concat('CustomerPortal.zip'))]",
-            "dbType": "None"
-          }
-        }
-      ]
+      }
     },
     {
       "name": "[variables('PublisherServiceAppName')]",
@@ -459,25 +435,7 @@
           ],
           "alwaysOn": true
         }
-      },
-      "resources": [
-        {
-          "name": "MSDeploy",
-          "type": "extensions",
-          "apiVersion": "2019-08-01",
-          "location": "[variables('location')]",
-          "dependsOn": [
-            "[resourceId('Microsoft.Web/sites', variables('PublisherServiceAppName'))]"
-          ],
-          "tags": {
-            "displayName": "Web Deploy for Publisher Portal"
-          },
-          "properties": {
-            "packageUri": "[uri(concat(parameters('PathToWebApplicationPackages'),'/'), concat('PublisherPortal.zip'))]",
-            "dbType": "None"
-          }
-        }
-      ]
+      }
     },
     {
       "type": "Microsoft.KeyVault/vaults/accessPolicies",
