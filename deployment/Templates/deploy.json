@@ -50,6 +50,12 @@
         "description": "SQL Admin password"
       }
     },
+    "SQLDatabaseName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the database"
+      }
+    },
     "PathToWebApplicationPackages": {
       "type": "string",
       "metadata": {
@@ -79,29 +85,52 @@
     }
   },
   "variables": {
-    "hostingEnvironment": "",
-    "serverFarmResourceGroup": "[resourceGroup().name]",
-    "alwaysOn": true,
-    "sku": "Basic",
-    "skuCode": "B1",
-    "workerSize": "0",
-    "workerSizeId": "0",
-    "numberOfWorkers": "1",
-    "linuxFxVersion": "DOTNETCORE|3.1",
-    "subscriptionId": "[subscription().subscriptionId]",
     "location": "[resourceGroup().location]",
     "appServicePlanName": "[concat(parameters('webAppNamePrefix'),'AmpSvcPlan')]",
     "ProvisioningServiceAppName": "[concat(parameters('webAppNamePrefix'),'-portal')]",
     "PublisherServiceAppName": "[concat(parameters('webAppNamePrefix'),'-admin')]",
-    "collation": "SQL_Latin1_General_CP1_CI_AS",
+    "KeyVaultName": "[toLower(concat(parameters('webAppNamePrefix'),'-kv'))]",
     "sqlDBName": "AMPSaaSDB"
   },
   "resources": [
     {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2021-04-01-preview",
+      "name": "[variables('keyVaultName')]",
+      "location": "[variables('location')]",
+      "properties": {
+        "tenantId": "[parameters('tenantId')]",
+        "sku": {
+          "name": "standard",
+          "family": "A"
+        },
+        "networkAcls": {
+          "defaultAction": "Allow",
+          "bypass": "AzureServices"
+        },
+        "accessPolicies": []
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2016-10-01",
+      "name": "[concat(variables('keyVaultName'), '/SaaSApiConfiguration--ClientSecret')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults',variables('keyVaultName'))]"
+      ],
+      "properties": {
+        "value": "[parameters('ADApplicationSecret')]",
+        "attributes": {
+          "enabled": true
+        }
+      }
+    },
+    {
       "type": "Microsoft.Sql/servers",
       "apiVersion": "2015-05-01-preview",
       "name": "[parameters('SQLServerName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('location')]",
       "properties": {
         "administratorLogin": "[parameters('SQLAdminLogin')]",
         "administratorLoginPassword": "[parameters('SQLAdminLoginPassword')]",
@@ -111,14 +140,14 @@
         {
           "type": "firewallrules",
           "name": "AllowAllAzureIps",
-          "location": "[resourceGroup().location]",
+          "location": "[variables('location')]",
           "apiVersion": "2015-05-01-preview",
           "dependsOn": [
             "[parameters('SQLServerName')]"
           ],
           "properties": {
             "startIpAddress": "0.0.0.0",
-            "endIpAddress": "255.255.255.255"
+            "endIpAddress": "0.0.0.0"
           }
         }
       ]
@@ -127,7 +156,7 @@
       "type": "Microsoft.Sql/servers/databases",
       "apiVersion": "2017-03-01-preview",
       "name": "[concat(string(parameters('SQLServerName')), '/', string(variables('sqlDBName')))]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Sql/servers', parameters('SQLServerName'))]"
       ],
@@ -161,7 +190,21 @@
         }
       ]
     },
-
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2016-10-01",
+      "name": "[concat(variables('keyVaultName'), '/SqlConnectionString')]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults',variables('keyVaultName'))]"
+      ],
+      "properties": {
+        "value": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=', parameters('SQLDatabaseName') , ';User Id=', parameters('SQLAdminLogin'), '@', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ';Password=', parameters('SQLAdminLoginPassword'), ';')]",
+        "attributes": {
+          "enabled": true
+        }
+      }
+    },
     // App service plan and web apps
     {
       "type": "Microsoft.Web/serverfarms",
@@ -169,16 +212,17 @@
       "name": "[variables('appServicePlanName')]",
       "location": "[variables('location')]",
       "sku": {
-        "name": "[variables('skuCode')]",
-        "capacity": "1"
+        "name": "B1",
+        "capacity": 1
       },
+      "kind": "linux",
       "tags": {
         "displayName": "[variables('appServicePlanName')]"
       },
       "properties": {
-        "name": "[variables('appServicePlanName')]"
-      },
-      "kind": "linux"
+        "name": "[variables('appServicePlanName')]",
+        "reserved": true
+      }
     },
     {
       "name": "[variables('ProvisioningServiceAppName')]",
@@ -189,18 +233,23 @@
         "displayName": "[variables('ProvisioningServiceAppName')]"
       },
       "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults',variables('keyVaultName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
         "[resourceId('Microsoft.Sql/servers/databases', parameters('SQLServerName'), variables('sqlDBName'))]"
       ],
+      "kind": "app",
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "properties": {
         "name": "[variables('ProvisioningServiceAppName')]",
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
-
         "siteConfig": {
           "connectionStrings": [
             {
               "name": "DefaultConnection",
-              "connectionString": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=AMPSaaSDB', ';User Id=', parameters('SQLAdminLogin'), '@', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ';Password=', parameters('SQLAdminLoginPassword'), ';')]"
+              "connectionString": "[concat('@Microsoft.KeyVault(VaultName=',variables('KeyVaultName'),';SecretName=SqlConnectionString)')]",
+              "type": "SQLAzure"
             }
           ],
           "appSettings": [
@@ -221,7 +270,7 @@
             },
             {
               "name": "SaaSApiConfiguration__ClientSecret",
-              "value": "[parameters('ADApplicationSecret')]",
+              "value": "[concat('@Microsoft.KeyVault(VaultName=',variables('KeyVaultName'),';SecretName=SaaSApiConfiguration--ClientSecret)')]",
               "slotSetting": false
             },
             {
@@ -281,7 +330,7 @@
               "value": "dotnetcore"
             }
           ],
-          "alwaysOn": "[variables('alwaysOn')]"
+          "alwaysOn": true
 
         }
       },
@@ -312,7 +361,12 @@
       "tags": {
         "displayName": "[variables('PublisherServiceAppName')]"
       },
+      "kind": "app",
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults',variables('keyVaultName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
         "[resourceId('Microsoft.Sql/servers/databases', parameters('SQLServerName'), variables('sqlDBName'))]"
       ],
@@ -323,7 +377,8 @@
           "connectionStrings": [
             {
               "name": "DefaultConnection",
-              "connectionString": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=AMPSaaSDB', ';User Id=', parameters('SQLAdminLogin'), '@', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ';Password=', parameters('SQLAdminLoginPassword'), ';')]"
+              "connectionString": "[concat('@Microsoft.KeyVault(VaultName=',variables('KeyVaultName'),';SecretName=SqlConnectionString)')]",
+              "type": "SQLAzure"
             }
           ],
           "appSettings": [
@@ -344,7 +399,7 @@
             },
             {
               "name": "SaaSApiConfiguration__ClientSecret",
-              "value": "[parameters('ADApplicationSecret')]",
+              "value": "[concat('@Microsoft.KeyVault(VaultName=',variables('KeyVaultName'),';SecretName=SaaSApiConfiguration--ClientSecret)')]",
               "slotSetting": false
             },
             {
@@ -404,7 +459,7 @@
               "value": "dotnetcore"
             }
           ],
-          "alwaysOn": "[variables('alwaysOn')]"
+          "alwaysOn": true
         }
       },
       "resources": [
@@ -425,6 +480,40 @@
           }
         }
       ]
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "name": "[concat(variables('keyVaultName'), '/add')]",
+      "apiVersion": "2016-10-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults',variables('keyVaultName'))]",
+        "[resourceId('Microsoft.Web/sites',variables('PublisherServiceAppName'))]",
+        "[resourceId('Microsoft.Web/sites',variables('ProvisioningServiceAppName'))]"
+      ],
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[parameters('tenantId')]",
+            "objectId": "[reference(resourceId('Microsoft.Web/sites', variables('PublisherServiceAppName')), '2019-08-01', 'full').identity.principalId]",
+            "permissions": {
+              "keys": [],
+              "secrets": [ "get", "list" ],
+              "certificates": [],
+              "storage": []
+            }
+          },
+          {
+            "tenantId": "[parameters('tenantId')]",
+            "objectId": "[reference(resourceId('Microsoft.Web/sites', variables('ProvisioningServiceAppName')), '2019-08-01', 'full').identity.principalId]",
+            "permissions": {
+              "keys": [],
+              "secrets": [ "get", "list" ],
+              "certificates": [],
+              "storage": []
+            }
+          }
+        ]
+      }
     }
   ],
   "outputs": {
@@ -435,10 +524,6 @@
     "PublisherPortal": {
       "type": "string",
       "value": "[reference(concat('Microsoft.Web/sites/', variables('PublisherServiceAppName'))).hostnames[0]]"
-    },
-    "DefaultConnection": {
-      "value": "[concat('Data Source=tcp:', parameters('SQLServerName'), '.database.windows.net,1433;Initial Catalog=AMPSaaSDB', ';User Id=', parameters('SQLAdminLogin'), '@', parameters('SQLServerName'), ';Password=', parameters('SQLAdminLoginPassword'), ';')]",
-      "type": "string"
     }
   }
 }

@@ -12,19 +12,40 @@ Param(
    [string][Parameter()]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
    [string][Parameter()]$ADApplicationSecret, # Secret key of the AD Application
    [string][Parameter()]$ADMTApplicationID, # The value should match the value provided for Multi-Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string][Parameter(Mandatory)]$SQLServerName, # Name of the database server (without database.windows.net)
-   [string][Parameter(Mandatory)]$SQLAdminLogin, # SQL Admin login
-   [string][Parameter(Mandatory)]$SQLAdminLoginPassword, # SQL Admin password
+   [string][Parameter()]$SQLServerName, # Name of the database server (without database.windows.net)
+   [string][Parameter()]$SQLDatabaseName, # Name of the database 
+   [string][Parameter()]$SQLAdminLogin, # SQL Admin login
+   [string][Parameter()]$SQLAdminLoginPassword, # SQL Admin password
    [string][Parameter(Mandatory)]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
    [string][Parameter()]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
-   [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
+   [string][Parameter()]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
-   [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
+   [string][Parameter()]$PathToARMTemplate,  # Local Path to the ARM Template
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico  # URL for Publisher .ico logo
 )
 
 Write-Host "Starting SaaS Accelerator Deployment..."
+#Handle defaults for parameters
+
+if ($PathToARMTemplate -eq "") {
+    $PathToARMTemplate = "./deploy.json"
+}
+if ($ResourceGroupForDeployment -eq "") {
+    $ResourceGroupForDeployment = $WebAppNamePrefix
+}
+if ($SQLServerName -eq "") {
+    $SQLServerName = "$WebAppNamePrefix-sql"
+}
+if ($SQLDatabaseName -eq "") {
+    $SQLDatabaseName = "AMPSaaSDB"
+}
+if ($SQLAdminLoginPassword -eq "") {
+    $SQLAdminLoginPassword = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((New-Guid))))+"="
+}
+if ($SQLAdminLogin -eq "") {
+    $SQLAdminLogin = "saasdbadmin" + $(Get-Random -Minimum 1 -Maximum 1000)
+}
 
 # Record the current ADApps to reduce deployment instructions at the end
 $IsADApplicationIDProvided = $ADApplicationIDProvided
@@ -36,7 +57,8 @@ $ISADMTApplicationIDProvided = $ADMTApplicationID
 # Azure Login
 if($env:ACC_CLOUD) {
     Write-Host "🔑  Authenticating using device..."
-    #Connect-AzAccount -UseDeviceAuthentication
+    #Connect-AzAccount -UseDeviceAuthentication 
+    #Wihtout device authentication, the script cannot return the proper username that is logged in so we need to provide publisher admin users
 } else {
     Write-Host "🔑  Authenticating using AzAccount authentication..."
     Connect-AzAccount
@@ -46,9 +68,9 @@ Write-Host "🔑  Connecting to AzureAD..."
 # Connect-AzureAD -Confirm   # TODO: Make this command works.  It fails when running from withing the script. 
 Write-Host "🔑  All Authentications Connected."
 
-$currentContext = get-AzureRMContext
-$currentTenant = $currentContext.Account.ExtendedProperties.Tenants
-$currentSubscription = $currentContext.Account.ExtendedProperties.Subscriptions
+$currentContext = Get-AzContext
+$currentTenant = $currentContext.Tenant.Id
+$currentSubscription = $currentContext.Subscription.Id
 # Get TenantID if not set as argument
 if(!($TenantID)) {    
     Get-AzTenant | Format-Table
@@ -83,12 +105,13 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
 
     try {    
         $ADApplication = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
-        $ADObjectID = $ADApplication | %{ $_.ObjectId }
-        $ADApplicationID = $ADApplication | %{ $_.AppId }
+        $ADObjectID = $ADApplication.ObjectId
+        $ADApplicationID = $ADApplication.AppId
+        
         Write-Host "🔑  AAD Single Tenant Object ID:" $ADObjectID    
         Write-Host "🔑  AAD Single Tenant Application ID:" $ADApplicationID  
         sleep 5 #this is to give time to AAD to register
-        New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $ADApplicationSecret -InformationVariable "SaaSAPI"
+        $res = New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $ADApplicationSecret -InformationVariable "SaaSAPI"
         Write-Host "🔑  ADApplicationID created."
         
     }
@@ -98,42 +121,44 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     }
 }
 
-$restbody = "" +`
-"{ \`"displayName\`": \`"$WebAppNamePrefix-LandingpageAppReg\`"," +`
-" \`"api\`":{\`"requestedAccessTokenVersion\`": 2}," +`
-" \`"signInAudience\`" : \`"AzureADandPersonalMicrosoftAccount\`"," +`
-" \`"web\`": " +`
-"{ \`"redirectUris\`": " +`
-"[" +`
-"\`"https://$WebAppNamePrefix-portal.azurewebsites.net\`"," +`
-"\`"https://$WebAppNamePrefix-portal.azurewebsites.net/\`"," +`
-"\`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index\`"," +`
-"\`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/\`"," +`
-"\`"https://$WebAppNamePrefix-admin.azurewebsites.net\`"," +`
-"\`"https://$WebAppNamePrefix-admin.azurewebsites.net/\`"," +`
-"\`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index\`"," +`
-"\`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/\`"" +`
-"]," +`
-" \`"logoutUrl\`": \`"https://$WebAppNamePrefix-portal.azurewebsites.net/logout\`"," +`
-"\`"implicitGrantSettings\`": " +`
-"{ \`"enableIdTokenIssuance\`": true }}," +`
-" \`"requiredResourceAccess\`": " +`
-" [{\`"resourceAppId\`": \`"00000003-0000-0000-c000-000000000000\`", " +`
-" \`"resourceAccess\`": " +`
-" [{ \`"id\`": \`"e1fe6dd8-ba31-4d61-89e7-88639da4683d\`"," +`
-" \`"type\`": \`"Scope\`" }]}] }" 
-
-Write-Host $restbody
-
 if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App Registration Requst 
     Write-Host "🔑  Mapping Landing paged mapped to AppRegistration..."
     try {
-        $landingpageLoginAppReg = $(az rest --method POST  --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications --body $restbody | jq '{lappID: .appId, publisherDomain: .publisherDomain, objectID: .id}')
-        Write-Host "$landingpageLoginAppReg"
-        $ADMTApplicationID = $landingpageLoginAppReg | jq .lappID | %{$_ -replace '"',''}
-        Write-Host "🔑  Landing paged mapped to AppRegistration: $ADMTApplicationID"
-        $ADMTObjectID = $landingpageLoginAppReg | jq .objectID | %{$_ -replace '"',''}
-        Write-Host "🔑  Landing paged AppRegistration ObjectID: $ADMTObjectID"
+
+        $replyUrls = New-Object System.Collections.Generic.List[System.String]
+        $replyUrls.Add("https://$WebAppNamePrefix-portal.azurewebsites.net/")
+        $replyUrls.Add("https://$WebAppNamePrefix-portal.azurewebsites.net")
+        $replyUrls.Add("https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index")
+        $replyUrls.Add("https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/")
+        $replyUrls.Add("https://$WebAppNamePrefix-admin.azurewebsites.net/")
+        $replyUrls.Add("https://$WebAppNamePrefix-admin.azurewebsites.net")
+        $replyUrls.Add("https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index")
+        $replyUrls.Add("https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/")
+        
+        $requiredResourceAccess = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess" 
+        $requiredResourceAccess.ResourceAppId = "00000003-0000-0000-c000-000000000000"
+        $requiredResourceAccess.ResourceAccess = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList "e1fe6dd8-ba31-4d61-89e7-88639da4683d","Scope"        
+
+        $landingpageLoginAppReg = New-AzureADApplication `
+                                    -DisplayName "$WebAppNamePrefix-LandingpageAppReg" `
+                                    -Oauth2AllowImplicitFlow $true `
+                                    -AvailableToOtherTenants $true `
+                                    -ReplyUrls $replyUrls `
+                                    -LogoutUrl "https://$WebAppNamePrefix-portal.azurewebsites.net/logout" `
+                                    -OptionalClaims @{ IdToken = [PSCustomObject]@{ Name = "auth-time"; } } `
+                                    -RequiredResourceAccess $requiredResourceAccess `
+
+        $ADMTApplicationID = $landingpageLoginAppReg.AppId
+        $ADMTObjectID = $landingpageLoginAppReg.ObjectId
+        
+        sleep 10 #this is to give time to AAD to register
+        #updating audience and api - TODO This can't be done using the New-AzureADApplication cmdlet
+
+        $updateAppBody = "{" +`
+        " \`"api\`":{\`"requestedAccessTokenVersion\`": 2}," +`
+        " \`"signInAudience\`" : \`"AzureADandPersonalMicrosoftAccount\`"" +`
+        "}"
+        $updatedApp = az rest --method PATCH --headers 'Content-Type=application/json' --uri https://graph.microsoft.com/v1.0/applications/$ADMTObjectID --body $updateAppBody
 
         # Download Publisher's AppRegistration logo
         if($LogoURLpng) { 
@@ -241,6 +266,7 @@ $ARMTemplateParams = @{
    ADApplicationSecret          = "$ADApplicationSecret"
    ADMTApplicationID            = "$ADMTApplicationID"
    SQLServerName                = "$SQLServerName"
+   SQLDatabaseName              = "$SQLDatabaseName"
    SQLAdminLogin                = "$SQLAdminLogin"
    SQLAdminLoginPassword        = "$SQLAdminLoginPassword"
    bacpacUrl                    = "$URLToBacpacFromStorage"
