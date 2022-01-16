@@ -215,13 +215,11 @@
         "name": "B1",
         "capacity": 1
       },
-      "kind": "linux",
       "tags": {
         "displayName": "[variables('appServicePlanName')]"
       },
       "properties": {
-        "name": "[variables('appServicePlanName')]",
-        "reserved": true
+        "name": "[variables('appServicePlanName')]"
       }
     },
     {
