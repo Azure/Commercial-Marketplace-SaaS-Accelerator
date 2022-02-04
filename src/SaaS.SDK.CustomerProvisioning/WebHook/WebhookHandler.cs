@@ -9,7 +9,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
-    using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
@@ -181,7 +180,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
 
             this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
-            this.applicationLogService.AddApplicationLog("Plan Quantity Successfully Changed.");
+            await this.applicationLogService.AddApplicationLog("Plan Quantity Successfully Changed.").ConfigureAwait(false);
 
             if (oldValue != null)
             {

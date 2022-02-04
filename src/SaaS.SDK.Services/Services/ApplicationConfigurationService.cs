@@ -1,6 +1,5 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
-    using System;
     using System.Collections.Generic;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
