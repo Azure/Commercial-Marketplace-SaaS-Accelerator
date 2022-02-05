@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context

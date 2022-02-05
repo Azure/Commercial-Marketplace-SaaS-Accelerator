@@ -237,16 +237,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 this.planRepository.Save(new Plans
                 {
                     PlanId = planDetail.PlanId,
-                    DisplayName = planDetail.PlanId,
-                    Description = planDetail.DisplayName,
+                    DisplayName = planDetail.DisplayName,
+                    Description = planDetail.Description,
                     OfferId = planDetail.OfferId,
                     PlanGuid = planDetail.PlanGUID,
                     MeteredDimensions = planDetail.GetmeteredDimensions(),
                     IsmeteringSupported = planDetail.IsmeteringSupported,
                     IsPerUser = planDetail.IsPerUserPlan,
-                    
-
-
                 });
             }
         }

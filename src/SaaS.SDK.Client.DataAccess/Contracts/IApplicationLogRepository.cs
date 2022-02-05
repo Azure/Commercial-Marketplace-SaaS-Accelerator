@@ -1,6 +1,5 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
-    using System;
     using System.Threading.Tasks;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 

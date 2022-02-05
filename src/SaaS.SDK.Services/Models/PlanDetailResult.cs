@@ -3,7 +3,6 @@
 namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Text.Json.Serialization;
