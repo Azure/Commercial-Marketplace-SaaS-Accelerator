@@ -11,6 +11,7 @@ name: "Deploy WEB Apps to dev"
 
 on:
   push:
+  pull_request:
     branches:
       - main
 
