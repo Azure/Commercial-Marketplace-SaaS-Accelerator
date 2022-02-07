@@ -4,7 +4,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     using System.ComponentModel;
     using System.Text.Json.Serialization;
-    using System.Collections.Generic;
     /// <summary>
     /// Meteringed Quantity Included.
     /// </summary>

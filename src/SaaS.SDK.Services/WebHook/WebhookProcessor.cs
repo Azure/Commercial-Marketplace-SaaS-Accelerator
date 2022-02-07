@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
 {
-    using System;
     using System.Threading.Tasks;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
 
