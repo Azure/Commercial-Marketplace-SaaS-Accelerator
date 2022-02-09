@@ -27,8 +27,7 @@
                             <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20" width="100%">
                                 <thead class="cm-table-head">
                                     <tr>
-                                        <th>User Name</th>
-                                        <th>User Email</th>
+                                        <th>Purchaser Email</th>
                                         <th>Subscription Name</th>
                                         <th>Plan</th>
                                         <th>Quantity</th>
@@ -42,10 +41,7 @@
                                         var subscription = Model.Subscriptions[i];
                                         <tr>
                                             <td class="text-left">
-                                                @subscription.CustomerName
-                                            </td>
-                                            <td class="text-left">
-                                                @subscription.CustomerEmailAddress
+                                                @subscription.Purchaser.EmailId
                                             </td>
                                             <td class="text-left">
                                                 @Html.HiddenFor(s => s.Subscriptions[i].Id)
