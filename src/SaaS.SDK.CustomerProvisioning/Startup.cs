@@ -97,6 +97,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
                     options.CallbackPath = "/Home/Index";
                     options.SignedOutRedirectUri = config.SignedOutRedirectUri;
                     options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_NAME; //This does not seem to take effect on User.Identity. See Note in CustomClaimsTransformation.cs
+                    options.TokenValidationParameters.ValidateIssuer = false;
                 });
             services
                .AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
