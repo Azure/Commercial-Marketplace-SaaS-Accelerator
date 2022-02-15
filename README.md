@@ -50,6 +50,8 @@ The following documents provide HOW-TOs setup Azure Monitoring and Alerting for 
 
 - Sample web application. This refers to source code that leverages the SDK and Client Libraries.
 
+## SaaS Accelerator Overview
+![Saas Diagram](./docs/images/saasoverview.png)
 ## Projects
 
 The source **(src)** directory offers the following components:
