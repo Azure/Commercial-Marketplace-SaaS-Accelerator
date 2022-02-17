@@ -3,6 +3,7 @@
 namespace Microsoft.Marketplace.Saas.Web
 {
     using global::Azure.Identity;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
@@ -83,37 +84,44 @@ namespace Microsoft.Marketplace.Saas.Web
             var knownUsers = new KnownUsersModel()
             {
                 KnownUsers = this.Configuration["KnownUsers"],
-
             };
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
-           .AddOpenIdConnect(options =>
-           {
-               options.Authority = $"{config.AdAuthenticationEndPoint}/common";
-               options.ClientId = config.MTClientId;
-               options.ResponseType = OpenIdConnectResponseType.IdToken;
-               options.CallbackPath = "/Home/Index";
-               options.SignedOutRedirectUri = config.SignedOutRedirectUri;
-               options.TokenValidationParameters.NameClaimType = "name";
-               options.TokenValidationParameters.ValidateIssuer = false;
-           })
-           .AddCookie();
-
             var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
-            services.AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()));
-            services.AddSingleton<IMeteredBillingApiService>( new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()));
-            services.AddSingleton<SaaSApiClientConfiguration>(config);
-            services.AddSingleton<KnownUsersModel>(knownUsers);
-            services.AddDbContext<SaasKitContext>(options =>
-               options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+
+
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddOpenIdConnect(options =>
+                {
+                    options.Authority = $"{config.AdAuthenticationEndPoint}/common/v2.0";
+                    options.ClientId = config.MTClientId;
+                    options.ResponseType = OpenIdConnectResponseType.IdToken;
+                    options.CallbackPath = "/Home/Index";
+                    options.SignedOutRedirectUri = config.SignedOutRedirectUri;
+                    options.TokenValidationParameters.NameClaimType = "name";
+                    options.TokenValidationParameters.ValidateIssuer = false;
+                })
+                .AddCookie();
+
+            services
+                .AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
+
+            services
+                .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()))
+                .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()))
+                .AddSingleton<SaaSApiClientConfiguration>(config)
+                .AddSingleton<KnownUsersModel>(knownUsers);
+
+            services
+                .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+
 
             InitializeRepositoryServices(services);
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddMvc(option => option.EnableEndpointRouting = false);
             services.AddControllersWithViews();
         }

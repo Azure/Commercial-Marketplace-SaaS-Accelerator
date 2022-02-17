@@ -24,6 +24,8 @@ namespace Microsoft.Marketplace.SaasKit.Client
     using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
     using global::Azure.Identity;
     using Microsoft.Marketplace.SaaS;
+    using Microsoft.AspNetCore.Authentication;
+    using System.IdentityModel.Tokens.Jwt;
 
     /// <summary>
     /// Defines the <see cref="Startup" />.
@@ -68,7 +70,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 AdAuthenticationEndPoint = this.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
                 ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
                 ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
-                MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],                
+                MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],
                 FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
                 FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
                 GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
@@ -77,34 +79,39 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
             };
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
-   .AddOpenIdConnect(options =>
-   {
-       options.Authority = $"{config.AdAuthenticationEndPoint}/common";
-       options.ClientId = config.MTClientId;
-       options.ResponseType = OpenIdConnectResponseType.IdToken;
-       options.CallbackPath = "/Home/Index";
-       options.SignedOutRedirectUri = config.SignedOutRedirectUri;
-       options.TokenValidationParameters.NameClaimType = "name";
-       options.TokenValidationParameters.ValidateIssuer = false;
-   })
-   .AddCookie();
-
             var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
-            services.AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()));
-            services.AddSingleton<SaaSApiClientConfiguration>(config);
-            services.AddDbContext<SaasKitContext>(options =>
-               options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddCookie()
+                .AddOpenIdConnect(options =>
+                {
+                    options.Authority = $"{config.AdAuthenticationEndPoint}/common/v2.0";
+                    options.ClientId = config.MTClientId;
+                    options.ResponseType = OpenIdConnectResponseType.IdToken;
+                    options.CallbackPath = "/Home/Index";
+                    options.SignedOutRedirectUri = config.SignedOutRedirectUri;
+                    options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_NAME; //This does not seem to take effect on User.Identity. See Note in CustomClaimsTransformation.cs
+                    options.TokenValidationParameters.ValidateIssuer = false;
+                });
+            services
+               .AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
+
+            services
+                .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()))
+                .AddSingleton<SaaSApiClientConfiguration>(config)
+                ;
+
+            services
+                .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
             InitializeRepositoryServices(services);
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddMvc(option => option.EnableEndpointRouting = false);
         }
 

@@ -49,7 +49,7 @@
 
             if (context.HttpContext != null && context.HttpContext.User.Claims.Count() > 0)
             {
-                email = context.HttpContext.User.Claims.Where(s => s.Type == ClaimConstants.CLAIM_EMAILADDRESS).FirstOrDefault().Value;
+                email = context.HttpContext.User?.Claims?.Where(s => s.Type == ClaimConstants.CLAIM_EMAILADDRESS)?.FirstOrDefault()?.Value;
                 isKnownuser = this.knownUsersRepository.GetKnownUserDetail(email, 1)?.Id > 0;
 
                 if (!isKnownuser)
