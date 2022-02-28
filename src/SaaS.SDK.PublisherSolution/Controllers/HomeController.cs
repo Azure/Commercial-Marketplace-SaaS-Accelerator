@@ -234,7 +234,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
                         Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
-                        subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
                             allSubscriptions.Add(subscriptionDetailExtension);
