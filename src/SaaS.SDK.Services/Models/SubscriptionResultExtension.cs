@@ -58,5 +58,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// The subscription status.
         /// </value>
         public SubscriptionStatusEnumExtension SubscriptionStatus { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is automatic provisioning supported.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is automatic provisioning supported; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsAutomaticProvisioningSupported { get; set; }
     }
 }
