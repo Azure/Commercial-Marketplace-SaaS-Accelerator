@@ -32,14 +32,6 @@
         public bool IsSuccess { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is automatic provisioning supported.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is automatic provisioning supported; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsAutomaticProvisioningSupported { get; set; }
-
-        /// <summary>
         /// Gets or sets the saa s application URL.
         /// </summary>
         /// <value>

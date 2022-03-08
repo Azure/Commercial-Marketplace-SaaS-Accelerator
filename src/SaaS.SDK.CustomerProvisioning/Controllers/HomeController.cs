@@ -243,6 +243,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                             subscriptionExtension.CustomerEmailAddress = this.CurrentUserEmailAddress;
                             subscriptionExtension.CustomerName = this.CurrentUserName;
                             subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
+                            subscriptionExtension.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         }
                     }
                     else
@@ -296,7 +297,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     foreach (var subscription in subscriptionDetail.Subscriptions)
                     {
                         Plans planDetail = this.planRepository.GetById(subscription.PlanId);
-                        subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
+                        subscription.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         subscription.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                     }
 
@@ -482,6 +483,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
+                    subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                 }
 
                 return this.View("Index", subscriptionDetail);
@@ -792,6 +794,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
                     subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+                    subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                 }
 
                 return this.View("Index", subscriptionDetail);

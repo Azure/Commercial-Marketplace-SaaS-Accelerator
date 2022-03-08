@@ -7,6 +7,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Azure Web hook.
@@ -74,7 +75,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
         /// Posts the specified request.
         /// </summary>
         /// <param name="request">The request.</param>
-        public async void Post(WebhookPayload request)
+        public async Task Post(WebhookPayload request)
         {
             await this.applicationLogService.AddApplicationLog("The azure Webhook Triggered.").ConfigureAwait(false);
 
