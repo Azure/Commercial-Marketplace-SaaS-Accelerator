@@ -28,6 +28,7 @@
                                 <thead class="cm-table-head">
                                     <tr>
                                         <th>Purchaser Email</th>
+                                        <th>Marketplace Subscription Id</th>
                                         <th>Subscription Name</th>
                                         <th>Plan</th>
                                         <th>Quantity</th>
@@ -43,7 +44,10 @@
                                             <td class="text-left">
                                                 @subscription.Purchaser.EmailId
                                             </td>
-                                            <td class="text-left">
+                                            <td class="text-left text-nowrap">
+                                                @subscription.Id
+                                            </td>
+                                               <td class="text-left">
                                                 @Html.HiddenFor(s => s.Subscriptions[i].Id)
                                                 @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
                                                 @subscription.Name
