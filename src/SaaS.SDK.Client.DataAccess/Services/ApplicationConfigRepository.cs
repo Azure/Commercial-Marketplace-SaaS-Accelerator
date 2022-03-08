@@ -35,7 +35,7 @@
         /// </returns>
         public string GetValueByName(string name)
         {
-            return this.context.ApplicationConfiguration.Where(s => s.Name == name).FirstOrDefault().Value;
+            return this.context.ApplicationConfiguration.Where(s => s.Name == name).FirstOrDefault()?.Value;
         }
 
         /// <summary>

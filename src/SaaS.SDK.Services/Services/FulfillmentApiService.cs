@@ -235,6 +235,35 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         }
 
         /// <summary>
+        /// Repond Failure on the operation status result.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription.</param>
+        /// <param name="operationId">The operation location.</param>
+        /// <param name="updateOperationStatus">The operation status to patch with.</param>
+        /// <returns>
+        /// Patch Operation Status Result.
+        /// </returns>
+        /// <exception cref="System.Exception">Error occurred while getting the operation result.</exception>
+        public async Task<OperationResult> PatchOperationStatusResultAsync(Guid subscriptionId, Guid operationId, UpdateOperationStatusEnum updateOperationStatus)
+        {
+            this.Logger?.Info($"Inside PatchOperationStatusResultAsync() of FulfillmentApiService, trying to Update Operation Status to { updateOperationStatus} Operation ID : {operationId} Subscription ID : {subscriptionId}");
+            try
+            {
+                UpdateOperation updateOperation = new UpdateOperation();
+                updateOperation.Status = updateOperationStatus;
+                var operationDetails = (await this.marketplaceClient.Operations.UpdateOperationStatusAsync(subscriptionId, operationId, updateOperation));
+                return new OperationResult();
+            }
+            catch (RequestFailedException ex)
+            {
+                this.ProcessErrorResponse(MarketplaceActionEnum.UPDATE_OPERATION_STATUS, ex);
+                return null;
+            }
+        }
+
+
+
+        /// <summary>
         /// Deletes the subscription.
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>

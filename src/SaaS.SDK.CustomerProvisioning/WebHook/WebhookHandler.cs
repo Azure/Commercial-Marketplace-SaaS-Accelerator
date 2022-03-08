@@ -177,25 +177,40 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// <exception cref="NotImplementedException"> Exception.</exception>
         public async Task ChangeQuantityAsync(WebhookPayload payload)
         {
+            var rejectAutoSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("RejectAutoSubscriptionUpdates"));
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
 
-            this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
-            await this.applicationLogService.AddApplicationLog("Plan Quantity Successfully Changed.").ConfigureAwait(false);
-
-            if (oldValue != null)
+            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
             {
-                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
+                SubscriptionId = oldValue.SubscribeId,
+                CreateBy = null,
+                CreateDate = DateTime.Now,
+            };
+
+
+            if (rejectAutoSubscriptionUpdates)
+            {
+                await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, SaaS.Models.UpdateOperationStatusEnum.Failure);
+                await this.applicationLogService.AddApplicationLog("Plan Quantity Change Failed Successfully.").ConfigureAwait(false);
+                if (oldValue != null)
                 {
-                    Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
-                    SubscriptionId = oldValue.SubscribeId,
-                    NewValue = payload.Quantity.ToString(),
-                    OldValue = oldValue.Quantity.ToString(),
-                    CreateBy = null,
-                    CreateDate = DateTime.Now,
-                };
-                this.subscriptionsLogRepository.Save(auditLog);
+                    auditLog.NewValue = oldValue.Quantity.ToString();
+                    auditLog.OldValue = oldValue.Quantity.ToString();
+                }
+            }
+            else
+            {
+                this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
+                await this.applicationLogService.AddApplicationLog("Plan Quantity Successfully Changed.").ConfigureAwait(false);
+                if (oldValue != null)
+                {
+                    auditLog.NewValue = payload.Quantity.ToString();
+                    auditLog.OldValue = oldValue.Quantity.ToString();
+                }
             }
 
+            this.subscriptionsLogRepository.Save(auditLog);
             await Task.CompletedTask;
         }
 
