@@ -19,7 +19,7 @@ env:
   CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH: './src/SaaS.SDK.CustomerProvisioning/publish'
   PUBLISHER_PROJECT: './src/SaaS.SDK.PublisherSolution/SaaS.SDK.PublisherSolution.csproj'
   PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH: './src/SaaS.SDK.PublisherSolution/publish'
-  DOTNET_CORE_VERSION: '6.0.3'
+  DOTNET_CORE_VERSION: '6.0.x'
   
 jobs:
   deploytocustomer:
