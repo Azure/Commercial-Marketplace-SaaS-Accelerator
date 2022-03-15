@@ -93,7 +93,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
         /// <returns>
         /// Get Operation Status Result.
         /// </returns>
-        Task<OperationResult> PatchOperationStatusResultAsync(Guid subscriptionId, Guid operationId, UpdateOperationStatusEnum updateOperationStatus);
+        Task<Response> PatchOperationStatusResultAsync(Guid subscriptionId, Guid operationId, UpdateOperationStatusEnum updateOperationStatus);
 
         /// <summary>
         /// Deletes the subscription.

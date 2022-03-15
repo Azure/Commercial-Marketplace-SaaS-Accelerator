@@ -244,15 +244,14 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// Patch Operation Status Result.
         /// </returns>
         /// <exception cref="System.Exception">Error occurred while getting the operation result.</exception>
-        public async Task<OperationResult> PatchOperationStatusResultAsync(Guid subscriptionId, Guid operationId, UpdateOperationStatusEnum updateOperationStatus)
+        public async Task<Response> PatchOperationStatusResultAsync(Guid subscriptionId, Guid operationId, UpdateOperationStatusEnum updateOperationStatus)
         {
             this.Logger?.Info($"Inside PatchOperationStatusResultAsync() of FulfillmentApiService, trying to Update Operation Status to { updateOperationStatus} Operation ID : {operationId} Subscription ID : {subscriptionId}");
             try
             {
                 UpdateOperation updateOperation = new UpdateOperation();
                 updateOperation.Status = updateOperationStatus;
-                var operationDetails = (await this.marketplaceClient.Operations.UpdateOperationStatusAsync(subscriptionId, operationId, updateOperation));
-                return new OperationResult();
+                return await this.marketplaceClient.Operations.UpdateOperationStatusAsync(subscriptionId, operationId, updateOperation);
             }
             catch (RequestFailedException ex)
             {
