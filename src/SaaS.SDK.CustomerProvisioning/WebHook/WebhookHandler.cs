@@ -252,7 +252,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                 {
                     Attribute = Convert.ToString(SubscriptionLogAttributes.StatusByWebhook),
                     SubscriptionId = oldValue?.SubscribeId,
-                    OldValue = Convert.ToString(oldValue?.SaasSubscriptionStatus),
+                    OldValue = Convert.ToString(oldValue?.SubscriptionStatus),
                     CreateBy = null,
                     CreateDate = DateTime.Now,
                 };
@@ -268,7 +268,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                     }
 
                     await this.applicationLogService.AddApplicationLog("Reinstate Change Request Rejected Successfully.").ConfigureAwait(false);
-                    auditLog.NewValue = Convert.ToString(oldValue?.SaasSubscriptionStatus);
+                    auditLog.NewValue = Convert.ToString(oldValue?.SubscriptionStatus);
                 }
                 else
                 {
@@ -302,7 +302,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                     Attribute = Convert.ToString(SubscriptionLogAttributes.StatusByWebhook),
                     SubscriptionId = oldValue.SubscribeId,
                     NewValue = Convert.ToString(SubscriptionStatusEnum.Suspended),
-                    OldValue = Convert.ToString(oldValue.SaasSubscriptionStatus),
+                    OldValue = Convert.ToString(oldValue.SubscriptionStatus),
                     CreateBy = null,
                     CreateDate = DateTime.Now,
                 };
@@ -330,7 +330,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                     Attribute = Convert.ToString(SubscriptionLogAttributes.StatusByWebhook),
                     SubscriptionId = oldValue.SubscribeId,
                     NewValue = Convert.ToString(SubscriptionStatusEnum.Unsubscribed),
-                    OldValue = Convert.ToString(oldValue.SaasSubscriptionStatus),
+                    OldValue = Convert.ToString(oldValue.SubscriptionStatus),
                     CreateBy = null,
                     CreateDate = DateTime.Now,
                 };
