@@ -88,6 +88,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
 
+        private const string RejectSubscriptionUpdates = "RejectSubscriptionUpdates";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WebHookHandler" /> class.
         /// </summary>
@@ -145,7 +147,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task ChangePlanAsync(WebhookPayload payload)
         {
-            var rejectSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("RejectSubscriptionUpdates"));
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
             
             if(oldValue != null)
@@ -159,7 +160,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                     CreateDate = DateTime.Now,
                 };
 
-                if (rejectSubscriptionUpdates)
+                //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
+                var _rejectSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(RejectSubscriptionUpdates));
+                if (_rejectSubscriptionUpdates)
                 {
                     var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, SaaS.Models.UpdateOperationStatusEnum.Failure);
                     if (patchOperation != null && patchOperation.Status != 200)
@@ -195,7 +198,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// <exception cref="NotImplementedException"> Exception.</exception>
         public async Task ChangeQuantityAsync(WebhookPayload payload)
         {
-            var rejectSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("RejectSubscriptionUpdates"));
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
 
             if (oldValue != null)
@@ -209,7 +211,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                     CreateDate = DateTime.Now,
                 };
 
-                if (rejectSubscriptionUpdates)
+                //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
+                var _rejectSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(RejectSubscriptionUpdates));
+                if (_rejectSubscriptionUpdates)
                 {
                     var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, SaaS.Models.UpdateOperationStatusEnum.Failure);
                     if (patchOperation != null && patchOperation.Status != 200)
@@ -236,14 +240,15 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         }
 
         /// <summary>
-        /// Reinstated the asynchronous.
+        /// Reinstated is followed by Suspend.
+        /// This is called when customer fixed their billing issues and partner can choose to reinstate the suspened subscription to subscribed.
+        /// And resume the software access to the customer.
         /// </summary>
         /// <param name="payload">The payload.</param>
         /// <returns> Exception.</returns>
         /// <exception cref="NotImplementedException"> Not Implemented Exception. </exception>
         public async Task ReinstatedAsync(WebhookPayload payload)
         {
-            var rejectSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("RejectSubscriptionUpdates"));
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
 
             if (oldValue != null)
@@ -257,7 +262,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                     CreateDate = DateTime.Now,
                 };
 
-                if (rejectSubscriptionUpdates)
+                //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
+                var _rejectSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(RejectSubscriptionUpdates));
+                if (_rejectSubscriptionUpdates)
                 {
                     var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, SaaS.Models.UpdateOperationStatusEnum.Failure);
                     if (patchOperation != null && patchOperation.Status != 200)
