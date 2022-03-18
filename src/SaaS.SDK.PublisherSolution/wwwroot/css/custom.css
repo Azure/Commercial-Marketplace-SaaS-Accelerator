@@ -439,12 +439,6 @@ button.navbar-toggler:focus, button.navbar-toggler:hover {
     outline: none
 }
 
-
-.navtoggle {
-    height: 100%;
-    font-weight: 600;
-}
-
 .admin-margin {
     margin-left:-30px;
 }
