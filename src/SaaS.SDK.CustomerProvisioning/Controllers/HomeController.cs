@@ -653,24 +653,30 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                 }
 
                                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
-
-                                this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
-                                this.logger.LogInformation("Plan Successfully Changed.");
-                                await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
-
-                                if (oldValue != null)
+                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                                 {
-                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                                    {
-                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
-                                        SubscriptionId = oldValue.SubscribeId,
-                                        NewValue = planId,
-                                        OldValue = oldValue.PlanId,
-                                        CreateBy = currentUserId,
-                                        CreateDate = DateTime.Now,
-                                    };
-                                    this.subscriptionLogRepository.Save(auditLog);
+                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
+                                    SubscriptionId = oldValue.SubscribeId,
+                                    CreateBy = currentUserId,
+                                    CreateDate = DateTime.Now,
+                                };
+
+                                if (changePlanOperationStatus != OperationStatusEnum.Succeeded)
+                                {
+                                    auditLog.NewValue = oldValue.PlanId;
+                                    auditLog.OldValue = oldValue.PlanId;
+                                    this.logger.LogInformation($"Plan Change not complete as the operation status was { changePlanOperationStatus }.");
+                                    await this.applicationLogService.AddApplicationLog($"Plan Change not complete as the operation status was { changePlanOperationStatus }.").ConfigureAwait(false);
                                 }
+                                else
+                                {
+                                    this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
+                                    auditLog.NewValue = planId;
+                                    auditLog.OldValue = oldValue.PlanId;
+                                    this.logger.LogInformation("Plan Successfully Changed.");
+                                    await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
+                                }
+                                this.subscriptionLogRepository.Save(auditLog);
                             }
                         }
                         catch (MarketplaceException fex)
@@ -728,24 +734,32 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                 }
 
                                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
-
-                                this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
-                                this.logger.LogInformation("Quantity Successfully Changed.");
-                                await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
-
-                                if (oldValue != null)
+                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                                 {
-                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                                    {
-                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
-                                        SubscriptionId = oldValue.SubscribeId,
-                                        NewValue = quantity.ToString(),
-                                        OldValue = oldValue.Quantity.ToString(),
-                                        CreateBy = currentUserId,
-                                        CreateDate = DateTime.Now,
-                                    };
-                                    this.subscriptionLogRepository.Save(auditLog);
+                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
+                                    SubscriptionId = oldValue.SubscribeId,
+                                    NewValue = quantity.ToString(),
+                                    OldValue = oldValue.Quantity.ToString(),
+                                    CreateBy = currentUserId,
+                                    CreateDate = DateTime.Now,
+                                };
+
+                                if (changeQuantityOperationStatus != OperationStatusEnum.Succeeded)
+                                {
+                                    auditLog.NewValue = oldValue.Quantity.ToString();
+                                    auditLog.OldValue = oldValue.Quantity.ToString();
+                                    this.logger.LogInformation($"Quantity Change not complete as the operation status was { changeQuantityOperationStatus }.");
+                                    await this.applicationLogService.AddApplicationLog($"Quantity Change not complete as the operation status was { changeQuantityOperationStatus }.").ConfigureAwait(false);
                                 }
+                                else
+                                {
+                                    this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
+                                    auditLog.NewValue = quantity.ToString();
+                                    auditLog.OldValue = oldValue.Quantity.ToString();
+                                    this.logger.LogInformation("Quantity Successfully Changed.");
+                                    await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
+                                }
+                                this.subscriptionLogRepository.Save(auditLog);
                             }
                         }
                         catch (MarketplaceException fex)
