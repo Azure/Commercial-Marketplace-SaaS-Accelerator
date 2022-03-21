@@ -150,7 +150,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
             SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
             {
-                Attribute = Convert.ToString(SubscriptionLogAttributes.PlanByWebhook),
+                Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
                 SubscriptionId = oldValue?.SubscribeId,
                 OldValue = oldValue?.PlanId,
                 CreateBy = null,
@@ -198,7 +198,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
             SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
             {
-                Attribute = Convert.ToString(SubscriptionLogAttributes.QuantityByWebhook),
+                Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
                 SubscriptionId = oldValue?.SubscribeId,
                 OldValue = oldValue?.Quantity.ToString(),
                 CreateBy = null,
@@ -246,7 +246,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
             SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
             {
-                Attribute = Convert.ToString(SubscriptionLogAttributes.StatusByWebhook),
+                Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
                 SubscriptionId = oldValue?.SubscribeId,
                 OldValue = Convert.ToString(oldValue?.SubscriptionStatus),
                 CreateBy = null,
@@ -297,7 +297,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             {
                 SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                 {
-                    Attribute = Convert.ToString(SubscriptionLogAttributes.StatusByWebhook),
+                    Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
                     SubscriptionId = oldValue.SubscribeId,
                     NewValue = Convert.ToString(SubscriptionStatusEnum.Suspended),
                     OldValue = Convert.ToString(oldValue.SubscriptionStatus),
@@ -325,7 +325,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             {
                 SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                 {
-                    Attribute = Convert.ToString(SubscriptionLogAttributes.StatusByWebhook),
+                    Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
                     SubscriptionId = oldValue.SubscribeId,
                     NewValue = Convert.ToString(SubscriptionStatusEnum.Unsubscribed),
                     OldValue = Convert.ToString(oldValue.SubscriptionStatus),

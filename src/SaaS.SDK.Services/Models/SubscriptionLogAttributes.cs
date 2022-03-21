@@ -24,20 +24,5 @@
         /// The deployment
         /// </summary>
         Deployment = 4,
-
-        /// <summary>
-        /// The plan
-        /// </summary>
-        PlanByWebhook = 5,
-
-        /// <summary>
-        /// The status
-        /// </summary>
-        StatusByWebhook = 6,
-
-        /// <summary>
-        /// The quantity
-        /// </summary>
-        QuantityByWebhook = 7,
     }
 }
