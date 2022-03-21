@@ -681,7 +681,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                                 this.logger.LogInformation($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.");
                                 await this.applicationLogService.AddApplicationLog($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.").ConfigureAwait(false);
                                 
-                                throw new MarketplaceException($"Plan change operation failed with operation status {changePlanOperationStatus}.");
+                                throw new MarketplaceException($"Plan change operation failed with operation status {changePlanOperationStatus}. Check if disallowed in the App config or db application log for more information.");
                             }
                         }
                     }
@@ -755,7 +755,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                                     this.logger.LogInformation($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
                                     await this.applicationLogService.AddApplicationLog($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.").ConfigureAwait(false);
                                     
-                                    throw new MarketplaceException($"Quantity Change operation failed with operation status {changeQuantityOperationStatus}.");
+                                    throw new MarketplaceException($"Quantity Change operation failed with operation status {changeQuantityOperationStatus}. Check if disallowed in the App config or db application log for more information.");
                                 }
                             }
                         }
