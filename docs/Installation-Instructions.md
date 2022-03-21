@@ -9,7 +9,7 @@ wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; 
 chmod +x dotnet-install.sh; `
 ./dotnet-install.sh; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b main --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 4.1.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
 .\Deploy.ps1 `
