@@ -759,6 +759,14 @@ BEGIN
     SELECT 'IsEmailEnabledForPendingActivation','false','Email Enabled For Pending Activation'
 END
 GO
+
+IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'RejectSubscriptionUpdates')
+BEGIN
+    INSERT INTO ApplicationConfiguration (Name,Value,Description)
+    SELECT 'RejectSubscriptionUpdates','false','Reject subscriptions plan or quantity updates'
+END
+GO
+
 INSERT INTO [DatabaseVersionHistory] 
 
 Select 2.1, 'Master Schema',Getdate(), 'DB User'
