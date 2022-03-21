@@ -665,7 +665,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                     this.logger.LogInformation($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.");
                                     await this.applicationLogService.AddApplicationLog($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.").ConfigureAwait(false);
 
-                                    throw new MarketplaceException($"Subscription Plan change operation failed with operation status {changePlanOperationStatus}.");
+                                    throw new MarketplaceException($"Plan change operation failed with operation status {changePlanOperationStatus}.");
                                 }
                             }
                         }
