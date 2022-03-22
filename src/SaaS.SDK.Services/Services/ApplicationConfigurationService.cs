@@ -64,7 +64,7 @@
         public void SaveFileToDisk(string configName, string fileName)
         {
             var base64String = this.appConfigRepository.GetValueByName(configName);
-            if (base64String != null)
+            if (!String.IsNullOrEmpty(base64String))
             {
                 var filepath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fileName);
                 var bytes = Convert.FromBase64String(base64String);
