@@ -103,7 +103,7 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 
 ## Change plan
 
-Pre-requisite: Set "RejectSubscriptionUpdates" Key in App config to "False". If "True" or Key doesnt exist, updates will be rejected by the webhook.
+Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesnt exist, updates will be rejected by the webhook.
 
 The diagram below illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 
@@ -139,7 +139,7 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 ## Change quantity
 
-Pre-requisite: Set "RejectSubscriptionUpdates" Key in App config to "False". If "True" or Key doesnt exist, updates will be rejected by the webhook.
+Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesnt exist, updates will be rejected by the webhook.
 
 The update to quantity is applicable only for the plans with *per user* pricing model.
   

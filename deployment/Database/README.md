@@ -57,7 +57,7 @@ Application configuration is initialized with the following keys that the publis
 | IsEmailEnabledForUnsubscription | Flag that defines if an email has to be sent out when a subscription is deleted (Default: False, Allowed values : True / False)|
 | IsAutomaticProvisioningSupported | Flag that enables activation workflow. If the value is False, the option Change Plan is not available to the customer. Clicking Subscribe button on the landing page would place the subscription in PendingActivation status and doesn't activate the subscription yet. Publisher has the option to activate the subscription, change plan and unsubscribe. If the value is True, customer can activate and change plan without any intervention required from the publisher.|
 | IsEmailEnabledForPendingActivation | Flag to indicate if an email should be sent out to publisher when activation workflow is enabled.|
-| RejectSubscriptionUpdates | If True, reject customer subscription update requests from Azure portal on the Webhook. If False or the key doesn't exist, Subscription updates are accepted.(Allowed values : True / False)|
+| AcceptSubscriptionUpdates | If True, subscription updates are allowed. If False or the key doesn't exist, Subscription updates are denied.(Allowed values : True / False)|
 
 
 ### EmailTemplate

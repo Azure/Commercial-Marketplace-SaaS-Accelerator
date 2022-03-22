@@ -760,10 +760,10 @@ BEGIN
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'RejectSubscriptionUpdates')
+IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'AcceptSubscriptionUpdates')
 BEGIN
     INSERT INTO ApplicationConfiguration (Name,Value,Description)
-    SELECT 'RejectSubscriptionUpdates','false','Reject subscriptions plan or quantity updates'
+    SELECT 'AcceptSubscriptionUpdates','false','Accepts subscriptions plan or quantity updates'
 END
 GO
 
