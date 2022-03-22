@@ -81,6 +81,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 
         private readonly ISubscriptionStatusHandler notificationStatusHandlers;
 
+        private readonly ApplicationConfigService applicationConfigService;
+
         private readonly ILoggerFactory loggerFactory;
 
         private SubscriptionService subscriptionService = null;
@@ -125,6 +127,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
             this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository);
             this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
             this.applicationConfigRepository = applicationConfigRepository;
+            this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);
             this.emailTemplateRepository = emailTemplateRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.offerAttributesRepository = offerAttributesRepository;
@@ -189,6 +192,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                 this.logger.LogInformation($"Landing page with token {token}");
                 SubscriptionResult subscriptionDetail = new SubscriptionResult();
                 SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
+
+                this.applicationConfigService.SaveFileToDisk("LogoFile", "contoso-sales.png");
+                this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
 
                 if (this.User.Identity.IsAuthenticated)
                 {

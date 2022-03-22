@@ -759,6 +759,18 @@ BEGIN
     SELECT 'IsEmailEnabledForPendingActivation','false','Email Enabled For Pending Activation'
 END
 GO
+IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'LogoFile')
+BEGIN
+    INSERT INTO ApplicationConfiguration (Name,Value,Description)
+    SELECT 'LogoFile',NULL,'Logo File'
+END
+GO
+IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'FaviconFile')
+BEGIN
+    INSERT INTO ApplicationConfiguration (Name,Value,Description)
+    SELECT 'FaviconFile',NULL,'Favicon File'
+END
+GO
 INSERT INTO [DatabaseVersionHistory] 
 
 Select 2.1, 'Master Schema',Getdate(), 'DB User'
