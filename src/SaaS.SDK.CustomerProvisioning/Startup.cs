@@ -113,10 +113,6 @@ namespace Microsoft.Marketplace.SaasKit.Client
             InitializeRepositoryServices(services);
 
             services.AddMvc(option => option.EnableEndpointRouting = false);
-          
-            services.Configure<CookieTempDataProviderOptions>(options => {
-                options.Cookie.IsEssential = true;
-            });
         }
 
         /// <summary>
