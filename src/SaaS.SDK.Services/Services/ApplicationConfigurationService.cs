@@ -81,7 +81,8 @@
         /// </summary>
         /// <param name="file">The file.</param>
         /// <param name="fileExtension">The file extension.</param>
-        public void UploadFileToDatabase(IFormFile file, string fileExtension)
+        /// <returns>True or false.</returns>
+        public bool UploadFileToDatabase(IFormFile file, string fileExtension)
         {
             using (var ms = new MemoryStream())
             {
@@ -91,12 +92,13 @@
 
                 if (fileExtension == ".png")
                 {
-                    this.appConfigRepository.SaveValueByName("LogoFile", base64String);
+                    return this.appConfigRepository.SaveValueByName("LogoFile", base64String);
                 }
                 else if (fileExtension == ".ico")
                 {
-                    this.appConfigRepository.SaveValueByName("FaviconFile", base64String);
+                    return this.appConfigRepository.SaveValueByName("FaviconFile", base64String);
                 }
+                return false;
             }
         }
     }

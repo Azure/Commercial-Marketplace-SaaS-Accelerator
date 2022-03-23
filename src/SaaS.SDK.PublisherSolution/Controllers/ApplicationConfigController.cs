@@ -146,7 +146,11 @@ namespace SaaS.SDK.PublisherSolution.Controllers
                             return RedirectToAction("Index");
                         }
 
-                        this.appConfigService.UploadFileToDatabase(file, fileExtension);
+                       if (this.appConfigService.UploadFileToDatabase(file, fileExtension) == false)
+                        {
+                            TempData["Upload"] = "File Upload failed!";
+                            return RedirectToAction("Index");
+                        }
                     }
 
                     if (files.Count == 1)

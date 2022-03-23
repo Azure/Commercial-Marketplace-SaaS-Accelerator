@@ -39,6 +39,7 @@
         /// </summary>
         /// <param name="name">The app config name.</param>
         /// <param name="newValue">The new value.</param>
-        void SaveValueByName(string name, string newValue);
+        /// <returns>True or false.</returns>
+        bool SaveValueByName(string name, string newValue);
     }
 }

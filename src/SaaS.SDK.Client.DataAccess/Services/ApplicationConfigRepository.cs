@@ -35,7 +35,12 @@
         /// </returns>
         public string GetValueByName(string name)
         {
-            return this.context.ApplicationConfiguration.Where(s => s.Name == name).FirstOrDefault().Value;
+            var appconfig = this.context.ApplicationConfiguration.Where(s => s.Name == name).FirstOrDefault();
+            if(appconfig != null)
+            {
+                return appconfig.Value;
+            }
+            return null;
         }
 
         /// <summary>
@@ -74,11 +79,17 @@
         /// </summary>
         /// <param name="name">The app config name.</param>
         /// <param name="newValue">The new value.</param>
-        public void SaveValueByName(string name, string newValue)
+        /// <returns>True or false.</returns>
+        public bool SaveValueByName(string name, string newValue)
         {
-            var existingConfig = this.context.ApplicationConfiguration.Where(a => a.Name == name).FirstOrDefault();
-            existingConfig.Value = newValue;
-            this.context.SaveChanges();
+            var appConfig = this.context.ApplicationConfiguration.Where(a => a.Name == name).FirstOrDefault();
+            if (appConfig != null)
+            {
+                appConfig.Value = newValue;
+                this.context.SaveChanges();
+                return true;
+            }
+            return false;
         }
     }
 }
