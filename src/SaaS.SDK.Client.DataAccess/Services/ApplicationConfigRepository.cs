@@ -36,7 +36,7 @@
         public string GetValueByName(string name)
         {
             var appconfig = this.context.ApplicationConfiguration.Where(s => s.Name == name).FirstOrDefault();
-            if(appconfig != null)
+            if (appconfig != null)
             {
                 return appconfig.Value;
             }
