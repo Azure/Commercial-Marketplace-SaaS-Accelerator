@@ -65,6 +65,7 @@
 
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
+    <Folder Include="Views\Scheduler\" />
   </ItemGroup>
 
 

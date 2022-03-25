@@ -20,5 +20,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public Guid OfferId { get; set; }
 
         public virtual ICollection<MeteredDimensions> MeteredDimensions { get; set; }
+        public virtual ICollection<MeteredPlanSchedulerManagement> MeteredPlanSchedulerManagements { get; set; }
     }
 }
