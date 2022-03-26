@@ -1,4 +1,4 @@
-/*Basic version 2.1 Schema*/
+/*Basic version 5.0 Schema*/
 GO
 /****** Object:  Table [dbo].[ApplicationConfiguration]    Script Date: 05-15-2020 12.56.43 PM ******/
 SET ANSI_NULLS ON
@@ -760,6 +760,13 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'AcceptSubscriptionUpdates')
+BEGIN
+    INSERT INTO ApplicationConfiguration (Name,Value,Description)
+    SELECT 'AcceptSubscriptionUpdates','false','Accepts subscriptions plan or quantity updates'
+END
+GO
+
 IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'LogoFile')
 BEGIN
     INSERT INTO ApplicationConfiguration (Name,Value,Description)
@@ -776,7 +783,7 @@ GO
 
 INSERT INTO [DatabaseVersionHistory] 
 
-Select 2.1, 'Master Schema',Getdate(), 'DB User'
+Select 5.0, 'Master Schema',Getdate(), 'DB User'
 
 GO
 

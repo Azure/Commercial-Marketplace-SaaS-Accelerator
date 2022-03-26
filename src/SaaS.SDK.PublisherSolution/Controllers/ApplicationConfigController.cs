@@ -114,6 +114,7 @@ namespace SaaS.SDK.PublisherSolution.Controllers
         public IActionResult PostUpload(List<IFormFile> files)
         {
             this.logger.LogInformation("Application Config Controller / PostUpload ");
+            TempData.Clear();
             try
             {
                 if (files != null && files.Count != 0)
@@ -146,7 +147,15 @@ namespace SaaS.SDK.PublisherSolution.Controllers
                             return RedirectToAction("Index");
                         }
 
-                       if (this.appConfigService.UploadFileToDatabase(file, fileExtension) == false)
+                        var appConfigNames = this.appConfigService.GetAllApplicationConfiguration().Select(a => a.Name);
+                       
+                        if (!appConfigNames.Contains("LogoFile") || !appConfigNames.Contains("FaviconFile"))
+                        {
+                            TempData["Upload"] = "LogoFile or FaviconFile application config settings are missing in the database";
+                            return RedirectToAction("Index");
+                        }
+
+                        if (this.appConfigService.UploadFileToDatabase(file, fileExtension) == false)
                         {
                             TempData["Upload"] = "File Upload failed!";
                             return RedirectToAction("Index");
