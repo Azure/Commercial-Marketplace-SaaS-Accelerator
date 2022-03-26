@@ -73,22 +73,22 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-md-10">
-                                    <input type="submit" class="btn btn-primary" value="Upload" />
+                                    <input type="submit" class="btn btn-primary" onclick = "changeValue()" value="Upload" />
                                 </div>
                             </div>
                         </form>
                     </section>
                 </div>
-                @TempData["FilesCount"]
-                @TempData["FileSize"]
-                @TempData["FileEmpty"]
-                @TempData["FileExtension"]
-                @TempData["Upload"]
+                <label id="tempdataLabel">@TempData["Upload"]</label> 
             </div>
         </div>
     </div>
 </div>
 <script>
+    function changeValue(){
+        document.getElementById('tempdataLabel').innerHTML=""
+    
+    }
     function ViewAppConfigdetailsById(Id) {
             $.ajax({
                 type: "Get",

@@ -114,28 +114,27 @@ namespace SaaS.SDK.PublisherSolution.Controllers
         public IActionResult PostUpload(List<IFormFile> files)
         {
             this.logger.LogInformation("Application Config Controller / PostUpload ");
-            TempData.Clear();
             try
             {
                 if (files != null && files.Count != 0)
                 {
                     if (files.Count > 2)
                     {
-                        TempData["FilesCount"] = "No more than two files can be uploaded";
+                        TempData["Upload"] = "No more than two files can be uploaded";
                         return RedirectToAction("Index");
-                    }
+                    }       
                     foreach (var file in files)
                     {
                         int maxLength = 1024 * 1024 * 5; //5 MB
 
                         if (file.Length > maxLength)
                         {
-                            TempData["FileSize"] = "File is too large, max size of file for upload is 5 MB";
+                            TempData["Upload"] = "File is too large, max size of file for upload is 5 MB";
                             return RedirectToAction("Index");
                         }
                         if (file.Length == 0)
                         {
-                            TempData["FileEmpty"] = "File is empty";
+                            TempData["Upload"] = "File is empty";
                             return RedirectToAction("Index");
                         }
 
@@ -143,7 +142,7 @@ namespace SaaS.SDK.PublisherSolution.Controllers
 
                         if (fileExtension != ".png" && fileExtension != ".ico")
                         {
-                            TempData["FileExtension"] = "Only .png or .ico files can be uploaded";
+                            TempData["Upload"] = "Only .png or .ico files can be uploaded";
                             return RedirectToAction("Index");
                         }
 
