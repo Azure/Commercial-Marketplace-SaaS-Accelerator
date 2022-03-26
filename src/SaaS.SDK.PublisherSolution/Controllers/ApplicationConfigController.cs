@@ -130,7 +130,7 @@ namespace SaaS.SDK.PublisherSolution.Controllers
 
                         if (file.Length > maxLength)
                         {
-                            TempData["FileSize"] = "File is too large, max size of file for upload is " + maxLength + " MB";
+                            TempData["FileSize"] = "File is too large, max size of file for upload is 5 MB";
                             return RedirectToAction("Index");
                         }
                         if (file.Length == 0)
