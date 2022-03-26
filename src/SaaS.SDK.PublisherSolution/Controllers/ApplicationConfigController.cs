@@ -116,7 +116,12 @@ namespace SaaS.SDK.PublisherSolution.Controllers
             this.logger.LogInformation("Application Config Controller / PostUpload ");
             try
             {
-                if (files != null && files.Count != 0)
+                if (files == null || files.Count == 0)
+                {
+                    TempData["Upload"] = "No files to upload";
+                    return RedirectToAction("Index");
+                }
+                else
                 {
                     if (files.Count > 2)
                     {
