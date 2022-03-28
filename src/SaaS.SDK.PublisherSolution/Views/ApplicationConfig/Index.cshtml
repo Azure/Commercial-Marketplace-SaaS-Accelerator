@@ -13,7 +13,7 @@
                 <span class="cm-section-heading">Application Config</span>
             </div>
             <div id="myModal">
-               <div class="table-responsive mt20">
+                <div class="table-responsive mt20">
                     <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0" id="applicationConfig">
                         <thead class="cm-table-head">
                             <tr>
@@ -27,6 +27,7 @@
                             @{ var i = 0;}
                             @foreach (var item in Model)
                             {
+                                @if (@item.Name.Equals("LogoFile") || @item.Name.Equals("FaviconFile")) continue;
                                 <tr>
                                     <td class="text-left">
                                         @item.Name
@@ -58,11 +59,36 @@
                         </tbody>
                     </table>
                 </div>
+                <hr />
+                <h2>Upload Logo</h2>
+                <p style="font-size:10px;">*restart the application after uploading file(s) and refresh (ctrl F5) to see the new logo/favicon</p>
+                <div class="row">
+                    <section>
+                        <form method="post" enctype="multipart/form-data"
+                              asp-controller="FileUpload" asp-action="Index">
+                            <div class="form-group">
+                                <div class="col-md-10">
+                                    <input type="file" name="files" accept=".ico, .png" multiple />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-10">
+                                    <input type="submit" class="btn btn-primary" onclick = "changeValue()" value="Upload" />
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+                <label id="tempdataLabel">@TempData["Upload"]</label> 
             </div>
         </div>
     </div>
 </div>
 <script>
+    function changeValue(){
+        document.getElementById('tempdataLabel').innerHTML="In progress ..."    
+    }
+
     function ViewAppConfigdetailsById(Id) {
             $.ajax({
                 type: "Get",

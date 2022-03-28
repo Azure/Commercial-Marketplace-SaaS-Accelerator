@@ -96,6 +96,8 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
 
+        private readonly ApplicationConfigService applicationConfigService;
+
         private UserService userService;
 
         private SubscriptionService subscriptionService = null;
@@ -137,12 +139,12 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
             this.dimensionsRepository = dimensionsRepository;
             this.logger = logger;
             this.applicationConfigRepository = applicationConfigRepository;
+            this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);
             this.userRepository = userRepository;
             this.userService = new UserService(userRepository);
             this.fulfillApiService = fulfillApiService;
             this.applicationLogRepository = applicationLogRepository;
             this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
-            this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionRepository = this.subscriptionRepo;
             this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository);
             this.emailTemplateRepository = emailTemplateRepository;
@@ -202,6 +204,9 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
             this.logger.LogInformation("Home Controller / Index ");
             try
             {
+                this.applicationConfigService.SaveFileToDisk("LogoFile", "contoso-sales.png");
+                this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
+
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 return this.View();
             }
@@ -830,7 +835,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             this.subscriptionLogRepository.Save(auditLog);  // add audit log
                         }
                     }
-                    
+
                 }
             }
             catch (Exception ex)
