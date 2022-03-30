@@ -760,13 +760,6 @@ BEGIN
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'AcceptSubscriptionUpdates')
-BEGIN
-    INSERT INTO ApplicationConfiguration (Name,Value,Description)
-    SELECT 'AcceptSubscriptionUpdates','false','Accepts subscriptions plan or quantity updates'
-END
-GO
-
 INSERT INTO [DatabaseVersionHistory] 
 
 Select 2.1, 'Master Schema',Getdate(), 'DB User'
