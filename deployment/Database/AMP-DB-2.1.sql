@@ -759,7 +759,6 @@ BEGIN
     SELECT 'IsEmailEnabledForPendingActivation','false','Email Enabled For Pending Activation'
 END
 GO
-
 INSERT INTO [DatabaseVersionHistory] 
 
 Select 2.1, 'Master Schema',Getdate(), 'DB User'
