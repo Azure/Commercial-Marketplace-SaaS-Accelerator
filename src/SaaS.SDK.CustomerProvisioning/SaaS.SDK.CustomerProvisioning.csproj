@@ -11,9 +11,14 @@
 
   <ItemGroup>
     <Compile Remove="Context\**" />
+    <Compile Remove="Properties\PublishProfiles\**" />
     <Content Remove="Context\**" />
+    <Content Remove="Properties\PublishProfiles\**" />
     <EmbeddedResource Remove="Context\**" />
+    <EmbeddedResource Remove="Properties\PublishProfiles\**" />
     <None Remove="Context\**" />
+    <None Remove="Properties\PublishProfiles\**" />
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,10 +44,5 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\PublishProfiles\" />
-    <Folder Include="Properties\ServiceDependencies\" />
   </ItemGroup>
 </Project>
