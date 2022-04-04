@@ -215,5 +215,17 @@
 
             return null;
         }
+
+        /// <summary>
+        /// Get All Plan marked as Metered Plan
+        /// </summary>
+        /// <returns></returns>
+        public List<PlansModel> GetMeteredPlans()
+        {
+            List<PlansModel> allplans = this.GetPlans();
+            return allplans.Where(p => p.IsmeteringSupported==true).ToList();
+
+
+        }
     }
 }

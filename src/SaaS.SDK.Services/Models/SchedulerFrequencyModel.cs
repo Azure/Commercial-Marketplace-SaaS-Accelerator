@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
 {
-    public partial class SchedulerFrequency
+    public partial class SchedulerFrequencyModel
     {
 
         public int Id { get; set; }

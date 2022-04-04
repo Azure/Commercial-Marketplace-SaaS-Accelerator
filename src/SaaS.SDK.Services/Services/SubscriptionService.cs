@@ -311,6 +311,23 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             }
         }
 
+        public List<Subscriptions> GetActiveSubscriptionsWithMeteredPlan()
+        {
+            var allActiveSubscription = this.subscriptionRepository.Get().ToList().Where(s => s.SubscriptionStatus == "Subscribed" && s.IsActive == true).ToList();
+
+            var allPlansData = this.planRepository.Get().ToList().Where(p => p.IsmeteringSupported == true).ToList();
+
+
+            var meteredSubscriptions = from subscription in allActiveSubscription
+                                       join plan in allPlansData
+                                       on subscription.AmpplanId equals plan.PlanId
+                                       select subscription;
+
+            return meteredSubscriptions.ToList();
+
+
+                
+        }
         /*
         /// <summary>
         /// Generates the parmlist from response.

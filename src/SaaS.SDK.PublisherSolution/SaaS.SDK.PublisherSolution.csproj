@@ -44,6 +44,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bootstrap.v3.Datetimepicker" Version="4.17.49" />
+    <PackageReference Include="Bootstrap.v3.Datetimepicker.CSS" Version="4.17.49" />
     <PackageReference Include="Marketplace.SaaS.Client" Version="1.0.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="6.0.1" />
 	<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
@@ -65,7 +67,6 @@
 
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
-    <Folder Include="Views\Scheduler\" />
   </ItemGroup>
 
 

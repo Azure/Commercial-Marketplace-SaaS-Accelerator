@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
-    public partial class SchedulerManagerView
+    public partial class SchedulerManagerViewModel
     {
         public int Id { get; set; }
         public Guid AMPSubscriptionId { get; set; }

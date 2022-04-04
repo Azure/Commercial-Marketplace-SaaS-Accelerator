@@ -14,7 +14,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public int? PlanId { get; set; }
         public int? DimensionId { get; set; }
         public int? FrequencyId { get; set; }
-        public float Quantity { get; set; }
+        public double? Quantity { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? NextRunTime { get; set; }
 
