@@ -35,7 +35,7 @@
         /// </returns>
         public string GetValueByName(string name)
         {
-            return this.context.ApplicationConfiguration.Where(s => s.Name == name).FirstOrDefault().Value;
+            return this.context.ApplicationConfiguration.Where(s => s.Name == name).FirstOrDefault()?.Value;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@
         /// <summary>
         /// Sets the value from application configuration.
         /// </summary>
-        /// <returns>List of all application configuration items.</returns>
+        /// <returns>Id of the application configuration.</returns>
         public int SaveById(ApplicationConfiguration applicationConfiguration)
         {
             var existingConfig = this.context.ApplicationConfiguration.Where(a => a.Id == applicationConfiguration.Id).FirstOrDefault();
@@ -67,6 +67,24 @@
         public ApplicationConfiguration GetById(int Id)
         {
             return this.context.ApplicationConfiguration.Where(s => s.Id == Id).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Update application configuration value.
+        /// </summary>
+        /// <param name="name">The app config name.</param>
+        /// <param name="newValue">The new value.</param>
+        /// <returns>True or false.</returns>
+        public bool SaveValueByName(string name, string newValue)
+        {
+            var appConfig = this.context.ApplicationConfiguration.Where(a => a.Name == name).FirstOrDefault();
+            if (appConfig != null)
+            {
+                appConfig.Value = newValue;
+                this.context.SaveChanges();
+                return true;
+            }
+            return false;
         }
     }
 }

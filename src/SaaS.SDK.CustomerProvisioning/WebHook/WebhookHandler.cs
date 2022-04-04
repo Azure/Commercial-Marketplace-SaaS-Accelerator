@@ -88,6 +88,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
 
+        private const string AcceptSubscriptionUpdates = "AcceptSubscriptionUpdates";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WebHookHandler" /> class.
         /// </summary>
@@ -146,24 +148,40 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         public async Task ChangePlanAsync(WebhookPayload payload)
         {
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
-
-            this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
-            await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
-
-            if (oldValue != null)
+            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
             {
-                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
+                SubscriptionId = oldValue?.SubscribeId,
+                OldValue = oldValue?.PlanId,
+                CreateBy = null,
+                CreateDate = DateTime.Now,
+            };
+
+            //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
+            //_acceptSubscriptionUpdates should be true and subscription should be in db to accept subscription updates
+            var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
+            if (_acceptSubscriptionUpdates && oldValue != null)
+            {
+                this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
+                await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
+                auditLog.NewValue = payload.PlanId;
+            }
+            else
+            {
+                var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, SaaS.Models.UpdateOperationStatusEnum.Failure);
+                if (patchOperation != null && patchOperation.Status != 200)
                 {
-                    Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
-                    SubscriptionId = oldValue.SubscribeId,
-                    NewValue = payload.PlanId,
-                    OldValue = oldValue.PlanId,
-                    CreateBy = null,
-                    CreateDate = DateTime.Now,
-                };
-                this.subscriptionsLogRepository.Save(auditLog);
+                    await this.applicationLogService.AddApplicationLog($"Plan Change operation PATCH failed with statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
+                    //partner trying to fail update operation from customer but PATCH on operation didnt successed, hence throwing an error
+                    throw new Exception(patchOperation.ReasonPhrase);
+                }
+
+                await this.applicationLogService.AddApplicationLog("Plan Change Request Rejected Successfully.").ConfigureAwait(false);
+                auditLog.NewValue = oldValue?.PlanId;
             }
 
+            this.subscriptionsLogRepository.Save(auditLog);
+            
             await Task.CompletedTask;
         }
 
@@ -178,36 +196,90 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         public async Task ChangeQuantityAsync(WebhookPayload payload)
         {
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
-
-            this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
-            await this.applicationLogService.AddApplicationLog("Plan Quantity Successfully Changed.").ConfigureAwait(false);
-
-            if (oldValue != null)
+            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
             {
-                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                {
-                    Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
-                    SubscriptionId = oldValue.SubscribeId,
-                    NewValue = payload.Quantity.ToString(),
-                    OldValue = oldValue.Quantity.ToString(),
-                    CreateBy = null,
-                    CreateDate = DateTime.Now,
-                };
-                this.subscriptionsLogRepository.Save(auditLog);
+                Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
+                SubscriptionId = oldValue?.SubscribeId,
+                OldValue = oldValue?.Quantity.ToString(),
+                CreateBy = null,
+                CreateDate = DateTime.Now,
+            };
+
+            //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
+            //_acceptSubscriptionUpdates should be true and subscription should be in db to accept subscription updates
+            var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
+            if (_acceptSubscriptionUpdates && oldValue != null)
+            {
+                this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
+                await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
+                auditLog.NewValue = payload.Quantity.ToString();
             }
+            else
+            {
+                var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, SaaS.Models.UpdateOperationStatusEnum.Failure);
+                if (patchOperation != null && patchOperation.Status != 200)
+                {
+                    await this.applicationLogService.AddApplicationLog($"Quantity Change operation PATCH failed with status statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
+                    //partner trying to fail update operation from customer but PATCH on operation didnt succeced, hence throwing an error
+                    throw new Exception(patchOperation.ReasonPhrase);
+                }
+
+                await this.applicationLogService.AddApplicationLog("Quantity Change Request Rejected Successfully.").ConfigureAwait(false);
+                auditLog.NewValue = oldValue?.Quantity.ToString();
+            }
+
+            this.subscriptionsLogRepository.Save(auditLog); 
 
             await Task.CompletedTask;
         }
 
         /// <summary>
-        /// Reinstated the asynchronous.
+        /// Reinstated is followed by Suspend.
+        /// This is called when customer fixed their billing issues and partner can choose to reinstate the suspened subscription to subscribed.
+        /// And resume the software access to the customer.
         /// </summary>
         /// <param name="payload">The payload.</param>
         /// <returns> Exception.</returns>
         /// <exception cref="NotImplementedException"> Not Implemented Exception. </exception>
-        public Task ReinstatedAsync(WebhookPayload payload)
+        public async Task ReinstatedAsync(WebhookPayload payload)
         {
-            throw new NotImplementedException();
+            var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
+            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+            {
+                Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                SubscriptionId = oldValue?.SubscribeId,
+                OldValue = Convert.ToString(oldValue?.SubscriptionStatus),
+                CreateBy = null,
+                CreateDate = DateTime.Now,
+            };
+
+            //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
+            //_acceptSubscriptionUpdates should be true and subscription should be in db to accept subscription updates
+            var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
+            if (_acceptSubscriptionUpdates && oldValue != null)
+            {
+                this.subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Subscribed.ToString(), false);
+                await this.applicationLogService.AddApplicationLog("Reinstated Successfully.").ConfigureAwait(false);
+                auditLog.NewValue = Convert.ToString(SubscriptionStatusEnum.Subscribed);
+                
+            }
+            else
+            {
+                var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, SaaS.Models.UpdateOperationStatusEnum.Failure);
+                if (patchOperation != null && patchOperation.Status != 200)
+                {
+                    await this.applicationLogService.AddApplicationLog($"Reinstate operation PATCH failed with status statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
+                    //partner trying to fail update operation from customer but PATCH on operation didnt succeced, hence throwing an error
+                    throw new Exception(patchOperation.ReasonPhrase);
+                }
+
+                await this.applicationLogService.AddApplicationLog("Reinstate Change Request Rejected Successfully.").ConfigureAwait(false);
+                auditLog.NewValue = Convert.ToString(oldValue?.SubscriptionStatus);
+            }
+
+            this.subscriptionsLogRepository.Save(auditLog); 
+
+            await Task.CompletedTask;
         }
 
         /// <summary>
@@ -216,9 +288,27 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// <param name="payload">The payload.</param>
         /// <returns> Exception.</returns>
         /// <exception cref="NotImplementedException"> Implemented Exception.</exception>
-        public Task SuspendedAsync(WebhookPayload payload)
+        public async Task SuspendedAsync(WebhookPayload payload)
         {
-            throw new NotImplementedException();
+            var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
+            this.subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Suspend.ToString(), false);
+            await this.applicationLogService.AddApplicationLog("Offer Successfully Suspended.").ConfigureAwait(false);
+
+            if (oldValue != null)
+            {
+                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                {
+                    Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                    SubscriptionId = oldValue.SubscribeId,
+                    NewValue = Convert.ToString(SubscriptionStatusEnum.Suspended),
+                    OldValue = Convert.ToString(oldValue.SubscriptionStatus),
+                    CreateBy = null,
+                    CreateDate = DateTime.Now,
+                };
+                this.subscriptionsLogRepository.Save(auditLog);
+            }
+
+            await Task.CompletedTask;
         }
 
         /// <summary>
@@ -239,7 +329,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                     Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
                     SubscriptionId = oldValue.SubscribeId,
                     NewValue = Convert.ToString(SubscriptionStatusEnum.Unsubscribed),
-                    OldValue = Convert.ToString(oldValue.SaasSubscriptionStatus),
+                    OldValue = Convert.ToString(oldValue.SubscriptionStatus),
                     CreateBy = null,
                     CreateDate = DateTime.Now,
                 };

@@ -124,6 +124,10 @@ namespace Microsoft.Marketplace.Saas.Web
 
             services.AddMvc(option => option.EnableEndpointRouting = false);
             services.AddControllersWithViews();
+
+            services.Configure<CookieTempDataProviderOptions>(options => {
+                options.Cookie.IsEssential = true;
+            });
         }
 
         /// <summary>
