@@ -103,6 +103,8 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 
 ## Change plan
 
+Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesnt exist, updates will be rejected by the webhook.
+
 The diagram below illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 
 ![Update subscription](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-update-api-v2-calls-from-saas-service-a.png)
@@ -136,6 +138,8 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 > **Note** If activation workflow is enabled, by turning on the flag - **IsAutomaticProvisioningSupported** in the ApplicationConfiguration table, the option to **Change Plan** is disabled for customers. Publisher has the option to change the plan of the subscription via the action menu in the subscription listing in the Publisher Portal.
 
 ## Change quantity
+
+Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesnt exist, updates will be rejected by the webhook.
 
 The update to quantity is applicable only for the plans with *per user* pricing model.
   

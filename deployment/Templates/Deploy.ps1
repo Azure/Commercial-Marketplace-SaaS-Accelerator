@@ -177,7 +177,7 @@ if($LogoURLico) {
 
 # If there is no backpack use the default from main
 if (!($BacpacUrl)) {
-    $BacpacUrl = "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac"
+    $BacpacUrl = "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/main/deployment/Database/AMPSaaSDB.bacpac"
 }
 
 $TempFolderToStoreBacpac = '.\AMPSaaSDatabase'
