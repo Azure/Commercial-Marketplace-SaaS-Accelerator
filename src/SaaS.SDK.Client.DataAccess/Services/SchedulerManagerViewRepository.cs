@@ -12,7 +12,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
     /// <summary>
     /// Scheduler Manager View Repository.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.ISubscriptionLogRepository" />
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.ISchedulerManagerViewRepository" />
     public class SchedulerManagerViewRepository : ISchedulerManagerViewRepository
     {
 

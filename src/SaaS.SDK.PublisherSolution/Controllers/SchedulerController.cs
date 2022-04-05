@@ -14,30 +14,37 @@
     using Microsoft.AspNetCore.Mvc.Rendering;
 
     /// <summary>
-    /// Plans Controller.
+    /// Scheduler Controller.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.Saas.Web.Controllers.BaseController" />
     [ServiceFilter(typeof(KnownUserAttribute))]
     public class SchedulerController : BaseController
     {
         /// <summary>
-        /// The subscription repository.
+        /// The dimension repository
         /// </summary>
-        private readonly ISubscriptionsRepository subscriptionRepository;
-        private readonly IPlansRepository plansRepository;
         private readonly IMeteredDimensionsRepository meteredRepository;
-        private readonly ISchedulerFrequencyRepository frequencyRepository;
-        private readonly IMeteredPlanSchedulerManagementRepository schedulerRepository;
-        private readonly ISchedulerManagerViewRepository schedulerViewRepository;
 
+        /// <summary>
+        /// logger controller
+        /// </summary>
         private readonly ILogger<OffersController> logger;
 
+        /// <summary>
+        /// the shceduler service
+        /// </summary>
         private MeteredPlanSchedulerManagementService scheudelerService;
+
+        /// <summary>
+        /// the subscription service
+        /// </summary>
         private SubscriptionService subscriptionService;
-
-        
-
+       
+        /// <summary>
+        /// the user repository
+        /// </summary>
         private readonly IUsersRepository usersRepository;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlansController" /> class.
         /// </summary>
@@ -52,16 +59,11 @@
             ISchedulerFrequencyRepository frequencyRepository, IPlansRepository plansRepository,
             IMeteredPlanSchedulerManagementRepository schedulerRepository,ISchedulerManagerViewRepository schedulerViewRepository, IUsersRepository usersRepository, ILogger<OffersController> logger)
         {
-            this.subscriptionRepository = subscriptionRepository;
-            this.meteredRepository = meteredRepository;
-            this.frequencyRepository = frequencyRepository;
-            this.plansRepository = plansRepository;
-            this.schedulerRepository = schedulerRepository;
-            this.schedulerViewRepository= schedulerViewRepository;
             this.usersRepository= usersRepository;
             this.logger = logger;
-            this.scheudelerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, this.schedulerRepository, this.schedulerViewRepository);
-            this.subscriptionService = new SubscriptionService(this.subscriptionRepository,this.plansRepository);
+            this.meteredRepository = meteredRepository;
+            this.scheudelerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository);
+            this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
 
         }
 
@@ -98,7 +100,7 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 var allActiveMeteredSubscriptions = this.subscriptionService.GetActiveSubscriptionsWithMeteredPlan();
-                List<SchedulerFrequency> getAllFrequency = frequencyRepository.GetAll().ToList();
+                List<SchedulerFrequencyModel> getAllFrequency = this.scheudelerService.GetAllFrequency();
 
                 // Create Frequency Dropdown list
                 List<SelectListItem> SchedulerFrequencyList = new List<SelectListItem>();
@@ -142,27 +144,12 @@
 
         public IActionResult GetSubscriptionData(int id)
         {
-            var allSubscriptionDetails = this.subscriptionRepository.Get().ToList(); 
-            //Get Subscription Plan
+            var allSubscriptionDetails = this.subscriptionService.GetActiveSubscriptionsWithMeteredPlan();
             var selectSubscription = allSubscriptionDetails.Where(s => s.Id == id).FirstOrDefault();
             if (selectSubscription != null)
             {
-                string planId = selectSubscription.AmpplanId;
-
-                List<Plans> getAllPlans = this.plansRepository.Get().ToList();
-                var selectedPlan = getAllPlans.Where(s => s.PlanId == planId).FirstOrDefault();
-                if (selectedPlan != null)
-                {
-                    List<SelectListItem> PlanList = new List<SelectListItem>();
-                    PlanList.Add(new SelectListItem()
-                    {
-                        Text = planId,
-                        Value = selectedPlan.Id.ToString(),
-                    });
-
-
                     // Create Dimension Dropdown list
-                    List<MeteredDimensions> getAllDimensions = this.meteredRepository.GetDimensionsByPlanId(planId);
+                    List<MeteredDimensions> getAllDimensions = this.meteredRepository.GetDimensionsByPlanId(selectSubscription.AmpplanId);
                     if (getAllDimensions != null)
                     {
                         List<SelectListItem> selectedList = new List<SelectListItem>();
@@ -180,8 +167,6 @@
                     }
                     return this.PartialView("Error", "Can not find any metered dimension related to selected plan");
 
-                }
-                return this.PartialView("Error", "Can not find any plan related to selected subscription");
             }
             return this.PartialView("Error", "Subscription is Invalid");
         }
@@ -192,7 +177,7 @@
             try
             {
                 var selectedDimension = this.meteredRepository.Get(int.Parse(schedulerUsageViewModel.SelectedDimension));
-                MeteredPlanSchedulerManagement schedulerManagement = new MeteredPlanSchedulerManagement()
+                MeteredPlanSchedulerManagementModel schedulerManagement = new MeteredPlanSchedulerManagementModel()
                 {
                     FrequencyId = Convert.ToInt32(schedulerUsageViewModel.SelectedSchedulerFrequency),
                     SubscriptionId = Convert.ToInt32(schedulerUsageViewModel.SelectedSubscription),
@@ -201,7 +186,7 @@
                     Quantity = Convert.ToDouble(schedulerUsageViewModel.Quantity),
                     StartDate = schedulerUsageViewModel.FirstRunDate
                 };
-                this.schedulerRepository.Save(schedulerManagement);
+                this.scheudelerService.SaveSchedulerDetail(schedulerManagement);
                 return this.RedirectToAction(nameof(this.Index));
 
             }                        

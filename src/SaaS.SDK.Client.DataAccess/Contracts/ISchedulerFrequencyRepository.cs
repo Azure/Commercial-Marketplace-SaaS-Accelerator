@@ -11,16 +11,16 @@
     public interface ISchedulerFrequencyRepository : IDisposable
     {
         /// <summary>
-        /// Gets all.
+        /// Gets all Frequencies.
         /// </summary>
-        /// <returns>List of all Scheduler Frequency supported by the application.</returns>
+        /// <returns>List of all Scheduler Frequencies supported by the application.</returns>
         IEnumerable<SchedulerFrequency> GetAll();
 
         /// <summary>
-        /// Gets the by identifier.
+        /// Gets Frequency  by identifier.
         /// </summary>
         /// <param name="id">The identifier.</param>
-        /// <returns> ValueTypes.</returns>
+        /// <returns> Frequency.</returns>
         SchedulerFrequency GetById(int id);
 
         

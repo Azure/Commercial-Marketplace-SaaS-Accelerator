@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
+    /// <summary>
+    /// Scheduler Manager View for Metered Plan.
+    /// </summary>
+    /// <seealso cref="System.IDisposable" />
+
     public interface ISchedulerManagerViewRepository : IDisposable
     {
         /// <summary>

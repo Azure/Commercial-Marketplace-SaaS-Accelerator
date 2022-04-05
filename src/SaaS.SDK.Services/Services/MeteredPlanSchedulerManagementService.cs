@@ -22,6 +22,7 @@
         /// </summary>
         /// <param name="schedulerRepository">The Scheduler repository.</param>
         /// <param name="frequencyRepository">The Frequency attributes repository.</param>
+        /// <param name="schedulerViewRepository">The Scheduler Manager View attributes repository.</param>
 
         public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository frequencyRepository, IMeteredPlanSchedulerManagementRepository schedulerRepository, ISchedulerManagerViewRepository schedulerViewRepository)
         {
@@ -48,6 +49,10 @@
             return frequencyList;
         }
 
+        /// <summary>
+        /// Get All Scheduled Metered trigger list
+        /// </summary>
+        /// <returns>List of Scheduler Manager View</returns>
         public List<SchedulerManagerViewModel> GetAllSchedulerManagerList()
         {
             List<SchedulerManagerViewModel> schedulerList = new List<SchedulerManagerViewModel>();
@@ -69,10 +74,10 @@
         }
 
         /// <summary>
-        /// Gets the plan detail by plan gu identifier.
+        /// Gets the Scheduler detail by  identifier.
         /// </summary>
-        /// <param name="planGuId">The plan gu identifier.</param>
-        /// <returns> Plans.</returns>
+        /// <param name="Id">The identifier.</param>
+        /// <returns> Scheduler Manager Model</returns>
         public MeteredPlanSchedulerManagementModel GetSchedulerDetailById(int id)
         {
             var existingScheduledMeteredPlan = this.schedulerRepository.Get(id);
@@ -92,10 +97,10 @@
         }
 
         /// <summary>
-        /// Saves the plan attributes.
+        /// Saves the Metered Plan Scheduler Management Model attributes.
         /// </summary>
-        /// <param name="planAttributes">The plan attributes.</param>
-        /// <returns> Plan Event Id.</returns>
+        /// <param name="MeteredPlanSchedulerManagementModel">The Metered Plan Scheduler Management model.</param>
+        /// <returns> Scheduler Id.</returns>
         public int? SaveSchedulerDetail(MeteredPlanSchedulerManagementModel meteredPlanSchedulerModel)
         {
             MeteredPlanSchedulerManagement meteredPlanScheduler = new MeteredPlanSchedulerManagement
@@ -108,13 +113,13 @@
                 Quantity = meteredPlanSchedulerModel.Quantity,
                 StartDate = meteredPlanSchedulerModel.StartDate
             };
-
-
             return this.schedulerRepository.Save(meteredPlanScheduler);
-             
         }
 
-
+        /// <summary>
+        ///  Remove Scheduler record by model
+        /// </summary>
+        /// <param name="meteredPlanSchedulerModel">The Metered Plan Scheduler Management model</param>
         public void DeleteSchedulerDetail(MeteredPlanSchedulerManagementModel meteredPlanSchedulerModel)
         {
             MeteredPlanSchedulerManagement meteredPlanScheduler = new MeteredPlanSchedulerManagement
@@ -127,23 +132,19 @@
                 Quantity = meteredPlanSchedulerModel.Quantity,
                 StartDate = meteredPlanSchedulerModel.StartDate
             };
-
-
              this.schedulerRepository.Remove(meteredPlanScheduler);
-
         }
-
+        /// <summary>
+        /// Remove Scheduler by Id
+        /// </summary>
+        /// <param name="id">Scheduler identifier</param>
         public void DeleteSchedulerDetailById(int id)
         {
             MeteredPlanSchedulerManagement meteredPlanScheduler = new MeteredPlanSchedulerManagement
             {
                 Id = id
-
             };
-
-
             this.schedulerRepository.Remove(meteredPlanScheduler);
-
         }
 
     }

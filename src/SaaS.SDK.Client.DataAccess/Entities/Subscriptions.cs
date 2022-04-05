@@ -9,6 +9,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         {
             MeteredAuditLogs = new HashSet<MeteredAuditLogs>();
             SubscriptionAuditLogs = new HashSet<SubscriptionAuditLogs>();
+            MeteredPlanSchedulerManagements = new HashSet<MeteredPlanSchedulerManagement>();
         }
 
         public int Id { get; set; }
