@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
 {
-    public partial class MeteredDimensions
+    public partial class SchedulerFrequency
     {
-        public MeteredDimensions()
+        public SchedulerFrequency()
         {
             MeteredPlanSchedulerManagements = new HashSet<MeteredPlanSchedulerManagement>();
         }
         public int Id { get; set; }
-        public string Dimension { get; set; }
-        public int? PlanId { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string Description { get; set; }
-
-        public virtual Plans Plan { get; set; }
+        public string Frequency { get; set; }
         public virtual ICollection<MeteredPlanSchedulerManagement> MeteredPlanSchedulerManagements { get; set; }
     }
 }

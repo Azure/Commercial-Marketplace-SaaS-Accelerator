@@ -103,6 +103,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         private SubscriptionService subscriptionService = null;
 
         private ApplicationLogService applicationLogService = null;
+        private SaaSApiClientConfiguration saaSApiClientConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
@@ -122,14 +123,14 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         /// <param name="emailTemplateRepository">The email template repository.</param>
         /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
         /// <param name="eventsRepository">The events repository.</param>
-        /// <param name="options">The options.</param>
+        /// <param name="SaaSApiClientConfiguration">The SaaSApiClientConfiguration.</param>
         /// <param name="cloudConfigs">The cloud configs.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="emailService">The email service.</param>
         /// <param name="offersRepository">The offers repository.</param>
         /// <param name="offersAttributeRepository">The offers attribute repository.</param>
         public HomeController(
-                        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository)
+                        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, SaaSApiClientConfiguration saaSApiClientConfiguration, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository)
         {
             this.billingApiService = billingApiService;
             this.subscriptionRepo = subscriptionRepo;
@@ -154,6 +155,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
             this.offersRepository = offersRepository;
             this.offersAttributeRepository = offersAttributeRepository;
             this.loggerFactory = loggerFactory;
+            this.saaSApiClientConfiguration = saaSApiClientConfiguration;
 
             this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
                                                                           fulfillApiService,
@@ -208,6 +210,11 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
 
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
+                
+                if (this.saaSApiClientConfiguration.SupportMeteredBilling)
+                {
+                    this.TempData.Add("SupportMeteredBilling", "1");
+                }
                 return this.View();
             }
             catch (Exception ex)

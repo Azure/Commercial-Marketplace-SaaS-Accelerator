@@ -9,6 +9,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         {
             MeteredAuditLogs = new HashSet<MeteredAuditLogs>();
             SubscriptionAuditLogs = new HashSet<SubscriptionAuditLogs>();
+            MeteredPlanSchedulerManagements = new HashSet<MeteredPlanSchedulerManagement>();
         }
 
         public int Id { get; set; }
@@ -28,5 +29,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public virtual Users User { get; set; }
         public virtual ICollection<MeteredAuditLogs> MeteredAuditLogs { get; set; }
         public virtual ICollection<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
+        public virtual ICollection<MeteredPlanSchedulerManagement> MeteredPlanSchedulerManagements { get; set; }
     }
 }
