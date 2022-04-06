@@ -109,8 +109,10 @@
                 </div>
             </div>
         </li>
-        <li id="onedash-menu-homepage4">
-            <a class="programCardLink text-capitalize" asp-area="" asp-controller="Scheduler" asp-action="Index">Scheduler</a>
+        @if (this.TempData["SupportMeteredBilling"]!=null)
+        {
+            <li id="onedash-menu-homepage4">
+                <a class="programCardLink text-capitalize" asp-area="" asp-controller="Scheduler" asp-action="Index">Scheduler</a>
             <div class="programCard">
                 <div class="programCardContentWrapper">
                     <div class="programCardTitle minline">
@@ -137,6 +139,7 @@
                 </div>
             </div>
         </li>
+        }
     </ul>
 
 </div>

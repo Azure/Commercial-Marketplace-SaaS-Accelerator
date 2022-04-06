@@ -26,6 +26,8 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
+    using System;
+
     /// <summary>
     /// Startup.
     /// </summary>
@@ -80,6 +82,7 @@ namespace Microsoft.Marketplace.Saas.Web
                 SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
+                SupportMeteredBilling = Convert.ToBoolean(this.Configuration["SaaSApiConfiguration:supportmeteredbilling"])
             };
             var knownUsers = new KnownUsersModel()
             {
