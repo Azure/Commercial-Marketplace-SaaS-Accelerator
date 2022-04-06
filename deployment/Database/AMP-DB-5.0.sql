@@ -441,6 +441,39 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+/****** Object:  Table [dbo].[SchedulerFrequency]    Script Date: 04-5-2022 12.56.43 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[SchedulerFrequency] (
+    [Id]        INT          NOT NULL,
+    [Frequency] VARCHAR (10) NOT NULL,
+    PRIMARY KEY CLUSTERED ([Id] ASC)
+)
+GO
+/****** Object:  Table [dbo].[MeteredPlanSchedulerManagement]    Script Date: 04-5-2022 12.56.43 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MeteredPlanSchedulerManagement] (
+    [Id]             INT        IDENTITY (1, 1) NOT NULL,
+    [SubscriptionId] INT        NOT NULL,
+    [PlanId]         INT        NOT NULL,
+    [DimensionId]    INT        NOT NULL,
+    [Quantity]       FLOAT (53) NOT NULL,
+    [FrequencyId]    INT        NOT NULL,
+    [StartDate]      DATETIME   NOT NULL,
+    [NextRunTime]    DATETIME   NULL,
+    PRIMARY KEY CLUSTERED ([SubscriptionId] ASC, [PlanId] ASC, [DimensionId] ASC, [FrequencyId] ASC),
+    CONSTRAINT [FK_MeteredPlanSchedulerManagement_ToSubscriptions] FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[Subscriptions] ([Id]),
+    CONSTRAINT [FK_MeteredPlanSchedulerManagement_ToPlans] FOREIGN KEY ([PlanId]) REFERENCES [dbo].[Plans] ([Id]),
+    CONSTRAINT [FK_MeteredPlanSchedulerManagement_ToMeteredDimensions] FOREIGN KEY ([DimensionId]) REFERENCES [dbo].[MeteredDimensions] ([Id]),
+    CONSTRAINT [FK_MeteredPlanSchedulerManagement_ToSchedulerFrequency] FOREIGN KEY ([FrequencyId]) REFERENCES [dbo].[SchedulerFrequency] ([Id])
+)
+GO
+
 ALTER TABLE [dbo].[Subscriptions] ADD  CONSTRAINT [DF_Subscriptions_AMPSubscriptionId]  DEFAULT (newid()) FOR [AMPSubscriptionId]
 GO
 ALTER TABLE [dbo].[KnownUsers]  WITH CHECK ADD FOREIGN KEY([RoleId])
@@ -458,6 +491,31 @@ GO
 ALTER TABLE [dbo].[Subscriptions]  WITH CHECK ADD FOREIGN KEY([UserId])
 REFERENCES [dbo].[Users] ([UserId])
 GO
+
+
+
+/****** Object:  VIEW [dbo].[SchedulerManagerView]    Script Date: 04-5-2022 12.56.43 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[SchedulerManagerView]
+	AS SELECT 
+	m.Id,
+	s.AMPSubscriptionId,
+	p.PlanId,
+	d.Dimension,
+	f.Frequency,
+	m.Quantity,
+	m.StartDate,
+	m.NextRunTime
+	FROM MeteredPlanSchedulerManagement m
+	inner join SchedulerFrequency f	on m.FrequencyId=f.Id
+	inner join Subscriptions s on m.SubscriptionId=s.Id
+	inner join Plans p on m.PlanId=p.Id
+	inner join MeteredDimensions d on m.DimensionId=d.Id
+GO
+
 /****** Object:  StoredProcedure [dbo].[spGetOfferParameters]    Script Date: 05-15-2020 12.56.43 PM ******/
 SET ANSI_NULLS ON
 GO
