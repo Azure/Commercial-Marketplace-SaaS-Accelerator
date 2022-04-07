@@ -781,6 +781,43 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Hourly')
+BEGIN
+    INSERT INTO [dbo].[SchedulerFrequency] (Id,Frequency) VALUES ( 1, 'Hourly')
+    
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Daily')
+BEGIN
+    INSERT INTO [dbo].[SchedulerFrequency] (Id,Frequency) VALUES ( 2, 'Daily')
+    
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Weekly')
+BEGIN
+    INSERT INTO [dbo].[SchedulerFrequency] (Id,Frequency) VALUES ( 3, 'Weekly')
+    
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Monthly')
+BEGIN
+    INSERT INTO [dbo].[SchedulerFrequency] (Id,Frequency) VALUES ( 4, 'Monthly')
+    
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Yearly')
+BEGIN
+    INSERT INTO [dbo].[SchedulerFrequency] (Id,Frequency) VALUES ( 5, 'Yearly')
+    
+END
+GO
+
+
+
 INSERT INTO [DatabaseVersionHistory] 
 
 Select 5.0, 'Master Schema',Getdate(), 'DB User'
