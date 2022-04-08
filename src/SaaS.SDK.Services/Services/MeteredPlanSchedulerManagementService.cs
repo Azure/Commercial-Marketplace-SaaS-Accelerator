@@ -20,15 +20,15 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="MeteredPlanSchedulerManagementService"/> class.
         /// </summary>
-        /// <param name="schedulerRepository">The Scheduler repository.</param>
-        /// <param name="frequencyRepository">The Frequency attributes repository.</param>
-        /// <param name="schedulerViewRepository">The Scheduler Manager View attributes repository.</param>
+        /// <param name="meteredPlanSchedulerManagementRepository">The Scheduler repository.</param>
+        /// <param name="schedulerFrequencyRepository">The Frequency attributes repository.</param>
+        /// <param name="schedulerManagerViewRepository">The Scheduler Manager View attributes repository.</param>
 
-        public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository frequencyRepository, IMeteredPlanSchedulerManagementRepository schedulerRepository, ISchedulerManagerViewRepository schedulerViewRepository)
+        public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository schedulerFrequencyRepository, IMeteredPlanSchedulerManagementRepository meteredPlanSchedulerManagementRepository, ISchedulerManagerViewRepository schedulerManagerViewRepository)
         {
-            this.frequencyRepository = frequencyRepository;
-            this.schedulerRepository = schedulerRepository;
-            this.schedulerViewRepository = schedulerViewRepository;
+            this.frequencyRepository = schedulerFrequencyRepository;
+            this.schedulerRepository = meteredPlanSchedulerManagementRepository;
+            this.schedulerViewRepository = schedulerManagerViewRepository;
         }
 
         /// <summary>
