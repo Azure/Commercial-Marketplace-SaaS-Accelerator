@@ -96,6 +96,7 @@
             return meteredPlanSchedule;
         }
 
+
         /// <summary>
         /// Saves the Metered Plan Scheduler Management Model attributes.
         /// </summary>
@@ -111,7 +112,8 @@
                 DimensionId = meteredPlanSchedulerModel.DimensionId,
                 FrequencyId = meteredPlanSchedulerModel.FrequencyId,
                 Quantity = meteredPlanSchedulerModel.Quantity,
-                StartDate = meteredPlanSchedulerModel.StartDate
+                StartDate = meteredPlanSchedulerModel.StartDate,
+                NextRunTime = meteredPlanSchedulerModel.NextRunTime
             };
             return this.schedulerRepository.Save(meteredPlanScheduler);
         }

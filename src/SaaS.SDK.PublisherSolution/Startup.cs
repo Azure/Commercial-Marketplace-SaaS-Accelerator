@@ -125,6 +125,13 @@ namespace Microsoft.Marketplace.Saas.Web
 
             InitializeRepositoryServices(services);
 
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(5);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddMvc(option => option.EnableEndpointRouting = false);
             services.AddControllersWithViews();
 
@@ -153,6 +160,7 @@ namespace Microsoft.Marketplace.Saas.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseSession();
             app.UseAuthentication();
             app.UseMvc(routes =>
             {

@@ -66,16 +66,18 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
                 existingEntity.FrequencyId = entity.FrequencyId;
                 existingEntity.StartDate = entity.StartDate;
                 existingEntity.NextRunTime = entity.NextRunTime;
-                this.context.MeteredPlanSchedulerManagement.Update(entity);
-                return entity.Id;
+                this.context.MeteredPlanSchedulerManagement.Update(existingEntity);
+                this.context.SaveChanges();
+                return existingEntity.Id;
             }
             else
             {
                 this.context.MeteredPlanSchedulerManagement.Add(entity);
+                this.context.SaveChanges();
+                return entity.Id;
+
             }
 
-            this.context.SaveChanges();
-            return entity.Id;
         }
         /// <summary>
         /// Remove record from Schedule Management

@@ -75,6 +75,7 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
 
+
                 getAllPlansData = this.plansService.GetPlans();
 
                 return this.View(getAllPlansData);

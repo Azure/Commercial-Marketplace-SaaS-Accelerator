@@ -24,6 +24,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
     using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using System.IO;
+using System;
 
 /// <summary>
 /// Startup.
@@ -55,12 +56,13 @@ using System.IO;
                 GrantType = configuration["SaaSApiConfiguration:GrantType"],
                 Resource = configuration["SaaSApiConfiguration:Resource"],
                 TenantId = configuration["SaaSApiConfiguration:TenantId"],
+                SupportMeteredBilling = Convert.ToBoolean(configuration["SaaSApiConfiguration:SupportMeteredBilling"])
             };
 
             var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
             
             services.AddLogging();
-            services.AddSingleton<IConfiguration>(configuration);
+            services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddDbContext<SaasKitContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
             services.AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()));
 
@@ -68,6 +70,7 @@ using System.IO;
             services.AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>();
             services.AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>();
             services.AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>();
+            services.AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>();
 
         }
 

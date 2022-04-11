@@ -8,6 +8,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
     using System.Text.Json;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Diagnostics;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
@@ -214,6 +215,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 if (this.saaSApiClientConfiguration.SupportMeteredBilling)
                 {
                     this.TempData.Add("SupportMeteredBilling", "1");
+                    this.HttpContext.Session.SetString("SupportMeteredBilling", "1");
                 }
                 return this.View();
             }
