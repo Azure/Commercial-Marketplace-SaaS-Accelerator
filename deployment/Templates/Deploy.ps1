@@ -22,6 +22,7 @@ Param(
    [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico  # URL for Publisher .ico logo
+   [string][Parameter()]$MeteredSchedulerSupportEnabled # set to True to deploy SaaS with Metered Support
 )
 
 Write-Host "Starting SaaS Accelerator Deployment..."
@@ -228,6 +229,21 @@ Write-host "☁  Upload web application files to storage account"
 Set-AzStorageBlobContent -File "..\..\Publish\PublisherPortal.zip" -Container $ContainerName -Blob "PublisherPortal.zip" -Context $ctx -Force
 Set-AzStorageBlobContent -File "..\..\Publish\CustomerPortal.zip" -Container $ContainerName -Blob "CustomerPortal.zip" -Context $ctx -Force
 
+# If metered support added then add Azure fuction code
+$MeteredSchedulerSupport =false
+if ($MeteredSchedulerSupportEnabled)
+{
+    if ($MeteredSchedulerSupportEnabled.ToUpper() -eq "YES")
+    {
+        Write-host "☁  Preparing the publish files for Metered Scheduler"
+        dotnet publish ..\..\src\SaaS.SDK.MeteredSchedulerProcessor\SaaS.SDK.MeteredSchedulerProcessor.csproj -c debug -o ..\..\Publish\MeteredProcessor
+        Compress-Archive -Path ..\..\Publish\MeteredProcessor\* -DestinationPath ..\..\Publish\MeteredProcessor.zip -Force
+        Set-AzStorageBlobContent -File "..\..\Publish\MeteredProcessor.zip" -Container $ContainerName -Blob "MeteredProcessor.zip" -Context $ctx -Force
+        $MeteredSchedulerSupport =true
+    }
+    
+}
+
 # The base URI where artifacts required by this template are located
 $PathToWebApplicationPackages = ((Get-AzStorageContainer -Container $ContainerName -Context $ctx).CloudBlobContainer.uri.AbsoluteUri)
 
@@ -247,6 +263,7 @@ $ARMTemplateParams = @{
    SAASKeyForbacpac             = ""
    PublisherAdminUsers          = "$PublisherAdminUsers"
    PathToWebApplicationPackages = "$PathToWebApplicationPackages"
+   MeteredSchedulerSupport       = "$MeteredSchedulerSupport"
 }
 
 

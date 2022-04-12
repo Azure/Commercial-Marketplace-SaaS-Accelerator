@@ -26,6 +26,7 @@ namespace SaaS.SDK.MeteredSchedulerProcessor
         private IMeteredPlanSchedulerManagementRepository schedulerRepository;
         private ISchedulerManagerViewRepository schedulerViewRepository;
         private ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository;
+
         private readonly IMeteredBillingApiService billingApiService;
         private readonly SaaSApiClientConfiguration saaasConfiguration;
 
@@ -37,7 +38,7 @@ namespace SaaS.SDK.MeteredSchedulerProcessor
             this.schedulerRepository = schedulerRepository;
             this.schedulerViewRepository = schedulerViewRepository;
             this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
-            this.scheudelerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, this.schedulerRepository, this.schedulerViewRepository);
+            this.scheudelerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, this.schedulerRepository, this.schedulerViewRepository, this.subscriptionUsageLogsRepository);
             this.billingApiService = billingApiService;
             this.saaasConfiguration = saaasConfiguration;
         }
