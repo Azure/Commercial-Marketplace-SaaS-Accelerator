@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
@@ -15,6 +16,7 @@
         private ISchedulerFrequencyRepository frequencyRepository;
         private IMeteredPlanSchedulerManagementRepository schedulerRepository;
         private ISchedulerManagerViewRepository schedulerViewRepository;
+        private ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository;
 
 
         /// <summary>
@@ -24,11 +26,12 @@
         /// <param name="schedulerFrequencyRepository">The Frequency attributes repository.</param>
         /// <param name="schedulerManagerViewRepository">The Scheduler Manager View attributes repository.</param>
 
-        public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository schedulerFrequencyRepository, IMeteredPlanSchedulerManagementRepository meteredPlanSchedulerManagementRepository, ISchedulerManagerViewRepository schedulerManagerViewRepository)
+        public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository schedulerFrequencyRepository, IMeteredPlanSchedulerManagementRepository meteredPlanSchedulerManagementRepository, ISchedulerManagerViewRepository schedulerManagerViewRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
         {
             this.frequencyRepository = schedulerFrequencyRepository;
             this.schedulerRepository = meteredPlanSchedulerManagementRepository;
             this.schedulerViewRepository = schedulerManagerViewRepository;
+            this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
         }
 
         /// <summary>
@@ -74,6 +77,26 @@
         }
 
         /// <summary>
+        /// Get All Scheduled Metered trigger list
+        /// </summary>
+        /// <returns>List of Scheduler Manager View</returns>
+        public SchedulerManagerViewModel GetSchedulerManagerById(int Id)
+        {
+
+            var item = this.schedulerViewRepository.GetById(Id);
+            SchedulerManagerViewModel schedulerView = new SchedulerManagerViewModel();
+                schedulerView.Id = item.Id;
+                schedulerView.PlanId = item.PlanId;
+                schedulerView.AMPSubscriptionId = item.AMPSubscriptionId;
+                schedulerView.Dimension = item.Dimension;
+                schedulerView.Frequency = item.Frequency;
+                schedulerView.Quantity = item.Quantity;
+                schedulerView.StartDate = item.StartDate;
+                schedulerView.NextRunTime = item.NextRunTime;
+            return schedulerView;
+        }
+
+        /// <summary>
         /// Gets the Scheduler detail by  identifier.
         /// </summary>
         /// <param name="Id">The identifier.</param>
@@ -96,6 +119,30 @@
             return meteredPlanSchedule;
         }
 
+        /// <summary>
+        /// Get Scheduler Item audit history
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>History of scheduled Item run result.</returns>
+        public List<MeteredAuditLogs> GetSchedulerItemRunHistory(int id)
+        {
+            List<MeteredAuditLogs> schedulerItemRunHistory = new List<MeteredAuditLogs>();
+            var scheduledItem = this.schedulerRepository.Get(id);
+            var meteredAudits = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(Convert.ToInt32(scheduledItem.SubscriptionId));
+            var scheduledItemView = this.schedulerViewRepository.GetById(id);
+            foreach (var auditLog in meteredAudits)
+            {
+                var MeteringUsageRequest = JsonSerializer.Deserialize<MeteringUsageRequest>(auditLog.RequestJson);
+
+                if (MeteringUsageRequest.Dimension== scheduledItemView.Dimension)
+                {
+                    schedulerItemRunHistory.Add(auditLog);
+                }
+                
+            }
+            return schedulerItemRunHistory;
+
+        }
 
         /// <summary>
         /// Saves the Metered Plan Scheduler Management Model attributes.

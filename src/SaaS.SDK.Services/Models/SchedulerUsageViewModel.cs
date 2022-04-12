@@ -40,7 +40,17 @@
         /// </value>
         public string Quantity { get; set; }
 
+        /// <summary>
+        /// Get or set First Run Time
+        /// </summary>
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime FirstRunDate { get; set; }
 
+
+        /// <summary>
+        /// Get or set Next Run Time
+        /// </summary>
+        public DateTime NextRunDate { get; set; }
 
         /// <summary>
         /// Gets or sets the metered audit logs.
@@ -49,8 +59,7 @@
         /// The metered audit logs.
         /// </value>
         /// 
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime FirstRunDate { get; set; }
+        public List<MeteredAuditLogs> MeteredAuditLogs { get; set; }
 
     }
 }

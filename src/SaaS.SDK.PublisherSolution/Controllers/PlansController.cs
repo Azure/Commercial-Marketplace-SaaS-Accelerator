@@ -36,7 +36,7 @@
 
         private readonly IOfferAttributesRepository offerAttributeRepository;
 
-        private readonly ILogger<OffersController> logger;
+        private readonly ILogger<PlansController> logger;
 
         private PlanService plansService;
 
@@ -50,7 +50,7 @@
         /// <param name="offerAttributeRepository">The offer attribute repository.</param>
         /// <param name="offerRepository">The offer repository.</param>
         /// <param name="logger">The logger.</param>
-        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger)
+        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<PlansController> logger)
         {
             this.subscriptionRepository = subscriptionRepository;
             this.usersRepository = usersRepository;

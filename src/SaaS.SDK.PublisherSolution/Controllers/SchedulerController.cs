@@ -28,7 +28,7 @@
         /// <summary>
         /// logger controller
         /// </summary>
-        private readonly ILogger<OffersController> logger;
+        private readonly ILogger<SchedulerController> logger;
 
         /// <summary>
         /// the shceduler service
@@ -57,12 +57,12 @@
         /// <param name="logger">The logger.</param>
         public SchedulerController(ISubscriptionsRepository subscriptionRepository, IMeteredDimensionsRepository meteredRepository,
             ISchedulerFrequencyRepository frequencyRepository, IPlansRepository plansRepository,
-            IMeteredPlanSchedulerManagementRepository schedulerRepository,ISchedulerManagerViewRepository schedulerViewRepository, IUsersRepository usersRepository, ILogger<OffersController> logger)
+            IMeteredPlanSchedulerManagementRepository schedulerRepository,ISchedulerManagerViewRepository schedulerViewRepository, IUsersRepository usersRepository, ILogger<SchedulerController> logger, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
         {
             this.usersRepository= usersRepository;
             this.logger = logger;
             this.meteredRepository = meteredRepository;
-            this.scheudelerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository);
+            this.scheudelerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository);
             this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
 
         }
@@ -219,6 +219,33 @@
             }
         }
 
+        public IActionResult SchedulerLogDetail(string id)
+        {
+            this.logger.LogInformation("Scheduler Controller / Get Schedule Item Details:  Id {0}", JsonSerializer.Serialize(id));
+            try
+            {
+                var SchedulerItem = this.scheudelerService.GetSchedulerManagerById(int.Parse(id));
+                var detail=this.scheudelerService.GetSchedulerItemRunHistory(int.Parse(id));
+                SchedulerUsageViewModel schedulerUsageViewModel = new SchedulerUsageViewModel();
+                schedulerUsageViewModel.SelectedSubscription = SchedulerItem.AMPSubscriptionId.ToString();
+                schedulerUsageViewModel.SelectedDimension = SchedulerItem.Dimension;
+                schedulerUsageViewModel.SelectedSchedulerFrequency = SchedulerItem.Frequency;
+                schedulerUsageViewModel.Quantity = SchedulerItem.Quantity.ToString();
+                schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate;
+                schedulerUsageViewModel.NextRunDate = Convert.ToDateTime(SchedulerItem.NextRunTime);
+                schedulerUsageViewModel.MeteredAuditLogs = detail;
+
+                return this.View(schedulerUsageViewModel);
+
+
+                
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                return this.PartialView("Error", ex);
+            }
+        }
 
 
     }

@@ -1,0 +1,74 @@
+﻿@*@using Microsoft.Marketplace.SaaS.SDK.Services.Models;*@
+@using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+@model SchedulerUsageViewModel
+
+    <div class="modal-content">
+        <div class="modal-header header-bg">
+            <h1><span class="cm-section-heading"> Activity Log</span></h1>
+            <button type="submit"onclick="@("window.location.href='" + @Url.Action("index", "Scheduler") + "'");" class="cm-button-default text-right float-right">Back To Scheduler List</button>
+        </div>
+        <div class="modal-body">
+            <div>
+                <table>
+                    <tr>
+                        <th>Subscription</th>
+                        <td> @Html.DisplayFor(model => model.SelectedSubscription)</td>
+                    </tr>
+                    <tr>
+                        <th>Dimenstion</th>
+                        <td> @Html.DisplayFor(model => model.SelectedDimension)</td>
+                    </tr>
+                    <tr>
+                        <th>Quantity</th>
+                        <td> @Html.DisplayFor(model => model.Quantity)</td>
+                    </tr>
+
+                    <tr>
+                        <th>Frequency</th>
+                       <td> @Html.DisplayFor(model => model.SelectedSchedulerFrequency)</td>
+                    </tr>
+                    <tr>
+                        <th>First Run Date &nbsp;&nbsp; </th>
+                        <td>  
+                             @Html.DisplayFor(model => model.FirstRunDate)
+                       </td>
+                    </tr>
+
+                    <tr>
+                        <th>Next Run Date &nbsp;&nbsp; </th>
+                        <td>  
+                             @Html.DisplayFor(model => model.NextRunDate)
+                       </td>
+                    </tr>
+
+                </table>
+            </div>
+            <table class="table table-bordered dt-responsive cm-table">
+                <thead class="cm-table-head">
+                    <tr>
+                        <th width="10%">ID</th>
+                        <th width="20%">Request</th>
+                        <th width="20%">Response</th>
+                        <th width="10%">Status</th>
+                        <th width="10%">Created Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model.MeteredAuditLogs)
+                    {
+                        <tr>
+
+                            <td class="text-left">@log.Id</td>
+                            <td class="text-left">@log.RequestJson</td>
+                            <td class="text-left">@log.StatusCode</td>
+                            <td class="text-left">@log.ResponseJson</td>
+                            <td class="text-left">
+                                @if (log.CreatedDate != null && log.CreatedDate.HasValue)
+                                {@log.CreatedDate.Value.ToString("mm/dd/yyyy hh:mm tt")}
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
