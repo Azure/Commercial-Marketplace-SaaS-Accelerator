@@ -230,7 +230,7 @@ Set-AzStorageBlobContent -File "..\..\Publish\PublisherPortal.zip" -Container $C
 Set-AzStorageBlobContent -File "..\..\Publish\CustomerPortal.zip" -Container $ContainerName -Blob "CustomerPortal.zip" -Context $ctx -Force
 
 # If metered support added then add Azure fuction code
-$MeteredSchedulerSupport =false
+$MeteredSchedulerSupport = "false"
 if ($MeteredSchedulerSupportEnabled)
 {
     if ($MeteredSchedulerSupportEnabled.ToUpper() -eq "YES")
@@ -239,7 +239,7 @@ if ($MeteredSchedulerSupportEnabled)
         dotnet publish ..\..\src\SaaS.SDK.MeteredSchedulerProcessor\SaaS.SDK.MeteredSchedulerProcessor.csproj -c debug -o ..\..\Publish\MeteredProcessor
         Compress-Archive -Path ..\..\Publish\MeteredProcessor\* -DestinationPath ..\..\Publish\MeteredProcessor.zip -Force
         Set-AzStorageBlobContent -File "..\..\Publish\MeteredProcessor.zip" -Container $ContainerName -Blob "MeteredProcessor.zip" -Context $ctx -Force
-        $MeteredSchedulerSupport = true
+        $MeteredSchedulerSupport = "true"
     }
     
 }
