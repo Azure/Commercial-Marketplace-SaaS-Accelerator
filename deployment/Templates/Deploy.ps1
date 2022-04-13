@@ -239,7 +239,7 @@ if ($MeteredSchedulerSupportEnabled)
         dotnet publish ..\..\src\SaaS.SDK.MeteredSchedulerProcessor\SaaS.SDK.MeteredSchedulerProcessor.csproj -c debug -o ..\..\Publish\MeteredProcessor
         Compress-Archive -Path ..\..\Publish\MeteredProcessor\* -DestinationPath ..\..\Publish\MeteredProcessor.zip -Force
         Set-AzStorageBlobContent -File "..\..\Publish\MeteredProcessor.zip" -Container $ContainerName -Blob "MeteredProcessor.zip" -Context $ctx -Force
-        $MeteredSchedulerSupport =true
+        $MeteredSchedulerSupport = true
     }
     
 }
@@ -263,7 +263,7 @@ $ARMTemplateParams = @{
    SAASKeyForbacpac             = ""
    PublisherAdminUsers          = "$PublisherAdminUsers"
    PathToWebApplicationPackages = "$PathToWebApplicationPackages"
-   MeteredSchedulerSupport       = $MeteredSchedulerSupport
+   MeteredSchedulerSupport       = "$MeteredSchedulerSupport"
 }
 
 

@@ -78,7 +78,7 @@
       "defaultValue": ""
     },
     "MeteredSchedulerSupport": {
-      "type": "bool",
+      "type": "string",
       "metadata": {
         "description": "Deploy Metered Feature if set to True"
       },
