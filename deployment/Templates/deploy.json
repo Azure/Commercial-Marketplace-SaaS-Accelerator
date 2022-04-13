@@ -469,6 +469,12 @@
                 "name": "[variables('MeteredFunction')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
                 "siteConfig": {
+                  "connectionStrings": [
+                        {
+                           "name": "DefaultConnection",
+                            "connectionString": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=AMPSaaSDB', ';User Id=', parameters('SQLAdminLogin'), '@', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ';Password=', parameters('SQLAdminLoginPassword'), ';')]"
+                        }
+                                    ],
                     "appSettings": [
                         {
                             "name": "AzureWebJobsStorage",
