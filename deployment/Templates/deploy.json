@@ -441,6 +441,7 @@
       ]
     },
     {
+       "condition": "[equals(parameters('MeteredSchedulerSupport'), 'true')]",
       "type": "Microsoft.Storage/storageAccounts",
       "apiVersion": "2021-08-01",
       "name": "[variables('StorageAccountName')]",
