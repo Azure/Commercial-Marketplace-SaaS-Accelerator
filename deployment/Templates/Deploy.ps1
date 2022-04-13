@@ -21,7 +21,7 @@ Param(
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
    [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
-   [string][Parameter()]$LogoURLico  # URL for Publisher .ico logo
+   [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
    [string][Parameter()]$MeteredSchedulerSupportEnabled # set to True to deploy SaaS with Metered Support
 )
 
@@ -263,7 +263,7 @@ $ARMTemplateParams = @{
    SAASKeyForbacpac             = ""
    PublisherAdminUsers          = "$PublisherAdminUsers"
    PathToWebApplicationPackages = "$PathToWebApplicationPackages"
-   MeteredSchedulerSupport       = "$MeteredSchedulerSupport"
+   MeteredSchedulerSupport       = $MeteredSchedulerSupport
 }
 
 
