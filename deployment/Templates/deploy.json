@@ -100,6 +100,8 @@
     "appServicePlanName": "[concat(parameters('webAppNamePrefix'),'AmpSvcPlan')]",
     "ProvisioningServiceAppName": "[concat(parameters('webAppNamePrefix'),'-portal')]",
     "PublisherServiceAppName": "[concat(parameters('webAppNamePrefix'),'-admin')]",
+    "StorageAccountName": "[concat(parameters('webAppNamePrefix'),uniqueString(resourceGroup().id))]",
+    "MeteredFunction" : "[concat(parameters('webAppNamePrefix'),'-processor')]",
     "collation": "SQL_Latin1_General_CP1_CI_AS",
     "sqlDBName": "AMPSaaSDB"
   },
@@ -439,10 +441,20 @@
       ]
     },
     {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-08-01",
+      "name": "[variables('StorageAccountName')]",
+      "location": "[variables('location')]",
+      "kind": "StorageV2",
+        "sku": {
+         "name": "Standard_LRS"
+      }
+    },
+    {
             "condition": "[equals(parameters('MeteredSchedulerSupport'), 'true')]",
             "type": "Microsoft.Web/sites",
             "apiVersion": "2021-03-01",
-            "name": "[concat(parameters('webAppNamePrefix'),'-processor')]",
+            "name": "[variables('MeteredFunction')]",
             "location": "[variables('location')]",
             "kind": "functionapp",
             "identity": {
@@ -453,13 +465,13 @@
                 "[resourceId('Microsoft.Sql/servers/databases', parameters('SQLServerName'), variables('sqlDBName'))]"
             ],
             "properties": {
-                "name": "[concat(parameters('webAppNamePrefix'),'-processor')]",
+                "name": "[variables('MeteredFunction')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
                 "siteConfig": {
                     "appSettings": [
                         {
                             "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2018-02-01').keys[0].value)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('StorageAccountName')), '2018-02-01').keys[0].value)]"
                         },
                         {
                             "name": "AzureWebJobsSecretStorageType",
@@ -467,7 +479,7 @@
                         },
                         {
                             "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2018-02-01').keys[0].value)]"
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('StorageAccountName')), '2018-02-01').keys[0].value)]"
                         },
                         {
                             "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -552,7 +564,7 @@
               "apiVersion": "2019-08-01",
               "location": "[variables('location')]",
               "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', concat(parameters('webAppNamePrefix'),'-processor'))]"
+                "[resourceId('Microsoft.Web/sites', variables('MeteredFunction'))]"
               ],
               "tags": {
                 "displayName": "Web Deploy for Azure fuction Processor"
@@ -563,7 +575,7 @@
               }
             }
          ]
-        }
+    }
   ],
   "outputs": {
     "CustomerPortal": {
