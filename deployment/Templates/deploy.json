@@ -100,7 +100,7 @@
     "appServicePlanName": "[concat(parameters('webAppNamePrefix'),'AmpSvcPlan')]",
     "ProvisioningServiceAppName": "[concat(parameters('webAppNamePrefix'),'-portal')]",
     "PublisherServiceAppName": "[concat(parameters('webAppNamePrefix'),'-admin')]",
-    "StorageAccountName": "[concat(parameters('webAppNamePrefix'),uniqueString(resourceGroup().id))]",
+    "StorageAccountName": "[uniqueString(resourceGroup().id)]",
     "MeteredFunction" : "[concat(parameters('webAppNamePrefix'),'-processor')]",
     "collation": "SQL_Latin1_General_CP1_CI_AS",
     "sqlDBName": "AMPSaaSDB"
