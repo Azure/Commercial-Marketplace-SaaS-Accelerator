@@ -549,7 +549,14 @@
 
 
 
-                    ]
+                    ],
+                    "metadata": [
+                    {
+                      "name": "CURRENT_STACK",
+                      "value": "dotnetcore"
+                    }
+                  ],
+                  "alwaysOn": "[variables('alwaysOn')]"
                 },
                 "clientAffinityEnabled": false,
                 "reserved": false
