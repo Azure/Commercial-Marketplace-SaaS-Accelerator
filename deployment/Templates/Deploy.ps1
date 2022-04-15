@@ -22,7 +22,7 @@ Param(
    [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
-   [string][Parameter()]$MeteredSchedulerSupportEnabled # set to True to deploy SaaS with Metered Support
+   [string][Parameter()]$MeteredSchedulerSupportEnabled # set to YES to deploy SaaS with Metered Support
 )
 
 Write-Host "Starting SaaS Accelerator Deployment..."
