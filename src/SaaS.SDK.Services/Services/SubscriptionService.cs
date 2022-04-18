@@ -195,7 +195,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <returns> Subscription Status EnumExtension.</returns>
         public SubscriptionStatusEnumExtension GetSubscriptionStatus(string subscriptionStatus)
         {
-            var status = SubscriptionStatusEnumExtension.NotStarted;
+            SubscriptionStatusEnumExtension status;
             Enum.TryParse(subscriptionStatus, out status);
             return status;
         }

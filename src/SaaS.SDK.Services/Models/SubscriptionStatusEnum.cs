@@ -23,11 +23,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         Unsubscribed,
 
         /// <summary>
-        /// The not started
-        /// </summary>
-        NotStarted,
-
-        /// <summary>
         /// Pending Activation
         /// </summary>
         PendingActivation,
