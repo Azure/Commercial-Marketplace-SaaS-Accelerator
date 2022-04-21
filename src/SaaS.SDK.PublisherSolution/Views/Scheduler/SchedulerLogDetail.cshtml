@@ -43,14 +43,12 @@
 
                 </table>
             </div>
-            <table class="table table-bordered dt-responsive cm-table">
+            <table class="table table-bordered dt-responsive cm-table" width=50%>
                 <thead class="cm-table-head">
                     <tr>
                         <th width="10%">ID</th>
-                        <th width="20%">Request</th>
-                        <th width="20%">Response</th>
                         <th width="10%">Status</th>
-                        <th width="10%">Created Date</th>
+                        <th width="10%">Submit Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -59,12 +57,10 @@
                         <tr>
 
                             <td class="text-left">@log.Id</td>
-                            <td class="text-left">@log.RequestJson</td>
                             <td class="text-left">@log.StatusCode</td>
-                            <td class="text-left">@log.ResponseJson</td>
                             <td class="text-left">
                                 @if (log.CreatedDate != null && log.CreatedDate.HasValue)
-                                {@log.CreatedDate.Value.ToString("mm/dd/yyyy hh:mm tt")}
+                                {@log.CreatedDate.Value.ToString()}
                             </td>
                         </tr>
                     }

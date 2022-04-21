@@ -473,7 +473,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns> The <see cref="IActionResult" />.</returns>
         public IActionResult RecordUsage(int subscriptionId)
-        {
+       {
             this.logger.LogInformation("Home Controller / RecordUsage ");
             try
             {

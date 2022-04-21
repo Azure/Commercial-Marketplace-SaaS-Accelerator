@@ -11,7 +11,29 @@
     /// </summary>
     public class SchedulerUsageViewModel
     {
+        /// <summary>
+        /// scheculer task anem
+        /// </summary>
+        public string schedulerName { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the subscription list.
+        /// </summary>
+        /// <value>
+        /// The dimensions list.
+        /// </value>
+        /// </summary>
         public SelectList SubscriptionList { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the selected subscription.
+        /// </summary>
+        /// <value>
+        /// The dimensions list.
+        /// </value>
+        /// </summary>
         public string SelectedSubscription { get; set; }
 
 
@@ -43,7 +65,6 @@
         /// <summary>
         /// Get or set First Run Time
         /// </summary>
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime FirstRunDate { get; set; }
 
 
