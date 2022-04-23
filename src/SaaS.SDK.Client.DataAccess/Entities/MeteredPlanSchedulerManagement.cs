@@ -10,6 +10,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
     public partial class MeteredPlanSchedulerManagement
     {
         public int Id { get; set; }
+        public string SchedulerName { get; set; }
         public int? SubscriptionId { get; set; }
         public int? PlanId { get; set; }
         public int? DimensionId { get; set; }

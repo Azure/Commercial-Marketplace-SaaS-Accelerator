@@ -180,6 +180,7 @@
                 MeteredPlanSchedulerManagementModel schedulerManagement = new MeteredPlanSchedulerManagementModel()
                 {
                     FrequencyId = Convert.ToInt32(schedulerUsageViewModel.SelectedSchedulerFrequency),
+                    SchedulerName = Convert.ToString(schedulerUsageViewModel.schedulerName),
                     SubscriptionId = Convert.ToInt32(schedulerUsageViewModel.SelectedSubscription),
                     PlanId = Convert.ToInt32(selectedDimension.PlanId),
                     DimensionId = Convert.ToInt32(schedulerUsageViewModel.SelectedDimension),

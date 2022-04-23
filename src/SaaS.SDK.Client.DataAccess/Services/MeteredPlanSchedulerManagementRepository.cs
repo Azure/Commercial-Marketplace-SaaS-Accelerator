@@ -63,6 +63,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
             if (existingEntity != null)
             {
                 existingEntity.Quantity = entity.Quantity;
+                existingEntity.SchedulerName = entity.SchedulerName;
                 existingEntity.FrequencyId = entity.FrequencyId;
                 existingEntity.StartDate = entity.StartDate;
                 existingEntity.NextRunTime = entity.NextRunTime;

@@ -17,11 +17,26 @@
                 subItems+="<option value='"+item.value+"'>"+item.text+"</option>"
               });
               $("#SelectedDimension").html(subItems);
+
               
             });
         });
-
+  
     });
+
+    function RedirectThis()
+    {   
+        var sub =$("select#SelectedSubscription").val()
+        if (sub)
+        {
+            window.location.href="/Home/RecordUsage?subscriptionId="+sub;
+        }
+        else
+        {
+            alert("Please Select Subscription value first")
+        }
+
+    }
 </script>
 
 
@@ -38,7 +53,7 @@
             <div style="align-content:center">
                 <table>
                     <tr>
-                        <th>Scheduler Name</th>
+                        <th>Scheduler Name&nbsp;&nbsp;</th>
                         <th>@Html.TextBoxFor(s => s.schedulerName, "Enter Name",  new { @class = "form-control", required = "required" })</th>
                     </tr>
                     <tr>
@@ -61,8 +76,11 @@
                     <tr>
                         <th>First Run Date &nbsp;&nbsp; </th>
                         <th>  
-                            <input asp-for="FirstRunDate" type="date" class="form-control" />
-                       </th>
+                            <input asp-for="FirstRunDate" type="datetime-local" class="form-control" value="<%=DateTime.Now.ToString('MM-dd-yyyyThh:mm:ss')%>">
+
+
+                        </th>
+
                     </tr>
 
                     <tr>
@@ -77,7 +95,7 @@
                        <th>  
                             <br/>
                               <div class="input-group-append">
-                                <button type="submit" onclick="@("window.location.href='/Home/RecordUsage?subscriptionId="+Model.SelectedSubscription+"'");" class="btn btn-success">Submit Usage Now</button>
+                                <button name="RedirectBtn" type="submit" onclick="RedirectThis()" class="btn btn-success">Submit Usage Now</button>
                             </div>
                        </th>
                     </tr>

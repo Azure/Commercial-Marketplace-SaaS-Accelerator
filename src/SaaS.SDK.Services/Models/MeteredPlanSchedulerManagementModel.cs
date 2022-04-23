@@ -19,6 +19,31 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         /// The identifier.
         /// </value>
         public int Id { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets Scheduler Name
+        /// </summary>
+        /// <value>
+        /// Scheduler Name
+        /// </value>
+        public string SchedulerName { get; set; }
+
+        /// Gets or sets Subscription Name
+        /// </summary>
+        /// <value>
+        /// Subscription Name
+        /// </value>
+        public string SubscriptionName { get; set; }
+        /// <summary>
+        /// Gets or sets Purchaser Email
+        /// </summary>
+        /// <value>
+        /// Purchaser Email
+        /// </value>
+        public string PurchaserEmail { get; set; }
+
+
         /// <summary>
         /// Gets or sets subscription identifier.
         /// </summary>

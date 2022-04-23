@@ -23,6 +23,28 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// </value>
         public Guid AMPSubscriptionId { get; set; }
         /// <summary>
+        /// Gets or sets Scheduler Name
+        /// </summary>
+        /// <value>
+        /// Scheduler Name
+        /// </value>
+        public string SchedulerName { get; set; }
+
+        /// Gets or sets Subscription Name
+        /// </summary>
+        /// <value>
+        /// Subscription Name
+        /// </value>
+        public string SubscriptionName { get; set; }
+        /// <summary>
+        /// Gets or sets Purchaser Email
+        /// </summary>
+        /// <value>
+        /// Purchaser Email
+        /// </value>
+        public string PurchaserEmail { get; set; }
+
+        /// <summary>
         /// Gets or sets identifier.
         /// </summary>
         /// <value>

@@ -65,6 +65,9 @@
                 SchedulerManagerViewModel schedulerView = new SchedulerManagerViewModel();
                 schedulerView.Id = item.Id;
                 schedulerView.PlanId = item.PlanId;
+                schedulerView.PurchaserEmail = item.PurchaserEmail;
+                schedulerView.SchedulerName = item.SchedulerName;
+                schedulerView.SubscriptionName = item.SubscriptionName;
                 schedulerView.AMPSubscriptionId = item.AMPSubscriptionId;
                 schedulerView.Dimension = item.Dimension;
                 schedulerView.Frequency = item.Frequency;
@@ -85,14 +88,17 @@
 
             var item = this.schedulerViewRepository.GetById(Id);
             SchedulerManagerViewModel schedulerView = new SchedulerManagerViewModel();
-                schedulerView.Id = item.Id;
-                schedulerView.PlanId = item.PlanId;
-                schedulerView.AMPSubscriptionId = item.AMPSubscriptionId;
-                schedulerView.Dimension = item.Dimension;
-                schedulerView.Frequency = item.Frequency;
-                schedulerView.Quantity = item.Quantity;
-                schedulerView.StartDate = item.StartDate;
-                schedulerView.NextRunTime = item.NextRunTime;
+            schedulerView.Id = item.Id;
+            schedulerView.PlanId = item.PlanId;
+            schedulerView.PurchaserEmail = item.PurchaserEmail;
+            schedulerView.SchedulerName = item.SchedulerName;
+            schedulerView.SubscriptionName = item.SubscriptionName;
+            schedulerView.AMPSubscriptionId = item.AMPSubscriptionId;
+            schedulerView.Dimension = item.Dimension;
+            schedulerView.Frequency = item.Frequency;
+            schedulerView.Quantity = item.Quantity;
+            schedulerView.StartDate = item.StartDate;
+            schedulerView.NextRunTime = item.NextRunTime;
             return schedulerView;
         }
 
@@ -109,6 +115,7 @@
             {
                 Id = existingScheduledMeteredPlan.Id,
                 PlanId = existingScheduledMeteredPlan.PlanId,
+                SchedulerName = existingScheduledMeteredPlan.SchedulerName,
                 SubscriptionId = existingScheduledMeteredPlan.SubscriptionId,
                 DimensionId = existingScheduledMeteredPlan.DimensionId,
                 FrequencyId = existingScheduledMeteredPlan.FrequencyId,
@@ -155,6 +162,7 @@
             {
                 Id = meteredPlanSchedulerModel.Id,
                 PlanId = meteredPlanSchedulerModel.PlanId,
+                SchedulerName = meteredPlanSchedulerModel.SchedulerName,
                 SubscriptionId = meteredPlanSchedulerModel.SubscriptionId,
                 DimensionId = meteredPlanSchedulerModel.DimensionId,
                 FrequencyId = meteredPlanSchedulerModel.FrequencyId,
@@ -174,6 +182,7 @@
             MeteredPlanSchedulerManagement meteredPlanScheduler = new MeteredPlanSchedulerManagement
             {
                 Id = meteredPlanSchedulerModel.Id,
+                SchedulerName=meteredPlanSchedulerModel.SchedulerName,
                 PlanId = meteredPlanSchedulerModel.PlanId,
                 SubscriptionId = meteredPlanSchedulerModel.SubscriptionId,
                 DimensionId = meteredPlanSchedulerModel.DimensionId,
