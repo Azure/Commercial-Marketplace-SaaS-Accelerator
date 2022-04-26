@@ -224,13 +224,9 @@ if (!($MeteredSchedulerSupport))
 
 if ($MeteredSchedulerSupport -ne "NO")
 { 
-    Write-host "☁  Preparing the publish files for Metered Scheduler"
-    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\MeteredTriggerJob
-
-    Write-host "☁  Move files form Metered Scheduler to publisher"
     mkdir -p ..\..\src\SaaS.SDK.PublisherSolution\wwwroot\app_data\jobs\triggered\MeteredTriggerJob
-    Copy-Item  ..\..\Publish\MeteredTriggerJob\* ..\..\src\SaaS.SDK.PublisherSolution\wwwroot\app_data\jobs\triggered\MeteredTriggerJob  -Recurse
-
+    Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
+    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\src\SaaS.SDK.PublisherSolution\wwwroot\app_data\jobs\triggered\MeteredTriggerJob
 
     Write-host "☁  Preparing the publish files for PublisherPortal"  
     dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
