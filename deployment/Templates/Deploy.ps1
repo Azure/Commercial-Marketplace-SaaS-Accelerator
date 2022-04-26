@@ -22,7 +22,7 @@ Param(
    [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
-   [string][Parameter()]$MeteredSchedulerSupportEnabled # set to YES to deploy SaaS with Metered Support
+   [string][Parameter()]$MeteredSchedulerSupport # set to NO to disable Metered Support
 )
 
 Write-Host "Starting SaaS Accelerator Deployment..."
@@ -217,32 +217,47 @@ Write-host "📜  Uploaded the bacpac file to $URLToBacpacFromStorage"
 
 Write-host "☁  Prepare publish files for the web application"
 
-Write-host "☁  Preparing the publish files for PublisherPortal"  
-dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
-Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
+if (!($MeteredSchedulerSupport))
+{
+    $MeteredSchedulerSupport = "True"
+}
+
+if ($MeteredSchedulerSupport -ne "NO")
+{ 
+    Write-host "☁  Preparing the publish files for Metered Scheduler"
+    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\MeteredTriggerJob
+
+    Write-host "☁  Move files form Metered Scheduler to publisher"
+    mkdir -p ..\..\src\SaaS.SDK.PublisherSolution\wwwroot\app_data\jobs\triggered\MeteredTriggerJob
+    Copy-Item -r ..\..\Publish\MeteredTriggerJob\* ..\..\src\SaaS.SDK.PublisherSolution\wwwroot\app_data\jobs\triggered\MeteredTriggerJob\
+
+
+    Write-host "☁  Preparing the publish files for PublisherPortal"  
+    dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
+    Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
+
+    $MeteredSchedulerSupport = "True"
+}
+else {
+    Write-host "☁  Preparing the publish files for PublisherPortal"  
+    dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
+    Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
+    $MeteredSchedulerSupport = "False"
+}
+
 
 Write-host "☁  Preparing the publish files for CustomerPortal"
 dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
 Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Publish\CustomerPortal.zip -Force
+# If metered support added then add Azure fuction code
+
 
 Write-host "☁  Upload web application files to storage account"
 Set-AzStorageBlobContent -File "..\..\Publish\PublisherPortal.zip" -Container $ContainerName -Blob "PublisherPortal.zip" -Context $ctx -Force
 Set-AzStorageBlobContent -File "..\..\Publish\CustomerPortal.zip" -Container $ContainerName -Blob "CustomerPortal.zip" -Context $ctx -Force
 
-# If metered support added then add Azure fuction code
-$MeteredSchedulerSupport = "false"
-if ($MeteredSchedulerSupportEnabled)
-{
-    if ($MeteredSchedulerSupportEnabled.ToUpper() -eq "YES")
-    {
-        Write-host "☁  Preparing the publish files for Metered Scheduler"
-        dotnet publish ..\..\src\SaaS.SDK.MeteredSchedulerProcessor\SaaS.SDK.MeteredSchedulerProcessor.csproj -c debug -o ..\..\Publish\MeteredProcessor
-        Compress-Archive -Path ..\..\Publish\MeteredProcessor\* -DestinationPath ..\..\Publish\MeteredProcessor.zip -Force
-        Set-AzStorageBlobContent -File "..\..\Publish\MeteredProcessor.zip" -Container $ContainerName -Blob "MeteredProcessor.zip" -Context $ctx -Force
-        $MeteredSchedulerSupport = "true"
-    }
-    
-}
+
+
 
 # The base URI where artifacts required by this template are located
 $PathToWebApplicationPackages = ((Get-AzStorageContainer -Container $ContainerName -Context $ctx).CloudBlobContainer.uri.AbsoluteUri)
@@ -263,7 +278,7 @@ $ARMTemplateParams = @{
    SAASKeyForbacpac             = ""
    PublisherAdminUsers          = "$PublisherAdminUsers"
    PathToWebApplicationPackages = "$PathToWebApplicationPackages"
-   MeteredSchedulerSupport       = "$MeteredSchedulerSupport"
+   MeteredSchedulerSupport      = "$MeteredSchedulerSupport"
 }
 
 

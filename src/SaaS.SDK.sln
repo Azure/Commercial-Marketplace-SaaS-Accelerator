@@ -15,10 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.Provisioning.Servi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.MeteredSchedulerProcessor", "SaaS.SDK.MeteredSchedulerProcessor\SaaS.SDK.MeteredSchedulerProcessor.csproj", "{3446975C-9D73-4ADE-87C3-768071AEE577}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeteredTriggerJob", "MeteredTrigger\MeteredTriggerJob.csproj", "{F74F7B23-0C5C-42C5-9EAE-4A0664B1DCE9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B5C169DF-D848-4762-AAB9-B022F1E79466} = {B5C169DF-D848-4762-AAB9-B022F1E79466}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.MeteredTriggerJob", "SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj", "{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,10 +47,10 @@ Global
 		{3446975C-9D73-4ADE-87C3-768071AEE577}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3446975C-9D73-4ADE-87C3-768071AEE577}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3446975C-9D73-4ADE-87C3-768071AEE577}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F74F7B23-0C5C-42C5-9EAE-4A0664B1DCE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F74F7B23-0C5C-42C5-9EAE-4A0664B1DCE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F74F7B23-0C5C-42C5-9EAE-4A0664B1DCE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F74F7B23-0C5C-42C5-9EAE-4A0664B1DCE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

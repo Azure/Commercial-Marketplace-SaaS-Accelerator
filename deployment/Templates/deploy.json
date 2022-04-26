@@ -82,27 +82,16 @@
       "metadata": {
         "description": "Deploy Metered Feature if set to True"
       },
-      "defaultValue": false
+      "defaultValue": "True"
     }
   },
   "variables": {
-    "hostingEnvironment": "",
-    "serverFarmResourceGroup": "[resourceGroup().name]",
     "alwaysOn": true,
-    "sku": "Basic",
     "skuCode": "B1",
-    "workerSize": "0",
-    "workerSizeId": "0",
-    "numberOfWorkers": "1",
-    "linuxFxVersion": "DOTNETCORE|3.1",
-    "subscriptionId": "[subscription().subscriptionId]",
     "location": "[resourceGroup().location]",
     "appServicePlanName": "[concat(parameters('webAppNamePrefix'),'AmpSvcPlan')]",
     "ProvisioningServiceAppName": "[concat(parameters('webAppNamePrefix'),'-portal')]",
     "PublisherServiceAppName": "[concat(parameters('webAppNamePrefix'),'-admin')]",
-    "StorageAccountName": "[uniqueString(resourceGroup().id)]",
-    "MeteredFunction" : "[concat(parameters('webAppNamePrefix'),'-processor')]",
-    "collation": "SQL_Latin1_General_CP1_CI_AS",
     "sqlDBName": "AMPSaaSDB"
   },
   "resources": [
@@ -439,146 +428,6 @@
           }
         }
       ]
-    },
-    {
-       "condition": "[equals(parameters('MeteredSchedulerSupport'), 'true')]",
-      "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2021-08-01",
-      "name": "[variables('StorageAccountName')]",
-      "location": "[variables('location')]",
-      "kind": "StorageV2",
-        "sku": {
-         "name": "Standard_LRS"
-      }
-    },
-    {
-            "condition": "[equals(parameters('MeteredSchedulerSupport'), 'true')]",
-            "type": "Microsoft.Web/sites",
-            "apiVersion": "2021-03-01",
-            "name": "[variables('MeteredFunction')]",
-            "location": "[variables('location')]",
-            "kind": "functionapp",
-            "identity": {
-                "type": "SystemAssigned"
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
-                "[resourceId('Microsoft.Sql/servers/databases', parameters('SQLServerName'), variables('sqlDBName'))]"
-            ],
-            "properties": {
-                "name": "[variables('MeteredFunction')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
-                "siteConfig": {
-                  "connectionStrings": [
-                        {
-                           "name": "DefaultConnection",
-                            "connectionString": "[concat('Data Source=tcp:', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ',1433;Initial Catalog=AMPSaaSDB', ';User Id=', parameters('SQLAdminLogin'), '@', reference(concat('Microsoft.Sql/servers/', parameters('SQLServerName'))).fullyQualifiedDomainName, ';Password=', parameters('SQLAdminLoginPassword'), ';')]"
-                        }
-                                    ],
-                    "appSettings": [
-                        {
-                            "name": "AzureWebJobsStorage",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('StorageAccountName')), '2018-02-01').keys[0].value)]"
-                        },
-                        {
-                            "name": "AzureWebJobsSecretStorageType",
-                            "value": "Files"
-                        },
-                        {
-                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('StorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('StorageAccountName')), '2018-02-01').keys[0].value)]"
-                        },
-                        {
-                            "name": "FUNCTIONS_EXTENSION_VERSION",
-                            "value": "~4"
-                        },
-                        {
-                            "name": "FUNCTIONS_WORKER_RUNTIME",
-                            "value": "dotnet"
-                        },
-                        {
-                          "name": "SaaSApiConfiguration__AdAuthenticationEndPoint",
-                          "value": "https://login.microsoftonline.com",
-                          "slotSetting": false
-                        },
-                        {
-                          "name": "SaaSApiConfiguration__ClientId",
-                          "value": "[parameters('ADApplicationID')]",
-                          "slotSetting": false
-                        },
-                        {
-                          "name": "SaaSApiConfiguration__ClientSecret",
-                          "value": "[parameters('ADApplicationSecret')]",
-                          "slotSetting": false
-                        },
-                        {
-                          "name": "SaaSApiConfiguration__MTClientId",
-                          "value": "[parameters('ADMTApplicationID')]",
-                          "slotSetting": false
-                        },
-                        {
-                          "name": "SaaSApiConfiguration__FulFillmentAPIBaseURL",
-                          "value": "https://marketplaceapi.microsoft.com/api",
-                          "slotSetting": false
-                        },
-                        {
-                          "name": "SaaSApiConfiguration__FulFillmentAPIVersion",
-                          "value": "2018-08-31",
-                          "slotSetting": false
-                        },
-                        {
-                          "name": "SaaSApiConfiguration__GrantType",
-                          "value": "client_credentials",
-                          "slotSetting": false
-                        },
-                        {
-                          "name": "SaaSApiConfiguration__Resource",
-                          "value": "20e940b3-4c77-4b0b-9a53-9e16a1b010a7",
-                          "slotSetting": false
-                        },
-                        {
-                          "name": "SaaSApiConfiguration__TenantId",
-                          "value": "[parameters('TenantID')]",
-                          "slotSetting": false
-                        },
-                        {
-                          "name": "SaaSApiConfiguration__SupportmeteredBilling",
-                          "value": "[parameters('MeteredSchedulerSupport')]",
-                          "slotSetting": false
-                        }
-
-
-
-                    ],
-                    "metadata": [
-                    {
-                      "name": "CURRENT_STACK",
-                      "value": "dotnetcore"
-                    }
-                  ],
-                  "alwaysOn": "[variables('alwaysOn')]"
-                },
-                "clientAffinityEnabled": false,
-                "reserved": false
-            },
-            "resources": [
-            {
-              "name": "MSDeploy",
-              "type": "extensions",
-              "apiVersion": "2019-08-01",
-              "location": "[variables('location')]",
-              "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('MeteredFunction'))]"
-              ],
-              "tags": {
-                "displayName": "Web Deploy for Azure fuction Processor"
-              },
-              "properties": {
-                "packageUri": "[uri(concat(parameters('PathToWebApplicationPackages'),'/'), concat('MeteredProcessor.zip'))]",
-                "dbType": "None"
-              }
-            }
-         ]
     }
   ],
   "outputs": {

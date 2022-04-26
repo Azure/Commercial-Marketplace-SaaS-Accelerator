@@ -17,7 +17,6 @@ using MeteredTriggerHelper;
 Console.WriteLine($"MeteredExecutor Webjob Started at: {DateTime.Now}");
 
 IConfiguration configuration = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
     .AddEnvironmentVariables()
     .Build();
 
