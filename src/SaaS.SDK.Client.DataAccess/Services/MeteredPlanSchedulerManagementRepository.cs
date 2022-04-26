@@ -65,8 +65,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
                 existingEntity.Quantity = entity.Quantity;
                 existingEntity.SchedulerName = entity.SchedulerName;
                 existingEntity.FrequencyId = entity.FrequencyId;
-                existingEntity.StartDate = entity.StartDate;
-                existingEntity.NextRunTime = entity.NextRunTime;
+                existingEntity.StartDate = entity.StartDate.Value.ToUniversalTime();
+                existingEntity.NextRunTime = entity.NextRunTime.HasValue? entity.NextRunTime.Value.ToUniversalTime():null;
                 this.context.MeteredPlanSchedulerManagement.Update(existingEntity);
                 this.context.SaveChanges();
                 return existingEntity.Id;

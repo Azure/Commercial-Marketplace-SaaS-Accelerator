@@ -12,6 +12,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.AspNetCore.Mvc.Rendering;
+    using System.Web;
 
     /// <summary>
     /// Scheduler Controller.
@@ -90,7 +91,7 @@
             }
         }
 
-        public IActionResult NewScheduler()
+        public IActionResult NewScheduler(string subscriptionId, string dimId, string quantity)
         {
             this.logger.LogInformation("New Scheduler Controller");
             try
@@ -123,15 +124,35 @@
                         Value = item.Id.ToString(),
                     });
                 }
-
-
-                // Create Plan Dropdown list
+                    // Create Plan Dropdown list
                 List<SelectListItem> PlanList = new List<SelectListItem>();
                 List<SelectListItem> DimensionsList = new List<SelectListItem>();
 
                 schedulerUsageViewModel.DimensionsList = new SelectList(DimensionsList, "Value", "Text");
                 schedulerUsageViewModel.SubscriptionList = new SelectList(SubscriptionList, "Value", "Text");
                 schedulerUsageViewModel.SchedulerFrequencyList = new SelectList(SchedulerFrequencyList, "Value", "Text");
+
+                
+                schedulerUsageViewModel.SelectedSubscription = subscriptionId;
+                schedulerUsageViewModel.Quantity = quantity;
+
+                if(!String.IsNullOrEmpty(dimId))
+                {
+                    var dimensions = this.meteredRepository.Get().Where(d => d.Dimension==dimId).FirstOrDefault();
+                    if(dimensions!=null)
+                    {
+                        DimensionsList.Add(new SelectListItem()
+                        {
+                            Text = dimId,
+                            Value = dimensions.Id.ToString(),
+                            Selected= true
+                        });
+                        schedulerUsageViewModel.DimensionsList = new SelectList(DimensionsList, "Value", "Text");
+                        schedulerUsageViewModel.SelectedDimension = dimensions.Id.ToString();
+                    }
+
+                }
+
 
                 return this.View(schedulerUsageViewModel);
             }

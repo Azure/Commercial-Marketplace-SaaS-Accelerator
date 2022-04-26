@@ -26,10 +26,13 @@
 
     function RedirectThis()
     {   
-        var sub =$("select#SelectedSubscription").val()
+        var sub =$("select#SelectedSubscription").val();
+        var dim =$("#SelectedDimension option:selected").text();
+        var qty =$("#Quantity").val();
+        
         if (sub)
         {
-            window.location.href="/Home/RecordUsage?subscriptionId="+sub;
+            window.location.href="/Home/RecordUsageNow?subscriptionId="+sub+"&dimId="+dim+"&quantity="+qty;
         }
         else
         {
@@ -95,7 +98,7 @@
                        <th>  
                             <br/>
                               <div class="input-group-append">
-                                <button name="RedirectBtn" type="submit" onclick="RedirectThis()" class="btn btn-success">Submit Usage Now</button>
+                                <button name="RedirectBtn" type="button" onclick="RedirectThis()" class="btn btn-success">Submit Usage Now</button>
                             </div>
                        </th>
                     </tr>

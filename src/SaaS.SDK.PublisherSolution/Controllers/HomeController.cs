@@ -285,7 +285,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         /// </returns>
         public IActionResult SubscriptionLogDetail(Guid subscriptionId)
         {
-            this.logger.LogInformation("Home Controller / RecordUsage : subscriptionId: {0}", JsonSerializer.Serialize(subscriptionId));
+            this.logger.LogInformation("Home Controller / SubscriptionLogDetail : subscriptionId: {0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
                 if (this.User.Identity.IsAuthenticated)
@@ -499,7 +499,41 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 return this.View("Error", ex);
             }
         }
+        /// <summary>
+        /// Records the usage.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns> The <see cref="IActionResult" />.</returns>
+        public IActionResult RecordUsageNow(int subscriptionId,string dimId,string quantity)
+        {
+            this.logger.LogInformation("Home Controller / RecordUsage ");
+            try
+            {
+                if (this.User.Identity.IsAuthenticated)
+                {
+                    var subscriptionDetail = this.subscriptionRepo.Get(subscriptionId);
+                    var allDimensionsList = this.dimensionsRepository.GetDimensionsByPlanId(subscriptionDetail.AmpplanId);
+                    SubscriptionUsageViewModel usageViewModel = new SubscriptionUsageViewModel();
+                    usageViewModel.SubscriptionDetail = subscriptionDetail;
+                    usageViewModel.MeteredAuditLogs = new List<MeteredAuditLogs>();
+                    usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId).OrderByDescending(s => s.CreatedDate).ToList();
+                    usageViewModel.DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description");
 
+                    usageViewModel.SelectedDimension = dimId;
+                    usageViewModel.Quantity = quantity;
+                    return this.View("RecordUsage", usageViewModel);
+                }
+                else
+                {
+                    return this.RedirectToAction(nameof(this.Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return this.View("Error", ex);
+            }
+        }
         /// <summary>
         /// Get Subscription Details for selected Subscription.
         /// </summary>

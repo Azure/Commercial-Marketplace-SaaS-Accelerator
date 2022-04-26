@@ -182,6 +182,23 @@
     <script src="~/lib/bootstrap/4.4.1/js/offcanvas.js"></script>
 
     @RenderSection("Scripts", required: false)
+
+ <script type="text/javascript">
+     function RedirectToScheduler(sub)
+    {   
+        var dim =$("select#SelectedDimension").val();
+        var qty =$("#Quantity").val();
+        if (sub)
+        {
+            window.location.href="/scheduler/NewScheduler?subscriptionId="+sub+"&dimId="+dim+"&quantity="+qty;
+        }
+        else
+        {
+            alert("Please Select Subscription value first")
+        }
+
+    }
+</script>
 </body>
 </html>
 
