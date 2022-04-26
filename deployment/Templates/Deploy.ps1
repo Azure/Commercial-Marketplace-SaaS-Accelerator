@@ -229,7 +229,7 @@ if ($MeteredSchedulerSupport -ne "NO")
 
     Write-host "☁  Move files form Metered Scheduler to publisher"
     mkdir -p ..\..\src\SaaS.SDK.PublisherSolution\wwwroot\app_data\jobs\triggered\MeteredTriggerJob
-    Copy-Item -r ..\..\Publish\MeteredTriggerJob\* ..\..\src\SaaS.SDK.PublisherSolution\wwwroot\app_data\jobs\triggered\MeteredTriggerJob\
+    Copy-Item -r ..\..\Publish\MeteredTriggerJob\* ..\..\src\SaaS.SDK.PublisherSolution\wwwroot\app_data\jobs\triggered\MeteredTriggerJob
 
 
     Write-host "☁  Preparing the publish files for PublisherPortal"  
