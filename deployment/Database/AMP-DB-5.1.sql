@@ -407,6 +407,39 @@ CREATE TABLE [dbo].[Users](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
+/****** Object: Table [dbo].[MeteredPlanSchedulerManagement] Script Date: 4/26/2022 6:26:25 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[MeteredPlanSchedulerManagement] (
+    [Id]             INT          IDENTITY (1, 1) NOT NULL,
+    [SchedulerName]  VARCHAR (50) NOT NULL,
+    [SubscriptionId] INT          NOT NULL,
+    [PlanId]         INT          NOT NULL,
+    [DimensionId]    INT          NOT NULL,
+    [Quantity]       FLOAT (53)   NOT NULL,
+    [FrequencyId]    INT          NOT NULL,
+    [StartDate]      DATETIME     NOT NULL,
+    [NextRunTime]    DATETIME     NULL
+);
+
+/****** Object: Table [dbo].[SchedulerFrequency] Script Date: 4/26/2022 6:27:39 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[SchedulerFrequency] (
+    [Id]        INT          IDENTITY (1, 1) NOT NULL,
+    [Frequency] VARCHAR (10) NOT NULL
+);
+
+
+
 /****** Object:  Table [dbo].[ValueTypes]    Script Date: 05-15-2020 12.56.43 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -458,6 +491,45 @@ GO
 ALTER TABLE [dbo].[Subscriptions]  WITH CHECK ADD FOREIGN KEY([UserId])
 REFERENCES [dbo].[Users] ([UserId])
 GO
+
+ALTER TABLE [dbo].[MeteredPlanSchedulerManagement]  WITH CHECK ADD FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[MeteredDimensions] ([Id]);
+GO
+ALTER TABLE [dbo].[MeteredPlanSchedulerManagement]  WITH CHECK ADD FOREIGN KEY ([PlanId]) REFERENCES [dbo].[Plans] ([Id]);
+GO
+ALTER TABLE [dbo].[MeteredPlanSchedulerManagement]  WITH CHECK ADD FOREIGN KEY ([FrequencyId]) REFERENCES [dbo].[SchedulerFrequency] ([Id]);
+GO
+ALTER TABLE [dbo].[MeteredPlanSchedulerManagement]  WITH CHECK ADD FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[Subscriptions] ([Id]);
+GO
+
+
+
+
+/****** Object: View [dbo].[SchedulerManagerView] Script Date: 4/26/2022 6:28:21 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE VIEW [dbo].[SchedulerManagerView]
+	AS SELECT 
+	m.Id,
+	m.SchedulerName,
+	s.AMPSubscriptionId,
+	s.Name as SubscriptionName,
+	s.PurchaserEmail,
+	p.PlanId,
+	d.Dimension,
+	f.Frequency,
+	m.Quantity,
+	m.StartDate,
+	m.NextRunTime
+	FROM MeteredPlanSchedulerManagement m
+	inner join SchedulerFrequency f	on m.FrequencyId=f.Id
+	inner join Subscriptions s on m.SubscriptionId=s.Id
+	inner join Plans p on m.PlanId=p.Id
+	inner join MeteredDimensions d on m.DimensionId=d.Id
+
 /****** Object:  StoredProcedure [dbo].[spGetOfferParameters]    Script Date: 05-15-2020 12.56.43 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -783,35 +855,35 @@ GO
 
 IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Hourly')
 BEGIN
-    INSERT INTO [dbo].[SchedulerFrequency] (Id,Frequency) VALUES ( 1, 'Hourly')
+    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('Hourly')
     
 END
 GO
 
 IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Daily')
 BEGIN
-    INSERT INTO [dbo].[SchedulerFrequency] (Id,Frequency) VALUES ( 2, 'Daily')
+    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ( 'Daily')
     
 END
 GO
 
 IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Weekly')
 BEGIN
-    INSERT INTO [dbo].[SchedulerFrequency] (Id,Frequency) VALUES ( 3, 'Weekly')
+    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('Weekly')
     
 END
 GO
 
 IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Monthly')
 BEGIN
-    INSERT INTO [dbo].[SchedulerFrequency] (Id,Frequency) VALUES ( 4, 'Monthly')
+    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ( 'Monthly')
     
 END
 GO
 
 IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Yearly')
 BEGIN
-    INSERT INTO [dbo].[SchedulerFrequency] (Id,Frequency) VALUES ( 5, 'Yearly')
+    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('Yearly')
     
 END
 GO
