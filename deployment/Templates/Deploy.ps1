@@ -204,15 +204,7 @@ else {
 Write-host "☁  Preparing the publish files for CustomerPortal"
 dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
 Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Publish\CustomerPortal.zip -Force
-# If metered support added then add Azure fuction code
 
-Write-host "☁  Upload web application files to storage account"
-#Set-AzStorageBlobContent -File "..\..\Publish\PublisherPortal.zip" -Container $ContainerName -Blob "PublisherPortal.zip" -Context $ctx -Force
-#Set-AzStorageBlobContent -File "..\..\Publish\CustomerPortal.zip" -Container $ContainerName -Blob "CustomerPortal.zip" -Context $ctx -Force
-
-
-# The base URI where artifacts required by this template are located
-$PathToWebApplicationPackages = ((Get-AzStorageContainer -Container $ContainerName -Context $ctx).CloudBlobContainer.uri.AbsoluteUri)
 
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
 
@@ -247,15 +239,15 @@ New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -Te
 # Deploy Code and database schema
 Write-host "📜  Deploying the database schema"
 $ServerUri = $SQLServerName+".database.windows.net"
-Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile "../Database/AMP-DB.sql"
+Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile "..\Database\AMP-DB.sql"
 
 Write-host "📜  Deploying the Publisher Code to publisher portal"
 $WebAppName=$WebAppNamePrefix+"-admin"
-Publish-AzWebApp -ResourceGroupName $ResourceGroupForDeployment -Name $WebAppName  -ArchivePath "../../Publish/PublisherPortal.zip"
+Publish-AzWebApp -ResourceGroupName $ResourceGroupForDeployment -Name $WebAppName  -ArchivePath "..\..\Publish\PublisherPortal.zip" -Force
 
 Write-host "📜  Deploying the Customer Code to Customer portal"
 $WebAppName=$WebAppNamePrefix+"-portal"
-Publish-AzWebApp -ResourceGroupName $ResourceGroupForDeployment -Name $WebAppName -ArchivePath  "../../Publish/CustomerPortal.zip"
+Publish-AzWebApp -ResourceGroupName $ResourceGroupForDeployment -Name $WebAppName -ArchivePath  "..\..\Publish\CustomerPortal.zip" -Force
 
 Write-host "🧹  Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
