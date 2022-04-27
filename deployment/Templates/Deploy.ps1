@@ -188,7 +188,7 @@ if ($MeteredSchedulerSupport -ne "NO")
 
     mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
     Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
-    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob --self-contained true
+    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
 
     Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
 
