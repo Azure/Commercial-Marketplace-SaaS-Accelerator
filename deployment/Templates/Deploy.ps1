@@ -243,11 +243,11 @@ Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdm
 
 Write-host "📜  Deploying the Publisher Code to publisher portal"
 $WebAppName=$WebAppNamePrefix+"-admin"
-Publish-AzWebApp -ResourceGroupName $ResourceGroupForDeployment -Name $WebAppName  -ArchivePath "../../Publish/PublisherPortal.zip" -Force
+Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppName"  -ArchivePath "./Commercial-Marketplace-SaaS-Accelerator/Publish/PublisherPortal.zip" -Force
 
 Write-host "📜  Deploying the Customer Code to Customer portal"
 $WebAppName=$WebAppNamePrefix+"-portal"
-Publish-AzWebApp -ResourceGroupName $ResourceGroupForDeployment -Name $WebAppName -ArchivePath  "../../Publish/CustomerPortal.zip" -Force
+Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppName" -ArchivePath  "./Commercial-Marketplace-SaaS-Accelerator/Publish/CustomerPortal.zip" -Force
 
 Write-host "🧹  Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
