@@ -188,7 +188,7 @@ if ($MeteredSchedulerSupport -ne "NO")
 
     mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
     Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
-    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
+    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob --self-contained true
 
     Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
 
@@ -196,7 +196,7 @@ if ($MeteredSchedulerSupport -ne "NO")
 }
 else {
     Write-host "☁  Preparing the publish files for PublisherPortal"  
-    dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
+    dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal 
     Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
     $MeteredSchedulerSupport = "False"
 }
@@ -235,7 +235,6 @@ Write-host "📜  Deploying the ARM template to set up resources"
 
 New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -TemplateFile $PathToARMTemplate -TemplateParameterObject $ARMTemplateParams
 
-# Prepare to 
 
 # Deploy Code and database schema
 Write-host "📜  Deploying the database schema"
