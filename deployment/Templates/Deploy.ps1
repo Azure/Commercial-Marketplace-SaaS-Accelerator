@@ -240,7 +240,7 @@ New-AzResourceGroup -Name $ResourceGroupForDeployment -Location $location -Force
 Write-host "📜  Deploying the ARM template to set up resources"
 # Deploy resources using ARM template
 
-#New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -TemplateFile $PathToARMTemplate -TemplateParameterObject $ARMTemplateParams
+New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -TemplateFile $PathToARMTemplate -TemplateParameterObject $ARMTemplateParams
 
 # Prepare to 
 
