@@ -509,10 +509,6 @@ GO
 
 
 /****** Object: View [dbo].[SchedulerManagerView] Script Date: 4/26/2022 6:28:21 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
 CREATE VIEW [dbo].[SchedulerManagerView]
 	AS SELECT 
 	m.Id,
