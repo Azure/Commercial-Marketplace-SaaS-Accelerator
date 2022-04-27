@@ -527,7 +527,7 @@ CREATE VIEW [dbo].[SchedulerManagerView]
 	inner join Subscriptions s on m.SubscriptionId=s.Id
 	inner join Plans p on m.PlanId=p.Id
 	inner join MeteredDimensions d on m.DimensionId=d.Id
-
+GO
 /****** Object:  StoredProcedure [dbo].[spGetOfferParameters]    Script Date: 05-15-2020 12.56.43 PM ******/
 SET ANSI_NULLS ON
 GO
