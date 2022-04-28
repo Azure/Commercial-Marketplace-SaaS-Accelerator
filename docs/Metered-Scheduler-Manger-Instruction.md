@@ -41,10 +41,11 @@ Publisher can add new scheduled task from by clicking **Add New Scheduled Metere
 
 ![add-task-1](./images/scheduler-add1.png)
 
-The Add Task from will load
 ![add-task-2](./images/scheduler-add2.png)
-Publisher can schedule new task by click **Add New Trigger** or run the task **On Demand** by click ** **
 
+Publisher can  run the task righ away **On Demand** by click **Submit Usage Now**
+
+Publisher can schedule the task by click **Add Scheduler Usage Task** and the task will be added to the Sscheduled tasks.
 Once the task is added, the new task will show up in **Dashboard page**
 ![add-task-2](./images/scheduler-add3.png)
 
