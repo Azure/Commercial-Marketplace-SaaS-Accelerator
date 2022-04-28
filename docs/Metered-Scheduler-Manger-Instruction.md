@@ -1,12 +1,13 @@
 # SaaS Accelerator Metered Scheduler Manager 
-Metered Scheduler Manager is an option feature where Publisher can scheduled **FIX Quantity** metered emiting event. The Scheduler then will monitor this task and trigger event based on the scheduled frequency time. Currenty the scheduler support the following time base trigger
+Metered Scheduler Manager is a feature where Publisher can scheduled **FIX Quantity** metered emiting event. The Scheduler then will monitor this task and trigger event based on the scheduled frequency time. Currenty the scheduler support the following time base trigger
 1. Hourly
 1. Daily
 1. Weekly
 1. Monthly
 1. Yearly
-## Enable Metered Scheduler Manager Feature
-Publisher can enable this feature during the installion process by passing an option parameter **MeteredSchedulerSupportEnabled** with **YES** value as part of the installion script. Here is example for installtion script with **MeteredSchedulerSupportEnabled** 
+## Enabled and Disable Metered Scheduler Manager Feature
+By defualt this feature is enabled and deployed as part of the installion. Publisher can disable this feature during the installion process by passing an option parameter **MeteredSchedulerSupportEnabled** with **NO** value as part of the installion script. 
+
 ``` powershell
 wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
 chmod +x dotnet-install.sh; `
@@ -24,10 +25,10 @@ Connect-AzureAD -Confirm; `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US" `
  -PathToARMTemplate ".\deploy.json" `
- -MeteredSchedulerSupportEnabled "YES"
+ -MeteredSchedulerSupportEnabled "NO"
  ```
 
-One feature is enabled. Publisher can access **Scheduler Manager Dashboard** from **Home page** or side bar menu.
+ Publisher can access **Scheduler Manager Dashboard** from **Home page** or side bar menu.
 
 ![home](./images/scheduler-home.png)
 
@@ -42,6 +43,7 @@ Publisher can add new scheduled task from by clicking **Add New Scheduled Metere
 
 The Add Task from will load
 ![add-task-2](./images/scheduler-add2.png)
+Publisher can schedule new task by click **Add New Trigger** or run the task **On Demand** by click ** **
 
 Once the task is added, the new task will show up in **Dashboard page**
 ![add-task-2](./images/scheduler-add3.png)
