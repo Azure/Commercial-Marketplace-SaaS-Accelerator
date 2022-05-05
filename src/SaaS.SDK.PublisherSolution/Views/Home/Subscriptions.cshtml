@@ -19,7 +19,13 @@
                 <div class="card-body">
                     <div class="text-left">
                         <span class="cm-section-heading">Subscriptions</span>
-                        <button type="submit" onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}" class="cm-button-default text-right float-right">Fetch All Subscriptions</button>
+                        <button type="submit" onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}" class="cm-button text-right float-right">Fetch All Subscriptions</button>
+                    </div>
+                    <hr />
+                    <div class="filter-box">
+                        <span>Filter: </span>
+                        <input type="text" size="50" id="filterTextBox" placeholder="Enter any text to filter subscriptions" onkeyup="filterSubscriptions()">
+                        <input type="checkbox" class="statusCheckbox" id="SubscribedOnly" onchange="filterSubscriptions()"/> Active Subscriptions Only
                     </div>
                     <div>
                         @if (Model.Subscriptions.Count() > 0)
@@ -40,7 +46,7 @@
                                     @for (var i = 0; i < Model.Subscriptions.Count; i++)
                                     {
                                         var subscription = Model.Subscriptions[i];
-                                        <tr>
+                                        <tr id=@subscription.SubscriptionStatus>
                                             <td class="text-left">
                                                 @subscription.Purchaser.EmailId
                                             </td>
@@ -225,4 +231,22 @@
         });
     }
 
+    function filterSubscriptions() {
+
+        var filterValue = $("#filterTextBox").val().toLowerCase();
+        var isChecked = $(".statusCheckbox").is(':checked');
+
+        if(isChecked){
+            $("#table tbody tr").hide();
+            $("#table tbody tr#Subscribed").show();
+
+            $("#table tbody tr#Subscribed").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(filterValue) > -1);
+            });
+        } else{
+            $("#table tbody tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(filterValue) > -1);
+            });
+        }
+    }
 </script>
