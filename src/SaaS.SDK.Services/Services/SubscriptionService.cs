@@ -238,7 +238,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 {
                     PlanId = planDetail.PlanId,
                     DisplayName = planDetail.DisplayName,
-                    Description = planDetail.Description,
+                    Description = "",
                     OfferId = planDetail.OfferId,
                     PlanGuid = planDetail.PlanGUID,
                     MeteredDimensions = planDetail.GetmeteredDimensions(),
