@@ -5,6 +5,8 @@
 # Powershell script to deploy the resources - Customer portal, Publisher portal and the Azure SQL Database
 #
 
+$ErrorActionPreference = "Stop"
+
 Param(  
    [string][Parameter(Mandatory)]$WebAppNamePrefix, # Prefix used for creating web applications
    [string][Parameter()]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
@@ -23,6 +25,16 @@ Param(
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico  # URL for Publisher .ico logo
 )
+
+Write-Host "Checking SQL username..."
+if($SQLAdminLogin.ToLower() -eq "admin") {
+    Throw "🛑 SQLAdminLogin may not be 'admin'."
+}
+
+Write-Host "Checking SQL password..."
+if($SQLAdminLogin.Lengh -lt 8) {
+    Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
+}
 
 Write-Host "Starting SaaS Accelerator Deployment..."
 
