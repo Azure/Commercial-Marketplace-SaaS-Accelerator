@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.PublisherSolution"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.Provisioning.Services", "SaaS.SDK.Services\SaaS.SDK.Provisioning.Services.csproj", "{B5C169DF-D848-4762-AAB9-B022F1E79466}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaaS.SDK.CustomerProvisioning.Test", "SaaS.SDK.CustomerProvisioning.Test\SaaS.SDK.CustomerProvisioning.Test.csproj", "{88428D56-56D7-4A88-9570-88BA1C0E574B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SaaS.SDK.CustomerProvisioning.Test", "SaaS.SDK.CustomerProvisioning.Test\SaaS.SDK.CustomerProvisioning.Test.csproj", "{C34ECD77-FABD-4C0C-B445-3D0DBC923D55}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +41,10 @@ Global
 		{B5C169DF-D848-4762-AAB9-B022F1E79466}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5C169DF-D848-4762-AAB9-B022F1E79466}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5C169DF-D848-4762-AAB9-B022F1E79466}.Release|Any CPU.Build.0 = Release|Any CPU
-		{88428D56-56D7-4A88-9570-88BA1C0E574B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{88428D56-56D7-4A88-9570-88BA1C0E574B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{88428D56-56D7-4A88-9570-88BA1C0E574B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{88428D56-56D7-4A88-9570-88BA1C0E574B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C34ECD77-FABD-4C0C-B445-3D0DBC923D55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C34ECD77-FABD-4C0C-B445-3D0DBC923D55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C34ECD77-FABD-4C0C-B445-3D0DBC923D55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C34ECD77-FABD-4C0C-B445-3D0DBC923D55}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
