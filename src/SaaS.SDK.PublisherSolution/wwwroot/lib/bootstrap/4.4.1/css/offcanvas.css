@@ -201,6 +201,10 @@ body {
         border-color: #004e8c;
     }
 
+    #homepage-programs > li#onedash-menu-homepage4 {
+        border-color: #8B4513;
+    }
+
     #homepage-programs > li {
         display: flex;
         flex-flow: row;
@@ -245,6 +249,11 @@ body {
             margin-bottom: 10px;
         }
 
+        #homepage-programs > li .programCardIcon4.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
+            background-color: #8B4513;
+            margin-bottom: 10px;
+        }
+
         #homepage-programs > li .programCardIcon1 {
             height: 28px;
             width: 28px;
@@ -270,6 +279,18 @@ body {
         }
 
         #homepage-programs > li .programCardIcon3 {
+            height: 28px;
+            width: 28px;
+            border-radius: 30px;
+            margin-right: 8px;
+            display: flex;
+            flex-flow: column;
+            float: left;
+            flex-wrap: nowrap;
+            justify-content: center;
+        }
+
+        #homepage-programs > li .programCardIcon4 {
             height: 28px;
             width: 28px;
             border-radius: 30px;
