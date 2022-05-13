@@ -26,12 +26,12 @@ Param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Host "Checking SQL username..."
+# Checking SQL username
 if($SQLAdminLogin.ToLower() -eq "admin") {
     Throw "🛑 SQLAdminLogin may not be 'admin'."
 }
 
-Write-Host "Checking SQL password length..."
+# Checking SQL password length
 if($SQLAdminLogin.Lengh -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
 }
