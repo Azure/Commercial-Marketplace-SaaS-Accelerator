@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using Microsoft.AspNetCore.Authentication;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -36,8 +38,15 @@
             this.logger.LogInformation("KnownUsers Controller / Index");
             try
             {
-                var getAllKnownUsers = this.knownUsersRepository.GetAllKnownUsers();
-                return this.View(getAllKnownUsers);
+                if (this.User.Identity.IsAuthenticated)
+                {
+                    var getAllKnownUsers = this.knownUsersRepository.GetAllKnownUsers();
+                    return this.View(getAllKnownUsers);
+                }
+                else
+                {
+                    return this.Challenge(new AuthenticationProperties { RedirectUri = "/" }, OpenIdConnectDefaults.AuthenticationScheme);
+                }
             }
             catch (Exception ex)
             {
