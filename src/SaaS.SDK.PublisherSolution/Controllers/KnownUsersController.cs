@@ -2,8 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -39,9 +37,9 @@
         {
             this.logger.LogInformation("KnownUsers Controller / Index");
             try
-            {              
+            {
                 var getAllKnownUsers = this.knownUsersRepository.GetAllKnownUsers();
-                return this.View(getAllKnownUsers);              
+                return this.View(getAllKnownUsers);
             }
             catch (Exception ex)
             {
