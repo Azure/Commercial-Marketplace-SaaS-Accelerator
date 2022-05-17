@@ -24,22 +24,7 @@
   
     });
 
-    function RedirectThis()
-    {   
-        var sub =$("select#SelectedSubscription").val();
-        var dim =$("#SelectedDimension option:selected").text();
-        var qty =$("#Quantity").val();
-        
-        if (sub)
-        {
-            window.location.href="/Home/RecordUsageNow?subscriptionId="+sub+"&dimId="+dim+"&quantity="+qty;
-        }
-        else
-        {
-            alert("Please Select Subscription value first")
-        }
 
-    }
 </script>
 
 
@@ -96,10 +81,7 @@
                             </div>
                        </th>
                        <th>  
-                            <br/>
-                              <div class="input-group-append">
-                                <button name="RedirectBtn" type="button" onclick="RedirectThis()" class="btn btn-success">Submit Usage Now</button>
-                            </div>
+
                        </th>
                     </tr>
 
