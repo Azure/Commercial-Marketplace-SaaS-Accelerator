@@ -8,10 +8,12 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;   
 
     /// <summary>
     /// KnownUsers Controller.
     /// </summary>
+    [ServiceFilter(typeof(KnownUserAttribute))]
     public class KnownUsersController : BaseController
     {
         private readonly IKnownUsersRepository knownUsersRepository;
@@ -37,16 +39,9 @@
         {
             this.logger.LogInformation("KnownUsers Controller / Index");
             try
-            {
-                if (this.User.Identity.IsAuthenticated)
-                {
-                    var getAllKnownUsers = this.knownUsersRepository.GetAllKnownUsers();
-                    return this.View(getAllKnownUsers);
-                }
-                else
-                {
-                    return this.Challenge(new AuthenticationProperties { RedirectUri = "/" }, OpenIdConnectDefaults.AuthenticationScheme);
-                }
+            {              
+                var getAllKnownUsers = this.knownUsersRepository.GetAllKnownUsers();
+                return this.View(getAllKnownUsers);              
             }
             catch (Exception ex)
             {
