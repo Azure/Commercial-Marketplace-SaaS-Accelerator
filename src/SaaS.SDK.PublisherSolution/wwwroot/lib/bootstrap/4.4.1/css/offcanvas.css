@@ -246,7 +246,7 @@ body {
             background-color: #004e8c;
             margin-bottom: 10px;
         }
-        #homepage-programs > li .programCardIcon4.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
+        #homepage-programs > li .programCardIcon5.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
             background-color: #288c00;
             margin-bottom: 10px;
         }
@@ -286,7 +286,7 @@ body {
             justify-content: center;
         }
 
-        #homepage-programs > li .programCardIcon4 {
+        #homepage-programs > li .programCardIcon5 {
             height: 28px;
             width: 28px;
             border-radius: 30px;
