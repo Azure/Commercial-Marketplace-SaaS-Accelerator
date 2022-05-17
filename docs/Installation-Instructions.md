@@ -31,7 +31,8 @@ Connect-AzureAD -Confirm; `
  -ADApplicationSecret "xxxx-xxx-xxx-xxx-xxxx" `
  -ADMTApplicationID "xxxx-xxx-xxx-xxx-xxxx" `
  -LogoURLpng "https://company_com/company_logo.png" `
- -LogoURLico "https://company_com/company_logo.ico"
+ -LogoURLico "https://company_com/company_logo.ico" `
+ -MeteredSchedulerSupport YES|NO default value is YES
  ```
 
    2. Open Powershell in the Azure Cloud (PowerShell)
@@ -60,6 +61,6 @@ Connect-AzureAD -Confirm; `
 | PathToARMTemplate | Local Path to the ARM Template |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
-
+| MeteredSchedulerSupport | Metered Scheduler is deployed by Default. Pass NO to disable the feature |
 ## Alternative Deployments
 There are other ways to deploy the SaaS Accelerator environment (e.g. development, maual deployment, etc).  Additional instruction can be found [here](Advanced-Instructions.md).
