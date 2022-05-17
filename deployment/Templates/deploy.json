@@ -86,12 +86,21 @@
     }
   },
   "variables": {
+    "hostingEnvironment": "",
+    "serverFarmResourceGroup": "[resourceGroup().name]",
     "alwaysOn": true,
+    "sku": "Basic",
     "skuCode": "B1",
+    "workerSize": "0",
+    "workerSizeId": "0",
+    "numberOfWorkers": "1",
+    "linuxFxVersion": "DOTNETCORE|3.1",
+    "subscriptionId": "[subscription().subscriptionId]",
     "location": "[resourceGroup().location]",
     "appServicePlanName": "[concat(parameters('webAppNamePrefix'),'AmpSvcPlan')]",
     "ProvisioningServiceAppName": "[concat(parameters('webAppNamePrefix'),'-portal')]",
     "PublisherServiceAppName": "[concat(parameters('webAppNamePrefix'),'-admin')]",
+    "collation": "SQL_Latin1_General_CP1_CI_AS",
     "sqlDBName": "AMPSaaSDB"
   },
   "resources": [
@@ -139,8 +148,25 @@
         "maxSizeBytes": 268435456000,
         "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
         "zoneRedundant": false
-      }
-
+      },
+      "resources": [
+        {
+          "name": "Import",
+          "type": "extensions",
+          "apiVersion": "2014-04-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Sql/servers/databases', parameters('SQLServerName'), variables('sqlDBName'))]"
+          ],
+          "properties": {
+            "storageKeyType": "SharedAccessKey",
+            "storageKey": "[concat('?',parameters('SAASKeyForbacpac'))]",
+            "storageUri": "[parameters('bacpacUrl')]",
+            "administratorLogin": "[parameters('SQLAdminLogin')]",
+            "administratorLoginPassword": "[parameters('SQLAdminLoginPassword')]",
+            "operationMode": "Import"
+          }
+        }
+      ]
     },
 
     // App service plan and web apps
@@ -246,17 +272,17 @@
               "slotSetting": false
             },
             {
+              "name": "SaaSApiConfiguration__SupportmeteredBilling",
+              "value": "[parameters('MeteredSchedulerSupport')]",
+              "slotSetting": false
+            },
+            {
               "name": "KnownUsers",
               "value": "[parameters('PublisherAdminUsers')]",
               "slotSetting": false
             },
             {
               "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
-              "value": "1",
-              "slotSetting": false
-            },
-            {
-              "name": "WEBSITE_RUN_FROM_PACKAGE",
               "value": "1",
               "slotSetting": false
             }
@@ -270,8 +296,25 @@
           "alwaysOn": "[variables('alwaysOn')]"
 
         }
-      }
-
+      },
+      "resources": [
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "apiVersion": "2019-08-01",
+          "location": "[variables('location')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('ProvisioningServiceAppName'))]"
+          ],
+          "tags": {
+            "displayName": "Web Deploy for Customer Portal"
+          },
+          "properties": {
+            "packageUri": "[uri(concat(parameters('PathToWebApplicationPackages'),'/'), concat('CustomerPortal.zip'))]",
+            "dbType": "None"
+          }
+        }
+      ]
     },
     {
       "name": "[variables('PublisherServiceAppName')]",
@@ -357,11 +400,6 @@
               "slotSetting": false
             },
             {
-              "name": "SaaSApiConfiguration__SupportmeteredBilling",
-              "value": "[parameters('MeteredSchedulerSupport')]",
-              "slotSetting": false
-            },
-            {
               "name": "KnownUsers",
               "value": "[parameters('PublisherAdminUsers')]",
               "slotSetting": false
@@ -370,13 +408,7 @@
               "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
               "value": "1",
               "slotSetting": false
-            },
-            {
-              "name": "WEBSITE_RUN_FROM_PACKAGE",
-              "value": "1",
-              "slotSetting": false
             }
-
           ],
           "metadata": [
             {
@@ -386,8 +418,25 @@
           ],
           "alwaysOn": "[variables('alwaysOn')]"
         }
-      }
-
+      },
+      "resources": [
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "apiVersion": "2019-08-01",
+          "location": "[variables('location')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('PublisherServiceAppName'))]"
+          ],
+          "tags": {
+            "displayName": "Web Deploy for Publisher Portal"
+          },
+          "properties": {
+            "packageUri": "[uri(concat(parameters('PathToWebApplicationPackages'),'/'), concat('PublisherPortal.zip'))]",
+            "dbType": "None"
+          }
+        }
+      ]
     }
   ],
   "outputs": {

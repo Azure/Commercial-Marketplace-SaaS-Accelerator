@@ -186,16 +186,57 @@ if($LogoURLico) {
     Write-Host "📷  Logo images ICO downloaded."
 }
 
-Write-host "☁  Prepare publish files for the web application"
+# Setup Bacpac
+
+# If there is no backpack use the default from main
+if (!($BacpacUrl)) {
+    $BacpacUrl = "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/main/deployment/Database/AMPSaaSDB.bacpac"
+}
+
+$TempFolderToStoreBacpac = '.\AMPSaaSDatabase'
+$BacpacFileName = "AMPSaaSDB.bacpac"
+$LocalPathToBacpacFile = $TempFolderToStoreBacpac + "\" + $BacpacFileName  
+
+# Create a temporary folder
+New-Item -Path $TempFolderToStoreBacpac -ItemType Directory -Force
+
+# Download Bacpac
+Invoke-WebRequest -Uri $BacpacUrl -OutFile $LocalPathToBacpacFile
+
+$storagepostfix = Get-Random -Minimum 1 -Maximum 1000
+
+$StorageAccountName = "amptmpstorage" + $storagepostfix       #enter storage account name
+
+$ContainerName = "packagefiles" #container name for uploading SQL DB file 
+$BlobName = "blob"
+$resourceGroupForStorageAccount = "amptmpstorage"   #resource group name for the storage account.
+
+Write-host "🕒  Creating a temporary resource group and storage account - $resourceGroupForStorageAccount"
+New-AzResourceGroup -Name $resourceGroupForStorageAccount -Location $location -Force
+New-AzStorageAccount -ResourceGroupName $resourceGroupForStorageAccount -Name $StorageAccountName -Location $location -SkuName Standard_LRS -Kind StorageV2
+$StorageAccountKey = @((Get-AzStorageAccountKey -ResourceGroupName $resourceGroupForStorageAccount -Name $StorageAccountName).Value)
+$key = $StorageAccountKey[0]
+
+$ctx = New-AzstorageContext -StorageAccountName $StorageAccountName  -StorageAccountKey $key
+
+New-AzStorageContainer -Name $ContainerName -Context $ctx -Permission Blob 
+Set-AzStorageBlobContent -File $LocalPathToBacpacFile -Container $ContainerName -Blob $BlobName -Context $ctx -Force
+
+$URLToBacpacFromStorage = (Get-AzStorageBlob -blob $BlobName -Container $ContainerName -Context $ctx).ICloudBlob.uri.AbsoluteUri
+
+Write-host "📜  Uploaded the bacpac file to $URLToBacpacFromStorage"    
+
 
 if (!($MeteredSchedulerSupport))
 {
     $MeteredSchedulerSupport = "True"
 }
 
+Write-host "☁  Prepare publish files for the web application"
+
 if ($MeteredSchedulerSupport -ne "NO")
 { 
-    Write-host "☁  Preparing the publish files for PublisherPortal"  
+    Write-host "☁  Preparing the publish files for PublisherPortal webjob"  
     dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
 
     mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
@@ -213,11 +254,16 @@ else {
     $MeteredSchedulerSupport = "False"
 }
 
-
 Write-host "☁  Preparing the publish files for CustomerPortal"
 dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
 Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Publish\CustomerPortal.zip -Force
 
+Write-host "☁  Upload web application files to storage account"
+Set-AzStorageBlobContent -File "..\..\Publish\PublisherPortal.zip" -Container $ContainerName -Blob "PublisherPortal.zip" -Context $ctx -Force
+Set-AzStorageBlobContent -File "..\..\Publish\CustomerPortal.zip" -Container $ContainerName -Blob "CustomerPortal.zip" -Context $ctx -Force
+
+# The base URI where artifacts required by this template are located
+$PathToWebApplicationPackages = ((Get-AzStorageContainer -Container $ContainerName -Context $ctx).CloudBlobContainer.uri.AbsoluteUri)
 
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
 
@@ -244,25 +290,13 @@ New-AzResourceGroup -Name $ResourceGroupForDeployment -Location $location -Force
 
 Write-host "📜  Deploying the ARM template to set up resources"
 # Deploy resources using ARM template
-
 New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -TemplateFile $PathToARMTemplate -TemplateParameterObject $ARMTemplateParams
 
 
-# Deploy Code and database schema
-Write-host "📜  Deploying the database schema"
-$ServerUri = $SQLServerName+".database.windows.net"
-Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile "../Database/AMP-DB.sql"
-
-Write-host "📜  Deploying the Publisher Code to publisher portal"
-$WebAppName=$WebAppNamePrefix+"-admin"
-Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppName"  -ArchivePath "./Commercial-Marketplace-SaaS-Accelerator/Publish/PublisherPortal.zip" -Force
-
-Write-host "📜  Deploying the Customer Code to Customer portal"
-$WebAppName=$WebAppNamePrefix+"-portal"
-Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppName" -ArchivePath  "./Commercial-Marketplace-SaaS-Accelerator/Publish/CustomerPortal.zip" -Force
-
 Write-host "🧹  Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
+Remove-AzResourceGroup -Name $resourceGroupForStorageAccount -Force 
+Remove-Item –path $TempFolderToStoreBacpac –recurse -Force
 Remove-Item -path ["..\..\Publish"] -recurse -Force
 
 Write-host "🏁  If the intallation completed without error complete the folllowing checklist:"
