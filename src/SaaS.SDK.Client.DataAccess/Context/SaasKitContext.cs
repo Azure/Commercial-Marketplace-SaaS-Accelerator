@@ -144,6 +144,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__KnownUser__RoleI__619B8048");
+
+                entity.Property(i => i.Id)
+                .ValueGeneratedOnAdd();
             });
 
             modelBuilder.Entity<MeteredAuditLogs>(entity =>

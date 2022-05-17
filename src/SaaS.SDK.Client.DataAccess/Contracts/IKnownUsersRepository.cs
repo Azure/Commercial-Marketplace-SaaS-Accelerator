@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
@@ -10,6 +11,14 @@
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IBaseRepository{Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.KnownUsers}" />
     public interface IKnownUsersRepository : IDisposable, IBaseRepository<KnownUsers>
     {
+        /// <summary>
+        /// Gets all known users.
+        /// </summary>
+        /// <returns>
+        /// All known users.
+        /// </returns>
+        public IEnumerable<KnownUsers> GetAllKnownUsers();
+
         /// <summary>
         /// Gets the known user detail.
         /// </summary>
@@ -25,5 +34,11 @@
         /// </summary>
         /// <param name="knownUsers">The known users.</param>
         void AddKnowUsersFromAppConfig(string knownUsers);
+
+        /// <summary>
+        /// Saves all known users.
+        /// </summary>
+        /// <returns>The number of modified records.</returns>
+        public int SaveAllKnownUsers(IEnumerable<KnownUsers> knownUsers);
     }
 }

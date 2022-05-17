@@ -25,6 +25,18 @@ Param(
    [string][Parameter()]$MeteredSchedulerSupport # set to NO to disable Metered Support
 )
 
+$ErrorActionPreference = "Stop"
+
+# Checking SQL username
+if($SQLAdminLogin.ToLower() -eq "admin") {
+    Throw "🛑 SQLAdminLogin may not be 'admin'."
+}
+
+# Checking SQL password length
+if($SQLAdminLogin.Length -lt 8) {
+    Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
+}
+
 Write-Host "Starting SaaS Accelerator Deployment..."
 
 # Record the current ADApps to reduce deployment instructions at the end

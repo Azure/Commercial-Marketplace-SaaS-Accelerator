@@ -33,6 +33,17 @@
         }
 
         /// <summary>
+        /// Gets all known users.
+        /// </summary>
+        /// <returns>
+        /// All known users.
+        /// </returns>
+        public IEnumerable<KnownUsers> GetAllKnownUsers()
+        {
+            return this.context.KnownUsers;
+        }
+
+        /// <summary>
         /// Gets the known user detail.
         /// </summary>
         /// <param name="emailAddress">The email address.</param>
@@ -108,6 +119,20 @@
         public void Remove(KnownUsers entity)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Save all known users.
+        /// </summary>
+        /// <returns>The number of modified records.</returns>
+        public int SaveAllKnownUsers(IEnumerable<KnownUsers> knownUsers)
+        {
+            var usersToAdd = knownUsers?.ExceptBy(context.KnownUsers?.ToList().Select(u1 => u1.UserEmail), u2 => u2.UserEmail);
+            this.context.KnownUsers.AddRange(usersToAdd);
+            var usersToRemove = context.KnownUsers?.ToList().ExceptBy(knownUsers?.Select(u1 => u1.UserEmail), u2 => u2.UserEmail);
+            this.context.KnownUsers.RemoveRange(usersToRemove);
+
+            return this.context.SaveChanges();
         }
 
         /// <summary>
