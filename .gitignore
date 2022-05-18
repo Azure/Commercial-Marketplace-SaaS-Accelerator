@@ -364,3 +364,5 @@ src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/vcs.xml
 # ignoring developer settings file
 appsettings.Development.json
 src/SaaS.SDK.PublisherSolution/appsettings.Development.json
+src/SaaS.SDK.MeteredTriggerJob/appsettings.Development.json
+
