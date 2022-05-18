@@ -271,11 +271,7 @@
               "value": "[parameters('TenantID')]",
               "slotSetting": false
             },
-            {
-              "name": "SaaSApiConfiguration__SupportmeteredBilling",
-              "value": "[parameters('MeteredSchedulerSupport')]",
-              "slotSetting": false
-            },
+
             {
               "name": "KnownUsers",
               "value": "[parameters('PublisherAdminUsers')]",
@@ -397,6 +393,11 @@
             {
               "name": "SaaSApiConfiguration__TenantId",
               "value": "[parameters('TenantID')]",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__SupportmeteredBilling",
+              "value": "[parameters('MeteredSchedulerSupport')]",
               "slotSetting": false
             },
             {
