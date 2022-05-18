@@ -6,10 +6,12 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;   
 
     /// <summary>
     /// KnownUsers Controller.
     /// </summary>
+    [ServiceFilter(typeof(KnownUserAttribute))]
     public class KnownUsersController : BaseController
     {
         private readonly IKnownUsersRepository knownUsersRepository;

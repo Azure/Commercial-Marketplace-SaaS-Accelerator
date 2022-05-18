@@ -365,4 +365,5 @@ src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/vcs.xml
 appsettings.Development.json
 src/SaaS.SDK.PublisherSolution/appsettings.Development.json
 src/SaaS.SDK.MeteredTriggerJob/appsettings.Development.json
+src/SaaS.SDK.CustomerProvisioning/appsettings.Development.json
 
