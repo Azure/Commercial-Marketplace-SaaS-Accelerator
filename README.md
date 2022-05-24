@@ -2,17 +2,44 @@
 
 ![.NET Core](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/workflows/.NET%20Core/badge.svg)
 
+  - [Introduction](#introduction)
+  - [Intended Use](#intended-use)
+  - [Installation](#installation)
+  - [Commercial Marketplace Documentation](#commercial-marketplace-documentation)
+  - [Monitoring](#monitoring)
+  - [Terminology](#terminology)
+  - [SaaS Accelerator Overview](#saas-accelerator-overview)
+  - [Projects](#projects)
+  - [Production Environment Reference Architecture](#production-environment-reference-architecture)
+  - [Technology and Versions](#technology-and-versions)
+  - [Security](#security)
+  - [Prerequisites](#prerequisites)
+  - [Releases](#releases)
+  - [Contributing](#contributing)
+  - [Developers](#developers)
+  - [License](#license)
+
 ## Introduction
 
-The goal of this project is to provide a reference example with sample code for developers interested in publishing transactable, Software as a-Service (SaaS) offers in Microsoft's commercial marketplace.
+This project is a community-supported reference implementation for integrating Software-as-a-Service (SaaS) solutions with Microsoft commercial marketplace SaaS offers. The SaaS Accelerator may be installed as-is or may be customized to support your requirements. The project provides the following capabilities.
 
-The sample code uses a .NET-based SDK published as a part of this project. The SDK provides a framework for exercising the commercial marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) Leveraging the SDK, the sample code demonstrates how a typical SaaS platform interacts with the marketplace APIs in order to provision subscriptions for customers, enable logging, and manage commercial marketplace subscriptions.
+1.	A configurable landing page for SaaS customers
+2.	A webhook that listens for subscription changes
+3.	A private portal for the publisher to monitor customer subscriptions
+
+The project is implemented in .NET and uses the commercial marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis). The SaaS Accelerator models how a typical SaaS platform interacts with the marketplace APIs to provision subscriptions for customers, enable logging, and manage commercial marketplace subscriptions.
 
 ## Intended Use
 
-The sample code and SDK in this project are for reference purposes only and are meant to complement the existing commercial marketplace documentation by demonstrating common API interactions required for publishing and managing SaaS application offers. The intent of this project is to accelerate the onboarding experience by providing code samples for developers. Although the sample code leverages the SDK, developers are encouraged to work with the SaaS Fulfillment API and Marketplace Metering Service API directly rather than rely on the SDK for production use.
+This code is a reference implementation of required components of a commercial marketplace SaaS offer and complements the existing commercial marketplace documentation. 
 
-Please note: this is not a Microsoft-supported Azure SDK project. Support for this project is community-based and contributions are welcome. Details on contributing can be found [below.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator#contributing)
+This project accelerates the SaaS offer onboarding experience for those building SaaS solutions for the Microsoft commercial marketplace. Whether installed and used as-is or customized for your particular requirements, this reference implementation provides all main components required by a commercial marketplace SaaS offer.
+
+> NOTE: Support for this project is community-based and contributions are welcome. Details on contributing can be found [below.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator#contributing). This is not an officially supported Microsoft product.
+
+
+
+ 
 
 ## Installation
 
@@ -112,7 +139,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
-### Developers
+## Developers
 
 Code contributed should follow the C# specifications and best practices as documented [here](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions).
 
