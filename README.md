@@ -37,51 +37,44 @@ This project accelerates the SaaS offer onboarding experience for those building
 
 > NOTE: Support for this project is community-based and contributions are welcome. Details on contributing can be found [below.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator#contributing). This is not an officially supported Microsoft product.
 
-
-
- 
-
 ## Installation
 
-The documentation **(docs)** directory contains [installation instructions](./docs/Installation-Instructions.md) to help understand, implement, and deploy the sample code and SDK components.
+**[Installation instructions are here](./docs/Installation-Instructions.md)**, as well as documents detailing architecture and scaled installation considerations are also available. Following these instructions will typically have the SaaS Accelerator installed in 20 minutes or less.
 
-**Video instructions:** Additionally, there is a quick video on [how to install the SaaS Accelerator with the installer script](https://microsoft.github.io/Mastering-the-Marketplace/saas-accelerator/#installing-the-saas-accelerator-with-the-installer) available through the [Mastering the Marketplace Library](https://microsoft.github.io/Mastering-the-Marketplace).
+**Video instructions:** Additionally, there is a quick video on [how to install the SaaS Accelerator with the installer script](https://www.youtube.com/watch?v=BVZTj6fssQ8) available through [Mastering the Marketplace ](https://microsoft.github.io/Mastering-the-Marketplace).
 
-## Commercial Marketplace Documentation
+### Additional technical documents
 
-Before using this sample code and SDK, please review the commercial marketplace documentation resources below to understand the important concepts, account setup, and offer configuration requirements for publishing SaaS SaaS application offers.
+1. [Advanced installation](docs/Advanced-Instructions.md) - This document details more manual installation instructions and how to set up a local development environment.
+2. [Enterprise reference architectures](docs/Enterprise-Reference-Architecture.md)
+3. [Single region architectures](./docs/Enterprise-Reference-Architecture-Single-region.md)
+4. [Multi-region architectures](./docs/Enterprise-Reference-Architecture-multi-region-saas-rg.md)
+5. [Advanced installation checklist](./docs/Enterprise-Reference-Architecture-Checklist.md)
 
-- [Mastering the Marketplace - SaaS Offers.](https://github.com/microsoft/Mastering-the-Marketplace/blob/main/saas/README.md) Zero-to-Hero Training on Azure Marketplace SaaS Offers.
-
-- [Commercial marketplace documentation.](https://docs.microsoft.com/azure/marketplace/) Getting started and top articles
-
-- [SaaS applications in the commercial marketplace.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-new-saas-offer) Overview of the SaaS SaaS application business policies, plus step-by step offer creation and configuration requirements.
-
-- [SaaS fulfillment API (v2).](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) API details for SaaS SaaS application subscription creation and management.
-
-- [Marketplace metering service API.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) API details for the Marketplace Metering Service which, when used in conjunction with the SaaS Fulfillment API, enables event-based billing.
-
-- [SaaS fulfillment API FAQ.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq) Frequently-asked questions about the SaaS Fulfillment APIs.
-
-## Monitoring
+### Monitoring
 The following documents provide HOW-TOs setup Azure Monitoring and Alerting for the resources deployed by the SaaS Accelerator:
 - [Web App Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
 - [SQL Server Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
 - [App Registration Credentials Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
 
-## Terminology
+## Commercial Marketplace Documentation
 
-- SDK: Software development kit. This refers to the SDK for the .NET language and includes the Client and Data Access Libraries, as well as the Sample Web Applications used to exercises the SaaS Fulfillment API and Marketplace Metering Service API.
+Before using this project, please review the commercial marketplace documentation resources below to understand the important concepts, account setup, and offer configuration requirements for publishing SaaS SaaS application offers.
 
-- Client library. This refers to a library (and associated tools, documentation, and samples) that customers/developers use to ease creating commercial marketplace SaaS SaaS application offers.
-
-- Sample web application. This refers to source code that leverages the SDK and Client Libraries.
+- [Mastering the Marketplace - SaaS Offers.](https://aka.ms/MasteringTheMarketplace/saas-accelerator) Zero-to-Hero Training on Azure Marketplace SaaS offers using the Accelerator.
+- [Commercial marketplace documentation.](https://docs.microsoft.com/azure/marketplace/) Getting started and top articles
+- [SaaS applications in the commercial marketplace.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-new-saas-offer) Overview of the SaaS SaaS application business policies, plus step-by step offer creation and configuration requirements.
+- [SaaS fulfillment API (v2).](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) API details for SaaS SaaS application subscription creation and management.
+- [Marketplace metering service API.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) API details for the Marketplace Metering Service which, when used in conjunction with the SaaS Fulfillment API, enables event-based billing.
+- [SaaS fulfillment API FAQ.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq) Frequently-asked questions about the SaaS Fulfillment APIs.
 
 ## SaaS Accelerator Overview
+
 ![Saas Diagram](./docs/images/saasoverview.png)
+
 ## Projects
 
-The source **(src)** directory offers the following components:
+The source `/src` directory contains the following Visual Studio projects.
 
 | Project | Description | Directory Name |
 | --- | --- | --- |
@@ -91,17 +84,13 @@ The source **(src)** directory offers the following components:
 | [**Services client library**](./src/SaaS.SDK.Services) | Contains the services used by the Customer and Publisher portals, including the POCO classes to orchestrate calls to the marketplace APIs on [client library](https://github.com/microsoft/commercial-marketplace-client-dotnet) / database.|SaaS.SDK.Services |
 | [**Unit tests project**](./src/SaaS.SDK.UnitTest) | Helps validate and test the SDKs codebase. | SaaS.SDK.UnitTest |
 
-The sample code and SDK in this repository run in the Publisher's environment as illustrated below. The metering SDK ( .NET class library ) and a sample web application to report usage events for subscriptions against those plans that support metering ( have the dimensions defined and enabled ) and correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
+The sample code in this repository runs in the publisher's environment as illustrated below. The metering SDK (.NET class library) and a sample web application to report usage events for subscriptions against those plans that support metering (have the dimensions defined and enabled) and correlate to SaaS Metering and SaaS Service blocks in the below image, respectively.
 
 ![Use case](./docs/images/sdk_overview.png)
 
-
-## Production Environment Reference Architecture
-How-To deploy SaaS Accelerator into a production environment? This [document](./docs/Enterprise-Reference-Architecture.md) provides recommendations on how to deploy the SaaS Accelerator into a production environment. 
-
 ## Technology and Versions
 
-This SDK has been developed using the following technologies and versions:
+This project has been developed using the following technologies and versions:
 
 - [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 - [ASP.NET Core Runtime 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
@@ -109,7 +98,7 @@ This SDK has been developed using the following technologies and versions:
 
 ## Security
 
-- The sample code and SDK have been scanned for vulnerabilities and use secure configurations. Versions have been reviewed to ensure compatibility with the latest security guidelines.
+The sample code and SDK have been scanned for vulnerabilities and use secure configurations. Versions have been reviewed to ensure compatibility with the latest security guidelines.
 
 ## Prerequisites
 
@@ -120,10 +109,6 @@ Ensure the following prerequisites are met before getting started:
 - We recommend using an Integrated Development Environment (IDE):  [Visual Studio Code](https://code.visualstudio.com/),  [Visual Studio 2019 / 2022](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16#), etc...
 - The SDK has been implemented using [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 - For data persistence we are using [Azure SQL Database](https://azure.microsoft.com/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/ef/). However, feel free to use any data repository you are comfortable with.  
-
-## Releases
-
-- **February 2020 - v1.0** Current Release. It includes the full implementation of the Fulfillment V2 and metering service APIs with web applications that demonstrate customer and publisher portals.
 
 ## Contributing
 
