@@ -317,7 +317,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <returns>a list of subscription with metered plan</returns>
         public List<Subscriptions> GetActiveSubscriptionsWithMeteredPlan()
         {
-            var allActiveSubscription = this.subscriptionRepository.Get().ToList().Where(s => s.SubscriptionStatus == "Subscribed" && s.IsActive == true).ToList();
+            var allActiveSubscription = this.subscriptionRepository.Get().ToList().Where(s => s.SubscriptionStatus == "Subscribed").ToList();
             var allPlansData = this.planRepository.Get().ToList().Where(p => p.IsmeteringSupported == true).ToList();
             var meteredSubscriptions = from subscription in allActiveSubscription
                                        join plan in allPlansData
