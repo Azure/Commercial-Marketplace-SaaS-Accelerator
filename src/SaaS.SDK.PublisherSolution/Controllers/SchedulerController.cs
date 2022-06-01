@@ -34,7 +34,7 @@
         /// <summary>
         /// the shceduler service
         /// </summary>
-        private MeteredPlanSchedulerManagementService scheudelerService;
+        private MeteredPlanSchedulerManagementService schedulerService;
 
         /// <summary>
         /// the subscription service
@@ -63,7 +63,7 @@
             this.usersRepository= usersRepository;
             this.logger = logger;
             this.meteredRepository = meteredRepository;
-            this.scheudelerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository);
+            this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository);
             this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
 
         }
@@ -81,7 +81,7 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
 
-                getAllSchedulerManagerViewData = this.scheudelerService.GetAllSchedulerManagerList();
+                getAllSchedulerManagerViewData = this.schedulerService.GetAllSchedulerManagerList();
                 return this.View(getAllSchedulerManagerViewData);
             }
             catch (Exception ex)
@@ -101,7 +101,7 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 var allActiveMeteredSubscriptions = this.subscriptionService.GetActiveSubscriptionsWithMeteredPlan();
-                List<SchedulerFrequencyModel> getAllFrequency = this.scheudelerService.GetAllFrequency();
+                List<SchedulerFrequencyModel> getAllFrequency = this.schedulerService.GetAllFrequency();
 
                 // Create Frequency Dropdown list
                 List<SelectListItem> SchedulerFrequencyList = new List<SelectListItem>();
@@ -201,14 +201,14 @@
                 MeteredPlanSchedulerManagementModel schedulerManagement = new MeteredPlanSchedulerManagementModel()
                 {
                     FrequencyId = Convert.ToInt32(schedulerUsageViewModel.SelectedSchedulerFrequency),
-                    SchedulerName = Convert.ToString(schedulerUsageViewModel.schedulerName),
+                    SchedulerName = Convert.ToString(schedulerUsageViewModel.SchedulerName),
                     SubscriptionId = Convert.ToInt32(schedulerUsageViewModel.SelectedSubscription),
                     PlanId = Convert.ToInt32(selectedDimension.PlanId),
                     DimensionId = Convert.ToInt32(schedulerUsageViewModel.SelectedDimension),
                     Quantity = Convert.ToDouble(schedulerUsageViewModel.Quantity),
                     StartDate = schedulerUsageViewModel.FirstRunDate
                 };
-                this.scheudelerService.SaveSchedulerDetail(schedulerManagement);
+                this.schedulerService.SaveSchedulerDetail(schedulerManagement);
                 return this.RedirectToAction(nameof(this.Index));
 
             }                        
@@ -231,7 +231,7 @@
             this.logger.LogInformation("Scheduler Controller / Remove Schedule Item Details:  Id {0}", JsonSerializer.Serialize(id));
             try
             {
-                this.scheudelerService.DeleteSchedulerDetailById(int.Parse(id));
+                this.schedulerService.DeleteSchedulerDetailById(int.Parse(id));
                 return this.RedirectToAction(nameof(this.Index));
             }
             catch (Exception ex)
@@ -246,8 +246,8 @@
             this.logger.LogInformation("Scheduler Controller / Get Schedule Item Details:  Id {0}", JsonSerializer.Serialize(id));
             try
             {
-                var SchedulerItem = this.scheudelerService.GetSchedulerManagerById(int.Parse(id));
-                var detail=this.scheudelerService.GetSchedulerItemRunHistory(int.Parse(id));
+                var SchedulerItem = this.schedulerService.GetSchedulerManagerById(int.Parse(id));
+                var detail=this.schedulerService.GetSchedulerItemRunHistory(int.Parse(id));
                 SchedulerUsageViewModel schedulerUsageViewModel = new SchedulerUsageViewModel();
                 schedulerUsageViewModel.SelectedSubscription = SchedulerItem.AMPSubscriptionId.ToString();
                 schedulerUsageViewModel.SelectedDimension = SchedulerItem.Dimension;

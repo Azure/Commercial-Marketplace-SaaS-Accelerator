@@ -12,9 +12,9 @@
     public class SchedulerUsageViewModel
     {
         /// <summary>
-        /// scheculer task anem
+        /// Scheduler Task Name
         /// </summary>
-        public string schedulerName { get; set; }
+        public string SchedulerName { get; set; }
 
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace MeteredTriggerHelper
     public class Executor
     {
 
-        private MeteredPlanSchedulerManagementService scheudelerService;
+        private MeteredPlanSchedulerManagementService schedulerService;
         private ISchedulerFrequencyRepository frequencyRepository;
         private IMeteredPlanSchedulerManagementRepository schedulerRepository;
         private ISchedulerManagerViewRepository schedulerViewRepository;
@@ -28,18 +28,18 @@ namespace MeteredTriggerHelper
             this.schedulerRepository = schedulerRepository;
             this.schedulerViewRepository = schedulerViewRepository;
             this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
-            this.scheudelerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, this.schedulerRepository, this.schedulerViewRepository, this.subscriptionUsageLogsRepository);
+            this.schedulerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, this.schedulerRepository, this.schedulerViewRepository, this.subscriptionUsageLogsRepository);
             this.billingApiService = billingApiService;
             
         }
 
         public void Execute()
         {
-            scheudelerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository, subscriptionUsageLogsRepository);
+            schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository, subscriptionUsageLogsRepository);
             
 
             //Get all Scheduled Data
-            List<SchedulerManagerViewModel> getAllSchedulerManagerViewData = scheudelerService.GetAllSchedulerManagerList();
+            List<SchedulerManagerViewModel> getAllSchedulerManagerViewData = schedulerService.GetAllSchedulerManagerList();
 
             //Process each scheduler frequency
             foreach (SchedulerFrequencyEnum frequency in Enum.GetValues(typeof(SchedulerFrequencyEnum)))
@@ -62,7 +62,7 @@ namespace MeteredTriggerHelper
                     //Trigger the Item Now
                     if ((_nextRunTime.HasValue) && (DateTime.Now >= _nextRunTime.Value))
                     {
-                        TriggerSchedulerItem(scheduledItem, frequency, billingApiService, scheudelerService, subscriptionUsageLogsRepository);
+                        TriggerSchedulerItem(scheduledItem, frequency, billingApiService, schedulerService, subscriptionUsageLogsRepository);
                     }
                     else
                     {
@@ -74,7 +74,7 @@ namespace MeteredTriggerHelper
         }
 
         public static void TriggerSchedulerItem(SchedulerManagerViewModel item, SchedulerFrequencyEnum frequency, IMeteredBillingApiService billingApiService,
-                                                MeteredPlanSchedulerManagementService scheudelerService,
+                                                MeteredPlanSchedulerManagementService schedulerService,
                                                 ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
         {
             try
@@ -99,15 +99,15 @@ namespace MeteredTriggerHelper
                     responseJson = JsonSerializer.Serialize(meteringUsageResult);
                     Console.WriteLine($"Got the following result{responseJson}");
                 }
-                catch (MarketplaceException mex)
+                catch (MarketplaceException marketplaceException)
                 {
-                    responseJson = JsonSerializer.Serialize(mex.Message);
-                    meteringUsageResult.Status = mex.ErrorCode;
+                    responseJson = JsonSerializer.Serialize(marketplaceException.Message);
+                    meteringUsageResult.Status = marketplaceException.ErrorCode;
                     Console.WriteLine($"Error during executing EmitUsageEventAsync got the following error {responseJson}");
                 }
 
                 item.NextRunTime = GetNextRunTime(DateTime.Now, frequency);
-                UpdateSchedulerItem(item, requestJson, responseJson, meteringUsageResult.Status,scheudelerService,subscriptionUsageLogsRepository);
+                UpdateSchedulerItem(item, requestJson, responseJson, meteringUsageResult.Status,schedulerService,subscriptionUsageLogsRepository);
             }
             catch (Exception ex)
             {
@@ -116,13 +116,13 @@ namespace MeteredTriggerHelper
 
         }
         public static void UpdateSchedulerItem(SchedulerManagerViewModel item, string requestJson, string responseJson, string status, 
-                                                MeteredPlanSchedulerManagementService scheudelerService,
+                                                MeteredPlanSchedulerManagementService schedulerService,
                                                 ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
         {
             try
             {
                 Console.WriteLine($"Save Audit information for metered: {item.Dimension}");
-                var scheduler = scheudelerService.GetSchedulerDetailById(item.Id);
+                var scheduler = schedulerService.GetSchedulerDetailById(item.Id);
                 var newMeteredAuditLog = new MeteredAuditLogs()
                 {
                     RequestJson = requestJson,
@@ -139,7 +139,7 @@ namespace MeteredTriggerHelper
                 {
                     Console.WriteLine($"Save Scheduler Item Id: {item.Id}");
                     scheduler.NextRunTime = item.NextRunTime;
-                    scheudelerService.SaveSchedulerDetail(scheduler);
+                    schedulerService.SaveSchedulerDetail(scheduler);
                 }
             }
             catch (Exception ex)

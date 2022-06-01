@@ -51,7 +51,6 @@
         /// <returns> Metered Dimensions.</returns>
         public MeteredDimensions Get(int id)
         {
-            
             return this.context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Id == id).FirstOrDefault();
         }
 

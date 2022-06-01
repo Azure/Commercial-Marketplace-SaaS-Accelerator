@@ -26,7 +26,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// <summary>
         /// Initializes a new instance of the <see cref="MeteredPlanSchedulerManagementRepository"/> class.
         /// </summary>
-        /// <param name="context">The this.context.</param>
+        /// <param name="context">SaaS DAL Context</param>
         public MeteredPlanSchedulerManagementRepository(SaasKitContext context)
         {
             this.context = context;

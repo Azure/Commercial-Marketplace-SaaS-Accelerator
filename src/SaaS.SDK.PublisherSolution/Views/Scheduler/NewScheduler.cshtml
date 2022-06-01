@@ -42,19 +42,19 @@
                 <table>
                     <tr>
                         <th>Scheduler Name&nbsp;&nbsp;</th>
-                        <th>@Html.TextBoxFor(s => s.schedulerName, "Enter Name",  new { @class = "form-control", required = "required" })</th>
+                        <th>@Html.TextBoxFor(s => s.SchedulerName, "",  new { @class = "form-control", required = "required" , pattern = @"^[a-zA-Z0-9-_]+$" })</th>
                     </tr>
                     <tr>
                         <th>Subscription</th>
                         <th>@Html.DropDownListFor(s => s.SelectedSubscription, Model.SubscriptionList, "-- Select Subscription --", new { @class = "form-control", required = "required"})</th>
                     </tr>
                     <tr>
-                        <th>Dimenstion</th>
+                        <th>Dimension</th>
                         <th>@Html.DropDownListFor(s => s.SelectedDimension, Model.DimensionsList, "-- Select Dimension --", new { @class = "form-control", required = "required" })</th>
                     </tr>
                     <tr>
                         <th>Quantity</th>
-                        <th><input asp-for="Quantity" type="number" class="form-control"  step='0.01' value="" required="true"></th>
+                        <th><input asp-for="Quantity" type="number" class="form-control"  step="0.01" min="0.01" value="" required="true"></th>
                     </tr>
 
                     <tr>

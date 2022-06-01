@@ -1,12 +1,12 @@
 # SaaS Accelerator Metered Scheduler Manager 
-Metered Scheduler Manager is a feature where Publisher can scheduled **FIX Quantity** metered emiting event. The Scheduler then will monitor this task and trigger event based on the scheduled frequency time. Currenty the scheduler support the following time base trigger
+Metered Scheduler Manager is a feature where Publisher can schedule **FIX Quantity** metered emiting tasks. The scheduler will monitor these tasks and trigger event based on the scheduled frequency time. Currenty the scheduler support the following time base trigger
 1. Hourly
 1. Daily
 1. Weekly
 1. Monthly
 1. Yearly
-## Enabled and Disable Metered Scheduler Manager Feature
-By defualt this feature is enabled and deployed as part of the installion. Publisher can disable this feature during the installion process by passing an option parameter **MeteredSchedulerSupportEnabled** with **NO** value as part of the installion script. 
+## Enable and Disable Metered Scheduler Manager Feature
+By defualt this feature is enabled and deployed as part of the installion. Publisher can disable this feature during the installion process by passing an optional parameter **MeteredSchedulerSupportEnabled** with **NO** value as part of the installion script. 
 
 ``` powershell
 wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
@@ -43,7 +43,6 @@ Publisher can add new scheduled task from by clicking **Add New Scheduled Metere
 
 ![add-task-2](./images/scheduler-add2.png)
 
-Publisher can  run the task righ away **On Demand** by click **Submit Usage Now**
 
 Publisher can schedule the task by click **Add Scheduler Usage Task** and the task will be added to the Sscheduled tasks.
 Once the task is added, the new task will show up in **Dashboard page**
@@ -58,7 +57,7 @@ There is the example for task audit
 ![audit-task-2](./images/scheduler-audit2.png)
 
 ## Delete Metered Scheduler Manager Task
-Publisher can deleted scheduled task by click **Delete**
+Publisher can delete scheduled task by click **Delete**
 ![delete-task-1](./images/scheduler-delete.png)
 
 ## Restriction
