@@ -497,7 +497,7 @@ ALTER TABLE [dbo].[Subscriptions]  WITH CHECK ADD FOREIGN KEY([UserId])
 REFERENCES [dbo].[Users] ([UserId])
 GO
 
-ALTER TABLE [dbo].[MeteredPlanSchedulerManagement]  WITH CHECK ADD FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[MeteredDimensions] ([Id]);
+ALTER TABLE [dbo].[MeteredPlanSchedulerManagement]  WITH CHECK ADD FOREIGN KEY ([DimensionId]) REFERENCES [dbo].[MeteredDimensions] ([Id]);
 GO
 ALTER TABLE [dbo].[MeteredPlanSchedulerManagement]  WITH CHECK ADD FOREIGN KEY ([PlanId]) REFERENCES [dbo].[Plans] ([Id]);
 GO

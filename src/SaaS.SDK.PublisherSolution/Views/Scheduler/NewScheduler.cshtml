@@ -54,7 +54,7 @@
                     </tr>
                     <tr>
                         <th>Quantity</th>
-                        <th>@Html.TextBoxFor(s => s.Quantity, "Enter Quantity",  new { @class = "form-control", required = "required" })</th>
+                        <th><input asp-for="Quantity" type="number" class="form-control"  step='0.01' value="" required="true"></th>
                     </tr>
 
                     <tr>
@@ -64,7 +64,7 @@
                     <tr>
                         <th>First Run Date &nbsp;&nbsp; </th>
                         <th>  
-                            <input asp-for="FirstRunDate" type="datetime-local" class="form-control" value="<%=DateTime.Now.ToString('MM-dd-yyyyThh:mm:ss')%>">
+                            <input asp-for="FirstRunDate" type="datetime-local" class="form-control" value="<%=DateTime.Now.ToString('MM-dd-yyyyThh:mm:ss')%>" required="true">
 
 
                         </th>
