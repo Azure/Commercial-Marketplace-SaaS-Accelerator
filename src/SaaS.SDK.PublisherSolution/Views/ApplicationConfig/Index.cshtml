@@ -60,59 +60,6 @@
                     </table>
                 </div>
                 <hr />
-                <h2>Email Template</h2>
-                  <div id="emailTemplateModal">
-                <div class="table-responsive mt20">
-                    @* 
-                        Update this part
-                        -Matthew
-                    *@
-                    @*table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0" id="applicationConfig">
-                        <thead class="cm-table-head">
-                            <tr>
-                                <th>Config Name</th>
-                                <th>Config Value</th>
-                                <th>Config Description</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @{ var j = 0;}
-                            @foreach (var item in Model)
-                            {
-                                @if (@item.Name.Equals("LogoFile") || @item.Name.Equals("FaviconFile")) continue;
-                                <tr>
-                                    <td class="text-left">
-                                        @item.Name
-                                    </td>
-                                    <td class="text-left">
-                                        @if (@item.Name.Equals("SMTPPassword") && @item.Value.Length > 5)
-                                        {
-                                            @String.Format("{0}{1}", @item.Value.Substring(0,5), "****************");
-                                        }
-                                        else
-                                        {
-                                            @item.Value
-                                        }
-                                    </td>
-                                    <td class="text-left">
-                                        @item.Description
-                                    </td>
-                                    <td class="text-left cm-ellipsis">
-                                        <div class="nav-item dropdown">
-                                            <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
-                                            <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                <a class="dropdown-item cm-dropdown-option" data-target="emailTemplateModal" onclick="ViewAppConfigdetailsById('@item.Id')">Edit</a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                j++;
-                            }
-                        </tbody>
-                    </table>*@
-                </div>
-                <hr />
                 <h2>Upload Logo</h2>
                 <p style="font-size:10px;">*restart the application after uploading file(s) and refresh (ctrl F5) to see the new logo/favicon</p>
                 <div class="row">
