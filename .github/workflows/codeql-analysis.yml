@@ -13,10 +13,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ msalem/add_scheduler_function ]
+    branches: [ main ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ msalem/add_scheduler_function ]
+    branches: [ main ]
   schedule:
     - cron: '33 10 * * 2'
 
@@ -51,10 +51,7 @@ jobs:
         
         # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
         # queries: security-extended,security-and-quality
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '6.x'
+
         
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
