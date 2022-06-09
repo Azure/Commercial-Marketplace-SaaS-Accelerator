@@ -3,7 +3,7 @@
     <Authors>Microsoft.Marketplace</Authors>
   	<Company>Microsoft</Company>
     <Product>SaaS.SDK</Product>	  
-    <TargetFramework>net6.0.300</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
