@@ -13,10 +13,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ main ]
+    branches: [ msalem/add_scheduler_function ]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ main ]
+    branches: [ msalem/add_scheduler_function ]
   schedule:
     - cron: '33 10 * * 2'
 
