@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.PublisherSolution"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.Provisioning.Services", "SaaS.SDK.Services\SaaS.SDK.Provisioning.Services.csproj", "{B5C169DF-D848-4762-AAB9-B022F1E79466}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.MeteredSchedulerProcessor", "SaaS.SDK.MeteredSchedulerProcessor\SaaS.SDK.MeteredSchedulerProcessor.csproj", "{3446975C-9D73-4ADE-87C3-768071AEE577}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.MeteredTriggerJob", "SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj", "{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}"
 EndProject
 Global

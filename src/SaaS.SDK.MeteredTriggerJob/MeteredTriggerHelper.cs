@@ -1,4 +1,8 @@
-﻿using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System.Text.Json;
 using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
