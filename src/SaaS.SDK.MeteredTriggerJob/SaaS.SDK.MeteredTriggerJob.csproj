@@ -4,7 +4,7 @@
   	<Company>Microsoft</Company>
     <Product>SaaS.SDK</Product>	  
     <TargetFramework>net6.0</TargetFramework>
-    
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj" />
