@@ -26,13 +26,12 @@
               var d = new Date();
               var month = d.getMonth()+1;
               var day = d.getDate();
-              var output = d.getFullYear()+ '/' +
-                          ((''+month).length<2 ? '0' : '') + month + '/' +
+              var output = d.getFullYear()+ '-' +
+                          ((''+month).length<2 ? '0' : '') + month + '-' +
                            ((''+day).length<2 ? '0' : '') + day +'T'+
                            ((''+d.getHours()).length<2 ? '0' : '')+d.getHours()+':'+
                            ((''+d.getMinutes()).length<2 ? '0' : '')+d.getMinutes();
 
-              alert(output)
               var date=document.getElementById("FirstRunDate")
               date.min=output
               $('#FirstRunDate').attr('min', output);
@@ -46,9 +45,10 @@
     function validateDate()
     {
          var date=document.getElementById("FirstRunDate")
+         
          if (date.min > date.value)
          {
-             alert('First run date must be greater than '+date.min)
+             alert('First Run Date must be greater than '+date.min)
              return false;
          }
          return true;
