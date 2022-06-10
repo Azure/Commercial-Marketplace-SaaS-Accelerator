@@ -254,7 +254,7 @@
                 schedulerUsageViewModel.SelectedSchedulerFrequency = SchedulerItem.Frequency;
                 schedulerUsageViewModel.Quantity = (decimal)SchedulerItem.Quantity;
                 schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate;
-                schedulerUsageViewModel.NextRunDate = Convert.ToDateTime(SchedulerItem.NextRunTime);
+                schedulerUsageViewModel.NextRunDate =SchedulerItem.NextRunTime ;
                 schedulerUsageViewModel.MeteredAuditLogs = detail;
 
                 return this.View(schedulerUsageViewModel);

@@ -21,8 +21,38 @@
               
             });
         });
-  
-    });
+
+        $(document).ready(function() {
+              var d = new Date();
+              var month = d.getMonth()+1;
+              var day = d.getDate();
+              var output = d.getFullYear()+ '/' +
+                          ((''+month).length<2 ? '0' : '') + month + '/' +
+                           ((''+day).length<2 ? '0' : '') + day +'T'+
+                           ((''+d.getHours()).length<2 ? '0' : '')+d.getHours()+':'+
+                           ((''+d.getMinutes()).length<2 ? '0' : '')+d.getMinutes();
+
+              alert(output)
+              var date=document.getElementById("FirstRunDate")
+              date.min=output
+              $('#FirstRunDate').attr('min', output);
+              $('#FirstRunDate').val(output);
+              $('#FirstRunDate').attr('value',output);
+
+          });
+    }
+    );
+
+    function validateDate()
+    {
+         var date=document.getElementById("FirstRunDate")
+         if (date.min > date.value)
+         {
+             alert('First run date must be greater than '+date.min)
+             return false;
+         }
+         return true;
+    }
 
 
 </script>
@@ -37,7 +67,7 @@
         </div>
 
 
-        <form method="post" id="frmSchedulerEvents" asp-action="AddNewScheduledTrigger" asp-controller="Scheduler">
+        <form method="post" id="frmSchedulerEvents" asp-action="AddNewScheduledTrigger" asp-controller="Scheduler"  onsubmit="return validateDate()">
             <div style="align-content:center">
                 <table>
                     <tr>
@@ -64,7 +94,7 @@
                     <tr>
                         <th>First Run Date &nbsp;&nbsp; </th>
                         <th>  
-                            <input asp-for="FirstRunDate" type="datetime-local" class="form-control" value="<%=DateTime.Now.ToString('MM-dd-yyyyThh:mm:ss')%>" required="true">
+                            <input asp-for="FirstRunDate" id="FirstRunDate" type="datetime-local" class="form-control"  required="true">
 
 
                         </th>

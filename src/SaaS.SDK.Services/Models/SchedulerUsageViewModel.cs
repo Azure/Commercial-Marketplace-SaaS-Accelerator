@@ -71,7 +71,7 @@
         /// <summary>
         /// Get or set Next Run Time
         /// </summary>
-        public DateTime NextRunDate { get; set; }
+        public DateTime? NextRunDate { get; set; }
 
         /// <summary>
         /// Gets or sets the metered audit logs.
