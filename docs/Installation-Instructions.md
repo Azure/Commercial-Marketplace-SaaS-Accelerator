@@ -1,15 +1,11 @@
-## Installating the Azure Marketplace SaaS Accelerator using Azure Cloud Shell
+## Install the Azure Marketplace SaaS Accelerator using Azure Cloud Shell
 
 You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal ([video tutorial](https://youtu.be/BVZTj6fssQ8)).
   
    1. Copy the following section to an editor and update it to match your company preference. Replace `SOME-UNIQUE-STRING` with your Team name or some other random string.
 
 ``` powershell
-wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
-chmod +x dotnet-install.sh; `
-./dotnet-install.sh; `
-$ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 5.0.0 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 5.1.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
 .\Deploy.ps1 `
