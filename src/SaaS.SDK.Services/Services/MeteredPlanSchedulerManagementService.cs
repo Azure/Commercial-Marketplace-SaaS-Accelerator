@@ -73,7 +73,10 @@
                 schedulerView.Frequency = item.Frequency;
                 schedulerView.Quantity = item.Quantity;
                 schedulerView.StartDate = item.StartDate;
-                schedulerView.NextRunTime = item.NextRunTime;
+                if (item.NextRunTime.HasValue)
+                {
+                    schedulerView.NextRunTime = item.NextRunTime.Value.ToLocalTime();
+                }
                 schedulerList.Add(schedulerView);
             }
             return schedulerList;
