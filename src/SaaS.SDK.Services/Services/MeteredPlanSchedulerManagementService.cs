@@ -73,12 +73,16 @@
                 schedulerView.Frequency = item.Frequency;
                 schedulerView.Quantity = item.Quantity;
                 schedulerView.StartDate = item.StartDate;
-                if (item.NextRunTime.HasValue)
-                {
-                    schedulerView.NextRunTime = item.NextRunTime.Value.ToLocalTime();
-                }
+                schedulerView.NextRunTime = item.NextRunTime;
+                
                 schedulerList.Add(schedulerView);
             }
+
+            foreach (var item in schedulerList)
+            {
+                item.LastRunTime = this.GetSchedulerLastRunTime(item.Id);
+            }
+
             return schedulerList;
         }
 
@@ -154,6 +158,31 @@
 
         }
 
+
+        public DateTime? GetSchedulerLastRunTime(int id)
+        {
+            DateTime? lastRunTime = null;
+            var scheduledItem = this.schedulerRepository.Get(id);
+            var meteredAudits = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(Convert.ToInt32(scheduledItem.SubscriptionId));
+            var scheduledItemView = this.schedulerViewRepository.GetById(id);
+            foreach (var auditLog in meteredAudits)
+            {
+                var MeteringUsageRequest = JsonSerializer.Deserialize<MeteringUsageRequest>(auditLog.RequestJson);
+
+                if (MeteringUsageRequest.Dimension == scheduledItemView.Dimension)
+                {
+                    if ((lastRunTime == null)|| (lastRunTime < auditLog.CreatedDate))
+                    {
+                        lastRunTime = auditLog.CreatedDate;
+                    }
+                }
+
+            }
+            return lastRunTime;
+
+        }
+
+
         /// <summary>
         /// Saves the Metered Plan Scheduler Management Model attributes.
         /// </summary>
@@ -170,7 +199,7 @@
                 DimensionId = meteredPlanSchedulerModel.DimensionId,
                 FrequencyId = meteredPlanSchedulerModel.FrequencyId,
                 Quantity = meteredPlanSchedulerModel.Quantity,
-                StartDate = meteredPlanSchedulerModel.StartDate,
+                StartDate = meteredPlanSchedulerModel.StartDate.Value.ToUniversalTime(),
                 NextRunTime = meteredPlanSchedulerModel.NextRunTime
             };
             return this.schedulerRepository.Save(meteredPlanScheduler);

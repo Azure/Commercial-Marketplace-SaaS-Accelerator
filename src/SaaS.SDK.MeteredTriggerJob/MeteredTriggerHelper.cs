@@ -142,7 +142,7 @@ namespace MeteredTriggerHelper
                 if ((status == "Accepted"))
                 {
                     Console.WriteLine($"Save Scheduler Item Id: {item.Id}");
-                    scheduler.NextRunTime = item.NextRunTime;
+                    scheduler.NextRunTime = item.NextRunTime.Value.ToUniversalTime();
                     schedulerService.SaveSchedulerDetail(scheduler);
                 }
             }

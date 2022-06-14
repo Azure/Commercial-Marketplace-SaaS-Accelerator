@@ -86,6 +86,14 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// schedule next run.
         /// </value>
         public DateTime? NextRunTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets schedule last run datatime.
+        /// </summary>
+        /// <value>
+        /// schedule last run.
+        /// </value>
+        public DateTime? LastRunTime { get; set; }
     }
 }
 

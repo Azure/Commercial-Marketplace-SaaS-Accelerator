@@ -82,6 +82,7 @@
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
 
                 getAllSchedulerManagerViewData = this.schedulerService.GetAllSchedulerManagerList();
+
                 return this.View(getAllSchedulerManagerViewData);
             }
             catch (Exception ex)
@@ -253,7 +254,7 @@
                 schedulerUsageViewModel.SelectedDimension = SchedulerItem.Dimension;
                 schedulerUsageViewModel.SelectedSchedulerFrequency = SchedulerItem.Frequency;
                 schedulerUsageViewModel.Quantity = (decimal)SchedulerItem.Quantity;
-                schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate;
+                schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate.ToLocalTime(); 
                 if (SchedulerItem.NextRunTime.HasValue)
                 {
                     schedulerUsageViewModel.NextRunDate = SchedulerItem.NextRunTime.Value.ToLocalTime();
