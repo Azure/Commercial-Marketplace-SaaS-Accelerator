@@ -254,10 +254,10 @@
                 schedulerUsageViewModel.SelectedDimension = SchedulerItem.Dimension;
                 schedulerUsageViewModel.SelectedSchedulerFrequency = SchedulerItem.Frequency;
                 schedulerUsageViewModel.Quantity = (decimal)SchedulerItem.Quantity;
-                schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate.ToLocalTime(); 
+                schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate; 
                 if (SchedulerItem.NextRunTime.HasValue)
                 {
-                    schedulerUsageViewModel.NextRunDate = SchedulerItem.NextRunTime.Value.ToLocalTime();
+                    schedulerUsageViewModel.NextRunDate = SchedulerItem.NextRunTime;
                 }
 
                 schedulerUsageViewModel.MeteredAuditLogs = detail;
