@@ -22,6 +22,16 @@
             });
         });
 
+        $("#btnSubmit").click(function () {
+                var dateElement=document.getElementById("FirstRunDate");
+                alert(dateElement.value)
+                var date=new Date(dateElement.value);
+                var d=date.toISOString();
+                dateElement.value=d.slice(0,-5);
+                alert(dateElement.value)
+         });
+        
+
         $(document).ready(function() {
               var d = new Date();
               var month = d.getMonth()+1;
@@ -42,19 +52,6 @@
     }
     );
 
-    function validateDate()
-    {
-         var date=document.getElementById("FirstRunDate")
-         
-         if (date.min > date.value)
-         {
-             alert('First Run Date must be greater than '+date.min)
-             return false;
-         }
-         return true;
-    }
-
-
 </script>
 
 
@@ -67,7 +64,7 @@
         </div>
 
 
-        <form method="post" id="frmSchedulerEvents" asp-action="AddNewScheduledTrigger" asp-controller="Scheduler"  onsubmit="return validateDate()">
+        <form method="post" id="frmSchedulerEvents" asp-action="AddNewScheduledTrigger" asp-controller="Scheduler" >
             <div style="align-content:center">
                 <table>
                     <tr>
@@ -105,7 +102,7 @@
   
                             <br/>
                               <div class="input-group-append">
-                                <button type="submit" class="btn btn-success">Add Scheduler Usage Task</button>
+                                <button type="submit" id="btnSubmit" class="btn btn-success">Add Scheduler Usage Task</button>
                             </div>
                        </th>
                        <th>  
