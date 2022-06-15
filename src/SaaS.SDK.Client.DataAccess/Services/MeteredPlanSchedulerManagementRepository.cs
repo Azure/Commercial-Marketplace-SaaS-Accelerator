@@ -59,20 +59,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// <returns></returns>
         public int Save(MeteredPlanSchedulerManagement entity)
         {
-            
-            if (entity.StartDate.HasValue)
-            {
-                int minute = entity.StartDate.Value.Minute;
-                if (entity.StartDate.Value.Minute >= 30)
-                {
-                    minute = 60 - entity.StartDate.Value.Minute;
-                    entity.StartDate = entity.StartDate.Value.AddMinutes(minute);
-                }
-                else
-                {
-                    entity.StartDate = entity.StartDate.Value.AddMinutes(-1*minute);
-                }
-            }
             var existingEntity = this.context.MeteredPlanSchedulerManagement.Where(s => (s.SubscriptionId == entity.SubscriptionId)&&(s.PlanId == entity.PlanId) && (s.DimensionId == entity.DimensionId)).FirstOrDefault();
             if (existingEntity != null)
             {
