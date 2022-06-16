@@ -24,11 +24,9 @@
 
         $("#btnSubmit").click(function () {
                 var dateElement=document.getElementById("FirstRunDate");
-                alert(dateElement.value)
                 var date=new Date(dateElement.value);
                 var d=date.toISOString();
                 dateElement.value=d.slice(0,-5);
-                alert(dateElement.value)
          });
         
 
@@ -81,7 +79,7 @@
                     </tr>
                     <tr>
                         <th>Quantity</th>
-                        <th><input asp-for="Quantity" type="number" class="form-control"  step="1" min="1" value="" required="true"></th>
+                        <th><input asp-for="Quantity" type="number" class="form-control"  step="1" min="1" value="@Model.Quantity" required="true"></th>
                     </tr>
 
                     <tr>

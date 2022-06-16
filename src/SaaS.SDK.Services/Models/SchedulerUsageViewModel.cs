@@ -60,7 +60,7 @@
         /// <value>
         /// The quantity.
         /// </value>
-        public decimal Quantity { get; set; }
+        public int Quantity { get; set; }
 
         /// <summary>
         /// Get or set First Run Time

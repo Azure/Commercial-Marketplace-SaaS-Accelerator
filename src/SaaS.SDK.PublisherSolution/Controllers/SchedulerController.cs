@@ -135,7 +135,7 @@
 
                 
                 schedulerUsageViewModel.SelectedSubscription = subscriptionId;
-                schedulerUsageViewModel.Quantity = Convert.ToDecimal(quantity);
+                schedulerUsageViewModel.Quantity = (Int32)Math.Round(Convert.ToDecimal(quantity),0);
 
                 if(!String.IsNullOrEmpty(dimId))
                 {
@@ -253,7 +253,7 @@
                 schedulerUsageViewModel.SelectedSubscription = SchedulerItem.AMPSubscriptionId.ToString();
                 schedulerUsageViewModel.SelectedDimension = SchedulerItem.Dimension;
                 schedulerUsageViewModel.SelectedSchedulerFrequency = SchedulerItem.Frequency;
-                schedulerUsageViewModel.Quantity = (decimal)SchedulerItem.Quantity;
+                schedulerUsageViewModel.Quantity = Convert.ToInt32(SchedulerItem.Quantity);
                 schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate; 
                 if (SchedulerItem.NextRunTime.HasValue)
                 {
