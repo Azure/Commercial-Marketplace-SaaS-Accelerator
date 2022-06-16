@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Collections.Generic;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -65,6 +66,44 @@
             {
                 return string.Empty;
             }
+        }
+
+        /// <summary>
+        /// Gets all email templates
+        /// </summary>
+        /// <returns>
+        /// List of email templates
+        /// </returns>
+        public IEnumerable<EmailTemplate> GetAll()
+        {
+            var templates = this.context.EmailTemplate;
+            return templates;
+        }
+
+        /// <summary>
+        /// Saves email configuration field
+        /// </summary>
+        /// <returns>
+        /// True or False
+        /// </returns>
+        public string SaveEmailTemplateByStatus(EmailTemplate template)
+        {
+            string[] editableFields = { "IsActive", "Subject", "Description", "TemplateBody" };
+            var emailTemplate = this.context.EmailTemplate.Where(a => a.Status == template.Status).FirstOrDefault();
+            if (emailTemplate != null)
+            {
+                foreach (var field in template.GetType().GetProperties())
+                {
+                    if (editableFields.Contains(field.Name))
+                    {
+                        var newValue = template.GetType().GetProperty(field.Name).GetValue(template, null);
+                        emailTemplate.GetType().GetProperty(field.Name).SetValue(emailTemplate, newValue);
+                    }
+
+                }
+                this.context.SaveChanges();
+            }
+            return template.Status;
         }
     }
 }

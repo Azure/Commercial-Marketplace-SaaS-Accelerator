@@ -27,9 +27,15 @@ namespace SaaS.SDK.PublisherSolution.Controllers
 
         private readonly IApplicationConfigRepository appConfigRepository;
 
-        public ApplicationConfigController(IApplicationConfigRepository applicationConfigRepository, ILogger<ApplicationConfigController> logger)
+        /// <summary>
+        /// Move to a new controller?
+        /// </summary>
+        private readonly IEmailTemplateRepository emailTemplateRepository;
+
+        public ApplicationConfigController(IApplicationConfigRepository applicationConfigRepository, ILogger<ApplicationConfigController> logger, IEmailTemplateRepository emailTemplateRepository)
         {
             this.appConfigRepository = applicationConfigRepository;
+            this.emailTemplateRepository = emailTemplateRepository;
             this.logger = logger;
             appConfigService = new ApplicationConfigService(this.appConfigRepository);
         }
@@ -53,6 +59,79 @@ namespace SaaS.SDK.PublisherSolution.Controllers
                 return this.View("Error", ex);
             }
         }
+
+        /// <summary>
+        /// Indexes an EmailTemplate instance
+        /// </summary>
+        /// <returns>return a list of all EmailTemplates.</returns>
+        public IActionResult EmailTemplates()
+        {
+            this.logger.LogInformation("Application Config Controller / EmailTemplates");
+            try
+            {
+                IEnumerable<EmailTemplate> getEmailTemplateData = new List<EmailTemplate>();
+                getEmailTemplateData = this.emailTemplateRepository.GetAll();
+                return this.View(getEmailTemplateData);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                return this.View("Error", ex);
+            }
+        }
+
+        /// <summary>
+        /// Get the fields of an EmailTemplate item by status
+        /// </summary>
+        /// <param name=status">The status that corresponds to the EmailTemplate.</param>
+        /// <returns>
+        /// return an EmailTemplate
+        /// </returns>
+        public IActionResult EmailTemplateDetails(string status)
+        {
+            this.logger.LogInformation("ApplicationConfig Controller / EmailTemplateDetails:  Status {0}", status);
+            try
+            {
+                EmailTemplate emailTemplate = new EmailTemplate();
+                emailTemplate = this.emailTemplateRepository.GetTemplateForStatus(status);
+                return this.PartialView(emailTemplate);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                return this.View("Error", ex);
+            }
+        }
+
+        /// <summary>
+        /// Saves changes to EmailTemplate
+        /// </summary>
+        /// <param name="emailTemplate">The modified EmailTemplate.</param>
+        /// <returns>
+        /// return the modified EmailTemplate.
+        /// </returns>
+        [HttpPost]
+        public IActionResult EmailTemplateDetails(EmailTemplate emailTemplate)
+        {
+            this.logger.LogInformation("ApplicationConfig Controller / EmailTemplateDetails:  EmailTemplate {0}", JsonSerializer.Serialize(emailTemplate));
+            try
+            {
+                if (emailTemplate != null)
+                {
+                    this.emailTemplateRepository.SaveEmailTemplateByStatus(emailTemplate);
+                }
+
+                this.ModelState.Clear();
+                return this.RedirectToAction(nameof(this.EmailTemplateDetails), new { status = emailTemplate.Status });
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, ex.Message);
+                return this.PartialView("Error", ex);
+            }
+        }
+
+
 
         /// <summary>
         /// Get the apllication config item by Id.
