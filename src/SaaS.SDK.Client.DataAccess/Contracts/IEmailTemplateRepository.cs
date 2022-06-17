@@ -31,9 +31,9 @@
         IEnumerable<EmailTemplate> GetAll();
 
         /// <summary>
-        /// Gets all editable email templates
+        /// Saves modified EmailTemplate
         /// </summary>
-        /// <returns> A list of EmailTemplates </returns>
+        /// <returns> Returns the status of the modified EmailTemplate </returns>
         string SaveEmailTemplateByStatus(EmailTemplate template);
     }
 }
