@@ -1,6 +1,7 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
@@ -22,5 +23,17 @@
         /// <param name="processStatus">The process status.</param>
         /// <returns> Email body.</returns>
         string GetEmailBodyForSubscription(Guid subscriptionID, string processStatus);
+
+        /// <summary>
+        /// Gets all editable email templates
+        /// </summary>
+        /// <returns> A list of EmailTemplates </returns>
+        IEnumerable<EmailTemplate> GetAll();
+
+        /// <summary>
+        /// Gets all editable email templates
+        /// </summary>
+        /// <returns> A list of EmailTemplates </returns>
+        string SaveEmailTemplateByStatus(EmailTemplate template);
     }
 }
