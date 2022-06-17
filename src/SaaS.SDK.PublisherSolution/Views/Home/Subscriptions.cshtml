@@ -238,12 +238,10 @@
         var isChecked = $(".statusCheckbox").is(':checked');
 
         if(isChecked){
-
-            var activeSubscriptions = $("#table tbody tr:not(#Unsubscribed)");
             $("#table tbody tr").hide();
-            activeSubscriptions.show();
+            $("#table tbody tr#Subscribed").show();
 
-            activeSubscriptions.filter(function() {
+            $("#table tbody tr#Subscribed").filter(function() {
                 $(this).toggle($(this).text().toLowerCase().indexOf(filterValue) > -1);
             });
         } else{
