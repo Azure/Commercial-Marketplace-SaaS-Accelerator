@@ -22,6 +22,5 @@
         /// <param name="processStatus">The process status.</param>
         /// <returns> Email body.</returns>
         string GetEmailBodyForSubscription(Guid subscriptionID, string processStatus);
-
     }
 }
