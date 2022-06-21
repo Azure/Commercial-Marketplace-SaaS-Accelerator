@@ -88,19 +88,16 @@
         /// </returns>
         public string SaveEmailTemplateByStatus(EmailTemplate template)
         {
-            string[] editableFields = { "IsActive", "Subject", "Description", "TemplateBody" };
             var emailTemplate = this.context.EmailTemplate.Where(a => a.Status == template.Status).FirstOrDefault();
             if (emailTemplate != null)
             {
-                foreach (var field in template.GetType().GetProperties())
-                {
-                    if (editableFields.Contains(field.Name))
-                    {
-                        var newValue = template.GetType().GetProperty(field.Name).GetValue(template, null);
-                        emailTemplate.GetType().GetProperty(field.Name).SetValue(emailTemplate, newValue);
-                    }
-
-                }
+                emailTemplate.IsActive = template.IsActive;
+                emailTemplate.Subject = template.Subject;
+                emailTemplate.Description = template.Description;
+                emailTemplate.TemplateBody = template.TemplateBody;
+                emailTemplate.ToRecipients = template.ToRecipients;
+                emailTemplate.Bcc = template.Bcc;
+                emailTemplate.Cc = template.Cc;
                 this.context.SaveChanges();
             }
             return template.Status;

@@ -31,35 +31,34 @@
                     </tr>
                 </theader>
                 <tbody>
-                    @{
-                        string[] editableFields = { "IsActive", "Subject", "Description", "TemplateBody" };
-                    }
-                    @foreach(var field in Model.GetType().GetProperties())
-                    {
-                           var value = Model.GetType().GetProperty(field.Name).GetValue(Model, null);
-                        if(editableFields.Contains(field.Name))
-                        {
-                            <tr>
-                                <td class="text-left">
-                                    @field.Name
-                                </td>
-                                <td class="text-left">
-                                    @if (@field.Name == "IsActive")
-                                    {
-                                        @Html.CheckBoxFor(model => model.IsActive, new { htmlAttributes = new { type ="checkbox", @class = "float-left", name=field.Name } });
-                                    }
-                                    else if (@field.Name == "TemplateBody")
-                                    {
-                                        <textarea name="@field.Name" id="@field.Name" class="form-control">@value</textarea>
-                                    } else
-                                    {
-                                        <input type="text" name="@field.Name" id="@field.Name" class="form-control" value="@value" />
-                                    }
-                                </td>
-                            </tr>
-
-                        }
-                    }                  
+                     <tr>
+                        <td class="text-left">IsActive</td>
+                        <td class="text-left">@Html.CheckBoxFor(model => model.IsActive, new { htmlAttributes = new { type ="checkbox", @class = "float-left", name="IsActive" } })</td>
+                    </tr>
+                     <tr>
+                        <td class="text-left">Subject</td>
+                        <td class="text-left">@Html.EditorFor(model => model.Subject, new { htmlAttributes = new {  @class = "form-control", name="Subject" } })</td>
+                    </tr>
+                     <tr>
+                        <td class="text-left">Description</td>
+                        <td class="text-left">@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", name="Description" } })</td>
+                    </tr>
+                     <tr>
+                        <td class="text-left">TemplateBody</td>
+                        <td class="text-left">@Html.TextAreaFor(model => model.TemplateBody, new { htmlAttributes = new { name="TemplateBody" } })</td>
+                    </tr>
+                     <tr>
+                        <td class="text-left">ToRecipients</td>
+                        <td class="text-left">@Html.EditorFor(model => model.ToRecipients, new { htmlAttributes = new { @class = "form-control", name="ToRecipients" } })</td>
+                    </tr>
+                     <tr>
+                        <td class="text-left">Bcc</td>
+                        <td class="text-left">@Html.EditorFor(model => model.Bcc, new { htmlAttributes = new { @class = "form-control", name="Bcc" } })</td>
+                    </tr>
+                     <tr>
+                        <td class="text-left">Cc</td>
+                        <td class="text-left">@Html.EditorFor(model => model.Cc, new { htmlAttributes = new { @class = "form-control", name="Cc" } })</td>
+                    </tr>         
                 </tbody>
             </table>
             <div class="ac-save-d">
