@@ -45,7 +45,9 @@
                     </tr>
                      <tr>
                         <td class="text-left">TemplateBody</td>
-                        <td class="text-left">@Html.TextAreaFor(model => model.TemplateBody, new { htmlAttributes = new { name="TemplateBody" } })</td>
+                        <td class="text-left">@Html.TextAreaFor(model => model.TemplateBody, new { @class = "form-control" })
+                            <span class="font-italic hint-text text-left">Due to the content size, it is recommended to copy the content to an external editor, modify the Template body, paste it back into here and save.</span>
+                        </td>
                     </tr>
                      <tr>
                         <td class="text-left">ToRecipients</td>
