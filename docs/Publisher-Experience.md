@@ -38,7 +38,7 @@ The publisher web application is the admin console for the publisher for definin
   * *ValueList*   : Items of the pick list as comma delimited values
   * *Max*         : Maximum value of the integer field
   * *Min*         : Minimum value of the integer field
-  * *DisplaySequence* :Order / sequence in which the field appears along with other fields
+  * *DisplaySequence* : Order / sequence in which the field appears along with other fields
   * *IsActive*    : Check this box to have the field in effect. Uncheck the box so that the field stops appearing on the landing page
   * *IsRequired*  : Check if the input on this field is mandatory
   * *Remove*      : Remove the item
@@ -68,10 +68,37 @@ The publisher web application is the admin console for the publisher for definin
 
 * Check the box - **Copy to Customer** to include customer email address in the email notifications relevant to the event
 
+## Email Setup
+
+* Make sure the SMTP values are updated in the **Application Config** page
+
+![Application Config Page](./images/config-page.png)
+
+* Set the emails' recipients in **Plans** and mark them as active
+
+![Plan Events](./images/events-activity.png)
+
+* Make sure:
+  * EmailToAddress OR Bcc is not empty (Success Emails on **Plan**)
+  * Cc is added (on the **Email Template**)
+
+* Set the appropriate config value for sending the emails in a particular scenario
+  a. If subscription is PendingActivation, set **IsEmailEnabledForPendingActivation** to True
+  b. If subscription is PendingSubscription, set **IsEmailEnabledForSubscriptionActivation** to True
+  c. If you want to unsubscribe, set **IsEmailEnabledForUnsubscription** to True
+
+![Application Config Page](./images/config-page2.png)
+
+To customize the template:
+  - Update by getting the right email template from the database
+To send the email to the customer:
+  - Enable the **Copy To Customer** flag
+
+
 ## Manage subscriptions
 
-* All the subscriptions purchased will be availabe under the subscriptions screen.
-* The status of each subscription will be availbe in the list.
+* All the subscriptions purchased will be available under the subscriptions screen.
+* The status of each subscription will be available in the list.
 * From this screen the actions on the subscriptions like Change Plan, Change Quantity,  Manage Usage, Activate and unsubscribe can be done depending on the status.
 
 ![SaaS Subscriptions](./images/customer-subscriptions.png)
@@ -103,7 +130,7 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 
 ## Change plan
 
-Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesnt exist, updates will be rejected by the webhook.
+Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesn't exist, updates will be rejected by the webhook.
 
 The diagram below illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 
@@ -139,13 +166,13 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 ## Change quantity
 
-Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesnt exist, updates will be rejected by the webhook.
+Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesn't exist, updates will be rejected by the webhook.
 
 The update to quantity is applicable only for the plans with *per user* pricing model.
   
 ![Per user pricing](./images/per-user-plan-pricing.png)
 
-The record for the plan needs to reflect the *per user* pricing model. To update the record, sse the following script as an example / template to update the records in **Plans**
+The record for the plan needs to reflect the *per user* pricing model. To update the record, see the following script as an example / template to update the records in **Plans**
 
 ```sql
 UPDATE Plans SET IsPerUser = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'
