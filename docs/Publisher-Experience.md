@@ -70,29 +70,25 @@ The publisher web application is the admin console for the publisher for definin
 
 ## Email Setup
 
-* Make sure the SMTP values are updated in the **Application Config** page
+* Log on to the **Publisher Portal**
 
+* In **Application Config**, make sure the **SMTP** values are updated
 ![Application Config Page](./images/config-page.png)
 
-* Set the emails' recipients in **Plans** and mark them as active
-
+* In the **Plans** page, set the emails' recipients under **Success/Failure Event Emails**
+* Mark them as active in the checkboxes under **Active**
+* To send the email to the customer, enable the **Copy To Customer** flag
 ![Plan Events](./images/events-activity.png)
 
-* Make sure:
-  * EmailToAddress OR Bcc is not empty (Success Emails on **Plan**)
-  * Cc is added (on the **Email Template**)
-
+* Make sure EmailToAddress OR Bcc is not empty (Success Emails on **Plan**)
+* Add to Cc (on the **Email Template**)
 * Set the appropriate config value for sending the emails in a particular scenario
-  a. If subscription is PendingActivation, set **IsEmailEnabledForPendingActivation** to True
-  b. If subscription is PendingSubscription, set **IsEmailEnabledForSubscriptionActivation** to True
-  c. If you want to unsubscribe, set **IsEmailEnabledForUnsubscription** to True
-
+  * If subscription is PendingActivation, set **IsEmailEnabledForPendingActivation** to True
+  * If subscription is PendingSubscription, set **IsEmailEnabledForSubscriptionActivation** to True
+  * If you want to unsubscribe, set **IsEmailEnabledForUnsubscription** to True
 ![Application Config Page](./images/config-page2.png)
 
-To customize the template:
-  - Update by getting the right email template from the database
-To send the email to the customer:
-  - Enable the **Copy To Customer** flag
+* To customize the template, get the right email template from the database
 
 
 ## Manage subscriptions
