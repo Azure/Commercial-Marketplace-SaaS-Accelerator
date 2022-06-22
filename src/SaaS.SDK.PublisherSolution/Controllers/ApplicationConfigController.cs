@@ -69,7 +69,6 @@ namespace SaaS.SDK.PublisherSolution.Controllers
             this.logger.LogInformation("Application Config Controller / EmailTemplates");
             try
             {
-                throw new Exception();
                 IEnumerable<EmailTemplate> getEmailTemplateData = new List<EmailTemplate>();
                 getEmailTemplateData = this.emailTemplateRepository.GetAll();
                 return this.View(getEmailTemplateData);
