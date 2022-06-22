@@ -138,18 +138,22 @@
             this.logger?.LogInformation("Get PlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
             this.logger?.LogInformation("Get User");
-            var userdetails = this.GetUserById(subscription.UserId);
+            var userdeatils = this.GetUserById(subscription.UserId);
 
             string planEventName = "Activate";
 
-            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString()){
+            if (
+             subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString())
+            {
                 planEventName = "Unsubscribe";
             }
 
             string processStatus = "success";
-            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString()) {
+            if (
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed.ToString() ||
+                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString())
+            {
                 processStatus = "failure";
             }
 
@@ -160,31 +164,39 @@
             bool isEmailEnabledForSubscriptionActivation = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsEmailEnabledForSubscriptionActivation"));
 
             bool triggerEmail = false;
-            if (planEvents != null && planEvents.Isactive == true){
-                if (planEventName == "Activate" && isEmailEnabledForPendingActivation && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString()) {
+            if (planEvents != null && planEvents.Isactive == true)
+            {
+                if (planEventName == "Activate" && isEmailEnabledForPendingActivation && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
+                {
                     triggerEmail = true;
                 }
 
-                if (planEventName == "Activate" && isEmailEnabledForSubscriptionActivation && subscription.SubscriptionStatus != SubscriptionStatusEnumExtension.PendingActivation.ToString()) {
+                if (planEventName == "Activate" && isEmailEnabledForSubscriptionActivation && subscription.SubscriptionStatus != SubscriptionStatusEnumExtension.PendingActivation.ToString())
+                {
                     triggerEmail = true;
                 }
 
-                if (planEventName == "Unsubscribe" && isEmailEnabledForUnsubscription) {
+                if (planEventName == "Unsubscribe" && isEmailEnabledForUnsubscription)
+                {
                     triggerEmail = true;
                 }
             }
 
-            if (triggerEmail) {
+            if (triggerEmail)
+            {
                 var emailContent = this.emailHelper.PrepareEmailContent(subscriptionID, planDetails.PlanGuid, processStatus, planEventName, subscription.SubscriptionStatus);
 
-                if (!string.IsNullOrWhiteSpace(emailContent.ToEmails) || !string.IsNullOrWhiteSpace(emailContent.BCCEmails)) {
+                if (!string.IsNullOrWhiteSpace(emailContent.ToEmails) || !string.IsNullOrWhiteSpace(emailContent.BCCEmails))
+                {
                     this.emailService.SendEmail(emailContent);
                 }
 
-                if (emailContent.CopyToCustomer && !string.IsNullOrEmpty(userdetails.EmailAddress)) {
-                    emailContent.ToEmails = userdetails.EmailAddress;
+                if (emailContent.CopyToCustomer && !string.IsNullOrEmpty(userdeatils.EmailAddress))
+                {
+                    emailContent.ToEmails = userdeatils.EmailAddress;
 
-                    if (!string.IsNullOrWhiteSpace(emailContent.ToEmails) || !string.IsNullOrWhiteSpace(emailContent.BCCEmails)) {
+                    if (!string.IsNullOrWhiteSpace(emailContent.ToEmails) || !string.IsNullOrWhiteSpace(emailContent.BCCEmails))
+                    {
                         this.emailService.SendEmail(emailContent);
                     }
                 }
