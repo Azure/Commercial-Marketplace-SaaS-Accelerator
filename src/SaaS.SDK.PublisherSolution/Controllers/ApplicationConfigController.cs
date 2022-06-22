@@ -69,6 +69,7 @@ namespace SaaS.SDK.PublisherSolution.Controllers
             this.logger.LogInformation("Application Config Controller / EmailTemplates");
             try
             {
+                throw new Exception();
                 IEnumerable<EmailTemplate> getEmailTemplateData = new List<EmailTemplate>();
                 getEmailTemplateData = this.emailTemplateRepository.GetAll();
                 return this.View(getEmailTemplateData);
@@ -76,7 +77,7 @@ namespace SaaS.SDK.PublisherSolution.Controllers
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("Error loading templates." + Environment.NewLine + " Please check logs for more details."));
             }
         }
 
