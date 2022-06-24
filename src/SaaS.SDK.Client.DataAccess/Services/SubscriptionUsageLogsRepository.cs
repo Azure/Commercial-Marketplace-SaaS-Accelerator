@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.Json;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -83,8 +84,43 @@
         /// <returns> Metered Audit Logs.</returns>
         public List<MeteredAuditLogs> GetMeteredAuditLogsBySubscriptionId(int subscriptionId)
         {
-            return this.context.MeteredAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.Id == subscriptionId).OrderByDescending(s => s.CreatedDate).ToList();
+            return this.context.MeteredAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.Id == subscriptionId).OrderByDescending(s => s.CreatedDate).Select(FormatJson).ToList();
         }
+
+        /// <summary>
+        /// Converts the metering usage request/response JSON into user-friendly strings
+        /// </summary>
+        /// <param name="logs">The Metered Audit Log to modify.</param>
+        /// <returns> The updated Metered Audit Logs.</returns>
+        private static MeteredAuditLogs FormatJson(MeteredAuditLogs logs)
+        {
+            // Update request format
+            MeteringUsageRequestAttributes parsedRequest = JsonSerializer.Deserialize<MeteringUsageRequestAttributes>(logs.RequestJson);
+            logs.RequestJson = "Quantity: " + parsedRequest.Quantity;
+            logs.RequestJson += "\r\nResourceId: " + parsedRequest.ResourceId;
+            logs.RequestJson += "\r\nDimension: " + parsedRequest.Dimension;
+            logs.RequestJson += "\r\nPlanId: " + parsedRequest.PlanId;
+
+            // Update response format
+            MeteringUsageResponseAttributes parsedResponse = JsonSerializer.Deserialize<MeteringUsageResponseAttributes>(logs.ResponseJson);
+            if (parsedResponse != null)
+            {
+                logs.ResponseJson = "Status: " + parsedResponse.Status;
+                logs.ResponseJson += "\r\nUsage Posted Date " + parsedResponse.UsagePostedDate;
+                logs.ResponseJson += "\r\nUsage Event Id: " + parsedResponse.UsagePostedDate;
+                logs.ResponseJson += "\r\nMessage Time: " + parsedResponse.MessageTime;
+                logs.ResponseJson += "\r\nResourceId: " + parsedResponse.ResourceId;
+                logs.ResponseJson += "\r\nQuantity: " + parsedResponse.Quantity;
+                logs.ResponseJson += "\r\nDimension: " + parsedResponse.Dimension;
+                logs.ResponseJson += "\r\nPlanId: " + parsedResponse.PlanId;
+            } else
+            {
+                logs.ResponseJson = "No Response";
+            }
+
+            return logs;
+        }
+
 
         /// <summary>
         /// Removes the specified metered audit logs.
