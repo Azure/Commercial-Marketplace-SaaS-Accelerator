@@ -25,7 +25,7 @@
                     <div class="filter-box">
                         <span>Filter: </span>
                         <input type="text" size="50" id="filterTextBox" placeholder="Enter any text to filter subscriptions" onkeyup="filterSubscriptions()">
-                        <input type="checkbox" class="statusCheckbox" id="SubscribedOnly" onchange="filterSubscriptions()"/> Active Subscriptions Only
+                        <input type="checkbox" class="statusCheckbox" id="SubscribedOnly" onchange="filterSubscriptions()"/> Hide Unsubscribed
                     </div>
                     <div>
                         @if (Model.Subscriptions.Count() > 0)
@@ -237,10 +237,12 @@
         var isChecked = $(".statusCheckbox").is(':checked');
 
         if(isChecked){
-            $("#table tbody tr").hide();
-            $("#table tbody tr#Subscribed").show();
 
-            $("#table tbody tr#Subscribed").filter(function() {
+            var activeSubscriptions = $("#table tbody tr:not(#Unsubscribed)");
+            $("#table tbody tr").hide();
+            activeSubscriptions.show();
+
+            activeSubscriptions.filter(function() {
                 $(this).toggle($(this).text().toLowerCase().indexOf(filterValue) > -1);
             });
         } else{
