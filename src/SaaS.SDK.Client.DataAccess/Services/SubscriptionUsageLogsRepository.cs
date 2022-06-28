@@ -96,8 +96,8 @@
         {
             // Update request format
             MeteringUsageRequestAttributes parsedRequest = JsonSerializer.Deserialize<MeteringUsageRequestAttributes>(logs.RequestJson);
-            logs.RequestJson = "Quantity: " + parsedRequest.Quantity;
-            logs.RequestJson += "\r\nResourceId: " + parsedRequest.ResourceId;
+            logs.RequestJson = "ResourceId: " + parsedRequest.ResourceId;
+            logs.RequestJson += "\r\nQuantity: " + parsedRequest.Quantity;
             logs.RequestJson += "\r\nDimension: " + parsedRequest.Dimension;
             logs.RequestJson += "\r\nPlanId: " + parsedRequest.PlanId;
 
@@ -105,14 +105,14 @@
             MeteringUsageResponseAttributes parsedResponse = JsonSerializer.Deserialize<MeteringUsageResponseAttributes>(logs.ResponseJson);
             if (parsedResponse != null)
             {
-                logs.ResponseJson = "Status: " + parsedResponse.Status;
-                logs.ResponseJson += "\r\nUsage Posted Date " + parsedResponse.UsagePostedDate;
-                logs.ResponseJson += "\r\nUsage Event Id: " + parsedResponse.UsagePostedDate;
-                logs.ResponseJson += "\r\nMessage Time: " + parsedResponse.MessageTime;
+                logs.ResponseJson = "Usage Event Id: " + parsedResponse.UsagePostedDate;
+                logs.ResponseJson += "\r\nStatus: " + parsedResponse.Status;
                 logs.ResponseJson += "\r\nResourceId: " + parsedResponse.ResourceId;
                 logs.ResponseJson += "\r\nQuantity: " + parsedResponse.Quantity;
                 logs.ResponseJson += "\r\nDimension: " + parsedResponse.Dimension;
                 logs.ResponseJson += "\r\nPlanId: " + parsedResponse.PlanId;
+                logs.ResponseJson += "\r\nUsage Posted Date " + parsedResponse.UsagePostedDate;
+                logs.ResponseJson += "\r\nMessage Time: " + parsedResponse.MessageTime;
             }
             else
             {
