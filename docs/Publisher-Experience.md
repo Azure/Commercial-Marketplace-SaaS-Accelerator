@@ -71,26 +71,22 @@ The publisher web application is the admin console for the publisher for definin
 
 ## Email setup
 
-* Log on to the **Publisher Portal**
+* Go to the **Publisher Portal** and in **Application Config**, make sure the **SMTP** values are updated
 
-* In **Application Config**, make sure the **SMTP** values are updated
 ![Application Config Page](./images/config-page.png)
 
-* In the **Plans** page, set the emails' recipients under **Success/Failure Event Emails**
-* Mark them as active in the checkboxes under **Active**
-* To send the email to the customer, enable the **Copy To Customer** flag
+* In the **Plans** page, go to the **Events** tab
+* Set the emails' recipients under **Success/Failure Event Emails** and mark them as active in the checkboxes under **Active** [To send the email to the customer, enable the **Copy To Customer** flag]
+
 ![Plan Events](./images/events-activity.png)
 
-* Make sure EmailToAddress OR Bcc is not empty (Success Emails on **Plan**)
-* Add to Cc (on the **Email Template**)
-* Set the appropriate config value for sending the emails in a particular scenario
-  * If subscription is PendingActivation, set **IsEmailEnabledForPendingActivation** to True
-  * If subscription is PendingSubscription, set **IsEmailEnabledForSubscriptionActivation** to True
-  * If you want to unsubscribe, set **IsEmailEnabledForUnsubscription** to True
+* To add Bcc emails, go to the **Email Template** in the **Application Config** page and add Bcc emails to the appropriate template
+* In the **Application Config** page, enable the respective config values to send the emails in different scenarios:
+  * To send emails when a subscription is requesting activation, set **IsEmailEnabledForPendingActivation** to **True**
+  * To send emails when a subscription is activated, set **IsEmailEnabledForSubscriptionActivation** to **True**
+  * To send emails when a subscription is unsubscribed, set **IsEmailEnabledForUnsubscription** to **True**
+
 ![Application Config Page](./images/config-page2.png)
-
-* To customize the template, get the right email template from the database
-
 
 ## Manage subscriptions
 
