@@ -6,6 +6,7 @@
   - [Manage new subscription landing page input fields](#manage-new-subscription-landing-page-input-fields)
   - [Manage existing subscription landing page input fields](#manage-existing-subscription-landing-page-input-fields)
   - [Subscription events](#subscription-events)
+  - [Email setup](#email-setup)
   - [Manage subscriptions](#manage-subscriptions)
   - [Activate a subscription](#activate-a-subscription)
   - [Change plan](#change-plan)
@@ -68,7 +69,7 @@ The publisher web application is the admin console for the publisher for definin
 
 * Check the box - **Copy to Customer** to include customer email address in the email notifications relevant to the event
 
-## Email Setup
+## Email setup
 
 * Log on to the **Publisher Portal**
 
