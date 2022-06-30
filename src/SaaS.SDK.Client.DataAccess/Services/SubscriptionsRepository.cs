@@ -41,7 +41,6 @@
         public int Save(Subscriptions subscriptionDetails)
         {
             var existingSubscriptions = this.context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionDetails.AmpsubscriptionId).FirstOrDefault();
-            
             if (existingSubscriptions != null)
             {
                 existingSubscriptions.SubscriptionStatus = subscriptionDetails.SubscriptionStatus;
