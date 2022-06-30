@@ -48,10 +48,9 @@
 
                 if (!string.IsNullOrEmpty(emailContent.BCCEmails))
                 {
-                    string[] bccEmails = emailContent.BCCEmails.Split(';');
-                    foreach (string bccEmail in bccEmails)
+                    foreach (string multimailid1 in toEmails)
                     {
-                        mail.Bcc.Add(new MailAddress(bccEmail));
+                        mail.Bcc.Add(new MailAddress(multimailid1));
                     }
                 }
 
