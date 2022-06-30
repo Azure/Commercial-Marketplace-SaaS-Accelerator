@@ -41,11 +41,14 @@
         public int Save(Subscriptions subscriptionDetails)
         {
             var existingSubscriptions = this.context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionDetails.AmpsubscriptionId).FirstOrDefault();
+            
             if (existingSubscriptions != null)
             {
                 existingSubscriptions.SubscriptionStatus = subscriptionDetails.SubscriptionStatus;
                 existingSubscriptions.AmpplanId = subscriptionDetails.AmpplanId;
                 existingSubscriptions.Ampquantity = subscriptionDetails.Ampquantity;
+                existingSubscriptions.UserId = subscriptionDetails.UserId;
+                existingSubscriptions.CreateBy = subscriptionDetails.CreateBy;
                 this.context.Subscriptions.Update(existingSubscriptions);
                 this.context.SaveChanges();
                 return existingSubscriptions.Id;

@@ -798,7 +798,8 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
                 foreach (SubscriptionResult subscription in subscriptions)
                 {
-                    if(this.subscriptionRepo.GetById(subscription.Id) == null)
+                    // create subscription (and user) if it doesn't exist
+                    if (this.subscriptionRepo.GetById(subscription.Id) == null)
                     {
                         //room for improvement to use AddRange rather making mulitple db trips
                         Offers offers = new Offers()
@@ -820,7 +821,8 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail); // add plans
 
                         //var subscriptionData = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-                        var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription);  // add subscription
+                        var customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Purchaser.EmailId, EmailAddress = subscription.Purchaser.EmailId });
+                        var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription, customerUserId);  // add subscription
                         if (subscribeId > 0 && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                         {
                             SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
@@ -833,6 +835,36 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                                 CreateDate = DateTime.Now,
                             };
                             this.subscriptionLogRepository.Save(auditLog);  // add audit log
+                        }
+                    } else
+                    {
+                        // create user for existing subscription if user doesn't exist
+                        var subscriptionId = this.subscriptionRepo.GetById(subscription.Id).Id;
+                        var customerUserId = this.userService.GetUserIdFromEmailAddress(subscription.CustomerEmailAddress);
+                        if(customerUserId == 0)
+                        {
+                            var newCustomerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Purchaser.EmailId, EmailAddress = subscription.Purchaser.EmailId });
+                        }
+
+                        // if subscription has an incorrect userId, update the subscription with correct value
+                       if(customerUserId != this.userService.GetUserIdFromEmailAddress(subscription.Purchaser.EmailId))
+                        {
+                            var newCustomerUserId = this.userService.GetUserIdFromEmailAddress(subscription.Purchaser.EmailId);
+                            subscription.SubscribeId = subscriptionId; // update to proper subscriptionId
+                            this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription,newCustomerUserId);  // update subscription
+                            if(subscriptionId > 0 && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                            {
+                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                {
+                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                                    SubscriptionId = subscriptionId,
+                                    NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
+                                    OldValue = "None",
+                                    CreateBy = newCustomerUserId,
+                                    CreateDate = DateTime.Now,
+                                };
+                                this.subscriptionLogRepository.Save(auditLog);  // add audit log
+                            }
                         }
                     }
 
