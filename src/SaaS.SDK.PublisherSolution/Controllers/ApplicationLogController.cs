@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace SaaS.SDK.PublisherSolution.Controllers
 {
-    public class ApplicationLogController : Controller
+    public class ApplicationLogController : BaseController
     {
         private readonly ILogger<ApplicationLogController> logger;
 
