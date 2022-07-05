@@ -244,8 +244,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         {
                             allSubscriptions.Add(subscriptionDetailExtension);
                         }
-
-
                     }
 
                     subscriptionDetail.Subscriptions = allSubscriptions;
@@ -804,7 +802,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     if(this.subscriptionRepo.GetById(subscription.Id) == null)
                     {
                         //room for improvement to use AddRange rather making mulitple db trips
-                        System.Diagnostics.Debug.WriteLine(subscription.OfferId);
                         Offers offers = new Offers()
                         {
                             OfferId = subscription.OfferId,
