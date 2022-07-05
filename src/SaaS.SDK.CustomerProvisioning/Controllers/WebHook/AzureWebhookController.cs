@@ -7,6 +7,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
+    using System;
 
     /// <summary>
     /// Azure Web hook.
@@ -76,13 +77,31 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
         /// <param name="request">The request.</param>
         public async void Post(WebhookPayload request)
         {
-            await this.applicationLogService.AddApplicationLog("The azure Webhook Triggered.").ConfigureAwait(false);
-
-            if (request != null)
+            try
             {
-                var json = JsonSerializer.Serialize(request);
-                await this.applicationLogService.AddApplicationLog("Webhook Serialize Object " + json).ConfigureAwait(false);
-                await this.webhookProcessor.ProcessWebhookNotificationAsync(request).ConfigureAwait(false);
+                await this.applicationLogService.AddApplicationLog("The azure Webhook Triggered.").ConfigureAwait(false);
+
+                if (request != null)
+                {
+                    var json = JsonSerializer.Serialize(request);
+                    await this.applicationLogService.AddApplicationLog("Webhook Serialize Object " + json).ConfigureAwait(false);
+                    await this.webhookProcessor.ProcessWebhookNotificationAsync(request).ConfigureAwait(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                // This catch block can handle any variety of exception however, in this case, I put it here
+                // specifically to handle a webhook invocation that can't be verified further downstream within webhookProcessor.
+
+                await this.applicationLogService.AddApplicationLog(
+                    $"An error occurred while attempting to process a webhook notification: [{ex.Message}].")
+                    .ConfigureAwait(false);
+
+                // Since we aren't returning an explicit status code here within the existing code, I'm just
+                // rethrowing the exception then letting the web app handle it appropriately. Ideally, this method
+                // would explicitly return a 200 or 403/503 in this exceptional case.
+
+                throw;
             }
         }
     }
