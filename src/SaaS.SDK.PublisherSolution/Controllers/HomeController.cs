@@ -798,7 +798,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
                 foreach (SubscriptionResult subscription in subscriptions)
                 {
-                    // create subscription (and user) if it doesn't exist
+                    // create saas subscription not in db (and its purchaser user) if it doesnt exist
                     if (this.subscriptionRepo.GetById(subscription.Id) == null)
                     {
                         //room for improvement to use AddRange rather making mulitple db trips
