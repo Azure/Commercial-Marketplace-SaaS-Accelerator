@@ -248,10 +248,13 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
                         Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
+                        subscriptionDetailExtension.OfferId = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.AmpsubscriptionId).GetAwaiter().GetResult().OfferId;
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
                             allSubscriptions.Add(subscriptionDetailExtension);
                         }
+
+
                     }
 
                     subscriptionDetail.Subscriptions = allSubscriptions;
@@ -845,6 +848,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     if (this.subscriptionRepo.GetById(subscription.Id) == null)
                     {
                         //room for improvement to use AddRange rather making mulitple db trips
+                        System.Diagnostics.Debug.WriteLine(subscription.OfferId);
                         Offers offers = new Offers()
                         {
                             OfferId = subscription.OfferId,
