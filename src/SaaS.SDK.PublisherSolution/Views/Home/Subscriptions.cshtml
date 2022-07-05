@@ -100,6 +100,10 @@
                                     }
                                 </tbody>
                             </table>
+                            <nav aria-label="Subscription Page Navigation">
+                              <ul class="pagination" id="pagination" data-count="@Model.TotalSubscriptions">
+                              </ul>
+                            </nav>
                         }
                         else
                         {
@@ -249,4 +253,33 @@
             });
         }
     }
+
+    // Manage pagination menu
+    function loadPagination() {
+
+        var queryParams = (new URL(window.location.href)).searchParams;
+        var page = queryParams.get("page") || 1;
+        var pageSize = queryParams.get("pageSize") || 50;
+        var activeOnly = queryParams.get("activeOnly") || false;
+        var calculatedPages = Math.ceil($("#pagination").attr("data-count")/pageSize);
+        var pageMenuHtml = "";
+        page != 1 && (pageMenuHtml += `<li class="page-item"><a class="page-link" href="?page=`+(currentPage-1)+`&pageSize=`+pageSize+`">Previous</a></li>`);
+        var currentPage = 1;
+        while (currentPage < calculatedPages) {
+            pagePath = `?page=${currentPage}&pageSize=${pageSize}&activeOnly=${activeOnly}`;
+            pageMenuHtml += (`<li class="page-item${currentPage == page && " active"}">
+                                <a class="page-link" href="` + pagePath +`">`+currentPage+`</a>
+                                </li>`);
+            currentPage++;
+        }
+        page != calculatedPages && (pageMenuHtml += `<li class="page-item"><a class="page-link" href="?page=`+(currentPage+1)+`&pageSize=`+pageSize+`">Next</a></li>`);
+        $("#pagination").html(pageMenuHtml);
+    }
+
+    $(document).ready(function() {
+
+        // Load pagination
+        loadPagination();
+
+    });
 </script>
