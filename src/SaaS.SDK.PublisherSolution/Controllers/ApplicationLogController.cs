@@ -33,7 +33,7 @@ namespace SaaS.SDK.PublisherSolution.Controllers
             try
             {
                 IEnumerable<ApplicationLog> getAllAppLogData = new List<ApplicationLog>();
-                getAllAppLogData = this.appLogService.GetAllLogs().ToList();
+                getAllAppLogData = this.appLogService.GetAllLogs().OrderByDescending(d => d.ActionTime).ToList();
                 return this.View(getAllAppLogData);
             }
             catch (Exception ex)
