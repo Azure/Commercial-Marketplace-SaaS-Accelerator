@@ -53,7 +53,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             var isActive = this.IsSubscriptionDeleted(Convert.ToString(subscriptionDetail.SaasSubscriptionStatus));
             Subscriptions newSubscription = new Subscriptions()
             {
-                Id = subscriptionDetail.SubscribeId,
+                Id = 0,
                 AmpplanId = subscriptionDetail.PlanId,
                 Ampquantity = subscriptionDetail.Quantity,
                 AmpsubscriptionId = subscriptionDetail.Id,
