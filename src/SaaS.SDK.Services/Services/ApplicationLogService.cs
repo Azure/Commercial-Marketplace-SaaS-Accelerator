@@ -44,21 +44,6 @@
         /// Updates the application log.
         /// </summary>
         /// <param name="logMessage">The log message.</param>
-        public async Task UpdateApplicationLog(string logMessage)
-        {
-            ApplicationLog existingLog = new ApplicationLog()
-            {
-                ActionTime = DateTime.Now,
-                LogDetail = logMessage,
-            };
-
-            await this.applicationLogRepository.UpdateLog(existingLog);
-        }
-
-        /// <summary>
-        /// Updates the application log.
-        /// </summary>
-        /// <param name="logMessage">The log message.</param>
         public IEnumerable<ApplicationLog> GetAllLogs()
         {
             return this.applicationLogRepository.GetLogs();
