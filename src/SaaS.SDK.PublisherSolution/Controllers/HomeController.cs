@@ -237,8 +237,9 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     foreach (var subscription in allSubscriptionDetails)
                     {
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
-                        Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
+                        Plans planDetail = allPlans.Where(s => s.PlanId == subscriptionDetailExtension.PlanId).FirstOrDefault();
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
+                        System.Diagnostics.Debug.WriteLine(subscription.Id + "/" + allSubscriptionDetails.Count);
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
                             allSubscriptions.Add(subscriptionDetailExtension);
