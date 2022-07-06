@@ -239,7 +239,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
                         Plans planDetail = allPlans.Where(s => s.PlanId == subscriptionDetailExtension.PlanId).FirstOrDefault();
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
-                        System.Diagnostics.Debug.WriteLine(subscription.Id + "/" + allSubscriptionDetails.Count);
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
                             allSubscriptions.Add(subscriptionDetailExtension);
