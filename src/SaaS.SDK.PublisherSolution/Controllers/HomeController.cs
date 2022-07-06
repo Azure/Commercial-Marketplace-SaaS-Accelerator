@@ -221,7 +221,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         /// Subscriptionses this instance.
         /// </summary>
         /// <returns> The <see cref="IActionResult" />.</returns>
-        public IActionResult Subscriptions(int page, int pageSize = 20)
+        public IActionResult Subscriptions()
         {
             this.logger.LogInformation("Home Controller / Subscriptions ");
             try
@@ -232,11 +232,9 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     this.TempData["ShowWelcomeScreen"] = "True";
 
                     List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
-                    List<SubscriptionResultExtension> paginatedSubscriptions = new List<SubscriptionResultExtension>();
                     var allSubscriptionDetails = this.subscriptionRepo.Get().ToList();
                     var allPlans = this.planRepository.Get().ToList();
-                    var paginatedSubscriptionDetails = new List<Subscriptions>(allSubscriptionDetails).Skip(pageSize * (page - 1)).Take(pageSize);
-                    foreach (var subscription in paginatedSubscriptionDetails)
+                    foreach (var subscription in allSubscriptionDetails)
                     {
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
                         Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
@@ -248,7 +246,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     }
 
                     subscriptionDetail.Subscriptions = allSubscriptions;
-                    subscriptionDetail.TotalSubscriptions = allSubscriptionDetails.Count;
 
                     if (this.TempData["ErrorMsg"] != null)
                     {

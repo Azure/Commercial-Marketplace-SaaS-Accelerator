@@ -38,13 +38,5 @@
         /// The saa s application URL.
         /// </value>
         public string SaaSAppUrl { get; set; }
-
-        /// <summary>
-        /// Gets or sets the total number of subscriptions without pagination
-        /// </summary>
-        /// <value>
-        /// The number of total subscriptions
-        /// </value>
-        public int TotalSubscriptions { get; set; }
     }
 }
