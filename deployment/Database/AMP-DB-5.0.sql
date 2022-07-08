@@ -385,6 +385,7 @@ CREATE TABLE [dbo].[Subscriptions](
 	[AMPQuantity] [int] NOT NULL,
 	[PurchaserEmail] [varchar](225) NULL,
 	[PurchaserTenantId] [uniqueidentifier] NULL,
+    [PlanGUId] [uniqueidentifier] NULL
  CONSTRAINT [PK_Subscriptions] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
