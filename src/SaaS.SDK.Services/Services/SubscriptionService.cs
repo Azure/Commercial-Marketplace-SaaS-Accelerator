@@ -66,6 +66,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 UserId = customerUserId == 0 ? this.currentUserId : customerUserId,
                 PurchaserEmail = subscriptionDetail.Purchaser.EmailId,
                 PurchaserTenantId = subscriptionDetail.Purchaser.TenantId,
+                PlanGUId = subscriptionDetail.PlanGUId
             };
             return this.subscriptionRepository.Save(newSubscription);
         }
