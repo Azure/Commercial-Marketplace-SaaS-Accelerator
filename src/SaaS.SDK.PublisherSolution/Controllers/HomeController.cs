@@ -246,9 +246,18 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     foreach (var subscription in allSubscriptionDetails)
                     {
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
-                        Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
-                        subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
-                        subscriptionDetailExtension.OfferId = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.AmpsubscriptionId).GetAwaiter().GetResult().OfferId;
+
+                        if (subscriptionDetailExtension.PlanGUId != null)
+                        {
+                            Plans planDetail = this.planRepository.GetByInternalReference((Guid)subscriptionDetailExtension.PlanGUId);
+                            subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
+
+                            Offers offerDetail = this.offersRepository.GetOfferById(planDetail.OfferId);
+
+                            subscriptionDetailExtension.OfferId = offerDetail.OfferName;
+
+                        }
+
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
                             allSubscriptions.Add(subscriptionDetailExtension);
