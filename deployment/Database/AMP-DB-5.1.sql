@@ -482,6 +482,8 @@ PRIMARY KEY CLUSTERED
 GO
 ALTER TABLE [dbo].[Subscriptions] ADD  CONSTRAINT [DF_Subscriptions_AMPSubscriptionId]  DEFAULT (newid()) FOR [AMPSubscriptionId]
 GO
+ALTER TABLE [dbo].[Subscriptions] ADD PlanGUId uniqueidentifier NULL
+GO
 ALTER TABLE [dbo].[KnownUsers]  WITH CHECK ADD FOREIGN KEY([RoleId])
 REFERENCES [dbo].[Roles] ([Id])
 GO
