@@ -157,6 +157,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 CustomerEmailAddress = subscription.User?.EmailAddress,
                 CustomerName = subscription.User?.FullName,
                 IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
+                PlanGUId = subscription.PlanGUId
             };
             subscritpionDetail.Purchaser = new PurchaserResult();
 
