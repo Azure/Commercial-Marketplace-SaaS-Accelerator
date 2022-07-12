@@ -237,18 +237,17 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     foreach (var subscription in allSubscriptionDetails)
                     {
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
-
+                        Plans planDetail = new Plans();
                         if (subscriptionDetailExtension.PlanGUId != null)
                         {
-                            Plans planDetail = this.planRepository.GetByInternalReference((Guid)subscriptionDetailExtension.PlanGUId);
-                            subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
-
+                            planDetail = this.planRepository.GetByInternalReference((Guid)subscriptionDetailExtension.PlanGUId);
                             Offers offerDetail = this.offersRepository.GetOfferById(planDetail.OfferId);
-
                             subscriptionDetailExtension.OfferId = offerDetail.OfferName;
-
+                        } else
+                        {
+                            planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
                         }
-
+                        subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
                             allSubscriptions.Add(subscriptionDetailExtension);
@@ -828,6 +827,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             x.PlanGUID = Guid.NewGuid();
                         });
                         this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail); // add plans
+                        subscription.PlanGUId = subscriptionPlanDetail.FirstOrDefault().PlanGUID;
 
                         //var subscriptionData = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
                         var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription);  // add subscription
