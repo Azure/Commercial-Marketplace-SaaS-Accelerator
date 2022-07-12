@@ -871,6 +871,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             x.PlanGUID = Guid.NewGuid();
                         });
                         this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail); // add plans
+                        subscription.PlanGUId = subscriptionPlanDetail.FirstOrDefault().PlanGUID;
 
                         //var subscriptionData = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
                         var customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Purchaser.EmailId, EmailAddress = subscription.Purchaser.EmailId });
