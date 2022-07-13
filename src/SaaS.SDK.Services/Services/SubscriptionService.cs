@@ -48,7 +48,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// </summary>
         /// <param name="subscriptionDetail">The subscription detail.</param>
         /// <returns>Subscription Id.</returns>
-        public int AddOrUpdatePartnerSubscriptions(SubscriptionResult subscriptionDetail)
+        public int AddOrUpdatePartnerSubscriptions(SubscriptionResult subscriptionDetail, int customerUserId = 0)
         {
             var isActive = this.IsSubscriptionDeleted(Convert.ToString(subscriptionDetail.SaasSubscriptionStatus));
             Subscriptions newSubscription = new Subscriptions()
@@ -63,9 +63,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 ModifyDate = DateTime.Now,
                 Name = subscriptionDetail.Name,
                 SubscriptionStatus = Convert.ToString(subscriptionDetail.SaasSubscriptionStatus),
-                UserId = this.currentUserId,
+                UserId = customerUserId == 0 ? this.currentUserId : customerUserId,
                 PurchaserEmail = subscriptionDetail.Purchaser.EmailId,
                 PurchaserTenantId = subscriptionDetail.Purchaser.TenantId,
+                PlanGUId = subscriptionDetail.PlanGUId
             };
             return this.subscriptionRepository.Save(newSubscription);
         }
@@ -156,6 +157,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 CustomerEmailAddress = subscription.User?.EmailAddress,
                 CustomerName = subscription.User?.FullName,
                 IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
+                PlanGUId = subscription.PlanGUId
             };
             subscritpionDetail.Purchaser = new PurchaserResult();
 
