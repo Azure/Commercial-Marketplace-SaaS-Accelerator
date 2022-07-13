@@ -362,4 +362,5 @@ src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/projectSettingsUpdater.xml
 src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/vcs.xml
 
 # ignoring developer settings file
-appsettings.Development.json
+src/SaaS.SDK.CustomerProvisioning/appsettings.Development.json
+src/SaaS.SDK.PublisherSolution/appsettings.Development.json

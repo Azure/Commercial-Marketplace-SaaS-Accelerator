@@ -24,6 +24,18 @@ Param(
    [string][Parameter()]$LogoURLico  # URL for Publisher .ico logo
 )
 
+$ErrorActionPreference = "Stop"
+
+# Checking SQL username
+if($SQLAdminLogin.ToLower() -eq "admin") {
+    Throw "🛑 SQLAdminLogin may not be 'admin'."
+}
+
+# Checking SQL password length
+if($SQLAdminLogin.Length -lt 8) {
+    Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
+}
+
 Write-Host "Starting SaaS Accelerator Deployment..."
 
 # Record the current ADApps to reduce deployment instructions at the end
@@ -177,7 +189,7 @@ if($LogoURLico) {
 
 # If there is no backpack use the default from main
 if (!($BacpacUrl)) {
-    $BacpacUrl = "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac"
+    $BacpacUrl = "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/main/deployment/Database/AMPSaaSDB.bacpac"
 }
 
 $TempFolderToStoreBacpac = '.\AMPSaaSDatabase'

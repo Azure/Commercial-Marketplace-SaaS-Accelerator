@@ -6,6 +6,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using global::Azure;
+    using Microsoft.Marketplace.SaaS.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 
     /// <summary>
@@ -82,6 +83,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
         /// Get Operation Status Result.
         /// </returns>
         Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
+
+        /// <summary>
+        /// Update the operation status result.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="operationId">The operation identifier.</param>
+        /// <param name="updateOperationStatus">The operation status to patch with.</param>
+        /// <returns>
+        /// Get Operation Status Result.
+        /// </returns>
+        Task<Response> PatchOperationStatusResultAsync(Guid subscriptionId, Guid operationId, UpdateOperationStatusEnum updateOperationStatus);
 
         /// <summary>
         /// Deletes the subscription.

@@ -96,6 +96,8 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
 
+        private readonly ApplicationConfigService applicationConfigService;
+
         private UserService userService;
 
         private SubscriptionService subscriptionService = null;
@@ -137,12 +139,12 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
             this.dimensionsRepository = dimensionsRepository;
             this.logger = logger;
             this.applicationConfigRepository = applicationConfigRepository;
+            this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);
             this.userRepository = userRepository;
             this.userService = new UserService(userRepository);
             this.fulfillApiService = fulfillApiService;
             this.applicationLogRepository = applicationLogRepository;
             this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
-            this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionRepository = this.subscriptionRepo;
             this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository);
             this.emailTemplateRepository = emailTemplateRepository;
@@ -202,6 +204,9 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
             this.logger.LogInformation("Home Controller / Index ");
             try
             {
+                this.applicationConfigService.SaveFileToDisk("LogoFile", "contoso-sales.png");
+                this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
+
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 return this.View();
             }
@@ -234,7 +239,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
                         Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
-                        subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
                             allSubscriptions.Add(subscriptionDetailExtension);
@@ -640,51 +644,49 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
             this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
             try
             {
-                var subscriptionId = Guid.Empty;
-                var planId = string.Empty;
-
-                if (subscriptionDetail != null)
-                {
-                    subscriptionId = subscriptionDetail.Id;
-                    planId = subscriptionDetail.PlanId;
-                }
-
-                if (subscriptionId != default && !string.IsNullOrEmpty(planId))
+                if (subscriptionDetail.Id != default && !string.IsNullOrEmpty(subscriptionDetail.PlanId))
                 {
                     try
                     {
+                        //initiate change plan
                         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-
-                        var jsonResult = await this.fulfillApiService.ChangePlanForSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false);
-
+                        var jsonResult = await this.fulfillApiService.ChangePlanForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.PlanId).ConfigureAwait(false);
                         var changePlanOperationStatus = OperationStatusEnum.InProgress;
+
                         if (jsonResult != null && jsonResult.OperationId != default)
                         {
+                            int _counter = 0;
+
+                            //loop untill the operation status has moved away from inprogress or notstarted, generally this will be the result of webhooks' action aganist this operation
                             while (OperationStatusEnum.InProgress.Equals(changePlanOperationStatus) || OperationStatusEnum.NotStarted.Equals(changePlanOperationStatus))
                             {
-                                var changePlanOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                var changePlanOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                                 changePlanOperationStatus = changePlanOperationResult.Status;
-                                this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId));
-                                await this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId).ConfigureAwait(false);
+                                
+                                this.logger.LogInformation($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changePlanOperationStatus }.");
+                                await this.applicationLogService.AddApplicationLog($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changePlanOperationStatus }.").ConfigureAwait(false);
+
+                                //wait and check every 5secs
+                                await Task.Delay(5000);
+                                _counter++;
+                                if (_counter > 100)
+                                {
+                                    //if loop has been executed for more than 100 times then break, to avoid infinite loop just in case
+                                    break;
+                                }
                             }
 
-                            var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
-                            this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
-                            this.logger.LogInformation("Plan Successfully Changed.");
-                            await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
-
-                            if (oldValue != null)
+                            if (changePlanOperationStatus == OperationStatusEnum.Succeeded)
                             {
-                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                                {
-                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
-                                    SubscriptionId = oldValue.SubscribeId,
-                                    NewValue = planId,
-                                    OldValue = oldValue.PlanId,
-                                    CreateBy = currentUserId,
-                                    CreateDate = DateTime.Now,
-                                };
-                                this.subscriptionLogRepository.Save(auditLog);
+                                this.logger.LogInformation($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
+                                await this.applicationLogService.AddApplicationLog($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                this.logger.LogInformation($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.");
+                                await this.applicationLogService.AddApplicationLog($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.").ConfigureAwait(false);
+                                
+                                throw new MarketplaceException($"Plan change operation failed with operation status {changePlanOperationStatus}. Check if the updates are allowed in the App config \"AcceptSubscriptionUpdates\" key or db application log for more information.");
                             }
                         }
                     }
@@ -720,43 +722,45 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     {
                         try
                         {
-                            var subscriptionId = subscriptionDetail.Id;
-                            var quantity = subscriptionDetail.Quantity;
-
+                            //initiate change quantity
                             var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-
-                            var jsonResult = await this.fulfillApiService.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
-
+                            var jsonResult = await this.fulfillApiService.ChangeQuantityForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.Quantity).ConfigureAwait(false);
                             var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
+
                             if (jsonResult != null && jsonResult.OperationId != default)
                             {
+                                int _counter = 0;
+                                
+                                //loop untill the operation status has moved away from inprogress or notstarted, generally this will be the result of webhooks' action aganist this operation
                                 while (OperationStatusEnum.InProgress.Equals(changeQuantityOperationStatus) || OperationStatusEnum.NotStarted.Equals(changeQuantityOperationStatus))
                                 {
-                                    var changeQuantityOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                    var changeQuantityOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                                     changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
-                                    this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(quantity));
-                                    await this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId).ConfigureAwait(false);
-                                }
+                                    this.logger.LogInformation($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
+                                    await this.applicationLogService.AddApplicationLog($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.").ConfigureAwait(false);
 
-                                var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
-
-                                this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
-                                this.logger.LogInformation("Quantity Successfully Changed.");
-                                await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
-
-                                if (oldValue != null)
-                                {
-                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                    //wait and check every 5secs
+                                    await Task.Delay(5000);
+                                    _counter++;
+                                    if (_counter > 100)
                                     {
-                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
-                                        SubscriptionId = oldValue.SubscribeId,
-                                        NewValue = quantity.ToString(),
-                                        OldValue = oldValue.Quantity.ToString(),
-                                        CreateBy = currentUserId,
-                                        CreateDate = DateTime.Now,
-                                    };
-                                    this.subscriptionLogRepository.Save(auditLog);
+                                        //if loop has been executed for more than 100 times then break, to avoid infinite loop just in case
+                                        break;
+                                    }
+                                }
+                                
+                                if (changeQuantityOperationStatus == OperationStatusEnum.Succeeded)
+                                {
+                                    this.logger.LogInformation($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
+                                    await this.applicationLogService.AddApplicationLog($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    this.logger.LogInformation($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
+                                    await this.applicationLogService.AddApplicationLog($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.").ConfigureAwait(false);
+                                    
+                                    throw new MarketplaceException($"Quantity Change operation failed with operation status {changeQuantityOperationStatus}. Check if the updates are allowed in the App config \"AcceptSubscriptionUpdates\" key or db application log for more information.");
                                 }
                             }
                         }
@@ -794,7 +798,8 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
                 foreach (SubscriptionResult subscription in subscriptions)
                 {
-                    if(this.subscriptionRepo.GetById(subscription.Id) == null)
+                    // create saas subscription not in db (and its purchaser user) if it doesnt exist
+                    if (this.subscriptionRepo.GetById(subscription.Id) == null)
                     {
                         //room for improvement to use AddRange rather making mulitple db trips
                         Offers offers = new Offers()
@@ -816,7 +821,8 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail); // add plans
 
                         //var subscriptionData = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-                        var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription);  // add subscription
+                        var customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Purchaser.EmailId, EmailAddress = subscription.Purchaser.EmailId });
+                        var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription, customerUserId);  // add subscription
                         if (subscribeId > 0 && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                         {
                             SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
@@ -831,7 +837,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             this.subscriptionLogRepository.Save(auditLog);  // add audit log
                         }
                     }
-                    
+
                 }
             }
             catch (Exception ex)

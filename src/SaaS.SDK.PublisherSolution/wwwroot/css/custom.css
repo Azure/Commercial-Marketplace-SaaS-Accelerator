@@ -129,6 +129,33 @@
     margin-top: 0px !important;
 }
 
+.filter-box {
+    display: flex;
+    justify-content: flex-start !important;
+    align-items: center;
+    gap: 10px;
+}
+
+.cm-button {
+    color: #fff !important;
+    background-color: #004578;
+    border-color: #2e6da4;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+
 .cm-button-default {
     color: #fff !important;
     background-color: #004578;
@@ -437,12 +464,6 @@ input:checked + .slider:before {
 
 button.navbar-toggler:focus, button.navbar-toggler:hover {
     outline: none
-}
-
-
-.navtoggle {
-    height: 100%;
-    font-weight: 600;
 }
 
 .admin-margin {

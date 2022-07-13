@@ -46,17 +46,19 @@ Application configuration is initialized with the following keys that the publis
 
 | Key | Description|
 | --- | -- |
+| SMTPFromEmail | From email address for the emails |
+| SMTPPassword | Password in the credential to connect to the SMTP server |
+| SMTPHost | SMTP server name |
+| SMTPPort | SMTP Port name |
+| SMTPUserName | Username in the credential to connect to the SMTP server |
+| SMTPSslEnabled | Is SMTP SSL enabled |
 | ApplicationName | Name of the application |
 | IsEmailEnabledForSubscriptionActivation | Flag that defines if an email has to be sent out when a subscription is activated (Default: False, Allowed values : True / False)|
 | IsEmailEnabledForUnsubscription | Flag that defines if an email has to be sent out when a subscription is deleted (Default: False, Allowed values : True / False)|
-| IsAutomaticProvisioningSupported | Flag that enables activation workflow. If the value is False, the options - Change Plan & Unsubscribe are not available to the customer. Clicking **Activate** button on the landing page would place the subscription in PendingActivation status and doesn't activate the subscription yet. Publisher has the option to activate the subscription, change plan and unsubscribe. If the value is True, customer can activate, change plan and unsubscribe without any intervention required from the publisher.
-| IsEmailEnabledForPendingActivation | Flag to indicate if an email should be sent out to publisher when activation workflow is enabled.
-| SMTPFromEmail | From email address for the emails |
-| SMTPHost | SMTP server name |
-| SMTPPassword | Password in the credential to connect to the SMTP server |
-| SMTPPort | SMTP Port name |
-| SMTPSslEnabled | Is SMTP SSL enabled |
-| SMTPUserName | Username in the credential to connect to the SMTP server |
+| IsAutomaticProvisioningSupported | Flag that enables activation workflow. If the value is False, the option Change Plan is not available to the customer. Clicking Subscribe button on the landing page would place the subscription in PendingActivation status and doesn't activate the subscription yet. Publisher has the option to activate the subscription, change plan and unsubscribe. If the value is True, customer can activate and change plan without any intervention required from the publisher.|
+| IsEmailEnabledForPendingActivation | Flag to indicate if an email should be sent out to publisher when activation workflow is enabled.|
+| AcceptSubscriptionUpdates | If True, subscription updates are allowed. If False or the key doesn't exist, Subscription updates are denied.(Allowed values : True / False)|
+
 
 ### EmailTemplate
 
