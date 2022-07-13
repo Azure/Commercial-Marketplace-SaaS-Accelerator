@@ -6,7 +6,6 @@
   - [Manage new subscription landing page input fields](#manage-new-subscription-landing-page-input-fields)
   - [Manage existing subscription landing page input fields](#manage-existing-subscription-landing-page-input-fields)
   - [Subscription events](#subscription-events)
-  - [Email setup](#email-setup)
   - [Manage subscriptions](#manage-subscriptions)
   - [Activate a subscription](#activate-a-subscription)
   - [Change plan](#change-plan)
@@ -39,7 +38,7 @@ The publisher web application is the admin console for the publisher for definin
   * *ValueList*   : Items of the pick list as comma delimited values
   * *Max*         : Maximum value of the integer field
   * *Min*         : Minimum value of the integer field
-  * *DisplaySequence* : Order / sequence in which the field appears along with other fields
+  * *DisplaySequence* :Order / sequence in which the field appears along with other fields
   * *IsActive*    : Check this box to have the field in effect. Uncheck the box so that the field stops appearing on the landing page
   * *IsRequired*  : Check if the input on this field is mandatory
   * *Remove*      : Remove the item
@@ -69,29 +68,10 @@ The publisher web application is the admin console for the publisher for definin
 
 * Check the box - **Copy to Customer** to include customer email address in the email notifications relevant to the event
 
-## Email setup
-
-* Go to the **Publisher Portal** and in **Application Config**, make sure the **SMTP** values are updated
-
-![Application Config Page](./images/config-page.png)
-
-* In the **Plans** page, go to the **Events** tab
-* Set the emails' recipients under **Success/Failure Event Emails** and mark them as active in the checkboxes under **Active** [To send the email to the customer, enable the **Copy To Customer** flag]
-
-![Plan Events](./images/events-activity.png)
-
-* To add Bcc emails, go to the **Email Template** in the **Application Config** page and add Bcc emails to the appropriate template
-* In the **Application Config** page, enable the respective config values to send the emails in different scenarios:
-  * To send emails when a subscription is requesting activation, set **IsEmailEnabledForPendingActivation** to **True**
-  * To send emails when a subscription is activated, set **IsEmailEnabledForSubscriptionActivation** to **True**
-  * To send emails when a subscription is unsubscribed, set **IsEmailEnabledForUnsubscription** to **True**
-
-![Application Config Page](./images/config-page2.png)
-
 ## Manage subscriptions
 
-* All the subscriptions purchased will be available under the subscriptions screen.
-* The status of each subscription will be available in the list.
+* All the subscriptions purchased will be availabe under the subscriptions screen.
+* The status of each subscription will be availbe in the list.
 * From this screen the actions on the subscriptions like Change Plan, Change Quantity,  Manage Usage, Activate and unsubscribe can be done depending on the status.
 
 ![SaaS Subscriptions](./images/customer-subscriptions.png)
@@ -123,7 +103,7 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 
 ## Change plan
 
-Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesn't exist, updates will be rejected by the webhook.
+Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesnt exist, updates will be rejected by the webhook.
 
 The diagram below illustrates the flow of information between Azure and the Azure marketplace SDK client application.
 
@@ -159,13 +139,13 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 
 ## Change quantity
 
-Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesn't exist, updates will be rejected by the webhook.
+Pre-requisite: Set "AcceptSubscriptionUpdates" Key in App config to "True". If "False" or Key doesnt exist, updates will be rejected by the webhook.
 
 The update to quantity is applicable only for the plans with *per user* pricing model.
   
 ![Per user pricing](./images/per-user-plan-pricing.png)
 
-The record for the plan needs to reflect the *per user* pricing model. To update the record, see the following script as an example / template to update the records in **Plans**
+The record for the plan needs to reflect the *per user* pricing model. To update the record, sse the following script as an example / template to update the records in **Plans**
 
 ```sql
 UPDATE Plans SET IsPerUser = 1 WHERE PlanId = '<ID-of-the-plan-as-in-the-offer-in-partner-center>'

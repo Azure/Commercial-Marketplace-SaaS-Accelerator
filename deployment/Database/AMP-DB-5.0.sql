@@ -385,7 +385,6 @@ CREATE TABLE [dbo].[Subscriptions](
 	[AMPQuantity] [int] NOT NULL,
 	[PurchaserEmail] [varchar](225) NULL,
 	[PurchaserTenantId] [uniqueidentifier] NULL,
-    [PlanGUId] [uniqueidentifier] NULL
  CONSTRAINT [PK_Subscriptions] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -443,8 +442,6 @@ PRIMARY KEY CLUSTERED
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 ALTER TABLE [dbo].[Subscriptions] ADD  CONSTRAINT [DF_Subscriptions_AMPSubscriptionId]  DEFAULT (newid()) FOR [AMPSubscriptionId]
-GO
-ALTER TABLE [dbo].[Subscriptions] ADD PlanGUId uniqueidentifier NULL
 GO
 ALTER TABLE [dbo].[KnownUsers]  WITH CHECK ADD FOREIGN KEY([RoleId])
 REFERENCES [dbo].[Roles] ([Id])

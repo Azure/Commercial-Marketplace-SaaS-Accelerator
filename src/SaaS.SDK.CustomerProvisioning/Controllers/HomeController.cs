@@ -229,7 +229,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
                             var subscriptionData = await this.apiService.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false);
-                            subscriptionData.PlanGUId = subscriptionPlanDetail.FirstOrDefault().PlanGUID;
                             var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
                             if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                             {
