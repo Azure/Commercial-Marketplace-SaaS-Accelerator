@@ -91,16 +91,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
             }
             catch (Exception ex)
             {
-                // This catch block can handle any variety of exception however, in this case, I put it here
-                // specifically to handle a webhook invocation that can't be verified further downstream within webhookProcessor.
-
                 await this.applicationLogService.AddApplicationLog(
                     $"An error occurred while attempting to process a webhook notification: [{ex.Message}].")
                     .ConfigureAwait(false);
-
-                // Since we aren't returning an explicit status code here within the existing code, I'm just
-                // rethrowing the exception then letting the web app handle it appropriately. Ideally, this method
-                // would explicitly return a 200 or 403/503 in this exceptional case.
 
                 throw;
             }
