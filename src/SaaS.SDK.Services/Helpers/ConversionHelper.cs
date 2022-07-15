@@ -182,11 +182,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
               ID = operation.Id?.ToString(),
               Status = (Models.OperationStatusEnum)Enum.Parse(typeof(Models.OperationStatusEnum), operation.Status.ToString()),
               Created = operation.TimeStamp.Value.UtcDateTime,
-              // Keeping subscription ID and action type as strings here but open for discussion. Nowhere in the docs does it 
-              // specifically state that the subscription ID is a GUID but everywhere that I've seen it it is. Keeping the action type
-              // as a string allows us to potentially support additional action types without further modifying the code. This should
-              // be fairly easy to change back to GUIDs/enums if needed. The operation ID will typically be a GUID as well but I note that
-              // on this object (OperationResult), the operation ID is expressed as a string so trying to maintain some consistency.
               SubscriptionId = operation.SubscriptionId?.ToString(), 
               ActionType = operation.Action?.ToString()
             };
