@@ -48,12 +48,12 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// </summary>
         /// <param name="subscriptionDetail">The subscription detail.</param>
         /// <returns>Subscription Id.</returns>
-        public int AddOrUpdatePartnerSubscriptions(SubscriptionResult subscriptionDetail, int customerUserId = 0)
+        public int AddOrUpdatePartnerSubscriptions(SubscriptionResult subscriptionDetail, int customerUserId = 0, int subscribeId = 0)
         {
             var isActive = this.IsSubscriptionDeleted(Convert.ToString(subscriptionDetail.SaasSubscriptionStatus));
             Subscriptions newSubscription = new Subscriptions()
             {
-                Id = 0,
+                Id = subscribeId,
                 AmpplanId = subscriptionDetail.PlanId,
                 Ampquantity = subscriptionDetail.Quantity,
                 AmpsubscriptionId = subscriptionDetail.Id,

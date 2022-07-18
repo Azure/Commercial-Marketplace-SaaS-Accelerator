@@ -858,5 +858,40 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
 
             return this.RedirectToAction(nameof(this.Subscriptions));
         }
+
+        [HttpPost]
+        public IActionResult SyncSubscriptions()
+        {
+            var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+
+            try
+            {
+                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, currentUserId);
+
+                //get all subscirptions from api
+                var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
+                foreach (SubscriptionResult subscription in subscriptions)
+                {
+                    if (this.subscriptionRepo.GetById(subscription.Id) != null)
+                    {
+                        //var subscriptionData = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+                        Plans plan = this.planRepository.GetById(subscription.PlanId);
+                        subscription.PlanGUId = plan.PlanGuid;
+                        var customerUserId = this.userService.GetUserIdFromEmailAddress(subscription.Purchaser.EmailId);
+                        var subscribeId = this.subscriptionRepo.GetById(subscription.Id).Id;
+                        this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription, customerUserId, subscribeId);  // update subscription
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return this.View("Error", ex);
+            }
+
+            return this.RedirectToAction(nameof(this.Subscriptions));
+        }
+
     }
 }
