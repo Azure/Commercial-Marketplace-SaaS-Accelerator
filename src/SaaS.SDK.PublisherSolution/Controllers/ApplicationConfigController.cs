@@ -15,7 +15,7 @@ using System.Text.Json;
 namespace SaaS.SDK.PublisherSolution.Controllers
 {
     /// <summary>
-    /// Offers Controller.
+    /// ApplicationConfig Controller.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.Saas.Web.Controllers.BaseController" />
     [ServiceFilter(typeof(KnownUserAttribute))]
