@@ -109,6 +109,35 @@
                 </div>
             </div>
         </li>
+        @if (this.TempData["SupportMeteredBilling"]!=null)
+        {
+            <li id="onedash-menu-homepage5">
+                <a class="programCardLink text-capitalize" asp-area="" asp-controller="Scheduler" asp-action="Index">Scheduler</a>
+            <div class="programCard">
+                <div class="programCardContentWrapper">
+                    <div class="programCardTitle minline">
+                        <div class="programCardIcon5 wrap-win-icon-RecruitmentManagement">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#288c00" class="bi bi-stopwatch-fill" viewBox="0 0 16 16">
+                              <path d="M6.5 0a.5.5 0 0 0 0 1H7v1.07A7.001 7.001 0 0 0 8 16a7 7 0 0 0 5.29-11.584.531.531 0 0 0 .013-.012l.354-.354.353.354a.5.5 0 1 0 .707-.707l-1.414-1.415a.5.5 0 1 0-.707.707l.354.354-.354.354a.717.717 0 0 0-.012.012A6.973 6.973 0 0 0 9 2.071V1h.5a.5.5 0 0 0 0-1h-3zm2 5.6V9a.5.5 0 0 1-.5.5H4.5a.5.5 0 0 1 0-1h3V5.6a.5.5 0 1 1 1 0z"/>
+                            </svg>
+
+                        </div>
+                        <div class="programCardTitleLeft">
+                            <h5>Scheduler</h5>
+
+                        </div>
+
+                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="programCardContent">
+                    </div>
+                    <div class="programCardHelp pull-right">
+                    </div>
+                </div>
+            </div>
+        </li>
+        }
         <li id="onedash-menu-homepage4">
             <a class="programCardLink text-capitalize" asp-area="" asp-controller="KnownUsers" asp-action="Index">Test Test Users</a>
             <div class="programCard">
@@ -134,7 +163,8 @@
                     </div>
                 </div>
             </div>
-        </li>
+        
+        
     </ul>
 
 </div>

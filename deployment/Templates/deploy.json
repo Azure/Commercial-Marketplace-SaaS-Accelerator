@@ -76,6 +76,13 @@
         "description": "Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal"
       },
       "defaultValue": ""
+    },
+    "MeteredSchedulerSupport": {
+      "type": "string",
+      "metadata": {
+        "description": "Deploy Metered Feature if set to True"
+      },
+      "defaultValue": "True"
     }
   },
   "variables": {
@@ -264,6 +271,7 @@
               "value": "[parameters('TenantID')]",
               "slotSetting": false
             },
+
             {
               "name": "KnownUsers",
               "value": "[parameters('PublisherAdminUsers')]",
@@ -385,6 +393,11 @@
             {
               "name": "SaaSApiConfiguration__TenantId",
               "value": "[parameters('TenantID')]",
+              "slotSetting": false
+            },
+            {
+              "name": "SaaSApiConfiguration__SupportmeteredBilling",
+              "value": "[parameters('MeteredSchedulerSupport')]",
               "slotSetting": false
             },
             {
