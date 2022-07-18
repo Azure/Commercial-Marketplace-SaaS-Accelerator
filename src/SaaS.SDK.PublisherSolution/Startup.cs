@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 namespace Microsoft.Marketplace.Saas.Web
 {
@@ -26,6 +26,8 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
+    using System;
+
     /// <summary>
     /// Startup.
     /// </summary>
@@ -80,6 +82,7 @@ namespace Microsoft.Marketplace.Saas.Web
                 SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
+                SupportMeteredBilling = Convert.ToBoolean(this.Configuration["SaaSApiConfiguration:supportmeteredbilling"])
             };
             var knownUsers = new KnownUsersModel()
             {
@@ -122,6 +125,13 @@ namespace Microsoft.Marketplace.Saas.Web
 
             InitializeRepositoryServices(services);
 
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(5);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddMvc(option => option.EnableEndpointRouting = false);
             services.AddControllersWithViews();
 
@@ -150,6 +160,7 @@ namespace Microsoft.Marketplace.Saas.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseSession();
             app.UseAuthentication();
             app.UseMvc(routes =>
             {
@@ -182,6 +193,9 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<KnownUserAttribute>();
             services.AddScoped<IEmailService, SMTPEmailService>();
+            services.AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>();
+            services.AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>();
+            services.AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>();
         }
     }
 }
