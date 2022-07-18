@@ -34,6 +34,7 @@
                             <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20" width="100%">
                                 <thead class="cm-table-head">
                                     <tr>
+                                        <th>Offer Name</th>
                                         <th>Purchaser Email</th>
                                         <th>Marketplace Subscription Id</th>
                                         <th>Subscription Name</th>
@@ -48,6 +49,9 @@
                                     {
                                         var subscription = Model.Subscriptions[i];
                                         <tr id=@subscription.SubscriptionStatus>
+                                            <td class="text-left">
+                                                @subscription.OfferId
+                                            </td>
                                             <td class="text-left">
                                                 @subscription.Purchaser.EmailId
                                             </td>

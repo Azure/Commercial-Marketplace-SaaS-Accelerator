@@ -66,6 +66,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 UserId = customerUserId == 0 ? this.currentUserId : customerUserId,
                 PurchaserEmail = subscriptionDetail.Purchaser.EmailId,
                 PurchaserTenantId = subscriptionDetail.Purchaser.TenantId,
+                PlanGUId = subscriptionDetail.PlanGUId
             };
             return this.subscriptionRepository.Save(newSubscription);
         }
@@ -156,6 +157,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 CustomerEmailAddress = subscription.User?.EmailAddress,
                 CustomerName = subscription.User?.FullName,
                 IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
+                PlanGUId = subscription.PlanGUId
             };
             subscritpionDetail.Purchaser = new PurchaserResult();
 
