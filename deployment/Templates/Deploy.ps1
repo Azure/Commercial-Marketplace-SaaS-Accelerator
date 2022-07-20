@@ -186,117 +186,86 @@ if($LogoURLico) {
     Write-Host "📷  Logo images ICO downloaded."
 }
 
-# Setup Bacpac
-
-# If there is no backpack use the default from main
-if (!($BacpacUrl)) {
-    $BacpacUrl = "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/main/deployment/Database/AMPSaaSDB.bacpac"
-}
-
-$TempFolderToStoreBacpac = '.\AMPSaaSDatabase'
-$BacpacFileName = "AMPSaaSDB.bacpac"
-$LocalPathToBacpacFile = $TempFolderToStoreBacpac + "\" + $BacpacFileName  
-
-# Create a temporary folder
-New-Item -Path $TempFolderToStoreBacpac -ItemType Directory -Force
-
-# Download Bacpac
-Invoke-WebRequest -Uri $BacpacUrl -OutFile $LocalPathToBacpacFile
-
-$storagepostfix = Get-Random -Minimum 1 -Maximum 1000
-
-$StorageAccountName = "amptmpstorage" + $storagepostfix       #enter storage account name
-
-$ContainerName = "packagefiles" #container name for uploading SQL DB file 
-$BlobName = "blob"
-$resourceGroupForStorageAccount = "amptmpstorage"   #resource group name for the storage account.
-
-Write-host "🕒  Creating a temporary resource group and storage account - $resourceGroupForStorageAccount"
-New-AzResourceGroup -Name $resourceGroupForStorageAccount -Location $location -Force
-New-AzStorageAccount -ResourceGroupName $resourceGroupForStorageAccount -Name $StorageAccountName -Location $location -SkuName Standard_LRS -Kind StorageV2
-$StorageAccountKey = @((Get-AzStorageAccountKey -ResourceGroupName $resourceGroupForStorageAccount -Name $StorageAccountName).Value)
-$key = $StorageAccountKey[0]
-
-$ctx = New-AzstorageContext -StorageAccountName $StorageAccountName  -StorageAccountKey $key
-
-New-AzStorageContainer -Name $ContainerName -Context $ctx -Permission Blob 
-Set-AzStorageBlobContent -File $LocalPathToBacpacFile -Container $ContainerName -Blob $BlobName -Context $ctx -Force
-
-$URLToBacpacFromStorage = (Get-AzStorageBlob -blob $BlobName -Container $ContainerName -Context $ctx).ICloudBlob.uri.AbsoluteUri
-
-Write-host "📜  Uploaded the bacpac file to $URLToBacpacFromStorage"    
-
+Write-host "☁  Prepare publish files for the web application"
 
 if (!($MeteredSchedulerSupport))
 {
-    $MeteredSchedulerSupport = "True"
+    $MeteredSchedulerSupport = "NO"
 }
 
-Write-host "☁  Prepare publish files for the web application"
+Write-host "☁  Preparing the publish files for PublisherPortal"  
+dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
 
 if ($MeteredSchedulerSupport -ne "NO")
 { 
-    Write-host "☁  Preparing the publish files for PublisherPortal webjob"  
-    dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
-
-    mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
     Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
-    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
-
-    Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
-
+    mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
+    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
     $MeteredSchedulerSupport = "True"
 }
 else {
-    Write-host "☁  Preparing the publish files for PublisherPortal"  
-    dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal 
-    Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
     $MeteredSchedulerSupport = "False"
 }
+Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
 
 Write-host "☁  Preparing the publish files for CustomerPortal"
 dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
 Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Publish\CustomerPortal.zip -Force
 
-Write-host "☁  Upload web application files to storage account"
-Set-AzStorageBlobContent -File "..\..\Publish\PublisherPortal.zip" -Container $ContainerName -Blob "PublisherPortal.zip" -Context $ctx -Force
-Set-AzStorageBlobContent -File "..\..\Publish\CustomerPortal.zip" -Container $ContainerName -Blob "CustomerPortal.zip" -Context $ctx -Force
-
-# The base URI where artifacts required by this template are located
-$PathToWebApplicationPackages = ((Get-AzStorageContainer -Container $ContainerName -Context $ctx).CloudBlobContainer.uri.AbsoluteUri)
 
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
-
-#Parameter for ARM template, Make sure to add values for parameters before running the script.
-$ARMTemplateParams = @{
-   webAppNamePrefix             = "$WebAppNamePrefix"
-   TenantID                     = "$TenantID"
-   ADApplicationID              = "$ADApplicationID"
-   ADApplicationSecret          = "$ADApplicationSecret"
-   ADMTApplicationID            = "$ADMTApplicationID"
-   SQLServerName                = "$SQLServerName"
-   SQLAdminLogin                = "$SQLAdminLogin"
-   SQLAdminLoginPassword        = "$SQLAdminLoginPassword"
-   bacpacUrl                    = "$URLToBacpacFromStorage"
-   SAASKeyForbacpac             = ""
-   PublisherAdminUsers          = "$PublisherAdminUsers"
-   PathToWebApplicationPackages = "$PathToWebApplicationPackages"
-   MeteredSchedulerSupport      = "$MeteredSchedulerSupport"
-}
-
 
 # Create RG if not exists
 New-AzResourceGroup -Name $ResourceGroupForDeployment -Location $location -Force
 
 Write-host "📜  Deploying the ARM template to set up resources"
-# Deploy resources using ARM template
-New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -TemplateFile $PathToARMTemplate -TemplateParameterObject $ARMTemplateParams
 
+Write-host "Create SQL Server"
+az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location "$location" --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword
+
+Write-host "Add SQL Server Firewall rules"
+az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowYourIp --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0"
+
+Write-host "Create SQL DB"
+az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name "AMPSaaSDB"  --edition Standard  --capacity 10 --zone-redundant false 
+
+# Deploy Code and database schema
+Write-host "📜  Deploying the database schema"
+$ServerUri = $SQLServerName+".database.windows.net"
+Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile "../Database/AMP-DB.sql"
+
+
+
+
+Write-host "📜  Create WebApp Service Plan"
+$WebAppNameService=$WebAppNamePrefix+"AmpSvcPlan"
+$WebAppNameAdmin=$WebAppNamePrefix+"-admin"
+$WebAppNamePortal=$WebAppNamePrefix+"-portal"
+$Connection="Data Source=tcp:"+$SQLServerName+".database.windows.net,1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
+az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1
+
+
+Write-host "📜  Create publisher Admin webapp"
+az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:6
+az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t mysql --settings DefaultConnection=$Connection
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecret SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport
+
+Write-host "📜  Create  customer portal webapp"
+az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:6
+az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t mysql --settings DefaultConnection=$Connection
+
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecret SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport
+
+Write-host "📜  Deploying the Publisher Code to Admin portal"
+
+Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNameAdmin"  -ArchivePath "./Commercial-Marketplace-SaaS-Accelerator/Publish/PublisherPortal.zip" -Force
+
+Write-host "📜  Deploying the Customer Code to Customer portal"
+
+Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNamePortal" -ArchivePath  "./Commercial-Marketplace-SaaS-Accelerator/Publish/CustomerPortal.zip" -Force
 
 Write-host "🧹  Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
-Remove-AzResourceGroup -Name $resourceGroupForStorageAccount -Force 
-Remove-Item –path $TempFolderToStoreBacpac –recurse -Force
 Remove-Item -path ["..\..\Publish"] -recurse -Force
 
 Write-host "🏁  If the intallation completed without error complete the folllowing checklist:"

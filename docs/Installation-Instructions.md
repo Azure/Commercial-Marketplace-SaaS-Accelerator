@@ -8,7 +8,7 @@ You can install the SaaS Accelerator code using a __single command__ line within
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
-.\DeployAz.ps1 `
+.\Deploy.ps1 `
  -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
  -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
@@ -40,7 +40,7 @@ Connect-AzureAD -Confirm; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
-.\DeployAzKv.ps1 `
+.\DeployKv.ps1 `
  -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
  -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
