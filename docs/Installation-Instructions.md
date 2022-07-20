@@ -5,7 +5,7 @@ You can install the SaaS Accelerator code using a __single command__ line within
    1. Copy the following section to an editor and update it to match your company preference. Replace `SOME-UNIQUE-STRING` with your Team name or some other random string.
 
 ``` powershell
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 5.0.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
 .\Deploy.ps1 `
@@ -37,7 +37,7 @@ Connect-AzureAD -Confirm; `
 
 ## Install the Azure Marketplace SaaS Accelerator With KeyVault 
 ``` powershell
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 5.0.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
 .\DeployKv.ps1 `
