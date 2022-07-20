@@ -5,10 +5,10 @@ You can install the SaaS Accelerator code using a __single command__ line within
    1. Copy the following section to an editor and update it to match your company preference. Replace `SOME-UNIQUE-STRING` with your Team name or some other random string.
 
 ``` powershell
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 5.0.0 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
-.\Deploy.ps1 `
+.\DeployAz.ps1 `
  -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
  -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
@@ -16,7 +16,7 @@ Connect-AzureAD -Confirm; `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US" `
- -PathToARMTemplate ".\deploy.json" `
+ -PathToARMTemplate ".\deploy.json" 
  ```
 
   The following lines are optional:
@@ -35,7 +35,21 @@ Connect-AzureAD -Confirm; `
 ![CloudShell Imge](images/portal-cloudshell.png) 
    3. Paste the new single command and run the command to install the SaaS Accelerator:
 
-
+## Install the Azure Marketplace SaaS Accelerator With KeyVault 
+``` powershell
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git --depth 1; `
+cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
+Connect-AzureAD -Confirm; `
+.\DeployAzKv.ps1 `
+ -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
+ -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
+ -SQLAdminLogin "adminlogin" `
+ -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
+ -PublisherAdminUsers "user@email.com" `
+ -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
+ -Location "East US" `
+ -PathToARMTemplate ".\deploy.json" 
+ ```
 ## Parameters
 
 | Parameter | Description |
