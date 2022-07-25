@@ -1,6 +1,5 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
-    using System;
     using System.Linq;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;

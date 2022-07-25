@@ -1,12 +1,8 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
     using System;
-    using System.Collections;
-    using System.IO;
-    using System.Linq;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
     /// Email Helper.

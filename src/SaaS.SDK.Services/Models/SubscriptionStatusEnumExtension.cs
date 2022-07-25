@@ -44,5 +44,10 @@
         /// The unsubscribe failed
         /// </summary>
         UnsubscribeFailed,
+
+        /// <summary>
+        /// The Suspend 
+        /// </summary>
+        Suspend,
     }
 }

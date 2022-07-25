@@ -1,7 +1,5 @@
 namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
-    using System;
-
     /// <summary>
     /// Error View Model.
     /// </summary>

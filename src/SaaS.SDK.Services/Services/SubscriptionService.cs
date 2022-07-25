@@ -48,7 +48,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// </summary>
         /// <param name="subscriptionDetail">The subscription detail.</param>
         /// <returns>Subscription Id.</returns>
-        public int AddOrUpdatePartnerSubscriptions(SubscriptionResult subscriptionDetail)
+        public int AddOrUpdatePartnerSubscriptions(SubscriptionResult subscriptionDetail, int customerUserId = 0)
         {
             var isActive = this.IsSubscriptionDeleted(Convert.ToString(subscriptionDetail.SaasSubscriptionStatus));
             Subscriptions newSubscription = new Subscriptions()
@@ -63,7 +63,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 ModifyDate = DateTime.Now,
                 Name = subscriptionDetail.Name,
                 SubscriptionStatus = Convert.ToString(subscriptionDetail.SaasSubscriptionStatus),
-                UserId = this.currentUserId,
+                UserId = customerUserId == 0 ? this.currentUserId : customerUserId,
                 PurchaserEmail = subscriptionDetail.Purchaser.EmailId,
                 PurchaserTenantId = subscriptionDetail.Purchaser.TenantId,
             };
@@ -237,16 +237,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 this.planRepository.Save(new Plans
                 {
                     PlanId = planDetail.PlanId,
-                    DisplayName = planDetail.PlanId,
-                    Description = planDetail.DisplayName,
+                    DisplayName = planDetail.DisplayName,
+                    Description = "",
                     OfferId = planDetail.OfferId,
                     PlanGuid = planDetail.PlanGUID,
                     MeteredDimensions = planDetail.GetmeteredDimensions(),
                     IsmeteringSupported = planDetail.IsmeteringSupported,
                     IsPerUser = planDetail.IsPerUserPlan,
-                    
-
-
                 });
             }
         }
@@ -314,6 +311,20 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             }
         }
 
+        /// <summary>
+        /// Get all Active subscription with Metered plan
+        /// </summary>
+        /// <returns>a list of subscription with metered plan</returns>
+        public List<Subscriptions> GetActiveSubscriptionsWithMeteredPlan()
+        {
+            var allActiveSubscription = this.subscriptionRepository.Get().ToList().Where(s => s.SubscriptionStatus == "Subscribed").ToList();
+            var allPlansData = this.planRepository.Get().ToList().Where(p => p.IsmeteringSupported == true).ToList();
+            var meteredSubscriptions = from subscription in allActiveSubscription
+                                       join plan in allPlansData
+                                       on subscription.AmpplanId equals plan.PlanId
+                                       select subscription;
+            return meteredSubscriptions.ToList();
+        }
         /*
         /// <summary>
         /// Generates the parmlist from response.

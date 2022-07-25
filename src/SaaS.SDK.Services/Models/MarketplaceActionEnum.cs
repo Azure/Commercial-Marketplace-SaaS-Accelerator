@@ -43,6 +43,11 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         OPERATION_STATUS,
 
         /// <summary>
+        /// The operation status
+        /// </summary>
+        UPDATE_OPERATION_STATUS,
+
+        /// <summary>
         /// The a Subscription
         /// </summary>
         GET_SUBSCRIPTION,

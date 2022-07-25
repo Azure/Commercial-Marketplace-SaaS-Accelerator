@@ -3,7 +3,7 @@
   - [Overview](#overview)
   - [Deploy web applications and SQL Azure database using an ARM template](#deploy-web-applications-and-sql-azure-database-using-an-arm-template)
   - [Deploy web applications and SQL Azure database using Powershell](#deploy-web-applications-and-sql-azure-database-using-powershell)
-  - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository--create-an-azure-sql-database-single-database-and-prepare)
+  - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository-create-an-azure-sql-database-single-database-and-prepare)
   - [Change configuration](#change-configuration)
   - [Create Web Apps on Azure and deploy the code](#create-web-apps-on-azure-and-deploy-the-code)
     + [Running the solution locally](#running-the-solution-locally)
@@ -11,6 +11,7 @@
   - [Next steps](#next-steps)
     - [Configuring the Customer Provisioning web application](./Customer-Experience.md)
     - [Configuring the Publisher Provisioning web application](./Publisher-Experience.md)
+
 ## Overview
 
 This document describes how to implement the required components to enable the SDK for the SaaS Fulfillment API (v2), Marketplace Metering Service API, and additional components that demonstrate how to build a customer provisioning interface, logging, and administration of the customer's subscriptions.
@@ -52,28 +53,26 @@ Please note: this SDK is community-supported. If you need help or have questions
 
 ### Using Azure Cloud Shell
    
-   1. Open Powershell in the Azure Cloud (PowerShell) and run the following commands to install Azure modules:
-> Note: Make sure that you are using the latest Powershell to avoid issues in Compress-Archive in 5.1 that got resolved in latest version.
-```powershell
-Install-Module -Name Az -AllowClobber
+   1. Copy the following section to an editor and update it to match your company preference. Replace SOME-UNIQUE-STRING with your Team name or some other random string.
 ```
-   2. Clone the repository
-   3. Navigate to the folder **.\deployment\Templates**
-   4. Run the command below with all the values in quotes updated.
-```
-git clone https://github.com/code4clouds/Commercial-Marketplace-SaaS-Accelerator.git -b app-registration --depth 1; `
- cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
- Connect-AzureAD -Confirm; .\Deploy.ps1 `
- -WebAppNamePrefix "marketplacesaasgithub" `
- -SQLServerName "marketplacesaasgithub" `
+wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
+chmod +x dotnet-install.sh; `
+./dotnet-install.sh; `
+$ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b main --depth 1; `
+cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
+Connect-AzureAD -Confirm; `
+.\Deploy.ps1 `
+ -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
+ -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `
+ -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
  -PublisherAdminUsers "user@email.com" `
- -BacpacUrl "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US" `
- -PathToARMTemplate ".\deploy.json"
+ -PathToARMTemplate ".\deploy.json" `
 ```
+  2. Paste the updated command in an Azure Cloud Shell PowerShell window.
 
 ### Local deployment
 
