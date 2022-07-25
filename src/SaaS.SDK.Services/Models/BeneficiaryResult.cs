@@ -18,5 +18,32 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// </value>
         [JsonPropertyName("tenantId")]
         public Guid TenantId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email identifier.
+        /// </summary>
+        /// <value>
+        /// The email identifier.
+        /// </value>
+        [JsonPropertyName("emailId")]
+        public string EmailId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Puid
+        /// </summary>
+        /// <value>
+        /// The Puid
+        /// </value>
+        [JsonPropertyName("puid")]
+        public string Puid { get; set; }
+
+        /// <summary>
+        /// Gets or sets the object identifier.
+        /// </summary>
+        /// <value>
+        /// The object identifier.
+        /// </value>
+        [JsonPropertyName("objectId")]
+        public string ObjectId { get; set; }
     }
 }
