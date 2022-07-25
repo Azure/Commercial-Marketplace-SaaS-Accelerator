@@ -15,6 +15,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
     using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
@@ -796,6 +797,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
 
                 //get all subscirptions from api
                 var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
+                var allPlans = this.planRepository.Get().ToList();
                 foreach (SubscriptionResult subscription in subscriptions)
                 {
                     // create saas subscription not in db (and its purchaser user) if it doesnt exist
@@ -811,8 +813,29 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             OfferGuid = Guid.NewGuid(),
                         };
                         Guid newOfferId = this.offersRepository.Add(offers);  // add offer
-
-                        var subscriptionPlanDetail = this.fulfillApiService.GetAllPlansForSubscriptionAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+                        List<PlanDetailResultExtension> subscriptionPlanDetail = new List<PlanDetailResultExtension>();
+                        if (subscription.SaasSubscriptionStatus != SubscriptionStatusEnum.Unsubscribed)
+                        {
+                            subscriptionPlanDetail = this.fulfillApiService.GetAllPlansForSubscriptionAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+                        } else
+                        {
+                            var planContent = allPlans.Where(p => p.PlanId == subscription.PlanId).ToList();
+                            foreach(Plans plan in planContent)
+                            {
+                                var planDetail = new PlanDetailResultExtension() {
+                                    Description = plan.Description,
+                                    DisplayName = plan.DisplayName,
+                                    PlanId = plan.PlanId
+                                    /*IsPrivate = plan.IsPrivate ?? false,
+                                    HasFreeTrials = plan.HasFreeTrials ?? false,
+                                    IsPerUserPlan = plan.IsPricePerSeat ?? false,
+                                    IsStopSell = plan.IsStopSell ?? false,
+                                    Market = plan.Market,
+                                    PlanComponents = plan.getPlanComponentsFromPlan()*/
+                                };
+                                subscriptionPlanDetail.Add(planDetail);
+                            }
+                        }
                         subscriptionPlanDetail.ForEach(x =>
                         {
                             x.OfferId = newOfferId;
