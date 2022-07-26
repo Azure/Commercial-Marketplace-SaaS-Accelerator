@@ -44,6 +44,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// The object identifier.
         /// </value>
         [JsonPropertyName("objectId")]
-        public string ObjectId { get; set; }
+        public Guid ObjectId { get; set; }
     }
 }

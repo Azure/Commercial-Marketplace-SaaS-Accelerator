@@ -60,7 +60,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             this.Logger = logger;
         }
 
-
         /// <summary>
         /// Get all subscriptions asynchronously.
         /// </summary>
@@ -71,6 +70,25 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             try
             {
                 var subscriptions = await this.marketplaceClient.Fulfillment.ListSubscriptionsAsync().ToListAsync();
+                return subscriptions.subscriptionResultList();
+            }
+            catch (RequestFailedException ex)
+            {
+                this.ProcessErrorResponse(MarketplaceActionEnum.GET_ALL_SUBSCRIPTIONS, ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get all subscriptions synchronously.
+        /// </summary>
+        /// <returns> List of subscriptions.</returns>
+        public List<SubscriptionResult> GetAllSubscriptions()
+        {
+            this.Logger?.Info($"Inside GetAllSubscriptions() of FulfillmentApiService, trying to get All Subscriptions.");
+            try
+            {
+                List<Subscription> subscriptions = this.marketplaceClient.Fulfillment.ListSubscriptions().ToList();
                 return subscriptions.subscriptionResultList();
             }
             catch (RequestFailedException ex)
@@ -93,6 +111,28 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             try
             {
                 var subscription = (await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(subscriptionId)).Value;
+                return subscription.subscriptionResult();
+            }
+            catch (RequestFailedException ex)
+            {
+                this.ProcessErrorResponse(MarketplaceActionEnum.GET_SUBSCRIPTION, ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets Subscription By SubscriptionId synchronously
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>
+        /// Returns Subscription By SubscriptionId.
+        /// </returns>
+        public SubscriptionResult GetSubscriptionById(Guid subscriptionId)
+        {
+            this.Logger?.Info($"Inside GetSubscriptionById() of FulfillmentApiService, trying to gets the Subscription Detail by subscriptionId : {subscriptionId}");
+            try
+            {
+                var subscription = (this.marketplaceClient.Fulfillment.GetSubscription(subscriptionId)).Value;
                 return subscription.subscriptionResult();
             }
             catch (RequestFailedException ex)

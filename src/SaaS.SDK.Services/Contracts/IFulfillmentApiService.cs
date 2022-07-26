@@ -37,6 +37,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
         Task<SubscriptionResult> GetSubscriptionByIdAsync(Guid subscriptionId);
 
         /// <summary>
+        /// Gets the subscription by subscription identifier.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>Subscription Detail By SubscriptionId. </returns>
+        SubscriptionResult GetSubscriptionById(Guid subscriptionId);
+
+        /// <summary>
         /// Resolves the Subscription.
         /// </summary>
         /// <param name="marketPlaceAccessToken">The Market Place access token.</param>
