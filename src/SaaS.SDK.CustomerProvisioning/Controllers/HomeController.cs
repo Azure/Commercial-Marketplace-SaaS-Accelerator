@@ -512,14 +512,14 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
         /// Subscriptions operation.
         /// </returns>
         [HttpPost]
-        public IActionResult SubscriptionOperation(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation)
+        public IActionResult SubscriptionOperation(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation, bool autoProvisionRedirect = false)
         {
             this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation));
             if (this.User.Identity.IsAuthenticated)
             {
                 try
                 {
-                    var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                     var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                     SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
 
                     if (subscriptionId != default)
@@ -602,6 +602,12 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 
                     this.notificationStatusHandlers.Process(subscriptionId);
 
+                    string SaaSAppUrl = this.apiService.GetSaaSAppURL();
+                    if (autoProvisionRedirect && !string.IsNullOrEmpty(SaaSAppUrl))
+                    {
+                        return Redirect(SaaSAppUrl);
+                    }
+                    
                     return this.RedirectToAction(nameof(this.ProcessMessage), new { action = operation, status = operation });
                 }
                 catch (Exception ex)
