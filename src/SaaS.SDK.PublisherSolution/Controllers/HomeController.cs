@@ -819,7 +819,9 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             subscriptionPlanDetail = this.fulfillApiService.GetAllPlansForSubscriptionAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
                         } else
                         {
-                            var planContent = allPlans.Where(p => p.PlanId == subscription.PlanId).ToList();
+                            // !!! Can't compare plan OfferId (Guid) to subscription OfferId (the offer display name as a string) so I had to use display name instead
+                            // !!! Both plan PlanId and subscription PlanId are referring to the plan name, so PlanGuid will work better here once that feature is merged
+                            var planContent = allPlans.Where(p => p.PlanId == subscription.PlanId && p.DisplayName == subscription.OfferId).ToList();
                             foreach(Plans plan in planContent)
                             {
                                 var planDetail = new PlanDetailResultExtension() {
@@ -860,7 +862,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             this.subscriptionLogRepository.Save(auditLog);  // add audit log
                         }
                     }
-
                 }
             }
             catch (Exception ex)
