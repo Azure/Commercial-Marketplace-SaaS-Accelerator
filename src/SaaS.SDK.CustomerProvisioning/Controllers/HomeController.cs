@@ -300,15 +300,15 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     this.TempData["ShowWelcomeScreen"] = "True";
                     SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
                     subscriptionDetail.Subscriptions = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, default, true).ToList();
+                    var allPlans = this.planRepository.Get().ToList();
                     foreach (var subscription in subscriptionDetail.Subscriptions)
                     {
+                        //Plans planDetail = allPlans.Where(plan => plan.PlanGuid == subscription.PlanGuid).FirstOrDefault();
                         Plans planDetail = this.planRepository.GetById(subscription.PlanId);
                         subscription.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         subscription.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                     }
-
                     subscriptionDetail.SaaSAppUrl = this.apiService.GetSaaSAppURL();
-
                     if (this.TempData["ErrorMsg"] != null)
                     {
                         subscriptionDetail.IsSuccess = false;
