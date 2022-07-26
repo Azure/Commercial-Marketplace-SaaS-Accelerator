@@ -519,7 +519,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
             {
                 try
                 {
-                     var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+                    var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                     SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
 
                     if (subscriptionId != default)
