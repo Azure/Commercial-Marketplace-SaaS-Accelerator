@@ -237,7 +237,19 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     foreach (var subscription in allSubscriptionDetails)
                     {
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
-                        Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
+                        Plans planDetail = new Plans();
+                        // Uses PlanGuid field from PR#270 to avoid duplicate plan names:
+                        /*if (subscriptionDetailExtension.PlanGUId != null)
+                        {
+                            planDetail = this.planRepository.GetByInternalReference((Guid)subscriptionDetailExtension.PlanGUId);
+                            Offers offerDetail = this.offersRepository.GetOfferById(planDetail.OfferId);
+                            subscriptionDetailExtension.OfferId = offerDetail.OfferName;
+                        }
+                        else
+                        {
+                            planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
+                        }*/
+                        planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
@@ -818,7 +830,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             x.PlanGUID = Guid.NewGuid();
                         });
                         this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail); // add plans
-
+                        // subscription.PlanGUId = subscriptionPlanDetail.FirstOrDefault().PlanGUID; // Requires PR#270
                         //var subscriptionData = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
                         var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription);  // add subscription
                         if (subscribeId > 0 && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
