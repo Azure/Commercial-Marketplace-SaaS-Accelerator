@@ -236,8 +236,9 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     var allPlans = this.planRepository.Get().ToList();
                     foreach (var subscription in allSubscriptionDetails)
                     {
-                        SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
-                        Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
+                        SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription, allPlans);
+                        Plans planDetail = allPlans.Where(s => s.PlanId == subscription.AmpplanId).FirstOrDefault(); // Will return plans with duplicate Plan IDs
+                        //Plans planDetail = allPlans.Where(s => s.PlanGuid == subscription.PlanGuid).FirstOrDefault(); // Uses Guid value from PR#270
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {

@@ -102,10 +102,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         {
             List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
             var allSubscriptionsForEmail = this.subscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
-
+            var allPlans = this.planRepository.Get().ToList();
             foreach (var subscription in allSubscriptionsForEmail)
             {
-                SubscriptionResultExtension subscritpionDetail = this.PrepareSubscriptionResponse(subscription);
+                SubscriptionResultExtension subscritpionDetail = this.PrepareSubscriptionResponse(subscription, allPlans);
                 if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
                 {
                     allSubscriptions.Add(subscritpionDetail);
@@ -141,10 +141,18 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns> Subscription.</returns>
-        public SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
+        public SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription, List<Plans> plans = null)
         {
-            var existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
-            SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
+            Plans existingPlanDetail = new Plans();
+            if (plans == null)
+            {
+                existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
+            }
+            else
+            {
+                existingPlanDetail = plans.Where(plan => plan.PlanId == subscription.AmpplanId).FirstOrDefault();
+            }
+            SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension
             {
                 Id = subscription.AmpsubscriptionId,
                 SubscribeId = subscription.Id,
@@ -157,11 +165,11 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 CustomerName = subscription.User?.FullName,
                 IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
             };
-            subscritpionDetail.Purchaser = new PurchaserResult();
+            subscriptionDetail.Purchaser = new PurchaserResult();
 
-            subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
-            subscritpionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
-            return subscritpionDetail;
+            subscriptionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
+            subscriptionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
+            return subscriptionDetail;
         }
 
         /// <summary>
