@@ -304,7 +304,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     foreach (var subscription in subscriptionDetail.Subscriptions)
                     {
                         Plans planDetail = allPlans.Where(plan => plan.PlanId == subscription.PlanId).FirstOrDefault(); // Can return different plans with same ID
-                        // Plans planDetail = allPlans.Where(plan => plan.PlanGuid == subscription.PlanGuid).FirstOrDefault(); Requires PR#270
+                        // Plans planDetail = allPlans.Where(plan => plan.PlanGuid == subscription.PlanGuid).FirstOrDefault(); // Requires PR#270
                         subscription.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         subscription.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                     }
@@ -317,7 +317,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                         subscriptionDetail.ErrorMessage = Convert.ToString(this.TempData["ErrorMsg"]);
                     }
 
-                    return this.View(subscriptionDetail);
+                  return this.View(subscriptionDetail);
                 }
                 else
                 {
