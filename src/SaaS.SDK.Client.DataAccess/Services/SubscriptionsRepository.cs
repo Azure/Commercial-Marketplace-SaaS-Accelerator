@@ -46,6 +46,8 @@
                 existingSubscriptions.SubscriptionStatus = subscriptionDetails.SubscriptionStatus;
                 existingSubscriptions.AmpplanId = subscriptionDetails.AmpplanId;
                 existingSubscriptions.Ampquantity = subscriptionDetails.Ampquantity;
+                existingSubscriptions.UserId = subscriptionDetails.UserId;
+                // existingSubscriptions.PlanGuid = subscriptionDetails.PlanGuid;  // Requires PR#270
                 this.context.Subscriptions.Update(existingSubscriptions);
                 this.context.SaveChanges();
                 return existingSubscriptions.Id;
