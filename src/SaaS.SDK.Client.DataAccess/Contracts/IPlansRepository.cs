@@ -76,5 +76,12 @@
         /// <param name="planGuId">The plan gu identifier.</param>
         /// <returns> Plan Attribute Mapping.</returns>
         PlanAttributeMapping GetPlanAttributeOnOfferAttributeId(int offerAttributeId, Guid planGuId);
+
+        /// <summary>
+        /// Adds the specified plan details without updating
+        /// </summary>
+        /// <param name="planDetails">The plan details.</param>
+        /// <returns> Plan Id.</returns>
+        public int SaveWithoutUpdating(Plans planDetails);
     }
 }

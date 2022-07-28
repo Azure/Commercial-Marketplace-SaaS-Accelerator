@@ -230,21 +230,38 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// Adds the plan details for subscription.
         /// </summary>
         /// <param name="allPlanDetail">All plan detail.</param>
-        public void AddPlanDetailsForSubscription(List<PlanDetailResultExtension> allPlanDetail)
+        public void AddPlanDetailsForSubscription(List<PlanDetailResultExtension> allPlanDetail, bool updatePlan = true)
         {
             foreach (var planDetail in allPlanDetail)
             {
-                this.planRepository.Save(new Plans
+                // Updates by default; Won't update if subscription status is unsubscribed and 
+                if (updatePlan)
                 {
-                    PlanId = planDetail.PlanId,
-                    DisplayName = planDetail.DisplayName,
-                    Description = "",
-                    OfferId = planDetail.OfferId,
-                    PlanGuid = planDetail.PlanGUID,
-                    MeteredDimensions = planDetail.GetmeteredDimensions(),
-                    IsmeteringSupported = planDetail.IsmeteringSupported,
-                    IsPerUser = planDetail.IsPerUserPlan,
-                });
+                    this.planRepository.Save(new Plans
+                    {
+                        PlanId = planDetail.PlanId,
+                        DisplayName = planDetail.DisplayName,
+                        Description = "",
+                        OfferId = planDetail.OfferId,
+                        PlanGuid = planDetail.PlanGUID,
+                        MeteredDimensions = planDetail.GetmeteredDimensions(),
+                        IsmeteringSupported = planDetail.IsmeteringSupported,
+                        IsPerUser = planDetail.IsPerUserPlan,
+                    });
+                } else
+                {
+                    this.planRepository.SaveWithoutUpdating(new Plans
+                    {
+                        PlanId = planDetail.PlanId,
+                        DisplayName = planDetail.DisplayName,
+                        Description = "",
+                        OfferId = planDetail.OfferId,
+                        PlanGuid = planDetail.PlanGUID,
+                        MeteredDimensions = planDetail.GetmeteredDimensions(),
+                        IsmeteringSupported = planDetail.IsmeteringSupported,
+                        IsPerUser = planDetail.IsPerUserPlan,
+                    });
+                }
             }
         }
 

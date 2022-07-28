@@ -814,36 +814,29 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         };
                         Guid newOfferId = this.offersRepository.Add(offers);  // add offer
                         List<PlanDetailResultExtension> subscriptionPlanDetail = new List<PlanDetailResultExtension>();
+                        bool updatePlan = false;
                         if (subscription.SaasSubscriptionStatus != SubscriptionStatusEnum.Unsubscribed)
                         {
+                            updatePlan = true;
                             subscriptionPlanDetail = this.fulfillApiService.GetAllPlansForSubscriptionAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+                            subscriptionPlanDetail.ForEach(x =>
+                            {
+                                x.OfferId = newOfferId;
+                                x.PlanGUID = Guid.NewGuid();
+                            });
                         } else
                         {
-                            // !!! Can't compare plan OfferId (Guid) to subscription OfferId (the offer display name as a string) so I had to use display name instead
-                            // !!! Both plan PlanId and subscription PlanId are referring to the plan name, so PlanGuid will work better here once that feature is merged
-                            var planContent = allPlans.Where(p => p.PlanId == subscription.PlanId && p.DisplayName == subscription.OfferId).ToList();
-                            foreach(Plans plan in planContent)
-                            {
-                                var planDetail = new PlanDetailResultExtension() {
-                                    Description = plan.Description,
-                                    DisplayName = plan.DisplayName,
-                                    PlanId = plan.PlanId
-                                    /*IsPrivate = plan.IsPrivate ?? false,
-                                    HasFreeTrials = plan.HasFreeTrials ?? false,
-                                    IsPerUserPlan = plan.IsPricePerSeat ?? false,
-                                    IsStopSell = plan.IsStopSell ?? false,
-                                    Market = plan.Market,
-                                    PlanComponents = plan.getPlanComponentsFromPlan()*/
-                                };
-                                subscriptionPlanDetail.Add(planDetail);
-                            }
+                            // Only use available fields from subscription
+                            // Set everything else to default as the repo won't update if its an existing subscription
+                            var planDetail = new PlanDetailResultExtension() {
+                                PlanId = subscription.PlanId,
+                                OfferId = newOfferId,
+                                PlanGUID = Guid.NewGuid()
+                            };
+                            subscriptionPlanDetail.Add(planDetail);
+                            
                         }
-                        subscriptionPlanDetail.ForEach(x =>
-                        {
-                            x.OfferId = newOfferId;
-                            x.PlanGUID = Guid.NewGuid();
-                        });
-                        this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail); // add plans
+                        this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail, updatePlan); // add plans
 
                         //var subscriptionData = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
                         var customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Purchaser.EmailId, EmailAddress = subscription.Purchaser.EmailId });

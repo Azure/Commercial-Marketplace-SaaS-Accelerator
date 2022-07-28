@@ -69,7 +69,7 @@
         {
             if (planDetails != null && !string.IsNullOrEmpty(planDetails.PlanId))
             {
-                var existingPlan = this.context.Plans.Include(p => p.MeteredDimensions).Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
+                var existingPlan = this.context.Plans.Include(p => p.MeteredDimensions).Where(s => s.PlanId == planDetails.PlanId && s.OfferId == planDetails.OfferId).FirstOrDefault();
                 if (existingPlan != null)
                 {
                     //room for improvement as these values dont change we dont make a db trip if something changes?
@@ -91,6 +91,27 @@
                 }
             }
 
+            return 0;
+        }
+
+        /// <summary>
+        /// Adds the specified plan details without updating
+        /// </summary>
+        /// <param name="planDetails">The plan details.</param>
+        /// <returns> Plan Id.</returns>
+        public int SaveWithoutUpdating(Plans planDetails)
+        {
+            /*
+             * Note: This situation only occurs when a subscription is in an unsubscribed state since
+             * the details cannot be fetched from API
+            */
+            var existingPlan = this.context.Plans.Include(p => p.MeteredDimensions).Where(s => s.PlanId == planDetails.PlanId && s.OfferId == planDetails.OfferId).FirstOrDefault();
+            if (existingPlan == null)
+            {
+                this.context.Plans.Add(planDetails);
+                this.context.SaveChanges();
+                return planDetails.Id;
+            }
             return 0;
         }
 
