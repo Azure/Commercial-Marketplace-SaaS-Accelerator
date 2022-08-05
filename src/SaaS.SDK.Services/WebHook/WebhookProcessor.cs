@@ -62,7 +62,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                     break;
 
                 case WebhookAction.Renew:
-                    await this.webhookHandler.RenewededAsync().ConfigureAwait(false);
+                    await this.webhookHandler.RenewedAsync().ConfigureAwait(false);
                     break;
                 
                 default:

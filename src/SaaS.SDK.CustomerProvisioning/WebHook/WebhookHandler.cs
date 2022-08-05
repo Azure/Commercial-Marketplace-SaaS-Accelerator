@@ -287,7 +287,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// </summary>
         /// <param name="payload">The payload.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task RenewededAsync()
+        public async Task RenewedAsync()
         {
             await this.applicationLogService.AddApplicationLog("Offer Successfully Renewed.").ConfigureAwait(false);
 
