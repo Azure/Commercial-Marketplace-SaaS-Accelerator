@@ -46,6 +46,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         [EnumMember(Value = "Reinstate")]
         Reinstate,
 
+        /// (When resource has been reinstated after suspension)
+        /// <summary>
+        /// The reinstate
+        /// </summary>
+        [EnumMember(Value = "Renew")]
+        Renew,
+        
         /// <summary>
         /// The transfer
         /// </summary>
