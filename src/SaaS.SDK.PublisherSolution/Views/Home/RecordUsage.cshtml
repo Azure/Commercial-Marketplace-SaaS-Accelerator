@@ -3,6 +3,12 @@
 @{
     ViewData["Title"] = "RecordUsage";
 }
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+</head>
+<body>
 
 @if (Model.SubscriptionDetail != null && Model.SubscriptionDetail.Id > 0)
 {
@@ -35,6 +41,9 @@
                                 <div class="col-md-2">
                                     <button type="submit" class="cm-button-default mt0">Record Usage</button>
                                 </div>
+                                <div class="col-md-2">
+                                    <button name="RedirectBtn2" type="button" onclick="RedirectToScheduler(@Model.SubscriptionDetail.Id);" class="cm-button-default mt0">Add Scheduler Usage</button>
+                                </div>
                             </div>
 
 
@@ -50,8 +59,6 @@
                                 <tr>
                                     <th>Subscription Usage Date(UTC)</th>
                                     <th>Status Code</th>
-                                    <th>Request JSON</th>
-                                    <th>Response JSON</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -72,19 +79,10 @@
                             </tbody>
                         </table>
                     }
-                    else
-                    {
-                        <div class="cm-panel-default mt40">
-                            <div class="p-3 mr420">
-                                <p>
-                                    No licenses assigned yet, start assigning by selecting a subscription and submitting license key.
-                                </p>
-                            </div>
-                        </div>
-                    }
                 </div>
             </div>
         </div>
 
     </div>
 }
+</body>

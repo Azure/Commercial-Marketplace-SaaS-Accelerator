@@ -200,6 +200,9 @@ body {
     #homepage-programs > li#onedash-menu-homepage3 {
         border-color: #004e8c;
     }
+    #homepage-programs > li#onedash-menu-homepage5 {
+        border-color: #288c00;
+    }
 
     #homepage-programs > li#onedash-menu-homepage4 {
         border-color: #8B4513;
@@ -246,6 +249,10 @@ body {
 
         #homepage-programs > li .programCardIcon3.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
             background-color: #004e8c;
+            margin-bottom: 10px;
+        }
+        #homepage-programs > li .programCardIcon5.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
+            background-color: #ffffff;
             margin-bottom: 10px;
         }
 
@@ -301,7 +308,17 @@ body {
             flex-wrap: nowrap;
             justify-content: center;
         }
-
+        #homepage-programs > li .programCardIcon5 {
+            height: 28px;
+            width: 28px;
+            border-radius: 30px;
+            margin-right: 8px;
+            display: flex;
+            flex-flow: column;
+            float: left;
+            flex-wrap: nowrap;
+            justify-content: center;
+        }
 .text-white-50 {
     color: rgba(255, 255, 255, .5);
 }
