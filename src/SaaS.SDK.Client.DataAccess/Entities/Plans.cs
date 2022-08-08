@@ -8,6 +8,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public Plans()
         {
             MeteredDimensions = new HashSet<MeteredDimensions>();
+            MeteredPlanSchedulerManagements = new HashSet<MeteredPlanSchedulerManagement>();
         }
 
         public int Id { get; set; }
@@ -20,5 +21,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public Guid OfferId { get; set; }
 
         public virtual ICollection<MeteredDimensions> MeteredDimensions { get; set; }
+        public virtual ICollection<MeteredPlanSchedulerManagement> MeteredPlanSchedulerManagements { get; set; }
     }
 }

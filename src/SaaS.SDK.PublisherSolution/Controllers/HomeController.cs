@@ -8,6 +8,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
     using System.Text.Json;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Diagnostics;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
@@ -103,6 +104,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         private SubscriptionService subscriptionService = null;
 
         private ApplicationLogService applicationLogService = null;
+        private SaaSApiClientConfiguration saaSApiClientConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
@@ -122,14 +124,14 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         /// <param name="emailTemplateRepository">The email template repository.</param>
         /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
         /// <param name="eventsRepository">The events repository.</param>
-        /// <param name="options">The options.</param>
+        /// <param name="SaaSApiClientConfiguration">The SaaSApiClientConfiguration.</param>
         /// <param name="cloudConfigs">The cloud configs.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="emailService">The email service.</param>
         /// <param name="offersRepository">The offers repository.</param>
         /// <param name="offersAttributeRepository">The offers attribute repository.</param>
         public HomeController(
-                        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository)
+                        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, SaaSApiClientConfiguration saaSApiClientConfiguration, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository)
         {
             this.billingApiService = billingApiService;
             this.subscriptionRepo = subscriptionRepo;
@@ -154,6 +156,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
             this.offersRepository = offersRepository;
             this.offersAttributeRepository = offersAttributeRepository;
             this.loggerFactory = loggerFactory;
+            this.saaSApiClientConfiguration = saaSApiClientConfiguration;
 
             this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
                                                                           fulfillApiService,
@@ -208,6 +211,12 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
 
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
+                
+                if (this.saaSApiClientConfiguration.SupportMeteredBilling)
+                {
+                    this.TempData.Add("SupportMeteredBilling", "1");
+                    this.HttpContext.Session.SetString("SupportMeteredBilling", "1");
+                }
                 return this.View();
             }
             catch (Exception ex)
@@ -285,7 +294,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         /// </returns>
         public IActionResult SubscriptionLogDetail(Guid subscriptionId)
         {
-            this.logger.LogInformation("Home Controller / RecordUsage : subscriptionId: {0}", JsonSerializer.Serialize(subscriptionId));
+            this.logger.LogInformation("Home Controller / SubscriptionLogDetail : subscriptionId: {0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
                 if (this.User.Identity.IsAuthenticated)
@@ -473,7 +482,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns> The <see cref="IActionResult" />.</returns>
         public IActionResult RecordUsage(int subscriptionId)
-        {
+       {
             this.logger.LogInformation("Home Controller / RecordUsage ");
             try
             {
@@ -499,7 +508,41 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 return this.View("Error", ex);
             }
         }
+        /// <summary>
+        /// Records the usage.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns> The <see cref="IActionResult" />.</returns>
+        public IActionResult RecordUsageNow(int subscriptionId,string dimId,string quantity)
+        {
+            this.logger.LogInformation("Home Controller / RecordUsage ");
+            try
+            {
+                if (this.User.Identity.IsAuthenticated)
+                {
+                    var subscriptionDetail = this.subscriptionRepo.Get(subscriptionId);
+                    var allDimensionsList = this.dimensionsRepository.GetDimensionsByPlanId(subscriptionDetail.AmpplanId);
+                    SubscriptionUsageViewModel usageViewModel = new SubscriptionUsageViewModel();
+                    usageViewModel.SubscriptionDetail = subscriptionDetail;
+                    usageViewModel.MeteredAuditLogs = new List<MeteredAuditLogs>();
+                    usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId).OrderByDescending(s => s.CreatedDate).ToList();
+                    usageViewModel.DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description");
 
+                    usageViewModel.SelectedDimension = dimId;
+                    usageViewModel.Quantity = quantity;
+                    return this.View("RecordUsage", usageViewModel);
+                }
+                else
+                {
+                    return this.RedirectToAction(nameof(this.Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogInformation("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return this.View("Error", ex);
+            }
+        }
         /// <summary>
         /// Get Subscription Details for selected Subscription.
         /// </summary>
