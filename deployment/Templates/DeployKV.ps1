@@ -223,6 +223,8 @@ $WebAppNameService=$WebAppNamePrefix+"AmpSvcPlan"
 $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $KeyVault=$WebAppNamePrefix+"kv"
+$KeyVault=$KeyVault -replace '-',''
+$KeyVault=$KeyVault -replace '_',''
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(SecretUri=https://"+$KeyVault+".vault.azure.net/secrets/ADApplicationSecret/)"
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(SecretUri=https://"+$KeyVault+".vault.azure.net/secrets/DefaultConnection/)"
 $Connection="Data Source=tcp:"+$SQLServerName+".database.windows.net,1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
