@@ -194,23 +194,23 @@ if (!($MeteredSchedulerSupport))
 }
 
 Write-host "☁  Preparing the publish files for PublisherPortal"  
-dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
+dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o .\Publish\PublisherPortal
 
 if ($MeteredSchedulerSupport -ne "NO")
 { 
     Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
     mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
-    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
+    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o .\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
     $MeteredSchedulerSupport = "True"
 }
 else {
     $MeteredSchedulerSupport = "False"
 }
-Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
+Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath .\Publish\PublisherPortal.zip -Force
 
 Write-host "☁  Preparing the publish files for CustomerPortal"
-dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
-Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Publish\CustomerPortal.zip -Force
+dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o .\Publish\CustomerPortal
+Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath .\Publish\CustomerPortal.zip -Force
 
 
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
@@ -232,7 +232,7 @@ az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServe
 # Deploy Code and database schema
 Write-host "📜  Deploying the database schema"
 $ServerUri = $SQLServerName+".database.windows.net"
-Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile "../Database/AMP-DB.sql"
+Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile "..\Database\AMP-DB.sql"
 
 
 
@@ -258,11 +258,11 @@ az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameP
 
 Write-host "📜  Deploying the Publisher Code to Admin portal"
 
-Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNameAdmin"  -ArchivePath "./Commercial-Marketplace-SaaS-Accelerator/Publish/PublisherPortal.zip" -Force
+Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNameAdmin"  -ArchivePath ".\Publish\PublisherPortal.zip" -Force
 
 Write-host "📜  Deploying the Customer Code to Customer portal"
 
-Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNamePortal" -ArchivePath  "./Commercial-Marketplace-SaaS-Accelerator/Publish/CustomerPortal.zip" -Force
+Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNamePortal" -ArchivePath  ".\Publish\CustomerPortal.zip" -Force
 
 Write-host "🧹  Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
