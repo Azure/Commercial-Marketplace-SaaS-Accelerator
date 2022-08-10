@@ -21,7 +21,8 @@ Param(
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
    [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
-   [string][Parameter()]$LogoURLico  # URL for Publisher .ico logo
+   [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
+   [string][Parameter()]$MeteredSchedulerSupport # set to NO to disable Metered Support
 )
 
 $ErrorActionPreference = "Stop"
@@ -32,7 +33,7 @@ if($SQLAdminLogin.ToLower() -eq "admin") {
 }
 
 # Checking SQL password length
-if($SQLAdminLogin.Length -lt 8) {
+if($SQLAdminLoginPassword.Length -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
 }
 
@@ -226,11 +227,32 @@ $URLToBacpacFromStorage = (Get-AzStorageBlob -blob $BlobName -Container $Contain
 Write-host "📜  Uploaded the bacpac file to $URLToBacpacFromStorage"    
 
 
+if (!($MeteredSchedulerSupport))
+{
+    $MeteredSchedulerSupport = "True"
+}
+
 Write-host "☁  Prepare publish files for the web application"
 
-Write-host "☁  Preparing the publish files for PublisherPortal"  
-dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
-Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
+if ($MeteredSchedulerSupport -ne "NO")
+{ 
+    Write-host "☁  Preparing the publish files for PublisherPortal webjob"  
+    dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
+
+    mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
+    Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
+    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
+
+    Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
+
+    $MeteredSchedulerSupport = "True"
+}
+else {
+    Write-host "☁  Preparing the publish files for PublisherPortal"  
+    dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal 
+    Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
+    $MeteredSchedulerSupport = "False"
+}
 
 Write-host "☁  Preparing the publish files for CustomerPortal"
 dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
@@ -259,6 +281,7 @@ $ARMTemplateParams = @{
    SAASKeyForbacpac             = ""
    PublisherAdminUsers          = "$PublisherAdminUsers"
    PathToWebApplicationPackages = "$PathToWebApplicationPackages"
+   MeteredSchedulerSupport      = "$MeteredSchedulerSupport"
 }
 
 

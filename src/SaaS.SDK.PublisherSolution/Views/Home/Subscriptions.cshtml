@@ -25,7 +25,7 @@
                     <div class="filter-box">
                         <span>Filter: </span>
                         <input type="text" size="50" id="filterTextBox" placeholder="Enter any text to filter subscriptions" onkeyup="filterSubscriptions()">
-                        <input type="checkbox" class="statusCheckbox" id="SubscribedOnly" onchange="filterSubscriptions()"/> Active Subscriptions Only
+                        <input type="checkbox" class="statusCheckbox" id="SubscribedOnly" onchange="filterSubscriptions()"/> Hide Unsubscribed
                     </div>
                     <div>
                         @if (Model.Subscriptions.Count() > 0)
@@ -74,15 +74,16 @@
                                                 <div class="nav-item dropdown">
                                                     <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                     <div class="dropdown-menu" aria-labelledby="dropdown01">
+                                                        <a class="dropdown-item cm-dropdown-option" asp-controller="Home" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id">View Details</a>
                                                         @if (subscription.IsMeteringSupported && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                         {
                                                             <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId">Manage Usage</a>
                                                         }
-                                                        @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation || subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
+                                                        @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation || subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart || subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed)
                                                         {
                                                             <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Activate">Activate</a>
                                                         }
-                                                        @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
+                                                        @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed || subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed)
                                                         {
                                                             <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
                                                             <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
@@ -237,10 +238,12 @@
         var isChecked = $(".statusCheckbox").is(':checked');
 
         if(isChecked){
-            $("#table tbody tr").hide();
-            $("#table tbody tr#Subscribed").show();
 
-            $("#table tbody tr#Subscribed").filter(function() {
+            var activeSubscriptions = $("#table tbody tr:not(#Unsubscribed)");
+            $("#table tbody tr").hide();
+            activeSubscriptions.show();
+
+            activeSubscriptions.filter(function() {
                 $(this).toggle($(this).text().toLowerCase().indexOf(filterValue) > -1);
             });
         } else{

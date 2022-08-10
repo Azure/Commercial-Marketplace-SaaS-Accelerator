@@ -39,6 +39,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<ValueTypes> ValueTypes { get; set; }
         public virtual DbSet<WebJobSubscriptionStatus> WebJobSubscriptionStatus { get; set; }
 
+        public virtual DbSet<SchedulerFrequency> SchedulerFrequency { get; set; }
+        public virtual DbSet<MeteredPlanSchedulerManagement> MeteredPlanSchedulerManagement { get; set; }
+        public virtual DbSet<SchedulerManagerView> SchedulerManagerView { get; set; }
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -184,8 +189,12 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .WithMany(p => p.MeteredDimensions)
                     .HasForeignKey(d => d.PlanId)
                     .HasConstraintName("FK__MeteredDi__PlanI__6383C8BA");
-            });
 
+                entity.HasMany(e => e.MeteredPlanSchedulerManagements)
+                .WithOne(e => e.MeteredDimensions)
+                .HasForeignKey(e => e.DimensionId);
+                
+            });
             modelBuilder.Entity<OfferAttributes>(entity =>
             {
                 entity.Property(e => e.Id).HasColumnName("ID");
@@ -482,6 +491,48 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasMaxLength(225)
                     .IsUnicode(false);
             });
+
+
+            modelBuilder.Entity<SchedulerFrequency>()
+            .Property(e => e.Frequency)
+            .IsUnicode(false);
+
+            modelBuilder.Entity<SchedulerFrequency>()
+                .HasMany(e => e.MeteredPlanSchedulerManagements)
+                .WithOne(e => e.SchedulerFrequency)
+                .HasForeignKey(e => e.FrequencyId);
+
+
+            modelBuilder.Entity<Plans>()
+            .HasMany(e => e.MeteredPlanSchedulerManagements)
+            .WithOne(e => e.Plan)
+            .HasForeignKey(e => e.PlanId);
+
+
+            modelBuilder.Entity<Subscriptions>()
+            .HasMany(e => e.MeteredPlanSchedulerManagements)
+            .WithOne(e => e.Subscriptions)
+            .HasForeignKey(e => e.SubscriptionId);
+
+
+
+            
+
+            modelBuilder.Entity<SchedulerManagerView>()
+                .Property(e => e.PlanId)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<SchedulerManagerView>()
+                .Property(e => e.Dimension)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<SchedulerManagerView>()
+                .Property(e => e.Frequency)
+                .IsUnicode(false);
+
+
+
+
 
             OnModelCreatingPartial(modelBuilder);
         }
