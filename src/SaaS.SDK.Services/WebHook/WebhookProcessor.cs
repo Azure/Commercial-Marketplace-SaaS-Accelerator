@@ -80,8 +80,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                 // We couldn't verify this webhook notification so something is definitely wrong.
                 // Throw an exception and let the upstream web app handle it...
 
-                throw new InvalidOperationException(
-                    $"Unable to process webhook notification [{payload.OperationId}]. Unable to verify webhook notification with Marketplace API.");
+                case WebhookAction.Renew:
+                    await this.webhookHandler.RenewedAsync().ConfigureAwait(false);
+                    break;
+                
+                default:
+                    await this.webhookHandler.UnknownActionAsync(payload).ConfigureAwait(false);
+                    break;
             }
         }
     }

@@ -39,6 +39,10 @@ The following picture illustrates the entities and the relationships among them:
 | Users | Users ( auto-registered due to purchase of subscriptions) |
 | ValueTypes | Type of attributes, for the fields that appear on the subscription landing page|
 | WebJobSubscriptionStatus | Status changes on the subscription as processed by the webjob are logged here |
+| SchedulerFrequency| Lookup table with Occurance frequency |
+| MeteredPlanSchedulerManagement| List of all Metered Scheduled task |
+| SchedulerManagerView| View of all metered scheduled task with Parents information |
+
 
 ### Application Configuration
 
