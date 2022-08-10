@@ -199,18 +199,18 @@ dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.c
 if ($MeteredSchedulerSupport -ne "NO")
 { 
     Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
-    mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
+    mkdir -p .\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
     dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o .\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
     $MeteredSchedulerSupport = "True"
 }
 else {
     $MeteredSchedulerSupport = "False"
 }
-Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath .\Publish\PublisherPortal.zip -Force
+Compress-Archive -Path .\Publish\PublisherPortal\* -DestinationPath .\Publish\PublisherPortal.zip -Force
 
 Write-host "☁  Preparing the publish files for CustomerPortal"
 dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o .\Publish\CustomerPortal
-Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath .\Publish\CustomerPortal.zip -Force
+Compress-Archive -Path .\Publish\CustomerPortal\* -DestinationPath .\Publish\CustomerPortal.zip -Force
 
 
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
