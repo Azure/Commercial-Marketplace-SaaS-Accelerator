@@ -118,6 +118,16 @@
         }
 
         /// <summary>
+        /// Gets the offer by its planGUId
+        /// </summary>
+        /// <param name="planGuid">The planGuid.</param>
+        /// <returns> Plan.</returns>
+        public Plans GetOfferByPlanGuid(Guid planGuid)
+        {
+            return this.context.Plans.Where(s => s.PlanGuid == planGuid).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Removes the specified plan details.
         /// </summary>
         /// <param name="offerDetails">The offer details.</param>
