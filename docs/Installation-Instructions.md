@@ -61,12 +61,9 @@ Connect-AzureAD -Confirm; `
 | SQLAdminLogin | SQL Admin login |
 | SQLAdminLoginPassword | SQL Admin password |
 | PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
-| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/ |
-| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac |
 | ResourceGroupForDeployment | Name of the resource group to deploy the resources |
 | Location | Location of the resource group |
 | AzureSubscriptionID | Subscription where the resources be deployed |
-| PathToARMTemplate | Local Path to the ARM Template |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
 | MeteredSchedulerSupport | Metered Scheduler is deployed by Default. Pass NO to disable the feature |

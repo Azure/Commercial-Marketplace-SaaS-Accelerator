@@ -193,24 +193,19 @@ if($LogoURLico) {
 
 Write-host "☁  Prepare publish files for the web application"
 
-if (!($MeteredSchedulerSupport))
-{
-    $MeteredSchedulerSupport = "NO"
-}
+
 
 Write-host "☁  Preparing the publish files for PublisherPortal"  
 dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
 
-if ($MeteredSchedulerSupport -ne "NO")
+if ($MeteredSchedulerSupport -ne $true)
 { 
     Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
     mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
     dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
-    $MeteredSchedulerSupport = "True"
+
 }
-else {
-    $MeteredSchedulerSupport = "False"
-}
+
 Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
 
 Write-host "☁  Preparing the publish files for CustomerPortal"
