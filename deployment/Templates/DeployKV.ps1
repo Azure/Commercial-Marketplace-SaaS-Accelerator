@@ -16,13 +16,11 @@ Param(
    [string][Parameter(Mandatory)]$SQLAdminLogin, # SQL Admin login
    [string][Parameter(Mandatory)]$SQLAdminLoginPassword, # SQL Admin password
    [string][Parameter(Mandatory)]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
-   [string][Parameter()]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
    [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
-   [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
-   [string][Parameter()]$MeteredSchedulerSupport # set to NO to disable Metered Support
+   [switch][Parameter()]$MeteredSchedulerSupport # set to true to enable Metered Support
 )
 
 $ErrorActionPreference = "Stop"
@@ -223,7 +221,8 @@ Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Pub
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
 
 # Create RG if not exists
-New-AzResourceGroup -Name $ResourceGroupForDeployment -Location $location -Force
+az group create --location $location --name $ResourceGroupForDeployment
+
 
 Write-host "📜  Start Deploy resources"
 $WebAppNameService=$WebAppNamePrefix+"AmpSvcPlan"
@@ -232,7 +231,7 @@ $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $KeyVault=$WebAppNamePrefix+"-kv"
 $KeyVault=$KeyVault -replace '_',''
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(SecretUri=https://"+$KeyVault+".vault.azure.net/secrets/ADApplicationSecret/)"
-$DefaultConnectionKeyVault="@Microsoft.KeyVault(SecretUri=https://"+$KeyVault+".vault.azure.net/secrets/DefaultConnection/)"
+$DefaultConnectionKeyVault  ="@Microsoft.KeyVault(SecretUri=https://"+$KeyVault+".vault.azure.net/secrets/DefaultConnection/)"
 $Connection="Data Source=tcp:"+$SQLServerName+".database.windows.net,1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
 
 

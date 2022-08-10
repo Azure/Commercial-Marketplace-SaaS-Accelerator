@@ -16,13 +16,11 @@ Param(
    [string][Parameter(Mandatory)]$SQLAdminLogin, # SQL Admin login
    [string][Parameter(Mandatory)]$SQLAdminLoginPassword, # SQL Admin password
    [string][Parameter(Mandatory)]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
-   [string][Parameter()]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
    [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
-   [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
-   [string][Parameter()]$MeteredSchedulerSupport # set to NO to disable Metered Support
+   [switch][Parameter()]$MeteredSchedulerSupport # set to true to enable Metered Support
 )
 
 $ErrorActionPreference = "Stop"
@@ -190,23 +188,19 @@ if($LogoURLico) {
 
 Write-host "☁  Prepare publish files for the web application"
 
-if (!($MeteredSchedulerSupport))
-{
-    $MeteredSchedulerSupport = "NO"
-}
 
 Write-host "☁  Preparing the publish files for PublisherPortal"  
 dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
 
-if ($MeteredSchedulerSupport -ne "NO")
+if ($MeteredSchedulerSupport -eq $true)
 { 
     Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
     mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
     dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
-    $MeteredSchedulerSupport = "True"
+
 }
 else {
-    $MeteredSchedulerSupport = "False"
+
 }
 Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
 
@@ -218,7 +212,7 @@ Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Pub
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
 
 # Create RG if not exists
-New-AzResourceGroup -Name $ResourceGroupForDeployment -Location $location -Force
+az group create --location $location --name $ResourceGroupForDeployment
 
 Write-host "Create SQL Server"
 az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location "$location" --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword

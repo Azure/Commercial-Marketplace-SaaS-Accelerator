@@ -15,8 +15,7 @@ Connect-AzureAD -Confirm; `
  -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -Location "East US" `
- -PathToARMTemplate ".\deploy.json" 
+ -Location "East US"  
  ```
 
   The following lines are optional:
@@ -47,8 +46,7 @@ Connect-AzureAD -Confirm; `
  -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -Location "East US" `
- -PathToARMTemplate ".\deploy.json" 
+ -Location "East US" 
  ```
 ## Parameters
 
