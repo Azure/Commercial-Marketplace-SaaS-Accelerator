@@ -140,16 +140,6 @@
         }
 
         /// <summary>
-        /// Gets the plan detail by planGUId
-        /// </summary>
-        /// <param name="planGuid">The planGuid.</param>
-        /// <returns> Plan.</returns>
-        public Plans GetByPlanGuid(Guid planGuid)
-        {
-            return this.context.Plans.Where(s => s.PlanGuid == planGuid).FirstOrDefault();
-        }
-
-        /// <summary>
         /// Gets the plans by user.
         /// </summary>
         /// <returns> List of Plans.</returns>

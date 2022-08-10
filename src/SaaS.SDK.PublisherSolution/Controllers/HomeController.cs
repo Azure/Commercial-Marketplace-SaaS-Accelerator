@@ -248,6 +248,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
                         Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
+                        subscriptionDetailExtension.OfferId = this.offersRepository.GetOfferById(planDetail.OfferId).OfferId;
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
                             allSubscriptions.Add(subscriptionDetailExtension);
@@ -862,7 +863,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             x.PlanGUID = Guid.NewGuid();
                         });
                         this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail); // add plans
-                        subscription.PlanGUId = subscriptionPlanDetail.FirstOrDefault().PlanGUID;
 
                         //var subscriptionData = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
                         var customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Purchaser.EmailId, EmailAddress = subscription.Purchaser.EmailId });
