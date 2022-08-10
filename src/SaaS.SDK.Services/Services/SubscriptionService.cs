@@ -26,11 +26,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         private IPlansRepository planRepository;
 
         /// <summary>
-        /// The offer repository.
-        /// </summary>
-        private IOffersRepository offerRepository;
-
-        /// <summary>
         /// The current user identifier.
         /// </summary>
         private int currentUserId;
@@ -163,7 +158,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 CustomerName = subscription.User?.FullName,
                 IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
                 PlanGUId = subscription.PlanGUId,
-                OfferId = this.offerRepository.GetOfferByPlanGuid(subscription.PlanGUId).OfferId
             };
             subscritpionDetail.Purchaser = new PurchaserResult();
 
