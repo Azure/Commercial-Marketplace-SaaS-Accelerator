@@ -294,7 +294,7 @@ az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameP
 
 Write-host "📜  Deploying the Publisher Code to Admin portal"
 
-Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNameAdmin"  -ArchivePath $publisherPackag -Force
+Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNameAdmin"  -ArchivePath $publisherPackage -Force
 
 Write-host "📜  Deploying the Customer Code to Customer portal"
 
