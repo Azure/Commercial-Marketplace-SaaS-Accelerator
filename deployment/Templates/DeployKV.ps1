@@ -38,7 +38,7 @@ if($SQLAdminLogin.Length -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
     Exit
 }
-if($SWebAppNamePrefix.Length -gt 21) {
+if($WebAppNamePrefix.Length -gt 21) {
     Throw "🛑 Web name prefix must be less than 21 characters."
     Exit
 }
