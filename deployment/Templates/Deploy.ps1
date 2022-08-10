@@ -33,7 +33,7 @@ if($SQLAdminLogin.ToLower() -eq "admin") {
 }
 
 # Checking SQL password length
-if($SQLAdminLogin.Length -lt 8) {
+if($SQLAdminLoginPassword.Length -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
 }
 
