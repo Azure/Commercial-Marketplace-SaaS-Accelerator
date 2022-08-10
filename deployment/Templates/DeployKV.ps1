@@ -237,10 +237,24 @@ az sql server firewall-rule create --resource-group $ResourceGroupForDeployment 
 Write-host "Create SQL DB"
 az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name "AMPSaaSDB"  --edition Standard  --capacity 10 --zone-redundant false 
 
+## Prepare to deploy packages 
+## This step to solve Linux/Windows relative path issue
+if ($IsLinux) 
+{ 
+   $dbSqlFile=(get-item . ).parent.FullName+"/Database/AMP-DB.sql"  
+   $publisherPackage=(get-item . ).parent.parent.FullName+"/Publish/PublisherPortal.zip"  
+   $customerPackage=(get-item . ).parent.parent.FullName+"/Publish/CustomerPortal.zip"  
+}
+else {
+    $dbSqlFile=(get-item . ).parent.FullName+"\Database\AMP-DB.sql"  
+    $publisherPackage=(get-item . ).parent.parent.FullName+"\Publish\PublisherPortal.zip"  
+    $customerPackage=(get-item . ).parent.parent.FullName+"\Publish\CustomerPortal.zip" 
+}
+
 # Deploy Code and database schema
 Write-host "📜  Deploying the database schema"
 $ServerUri = $SQLServerName+".database.windows.net"
-Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile "../Database/AMP-DB.sql"
+Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile $dbSqlFile
 
 
 Write-host "📜  Create Keyvault"
@@ -280,11 +294,11 @@ az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameP
 
 Write-host "📜  Deploying the Publisher Code to Admin portal"
 
-Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNameAdmin"  -ArchivePath "./Commercial-Marketplace-SaaS-Accelerator/Publish/PublisherPortal.zip" -Force
+Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNameAdmin"  -ArchivePath $publisherPackag -Force
 
 Write-host "📜  Deploying the Customer Code to Customer portal"
 
-Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNamePortal" -ArchivePath  "./Commercial-Marketplace-SaaS-Accelerator/Publish/CustomerPortal.zip" -Force
+Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNamePortal" -ArchivePath  $customerPackage -Force
 
 
 Write-host "🧹  Cleaning things up!"
