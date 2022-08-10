@@ -43,12 +43,5 @@
         /// <param name="id">The identifier.</param>
         /// <returns>Offer for the given identifier ( internal id ).</returns>
         Offers GetOfferByInternalId(int id);
-
-        /// <summary>
-        /// Gets the offer by associated Plan Guid
-        /// </summary>
-        /// <param name="planGuid">The plan Guid.</param>
-        /// <returns>Offer for the given identifier ( Plan Guid ).</returns>
-        Offers GetOfferByPlanGuid(Guid? planGuid);
     }
 }
