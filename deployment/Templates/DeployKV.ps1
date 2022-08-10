@@ -222,8 +222,7 @@ Write-host "📜  Start Deploy resources"
 $WebAppNameService=$WebAppNamePrefix+"AmpSvcPlan"
 $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
-$KeyVault=$WebAppNamePrefix+"kv"
-$KeyVault=$KeyVault -replace '-',''
+$KeyVault=$WebAppNamePrefix+"-kv"
 $KeyVault=$KeyVault -replace '_',''
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(SecretUri=https://"+$KeyVault+".vault.azure.net/secrets/ADApplicationSecret/)"
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(SecretUri=https://"+$KeyVault+".vault.azure.net/secrets/DefaultConnection/)"
