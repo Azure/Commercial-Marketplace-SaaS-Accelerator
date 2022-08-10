@@ -30,12 +30,19 @@ $ErrorActionPreference = "Stop"
 # Checking SQL username
 if($SQLAdminLogin.ToLower() -eq "admin") {
     Throw "🛑 SQLAdminLogin may not be 'admin'."
+    Exit
 }
 
 # Checking SQL password length
 if($SQLAdminLogin.Length -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
+    Exit
 }
+if($SWebAppNamePrefix.Length -gt 21) {
+    Throw "🛑 Web name prefix must be less than 21 characters."
+    Exit
+}
+
 
 Write-Host "Starting SaaS Accelerator Deployment..."
 
