@@ -245,6 +245,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     var allPlans = this.planRepository.Get().ToList();
                     foreach (var subscription in allSubscriptionDetails)
                     {
+
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
                         Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
@@ -312,7 +313,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <param name="planId">The plan identifier.</param>
         /// <returns> The <see cref="IActionResult" />.</returns>
-        public IActionResult SubscriptionDetails(Guid subscriptionId, string planId)
+        public async Task<IActionResult> SubscriptionDetails(Guid subscriptionId, string planId)
         {
             this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId:{1}", subscriptionId, planId);
             SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
@@ -336,6 +337,8 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                 subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
                 subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
+                var detailsFromAPI = await this.fulfillApiService.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false);
+                subscriptionDetail.Beneficiary = detailsFromAPI.Beneficiary;
             }
 
             return this.View(subscriptionDetail);
