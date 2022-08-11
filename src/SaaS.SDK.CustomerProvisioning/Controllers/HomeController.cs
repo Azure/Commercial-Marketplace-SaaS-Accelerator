@@ -317,7 +317,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                         subscriptionDetail.ErrorMessage = Convert.ToString(this.TempData["ErrorMsg"]);
                     }
 
-                  return this.View(subscriptionDetail);
+                    return this.View(subscriptionDetail);
                 }
                 else
                 {
