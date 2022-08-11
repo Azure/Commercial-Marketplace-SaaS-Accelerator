@@ -256,10 +256,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                         DisplayName = planDetail.DisplayName,
                         Description = "",
                         OfferId = planDetail.OfferId,
-                        PlanGuid = planDetail.PlanGUID,
-                        MeteredDimensions = planDetail.GetmeteredDimensions(),
-                        IsmeteringSupported = planDetail.IsmeteringSupported,
-                        IsPerUser = planDetail.IsPerUserPlan,
+                        PlanGuid = planDetail.PlanGUID
                     });
                 }
             }
