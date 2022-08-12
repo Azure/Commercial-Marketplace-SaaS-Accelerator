@@ -32,7 +32,7 @@ if($SQLAdminLogin.ToLower() -eq "admin") {
 }
 
 # Checking SQL password length
-if($SQLAdminLogin.Length -lt 8) {
+if($SQLAdminLoginPassword.Length -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
     Exit
 }
@@ -59,9 +59,9 @@ Write-Host "🔑  Connecting to AzureAD..."
 # Connect-AzureAD -Confirm   # TODO: Make this command works.  It fails when running from withing the script. 
 Write-Host "🔑  All Authentications Connected."
 
-$currentContext = get-AzureRMContext
-$currentTenant = $currentContext.Account.ExtendedProperties.Tenants
-$currentSubscription = $currentContext.Account.ExtendedProperties.Subscriptions
+$currentContext = Get-AzContext
+$currentTenant = $currentContext.Tenant.Id
+$currentSubscription = $currentContext.Subscription.Id
 # Get TenantID if not set as argument
 if(!($TenantID)) {    
     Get-AzTenant | Format-Table
@@ -70,6 +70,7 @@ if(!($TenantID)) {
 else {
     Write-Host "🔑  TenantID provided: $TenantID"
 }
+
                                                    
 # Get Azure Subscription
 if(!($AzureSubscriptionID)) {    

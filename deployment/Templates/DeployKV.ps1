@@ -32,7 +32,7 @@ if($SQLAdminLogin.ToLower() -eq "admin") {
 }
 
 # Checking SQL password length
-if($SQLAdminLogin.Length -lt 8) {
+if($SQLAdminLoginPassword.Length -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
     Exit
 }
@@ -64,9 +64,9 @@ Write-Host "🔑  Connecting to AzureAD..."
 # Connect-AzureAD -Confirm   # TODO: Make this command works.  It fails when running from withing the script. 
 Write-Host "🔑  All Authentications Connected."
 
-$currentContext = get-AzureRMContext
-$currentTenant = $currentContext.Account.ExtendedProperties.Tenants
-$currentSubscription = $currentContext.Account.ExtendedProperties.Subscriptions
+$currentContext = Get-AzContext
+$currentTenant = $currentContext.Tenant.Id
+$currentSubscription = $currentContext.Subscription.Id
 # Get TenantID if not set as argument
 if(!($TenantID)) {    
     Get-AzTenant | Format-Table
@@ -75,7 +75,7 @@ if(!($TenantID)) {
 else {
     Write-Host "🔑  TenantID provided: $TenantID"
 }
-                                                   
+
 # Get Azure Subscription
 if(!($AzureSubscriptionID)) {    
     Get-AzSubscription -TenantId $TenantID | Format-Table
@@ -225,8 +225,8 @@ $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $KeyVault=$WebAppNamePrefix+"-kv"
 $KeyVault=$KeyVault -replace '_',''
-$ADApplicationSecretKeyVault="@Microsoft.KeyVault(SecretUri=https://"+$KeyVault+".vault.azure.net/secrets/ADApplicationSecret/)"
-$DefaultConnectionKeyVault  ="@Microsoft.KeyVault(SecretUri=https://"+$KeyVault+".vault.azure.net/secrets/DefaultConnection/)"
+$ADApplicationSecretKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=ADApplicationSecret)"' -f $KeyVault
+$DefaultConnectionKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=DefaultConnection)"' -f $KeyVault
 $Connection="Data Source=tcp:"+$SQLServerName+".database.windows.net,1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
 
 
