@@ -21,6 +21,11 @@
         Unsubscribed,
 
         /// <summary>
+        /// When status cannot be parsed to any of the other Status types
+        /// </summary>
+        UnRecognized,
+
+        /// <summary>
         /// Pending Activation
         /// </summary>
         PendingActivation,
