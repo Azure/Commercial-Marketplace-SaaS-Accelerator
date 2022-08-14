@@ -227,10 +227,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         }
 
         /// <summary>
-        /// Adds the plan details for subscription.
+        /// Adds/Updates all plans details for subscription.
         /// </summary>
         /// <param name="allPlanDetail">All plan detail.</param>
-        public void AddPlanDetailsForSubscription(List<PlanDetailResultExtension> allPlanDetail)
+        public void AddUpdateAllPlanDetailsForSubscription(List<PlanDetailResultExtension> allPlanDetail)
         {
             foreach (var planDetail in allPlanDetail)
             {
@@ -246,6 +246,24 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                     IsPerUser = planDetail.IsPerUserPlan,
                 });
             }
+        }
+
+        /// <summary>
+        /// Only Add current subscription plan. This is more relevent when an unsubscribed subscription gets created
+        /// As the ListAvailableplans API is not available, we only add current plan from Subscription
+        /// </summary>
+        /// <param name="allPlanDetail">All plan detail.</param>
+        public void AddPlanDetailsForSubscription(PlanDetailResultExtension planDetail)
+        {
+            this.planRepository.Add(new Plans
+            {
+                PlanId = planDetail.PlanId,
+                DisplayName = planDetail.DisplayName,
+                Description = "",
+                OfferId = planDetail.OfferId,
+                PlanGuid = planDetail.PlanGUID,
+                IsPerUser = planDetail.IsPerUserPlan,
+            });
         }
 
         /// <summary>

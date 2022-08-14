@@ -76,5 +76,13 @@
         /// <param name="planGuId">The plan gu identifier.</param>
         /// <returns> Plan Attribute Mapping.</returns>
         PlanAttributeMapping GetPlanAttributeOnOfferAttributeId(int offerAttributeId, Guid planGuId);
+
+        /// <summary>
+        /// Adds the specified plan details with information available from GetSubscription API
+        /// This is more relevent for an Unsubscribed subscription where the ListAvailablePlans API wont work
+        /// </summary>
+        /// <param name="planDetails">The plan details.</param>
+        /// <returns> Plan Id.</returns>
+        int Add(Plans planDetails);
     }
 }
