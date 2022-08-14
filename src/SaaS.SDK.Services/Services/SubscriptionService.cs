@@ -263,6 +263,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 OfferId = planDetail.OfferId,
                 PlanGuid = planDetail.PlanGUID,
                 IsPerUser = planDetail.IsPerUserPlan,
+                // Setting to false to avoid NULL in the DB. This only applies
+                // when creating a plan for an unsubscribed subscription, so it is fine.
+                IsmeteringSupported = false   
             });
         }
 
