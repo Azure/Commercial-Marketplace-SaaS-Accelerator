@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
+using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
 using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 
 namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
@@ -40,13 +41,11 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// Processes the webhook notification asynchronous.
         /// </summary>
         /// <param name="payload">The payload.</param>
+        /// <param name="config">Current environmental configuration</param>
         /// <returns> Notification.</returns>
-        public async Task ProcessWebhookNotificationAsync(WebhookPayload payload)
+        public async Task ProcessWebhookNotificationAsync(WebhookPayload payload, SaaSApiClientConfiguration config)
         {
-            
-            var WebhookRe = await apiClient.GetOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId);
-
-            if (WebhookRequestIsValid(payload, WebhookRe)) 
+            if (WebhookRequestIsValid(payload, config).Result) 
             {
                 switch (payload.Action)
                 {
@@ -89,8 +88,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             }
         }
 
-        private static bool WebhookRequestIsValid(WebhookPayload payload, OperationResult webhookOperation)
+        private async Task<bool> WebhookRequestIsValid(WebhookPayload payload, SaaSApiClientConfiguration config)
         {
+            // if we are in a development environment, return true
+            if (!string.IsNullOrEmpty(config.Environment) && config.Environment.ToLower() == "development")
+            {
+                return true;
+            }
+            
+            // we are not in development. Check the operation details.
+            OperationResult webhookOperation = await apiClient.GetOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId);
+
             return webhookOperation != null && // Is the Marketplace aware of this webhook invocation?                       
                    webhookOperation.ID == payload.OperationId.ToString() && // Does the operation ID match? Are we talking about the same invocation?
                    webhookOperation.SubscriptionId == payload.SubscriptionId.ToString() && // Does it apply to this subscription?
