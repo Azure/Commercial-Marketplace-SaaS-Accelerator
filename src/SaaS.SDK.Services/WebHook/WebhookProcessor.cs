@@ -1,5 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
+
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+
 namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
 {
     using System;
@@ -40,13 +43,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// <returns> Notification.</returns>
         public async Task ProcessWebhookNotificationAsync(WebhookPayload payload)
         {
-            var webhookOperation = await apiClient.GetOperationStatusResultAsync(
-                payload.SubscriptionId, payload.OperationId);
+            
+            var WebhookRe = await apiClient.GetOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId);
 
-            if (webhookOperation != null && // Is the Marketplace aware of this webhook invocation?                       
-                webhookOperation.ID == payload.OperationId.ToString() && // Does the operation ID match? Are we talking about the same invocation?
-                webhookOperation.SubscriptionId == payload.SubscriptionId.ToString() && // Does it apply to this subscription?
-                webhookOperation.ActionType == payload.Action.ToString()) // Does the action type match?
+            if (WebhookRequestIsValid(payload, WebhookRe)) 
             {
                 switch (payload.Action)
                 {
@@ -70,6 +70,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                         await this.webhookHandler.ReinstatedAsync(payload).ConfigureAwait(false);
                         break;
 
+                    case WebhookAction.Renew:
+                        await this.webhookHandler.RenewedAsync().ConfigureAwait(false);
+                        break;
+
                     default:
                         await this.webhookHandler.UnknownActionAsync(payload).ConfigureAwait(false);
                         break;
@@ -83,6 +87,14 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
                 throw new InvalidOperationException(
                     $"Unable to process webhook notification [{payload.OperationId}]. Unable to verify webhook notification with Marketplace API.");
             }
+        }
+
+        private static bool WebhookRequestIsValid(WebhookPayload payload, OperationResult webhookOperation)
+        {
+            return webhookOperation != null && // Is the Marketplace aware of this webhook invocation?                       
+                   webhookOperation.ID == payload.OperationId.ToString() && // Does the operation ID match? Are we talking about the same invocation?
+                   webhookOperation.SubscriptionId == payload.SubscriptionId.ToString() && // Does it apply to this subscription?
+                   webhookOperation.ActionType == payload.Action.ToString(); // Does the action type match?
         }
     }
 }
