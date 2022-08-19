@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj" />
+	  <ProjectReference Include="..\SaaSAccelerator.DataAccess\SaaSAccelerator.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
