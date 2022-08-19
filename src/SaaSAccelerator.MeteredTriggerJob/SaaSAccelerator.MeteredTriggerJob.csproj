@@ -2,7 +2,7 @@
    <PropertyGroup>
     <Authors>Microsoft.Marketplace</Authors>
   	<Company>Microsoft</Company>
-    <Product>SaaS.SDK</Product>	  
+    <Product>SaaSAccelerator</Product>	  
     <TargetFramework>net6.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <PublishSingleFile>true</PublishSingleFile>

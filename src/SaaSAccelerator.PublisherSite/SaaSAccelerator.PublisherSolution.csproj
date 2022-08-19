@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Authors>Microsoft.Marketplace</Authors>
     <Company>Microsoft</Company>
-    <Product>SaaS.SDK</Product>
+    <Product>SaaSAccelerator</Product>
   </PropertyGroup>
 
   <ItemGroup>

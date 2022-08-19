@@ -6,7 +6,7 @@
     <RootNamespace>SaaS.SDK.CustomerProvisioning</RootNamespace>
     <Company>Microsoft</Company>
     <Authors>Microsoft.Marketplace</Authors>
-    <Product>SaaS.SDK</Product>
+    <Product>SaaSAccelerator</Product>
   </PropertyGroup>
 
   <ItemGroup>

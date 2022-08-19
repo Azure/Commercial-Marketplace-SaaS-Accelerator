@@ -5,7 +5,7 @@
     <IsPackable>false</IsPackable>
     <Authors>Microsoft.Marketplace</Authors>
     <Company>Microsoft</Company>
-    <Product>SaaS.SDK</Product>
+    <Product>SaaSAccelerator</Product>
   </PropertyGroup>
 
   <ItemGroup>
