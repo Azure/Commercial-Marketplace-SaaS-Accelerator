@@ -1,20 +1,20 @@
-﻿namespace Microsoft.Marketplace.Saas.Web.Controllers
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text.Json;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Services;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Utilities;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.PublisherSite.Controllers
+{
     /// <summary>
     /// Plans Controller.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.Saas.Web.Controllers.BaseController" />
+    /// <seealso cref="BaseController" />
     [ServiceFilter(typeof(KnownUserAttribute))]
     public class PlansController : BaseController
     {

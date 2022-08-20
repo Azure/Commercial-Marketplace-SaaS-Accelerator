@@ -1,7 +1,7 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel
-{
-    using System;
+﻿using System;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.DataAccess.DataModel
+{
     /// <summary>
     /// Encapsulation for Plan events.
     /// </summary>

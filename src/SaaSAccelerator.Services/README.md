@@ -6,7 +6,7 @@ The project offers the service layer that is leveraged by the **Customer portal*
 
 ## Source Code
 
-The project is located in the **SaaS.SDK.Services** folder. The project is composed of the following sections:
+The project is located in the **SaaSAccelerator.Services** folder. The project is composed of the following sections:
 
 | Section Name | Description |
 | --- | --- |  

@@ -1,7 +1,7 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
-{
-    using System;
+﻿using System;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Models
+{
     /// <summary>
     /// Plan Events Model.
     /// </summary>

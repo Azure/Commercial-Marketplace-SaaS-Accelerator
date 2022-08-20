@@ -1,18 +1,16 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Context;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Entities;
 
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+namespace Microsoft.Marketplace.SaaSAccelerator.DataAccess.Services
 {
     /// <summary>
     ///   Scheduler Frequency Repository.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.ISchedulerFrequencyRepository" />
+    /// <seealso cref="ISchedulerFrequencyRepository" />
     public class SchedulerFrequencyRepository : ISchedulerFrequencyRepository
     {
         /// <summary>

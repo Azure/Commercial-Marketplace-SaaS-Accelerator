@@ -10,11 +10,11 @@ The web application demonstrates the end-user experience covering the following 
 
 ## Source Code
 
-The Project is located in the **SaaS.SDK.CustomerProvisioning** folder. The project is composed of the following sections:
+The Project is located in the **SaaSAccelerator.CustomerSite** folder. The project is composed of the following sections:
 
 | Section Name | Description |
 | --- | --- |  
-| Dependencies | Microsoft AspNet Core OpenID Authentication, EntityFramework and Logging extensions, SaaS.SDK.Client  |
+| Dependencies | Microsoft AspNet Core OpenID Authentication, EntityFramework and Logging extensions, SaaSAccelerator.ClientSite  |
 | Controllers | ASP.Net Core MVC controllers that are responsible to provide data  / views and handle the data posted back by the user |
 | Database | Scripts to set up and initialize the database |
 | Models | POCO classes for transferring data between the client and the endpoints |

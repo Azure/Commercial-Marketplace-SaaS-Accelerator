@@ -9,6 +9,8 @@
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishReadyToRun>true</PublishReadyToRun>
+	<RootNamespace>Microsoft.Marketplace.SaaSAccelerator.MeteredTriggeredJob</RootNamespace>
+	<AssemblyName>Microsoft.Marketplace.SaaSAccelerator.MeteredTriggeredJob</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SaaSAccelerator.DataAccess\SaaSAccelerator.DataAccess.csproj" />

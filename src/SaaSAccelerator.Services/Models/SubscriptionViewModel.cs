@@ -1,7 +1,7 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Models
+{
     /// <summary>
     /// Subscription ViewModel.
     /// </summary>

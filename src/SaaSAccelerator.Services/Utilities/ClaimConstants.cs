@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Utilities
+﻿namespace Microsoft.Marketplace.SaaSAccelerator.Services.Utilities
 {
     /// <summary>
     /// WebConstants.

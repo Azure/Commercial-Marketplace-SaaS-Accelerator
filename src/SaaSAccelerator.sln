@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaSAccelerator.DataAccess"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaSAccelerator.MeteredTriggerJob", "SaaSAccelerator.MeteredTriggerJob\SaaSAccelerator.MeteredTriggerJob.csproj", "{9EEEE406-775B-4DB0-AA70-022425DF6669}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaSAccelerator.PublisherSolution", "SaaSAccelerator.PublisherSite\SaaSAccelerator.PublisherSolution.csproj", "{50063DCD-D384-42B3-833D-83BF59F845B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaSAccelerator.PublisherSite", "SaaSAccelerator.PublisherSite\SaaSAccelerator.PublisherSite.csproj", "{50063DCD-D384-42B3-833D-83BF59F845B1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaSAccelerator.Services", "SaaSAccelerator.Services\SaaSAccelerator.Services.csproj", "{F3FA23F0-890B-482A-9CDD-10C5E862C0C3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaSAccelerator.UnitTest", "SaaSAccelerator.UnitTest.Services\SaaSAccelerator.UnitTest.csproj", "{AD194981-78A0-4374-84AC-FF6AEFAFAFB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaSAccelerator.UnitTest.Services", "SaaSAccelerator.UnitTest.Services\SaaSAccelerator.UnitTest.Services.csproj", "{AD194981-78A0-4374-84AC-FF6AEFAFAFB6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaSAccelerator.CustomerSite", "SaaSAcclerator.CustomerSite\SaaSAccelerator.CustomerSite.csproj", "{F4B41EFD-0778-4F0D-8816-38816DA2C04A}"
 EndProject

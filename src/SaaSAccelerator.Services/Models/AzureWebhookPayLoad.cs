@@ -1,8 +1,8 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
-{
-    using System;
-    using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Models
+{
     /// <summary>
     /// Wbe hook pary load.
     /// </summary>

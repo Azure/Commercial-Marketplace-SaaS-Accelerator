@@ -1,9 +1,9 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
-{
-    using System;
-    using System.Collections.Generic;
-    using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Models
+{
     /// <summary>
     /// The Plans Model.
     /// </summary>

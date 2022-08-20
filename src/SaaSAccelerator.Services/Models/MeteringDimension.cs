@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
+
+using System.ComponentModel;
+using System.Text.Json.Serialization;
+
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Models
 {
-    using System.ComponentModel;
-    using System.Text.Json.Serialization;
     /// <summary>
     /// Metering Dimension Details.
     /// </summary>

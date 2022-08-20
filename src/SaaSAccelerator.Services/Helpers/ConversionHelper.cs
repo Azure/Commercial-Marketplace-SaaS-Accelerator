@@ -1,13 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Marketplace.SaaS.Models;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Exceptions;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
+
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Helpers
 {
-    using Microsoft.Marketplace.SaaS.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using MeteringDimension = Models.MeteringDimension;
     using RecurrentBillingTerm = Models.RecurrentBillingTerm;
     using MeteringedQuantityIncluded = Models.MeteringedQuantityIncluded;

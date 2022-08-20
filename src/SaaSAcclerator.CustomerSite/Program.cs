@@ -1,3 +1,5 @@
+using Microsoft.Marketplace.SaaSAccelerator.CustomerSite;
+
 namespace Microsoft.Marketplace.SaasKit.Client
 {
     using Microsoft.AspNetCore.Hosting;

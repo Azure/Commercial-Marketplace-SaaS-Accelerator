@@ -1,13 +1,13 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Utilities
-{
-    using System.Linq;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Filters;
-    using Microsoft.AspNetCore.Routing;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Utilities
+{
     /// <summary>
     /// Authorize attribute to check if the user is a known user.
     /// </summary>

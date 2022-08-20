@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
+namespace Microsoft.Marketplace.SaaSAccelerator.DataAccess.Entities
 {
     public partial class MeteredDimensions
     {

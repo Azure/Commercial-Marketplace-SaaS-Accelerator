@@ -5,6 +5,9 @@
     <Authors>Microsoft.Marketplace</Authors>
     <Company>Microsoft</Company>
     <Product>SaaSAccelerator</Product>
+	<RootNamespace>Microsoft.Marketplace.SaaSAccelerator.PublisherSite</RootNamespace>
+	<AssemblyName>Microsoft.Marketplace.SaaSAccelerator.PublisherSite</AssemblyName>
+
   </PropertyGroup>
 
   <ItemGroup>

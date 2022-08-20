@@ -1,33 +1,34 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.Saas.Web
-{
-    using global::Azure.Identity;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-    using Microsoft.Marketplace.Metering;
-    using Microsoft.Marketplace.SaaS;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
-    using System;
 
+using System;
+using Azure.Identity;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Marketplace.Metering;
+using Microsoft.Marketplace.SaaS;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Context;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Services;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Configurations;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Services;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Utilities;
+
+namespace Microsoft.Marketplace.SaaSAccelerator.PublisherSite
+{
     /// <summary>
     /// Startup.
     /// </summary>

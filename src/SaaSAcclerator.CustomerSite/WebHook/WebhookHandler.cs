@@ -1,16 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
+
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Entities;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Services;
+using Microsoft.Marketplace.SaaSAccelerator.Services.StatusHandlers;
+using Microsoft.Marketplace.SaaSAccelerator.Services.WebHook;
+
 namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
 {
     using System;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
     /// Handler For the WebHook Actions.

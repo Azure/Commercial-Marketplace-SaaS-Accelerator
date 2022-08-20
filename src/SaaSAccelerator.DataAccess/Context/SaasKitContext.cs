@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Entities;
 
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
+namespace Microsoft.Marketplace.SaaSAccelerator.DataAccess.Context
 {
     public partial class SaasKitContext : DbContext
     {

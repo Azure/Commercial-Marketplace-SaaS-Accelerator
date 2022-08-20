@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Utilities
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Utilities
 {
     public class CustomClaimsTransformation : IClaimsTransformation
     {

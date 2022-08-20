@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Exceptions
-{
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using System;
 
+using System;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
+
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Exceptions
+{
     /// <summary>
     /// Metered Billing Exception.
     /// </summary>

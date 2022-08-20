@@ -1,19 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.UnitTest
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using global::Azure.Identity;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Marketplace.Metering;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Azure.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Marketplace.Metering;
+using Microsoft.Marketplace.SaaS;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Configurations;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Services;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace SaaSAccelerator.UnitTest
+{
     /// <summary>
     /// Metered API Test.
     /// </summary>

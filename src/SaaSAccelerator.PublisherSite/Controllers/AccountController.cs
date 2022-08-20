@@ -1,10 +1,10 @@
-﻿namespace Microsoft.Marketplace.Saas.Web.Controllers
-{
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Mvc;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.PublisherSite.Controllers
+{
     /// <summary>
     /// Account Controller.
     /// </summary>

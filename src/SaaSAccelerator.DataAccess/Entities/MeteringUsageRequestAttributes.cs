@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
+
+using System;
+
+namespace Microsoft.Marketplace.SaaSAccelerator.DataAccess.Entities
 {
-    using System;
     public partial class MeteringUsageRequestAttributes
     {
         public double Quantity { get; set; }

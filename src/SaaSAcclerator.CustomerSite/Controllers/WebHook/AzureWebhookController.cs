@@ -1,12 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
+
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Services;
+using Microsoft.Marketplace.SaaSAccelerator.Services.WebHook;
+
 namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
 {
     using System.Text.Json;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
+    using Microsoft.Marketplace.SaaSAccelerator.Services.WebHook;
     using System.Threading.Tasks;
 
     /// <summary>

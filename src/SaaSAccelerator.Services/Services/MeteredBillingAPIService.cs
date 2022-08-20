@@ -1,21 +1,22 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.Marketplace.Metering;
-    using Microsoft.Marketplace.Metering.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Marketplace.Metering;
+using Microsoft.Marketplace.Metering.Models;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Configurations;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
+
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Services
+{
     /// <summary>
     /// Metered Api Client.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IMeteredBillingApiService" />
+    /// <seealso cref="IMeteredBillingApiService" />
     public class MeteredBillingApiService : BaseApiService, IMeteredBillingApiService
     {
         /// <summary>

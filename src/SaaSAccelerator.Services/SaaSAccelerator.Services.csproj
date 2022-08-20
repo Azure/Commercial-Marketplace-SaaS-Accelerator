@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Microsoft.Marketplace.SaaS.SDK.Services</RootNamespace>
-    <AssemblyName>Microsoft.Marketplace.SaaS.SDK.Services</AssemblyName>
+    <RootNamespace>Microsoft.Marketplace.SaaSAccelerator.Services</RootNamespace>
+    <AssemblyName>Microsoft.Marketplace.SaaSAccelerator.Services</AssemblyName>
 	<Product>SaaSAccelerator</Product>
   </PropertyGroup>
 

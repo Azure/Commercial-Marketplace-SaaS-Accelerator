@@ -1,12 +1,12 @@
-﻿namespace Microsoft.Marketplace.Saas.Web.Controllers
-{
-    using System.Linq;
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Utilities;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.PublisherSite.Controllers
+{
     /// <summary>
     /// Base Controller.
     /// </summary>

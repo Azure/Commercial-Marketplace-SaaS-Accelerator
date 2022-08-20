@@ -1,9 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Attributes
-{
-    using System;
 
+using System;
+
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Models.Attributes
+{
     /// <summary>
     /// FromRequestHeaderAttribute to set the Header Key with each Request.
     /// </summary>

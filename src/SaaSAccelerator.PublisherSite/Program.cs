@@ -1,9 +1,9 @@
-namespace Microsoft.Marketplace.Saas.Web
-{
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.PublisherSite
+{
     /// <summary>
     /// Program.
     /// </summary>

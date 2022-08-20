@@ -1,16 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Utilities
-{
-    using System;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 
+using System;
+using Microsoft.Extensions.Logging;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Services;
+using ILogger = Microsoft.Marketplace.SaaSAccelerator.Services.Contracts.ILogger;
+
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Utilities
+{
     /// <summary>
     /// Logger.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.ILogger" />
-    public class MeteringApiClientLogger : Microsoft.Marketplace.SaaS.SDK.Services.Contracts.ILogger
+    /// <seealso cref="Microsoft.Marketplace.SaaSAccelerator.Services.ILogger" />
+    public class MeteringApiClientLogger : ILogger
     {
         /// <summary>
         /// The logger.

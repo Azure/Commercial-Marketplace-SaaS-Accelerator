@@ -1,7 +1,7 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.DataAccess.Contracts
+{
     /// <summary>
     /// Base repository for managing entities.
     /// </summary>

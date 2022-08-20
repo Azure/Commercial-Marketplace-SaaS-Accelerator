@@ -1,23 +1,25 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
-{
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
-    using SaaS.Models;
-    using global::Azure;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Azure;
+using Microsoft.Marketplace.SaaS;
+using Microsoft.Marketplace.SaaS.Models;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Configurations;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Exceptions;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Helpers;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
+
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Services
+{
     /// <summary>
     /// Fulfillment API Client Action-List For Subscriptions.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IFulfilmentApiClient" />
+    /// <seealso cref="Microsoft.Marketplace.SaaSAccelerator.Services.Contracts.IFulfilmentApiClient" />
     public class FulfillmentApiService : BaseApiService, IFulfillmentApiService
     {
 

@@ -1,12 +1,12 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Entities;
+using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.Services
+{
     /// <summary>
     /// Service to manage plans.
     /// </summary>

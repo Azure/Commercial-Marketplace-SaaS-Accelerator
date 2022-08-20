@@ -1,11 +1,6 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
+namespace Microsoft.Marketplace.SaaSAccelerator.DataAccess.Entities
 {
     public partial class MeteredPlanSchedulerManagement
     {

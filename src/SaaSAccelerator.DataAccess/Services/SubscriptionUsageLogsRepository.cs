@@ -1,18 +1,18 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text.Json;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Context;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Contracts;
+using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Entities;
 
+namespace Microsoft.Marketplace.SaaSAccelerator.DataAccess.Services
+{
     /// <summary>
     /// Subscription Usage Log.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.ISubscriptionUsageLogsRepository" />
+    /// <seealso cref="ISubscriptionUsageLogsRepository" />
     public class SubscriptionUsageLogsRepository : ISubscriptionUsageLogsRepository
     {
         /// <summary>

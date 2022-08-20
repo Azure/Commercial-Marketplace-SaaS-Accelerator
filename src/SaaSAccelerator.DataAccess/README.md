@@ -39,7 +39,7 @@ Entities that are persisted in the Database
 
 ## Source Code
 
-The Project is located in the **SaaS.SDK.Client.DataAccess** folder.
+The Project is located in the **SaaSAccelerator.DataAccess** folder.
 The project is composed of the following sections:
 
 | Section Name | Description |
