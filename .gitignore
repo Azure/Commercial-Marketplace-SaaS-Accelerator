@@ -352,18 +352,18 @@ MigrationBackup/
 # IDEA project dev tools
 .DS_Store
 src/.idea/.gitignore
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/riderModule.iml
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/.gitignore
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/.name
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/contentModel.xml
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/indexLayout.xml
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/modules.xml
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/projectSettingsUpdater.xml
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/vcs.xml
+src/.idea/.idea.Microsoft.Marketplace.SaaSAccelerator/riderModule.iml
+src/.idea/.idea.Microsoft.Marketplace.SaaSAccelerator/.idea/.gitignore
+src/.idea/.idea.Microsoft.Marketplace.SaaSAccelerator/.idea/.name
+src/.idea/.idea.Microsoft.Marketplace.SaaSAccelerator/.idea/contentModel.xml
+src/.idea/.idea.Microsoft.Marketplace.SaaSAccelerator/.idea/indexLayout.xml
+src/.idea/.idea.Microsoft.Marketplace.SaaSAccelerator/.idea/modules.xml
+src/.idea/.idea.Microsoft.Marketplace.SaaSAccelerator/.idea/projectSettingsUpdater.xml
+src/.idea/.idea.Microsoft.Marketplace.SaaSAccelerator/.idea/vcs.xml
 
 # ignoring developer settings file
 appsettings.Development.json
-src/SaaS.SDK.PublisherSolution/appsettings.Development.json
-src/SaaS.SDK.MeteredTriggerJob/appsettings.Development.json
-src/SaaS.SDK.CustomerProvisioning/appsettings.Development.json
+src/SaaSAccelerator.PublisherSite/appsettings.Development.json
+src/SaaSAccelerator.MeteredTriggerJob/appsettings.Development.json
+src/SaaSAccelerator.CustomerSite/appsettings.Development.json
 
