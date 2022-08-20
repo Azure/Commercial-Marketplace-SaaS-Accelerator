@@ -9,7 +9,7 @@ using Microsoft.Marketplace.SaaSAccelerator.Services.Services;
 using Microsoft.Marketplace.SaaSAccelerator.Services.StatusHandlers;
 using Microsoft.Marketplace.SaaSAccelerator.Services.WebHook;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
+namespace Microsoft.Marketplace.SaaSAccelerator.Services.WebHook
 {
     using System;
     using System.Threading.Tasks;

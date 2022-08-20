@@ -12,7 +12,7 @@ using Microsoft.Marketplace.SaaSAccelerator.Services.Exceptions;
 using Microsoft.Marketplace.SaaSAccelerator.Services.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SaaSAccelerator.UnitTest
+namespace Microsoft.Marketplace.SaaSAccelerator.UnitTest.Services
 {
     /// <summary>
     /// FulfillmentApi Test Class.

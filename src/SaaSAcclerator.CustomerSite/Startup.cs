@@ -15,7 +15,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Marketplace.SaaS;
-using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
 using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Context;
 using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Contracts;
 using Microsoft.Marketplace.SaaSAccelerator.DataAccess.Services;

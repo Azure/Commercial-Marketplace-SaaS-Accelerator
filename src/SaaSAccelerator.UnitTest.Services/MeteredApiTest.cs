@@ -14,7 +14,7 @@ using Microsoft.Marketplace.SaaSAccelerator.Services.Models;
 using Microsoft.Marketplace.SaaSAccelerator.Services.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SaaSAccelerator.UnitTest
+namespace Microsoft.Marketplace.SaaSAccelerator.UnitTest.Services
 {
     /// <summary>
     /// Metered API Test.

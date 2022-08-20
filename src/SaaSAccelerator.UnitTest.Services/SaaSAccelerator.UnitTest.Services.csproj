@@ -6,6 +6,8 @@
     <Authors>Microsoft.Marketplace</Authors>
     <Company>Microsoft</Company>
     <Product>SaaSAccelerator</Product>
+	<RootNamespace>Microsoft.Marketplace.SaaSAccelerator.UnitTest.Services</RootNamespace>
+	<AssemblyName>Microsoft.Marketplace.SaaSAccelerator.UnitTest.Services</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
