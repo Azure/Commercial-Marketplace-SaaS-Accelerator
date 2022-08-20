@@ -141,9 +141,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns> Subscription.</returns>
-        public SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
+        public SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription, Plans existingPlanDetail = null)
         {
-            var existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
+            if(existingPlanDetail == null)
+            {
+                existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
+            }
+            
             SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
             {
                 Id = subscription.AmpsubscriptionId,
@@ -157,8 +161,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 CustomerName = subscription.User?.FullName,
                 IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
             };
-            subscritpionDetail.Purchaser = new PurchaserResult();
 
+            subscritpionDetail.Purchaser = new PurchaserResult();
             subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
             subscritpionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
             return subscritpionDetail;
