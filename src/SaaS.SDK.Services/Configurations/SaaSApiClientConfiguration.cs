@@ -104,6 +104,14 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Configurations
         /// </value>
         public bool SupportMeteredBilling { get; set; }
 
+        /// <summary>
+        /// Initializes or Gets the current run environment. Set to "development" or "production" is assumed.
+        /// </summary>
+        /// <value>
+        /// The production-level environment. Typically, "development", "production", or null.
+        /// </value>
+        public string Environment { get; init; }
+
 
     }
 }

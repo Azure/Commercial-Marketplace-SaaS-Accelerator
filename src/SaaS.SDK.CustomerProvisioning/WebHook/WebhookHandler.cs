@@ -283,6 +283,18 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         }
 
         /// <summary>
+        /// Renewed the subscription.
+        /// </summary>
+        /// <param name="payload">The payload.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task RenewedAsync()
+        {
+            await this.applicationLogService.AddApplicationLog("Offer Successfully Renewed.").ConfigureAwait(false);
+
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
         /// Suspended the asynchronous.
         /// </summary>
         /// <param name="payload">The payload.</param>
@@ -348,7 +360,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task UnknownActionAsync(WebhookPayload payload)
         {
-            await this.applicationLogService.AddApplicationLog("Offer Received an unknow action: " + payload.Action).ConfigureAwait(false);
+            await this.applicationLogService.AddApplicationLog("Offer Received an unknown action: " + payload.Action).ConfigureAwait(false);
 
             await Task.CompletedTask;
         }
