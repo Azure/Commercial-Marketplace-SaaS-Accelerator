@@ -141,9 +141,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns> Subscription.</returns>
-        public SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
+        public SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription, Plans existingPlanDetail = null)
         {
-            var existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
+            if(existingPlanDetail == null)
+            {
+                existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
+            }
+            
             SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
             {
                 Id = subscription.AmpsubscriptionId,
@@ -157,8 +161,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 CustomerName = subscription.User?.FullName,
                 IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
             };
-            subscritpionDetail.Purchaser = new PurchaserResult();
 
+            subscritpionDetail.Purchaser = new PurchaserResult();
             subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
             subscritpionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
             return subscritpionDetail;
@@ -226,10 +230,10 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         }
 
         /// <summary>
-        /// Adds the plan details for subscription.
+        /// Adds/Updates all plans details for subscription.
         /// </summary>
         /// <param name="allPlanDetail">All plan detail.</param>
-        public void AddPlanDetailsForSubscription(List<PlanDetailResultExtension> allPlanDetail)
+        public void AddUpdateAllPlanDetailsForSubscription(List<PlanDetailResultExtension> allPlanDetail)
         {
             foreach (var planDetail in allPlanDetail)
             {
@@ -245,6 +249,27 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                     IsPerUser = planDetail.IsPerUserPlan,
                 });
             }
+        }
+
+        /// <summary>
+        /// Only Add current subscription plan. This is more relevent when an unsubscribed subscription gets created
+        /// As the ListAvailableplans API is not available, we only add current plan from Subscription
+        /// </summary>
+        /// <param name="allPlanDetail">All plan detail.</param>
+        public void AddPlanDetailsForSubscription(PlanDetailResultExtension planDetail)
+        {
+            this.planRepository.Add(new Plans
+            {
+                PlanId = planDetail.PlanId,
+                DisplayName = planDetail.DisplayName,
+                Description = "",
+                OfferId = planDetail.OfferId,
+                PlanGuid = planDetail.PlanGUID,
+                IsPerUser = planDetail.IsPerUserPlan,
+                // Setting to false to avoid NULL in the DB. This only applies
+                // when creating a plan for an unsubscribed subscription, so it is fine.
+                IsmeteringSupported = false   
+            });
         }
 
         /// <summary>
