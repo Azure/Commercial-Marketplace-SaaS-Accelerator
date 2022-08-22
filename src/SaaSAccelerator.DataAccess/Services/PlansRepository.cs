@@ -61,7 +61,7 @@ namespace Microsoft.Marketplace.SaaSAccelerator.DataAccess.Services
         }
 
         /// <summary>
-        /// Adds the specified plan details.
+        /// Adds/Updates the specified plan details.
         /// </summary>
         /// <param name="planDetails">The plan details.</param>
         /// <returns> Plan Id.</returns>
@@ -93,6 +93,29 @@ namespace Microsoft.Marketplace.SaaSAccelerator.DataAccess.Services
 
             return 0;
         }
+
+        /// <summary>
+        /// Adds the specified plan details with information available from GetSubscription API
+        /// This is more relevent for an Unsubscribed subscription where the ListAvailablePlans API wont work
+        /// </summary>
+        /// <param name="planDetails">The plan details.</param>
+        /// <returns> Plan Id.</returns>
+        public int Add(Plans planDetails)
+        {
+            if (planDetails != null && !string.IsNullOrEmpty(planDetails.PlanId))
+            {
+                var existingPlan = this.context.Plans.Include(p => p.MeteredDimensions).Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
+                if (existingPlan == null)
+                {
+                    this.context.Plans.Add(planDetails);
+                    this.context.SaveChanges();
+                }
+                return planDetails.Id;
+            }
+
+            return 0;
+        }
+
 
         /// <summary>
         /// Check if there is Metered Dimensions exists or updated

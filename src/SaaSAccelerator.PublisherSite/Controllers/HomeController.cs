@@ -245,9 +245,8 @@ namespace Microsoft.Marketplace.SaaSAccelerator.PublisherSite.Controllers
                     var allPlans = this.planRepository.Get().ToList();
                     foreach (var subscription in allSubscriptionDetails)
                     {
-
-                        SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription);
-                        Plans planDetail = this.planRepository.GetById(subscriptionDetailExtension.PlanId);
+                        Plans planDetail = allPlans.FirstOrDefault(p => p.PlanId == subscription.AmpplanId);
+                        SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription, planDetail);
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
@@ -840,35 +839,55 @@ namespace Microsoft.Marketplace.SaaSAccelerator.PublisherSite.Controllers
             {
                 this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, currentUserId);
 
-                //get all subscirptions from api
+                // Step 1: Get all subscriptions from the API
                 var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
                 foreach (SubscriptionResult subscription in subscriptions)
                 {
-                    // create saas subscription not in db (and its purchaser user) if it doesnt exist
+                    // Step 2: Check if they Exist in DB - Create if dont exist
                     if (this.subscriptionRepo.GetById(subscription.Id) == null)
                     {
-                        //room for improvement to use AddRange rather making mulitple db trips
-                        Offers offers = new Offers()
+                        // Step 3: Add/Update the Offer
+                        Guid OfferId = this.offersRepository.Add(new Offers()
                         {
                             OfferId = subscription.OfferId,
                             OfferName = subscription.OfferId,
                             UserId = currentUserId,
                             CreateDate = DateTime.Now,
                             OfferGuid = Guid.NewGuid(),
-                        };
-                        Guid newOfferId = this.offersRepository.Add(offers);  // add offer
-
-                        var subscriptionPlanDetail = this.fulfillApiService.GetAllPlansForSubscriptionAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-                        subscriptionPlanDetail.ForEach(x =>
-                        {
-                            x.OfferId = newOfferId;
-                            x.PlanGUID = Guid.NewGuid();
                         });
-                        this.subscriptionService.AddPlanDetailsForSubscription(subscriptionPlanDetail); // add plans
 
-                        //var subscriptionData = this.fulfillApiService.GetSubscriptionByIdAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-                        var customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Purchaser.EmailId, EmailAddress = subscription.Purchaser.EmailId });
-                        var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription, customerUserId);  // add subscription
+                        // Step 4: Add/Update the Plans. For Unsubscribed Only Add current plan from subscription information
+                        if(subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Unsubscribed)
+                        {
+                            PlanDetailResultExtension planDetails = new PlanDetailResultExtension
+                            {
+                                PlanId = subscription.PlanId,
+                                DisplayName = subscription.PlanId,
+                                Description = "",
+                                OfferId = OfferId,
+                                PlanGUID = Guid.NewGuid(),
+                                IsPerUserPlan = subscription.Quantity > 0,
+                            };
+                            this.subscriptionService.AddPlanDetailsForSubscription(planDetails);
+                        }
+                        else
+                        {
+                            var subscriptionPlanDetail = this.fulfillApiService.GetAllPlansForSubscriptionAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+                            subscriptionPlanDetail.ForEach(x =>
+                            {
+                                x.OfferId = OfferId;
+                                x.PlanGUID = Guid.NewGuid();
+                            });
+                            this.subscriptionService.AddUpdateAllPlanDetailsForSubscription(subscriptionPlanDetail);
+                        }
+
+                        // Step 5: Add/Update the current user from Subscription information
+                        var customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Beneficiary.EmailId, EmailAddress = subscription.Beneficiary.EmailId });
+
+                        // Step 6: Add Subscription
+                        var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription, customerUserId);
+
+                        // Step 7: Add Subscription Audit
                         if (subscribeId > 0 && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                         {
                             SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
@@ -880,19 +899,18 @@ namespace Microsoft.Marketplace.SaaSAccelerator.PublisherSite.Controllers
                                 CreateBy = currentUserId,
                                 CreateDate = DateTime.Now,
                             };
-                            this.subscriptionLogRepository.Save(auditLog);  // add audit log
+                            this.subscriptionLogRepository.Save(auditLog);
                         }
                     }
-
                 }
             }
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return BadRequest();
             }
 
-            return this.RedirectToAction(nameof(this.Subscriptions));
+            return Ok();
         }
     }
 }
