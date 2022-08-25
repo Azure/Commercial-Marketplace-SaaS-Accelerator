@@ -247,22 +247,6 @@ The **Technical Configuration** section of the Marketplace offer with the values
 |Azure Active Directory Tenant ID | Tenant where the AD application is registered
 |Azure Active Directory Application ID | ID of the registered AD application
 
-### Running the webhook locally
-
-You may find yourself wanting to exercise the webhook in your local development environment. There is a challenge here that has been addressed in the webhook code.
-
-There is logic in the webhook to verify the operation that was received via HTTP POST. This is a best practice, but provides challenges when exercising the webhook on your desktop, perhaps by POSTing a webhook payload with Postman or a similar tool. 
-
-To get around this in your development environment, you can set an environmental variable to bypass verifying the operation within the Azure marketplace. Setting this variable on a local development machine can be done in `appsetting.Development.json`. The vey/value pair to add to your environmental variables is as follows.
-
-```json
-environment=development
-```
-
-> ⚠️ This variable should never be set in production. It is for local development purposes only.
-
-Any other value for the environmental variable, including not having the variable present, will result in the webhook authenticating the operation of the request.
-
 ## Next steps
 
 * [Customer portal - Sample web application](./Customer-Experience.md): This document shows how to configure the web solution that enables the registration of a customer purchasing your SaaS Service and how a customer would manage their subscriptions and plans.
