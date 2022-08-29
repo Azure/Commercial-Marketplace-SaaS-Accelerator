@@ -39,7 +39,7 @@ Connect-AzureAD -Confirm; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 5.0.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
-.\DeployKv.ps1 `
+.\DeployKV.ps1 `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
  -SQLServerName "marketplace-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
