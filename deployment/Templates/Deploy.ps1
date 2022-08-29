@@ -36,6 +36,11 @@ if($SQLAdminLoginPassword.Length -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
     Exit
 }
+if($WebAppNamePrefix.Length -gt 21) {
+    Throw "🛑 Web name prefix must be less than 21 characters."
+    Exit
+}
+
 
 Write-Host "Starting SaaS Accelerator Deployment..."
 
@@ -71,7 +76,6 @@ else {
     Write-Host "🔑  TenantID provided: $TenantID"
 }
 
-                                                   
 # Get Azure Subscription
 if(!($AzureSubscriptionID)) {    
     Get-AzSubscription -TenantId $TenantID | Format-Table
@@ -190,19 +194,18 @@ if($LogoURLico) {
 Write-host "☁  Prepare publish files for the web application"
 
 
+
 Write-host "☁  Preparing the publish files for PublisherPortal"  
 dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
 
-if ($MeteredSchedulerSupport -eq $true)
+if ($MeteredSchedulerSupport -ne $true)
 { 
     Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
     mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
     dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
 
 }
-else {
 
-}
 Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
 
 Write-host "☁  Preparing the publish files for CustomerPortal"
@@ -215,6 +218,18 @@ Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
 # Create RG if not exists
 az group create --location $location --name $ResourceGroupForDeployment
 
+
+Write-host "📜  Start Deploy resources"
+$WebAppNameService=$WebAppNamePrefix+"AmpSvcPlan"
+$WebAppNameAdmin=$WebAppNamePrefix+"-admin"
+$WebAppNamePortal=$WebAppNamePrefix+"-portal"
+$KeyVault=$WebAppNamePrefix+"-kv"
+$KeyVault=$KeyVault -replace '_',''
+$ADApplicationSecretKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=ADApplicationSecret)"' -f $KeyVault
+$DefaultConnectionKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=DefaultConnection)"' -f $KeyVault
+$Connection="Data Source=tcp:"+$SQLServerName+".database.windows.net,1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
+
+
 Write-host "Create SQL Server"
 az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location "$location" --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword
 
@@ -223,7 +238,6 @@ az sql server firewall-rule create --resource-group $ResourceGroupForDeployment 
 
 Write-host "Create SQL DB"
 az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name "AMPSaaSDB"  --edition Standard  --capacity 10 --zone-redundant false 
-
 
 ## Prepare to deploy packages 
 ## This step to solve Linux/Windows relative path issue
@@ -239,35 +253,46 @@ else {
     $customerPackage=(get-item . ).parent.parent.FullName+"\Publish\CustomerPortal.zip" 
 }
 
-
-
-
 # Deploy Code and database schema
 Write-host "📜  Deploying the database schema"
 $ServerUri = $SQLServerName+".database.windows.net"
 Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile $dbSqlFile
 
 
+Write-host "📜  Create Keyvault"
+az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment
+
+Write-host "📜  Add Secrets"
+az keyvault secret set --vault-name $KeyVault  --name ADApplicationSecret --value $ADApplicationSecret
+az keyvault secret set --vault-name $KeyVault  --name DefaultConnection --value $Connection
 
 
 Write-host "📜  Create WebApp Service Plan"
-$WebAppNameService=$WebAppNamePrefix+"AmpSvcPlan"
-$WebAppNameAdmin=$WebAppNamePrefix+"-admin"
-$WebAppNamePortal=$WebAppNamePrefix+"-portal"
-$Connection="Data Source=tcp:"+$SQLServerName+".database.windows.net,1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
 az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1
-
 
 Write-host "📜  Create publisher Admin webapp"
 az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:6
-az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure  --settings DefaultConnection=$Connection
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecret SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport
+az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] 
+$WebAppNameAdminId=$(az webapp identity show  -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --query principalId -o tsv)
+
+Write-host "📜  Add publisher Admin webapp Identity to KV"
+az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list
+
+Write-host "📜  Add Admin Configuration"
+az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --settings DefaultConnection=$DefaultConnectionKeyVault
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport
 
 Write-host "📜  Create  customer portal webapp"
 az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:6
-az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure  --settings DefaultConnection=$Connection
+az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] 
+$WebAppNamePortalId=$(az webapp identity show  -g $ResourceGroupForDeployment  -n $WebAppNamePortal --query principalId -o tsv)
 
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecret SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport
+Write-host "📜  Add publisher Admin webapp Identity to KV"
+az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list
+
+Write-host "📜  Add Portal Configuration"
+az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --settings DefaultConnection=$DefaultConnectionKeyVault
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport
 
 Write-host "📜  Deploying the Publisher Code to Admin portal"
 
@@ -276,6 +301,7 @@ Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebApp
 Write-host "📜  Deploying the Customer Code to Customer portal"
 
 Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNamePortal" -ArchivePath  $customerPackage -Force
+
 
 Write-host "🧹  Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.

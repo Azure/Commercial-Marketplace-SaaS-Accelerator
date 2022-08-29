@@ -29,25 +29,7 @@ Connect-AzureAD -Confirm; `
  -LogoURLico "https://company_com/company_logo.ico" `
  -MeteredSchedulerSupport YES|NO default value is YES
  ```
-
-   2. Open Powershell in the Azure Cloud (PowerShell)
-![CloudShell Imge](images/portal-cloudshell.png) 
-   3. Paste the new single command and run the command to install the SaaS Accelerator:
-
-## Install the Azure Marketplace SaaS Accelerator With KeyVault 
-``` powershell
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 5.0.0 --depth 1; `
-cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
-Connect-AzureAD -Confirm; `
-.\DeployKV.ps1 `
- -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
- -SQLServerName "marketplace-SOME-UNIQUE-STRING" `
- -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "" `
- -PublisherAdminUsers "user@email.com" `
- -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -Location "East US" 
- ```
+ 
 ## Parameters
 
 | Parameter | Description |
