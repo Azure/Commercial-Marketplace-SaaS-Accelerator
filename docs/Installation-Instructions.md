@@ -9,10 +9,10 @@ git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
 .\Deploy.ps1 `
- -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
- -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
+ -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
+ -SQLServerName "marketplace-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
+ -SQLAdminLoginPassword "" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US"  
@@ -40,10 +40,10 @@ git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
 .\DeployKv.ps1 `
- -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
- -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
+ -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
+ -SQLServerName "marketplace-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
+ -SQLAdminLoginPassword "" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US" 
