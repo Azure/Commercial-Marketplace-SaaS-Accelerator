@@ -78,6 +78,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
+                Environment = this.Configuration["SaaSApiConfiguration:Environment"]
             };
             var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
 
@@ -104,8 +105,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
 
             services
                 .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()))
-                .AddSingleton<SaaSApiClientConfiguration>(config)
-                ;
+                .AddSingleton<SaaSApiClientConfiguration>(config);
 
             services
                 .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));

@@ -30,6 +30,24 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         public OperationStatusEnum Status { get; set; }
 
         /// <summary>
+        /// Gets or sets the operation action type.
+        /// </summary>
+        /// <value>
+        /// The operation action type.
+        /// </value>
+        [JsonPropertyName("actionType")]
+        public string ActionType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the subscription ID.
+        /// </summary>
+        /// <value>
+        /// The subscription ID.
+        /// </value>
+        [JsonPropertyName("subscriptionId")]
+        public string SubscriptionId { get; set; }
+
+        /// <summary>
         /// Gets or sets the resource location.
         /// </summary>
         /// <value>

@@ -43,6 +43,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                 },
                 Beneficiary = new BeneficiaryResult()
                 {
+                    EmailId = subscription.Beneficiary.EmailId ?? throw new MarketplaceException("Beneficiary Email Id cannot be null"),
+                    ObjectId = subscription.Beneficiary.ObjectId ?? throw new MarketplaceException("Beneficiary Object Id cannot be null"),
                     TenantId = subscription.Beneficiary.TenantId ?? throw new MarketplaceException("Beneficiary Tenant Id cannot be null"),
                 },
                 Term = new TermResult()
@@ -181,7 +183,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             { 
               ID = operation.Id?.ToString(),
               Status = (Models.OperationStatusEnum)Enum.Parse(typeof(Models.OperationStatusEnum), operation.Status.ToString()),
-              Created = operation.TimeStamp.Value.UtcDateTime
+              Created = operation.TimeStamp.Value.UtcDateTime,
+              SubscriptionId = operation.SubscriptionId?.ToString(), 
+              ActionType = operation.Action?.ToString()
             };
         }
     }
