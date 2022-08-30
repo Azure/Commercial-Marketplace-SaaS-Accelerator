@@ -9,14 +9,13 @@ git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
 .\Deploy.ps1 `
- -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
- -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
+ -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
+ -SQLServerName "marketplace-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
+ -SQLAdminLoginPassword "" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -Location "East US" `
- -PathToARMTemplate ".\deploy.json" `
+ -Location "East US"  
  ```
 
   The following lines are optional:
@@ -30,12 +29,7 @@ Connect-AzureAD -Confirm; `
  -LogoURLico "https://company_com/company_logo.ico" `
  -MeteredSchedulerSupport YES|NO default value is YES
  ```
-
-   2. Open Powershell in the Azure Cloud (PowerShell)
-![CloudShell Imge](images/portal-cloudshell.png) 
-   3. Paste the new single command and run the command to install the SaaS Accelerator:
-
-
+ 
 ## Parameters
 
 | Parameter | Description |
@@ -49,12 +43,9 @@ Connect-AzureAD -Confirm; `
 | SQLAdminLogin | SQL Admin login |
 | SQLAdminLoginPassword | SQL Admin password |
 | PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
-| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/ |
-| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac |
 | ResourceGroupForDeployment | Name of the resource group to deploy the resources |
 | Location | Location of the resource group |
 | AzureSubscriptionID | Subscription where the resources be deployed |
-| PathToARMTemplate | Local Path to the ARM Template |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
 | MeteredSchedulerSupport | Metered Scheduler is deployed by Default. Pass NO to disable the feature |
