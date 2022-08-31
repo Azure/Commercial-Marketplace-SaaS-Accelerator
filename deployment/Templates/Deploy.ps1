@@ -16,13 +16,31 @@ Param(
    [string][Parameter(Mandatory)]$SQLAdminLogin, # SQL Admin login
    [string][Parameter(Mandatory)]$SQLAdminLoginPassword, # SQL Admin password
    [string][Parameter(Mandatory)]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
-   [string][Parameter()]$BacpacUrl, # The url to the blob storage where the SaaS DB bacpac is stored
    [string][Parameter(Mandatory)]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
    [string][Parameter(Mandatory)]$Location, # Location of the resource group
-   [string][Parameter(Mandatory)]$PathToARMTemplate,  # Local Path to the ARM Template
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
-   [string][Parameter()]$LogoURLico  # URL for Publisher .ico logo
+   [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
+   [switch][Parameter()]$MeteredSchedulerSupport # set to true to enable Metered Support
 )
+
+$ErrorActionPreference = "Stop"
+$SaaSApiConfiguration_CodeHash= git log --format='%H' -1
+# Checking SQL username
+if($SQLAdminLogin.ToLower() -eq "admin") {
+    Throw "🛑 SQLAdminLogin may not be 'admin'."
+    Exit
+}
+
+# Checking SQL password length
+if($SQLAdminLoginPassword.Length -lt 8) {
+    Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
+    Exit
+}
+if($WebAppNamePrefix.Length -gt 21) {
+    Throw "🛑 Web name prefix must be less than 21 characters."
+    Exit
+}
+
 
 Write-Host "Starting SaaS Accelerator Deployment..."
 
@@ -46,9 +64,9 @@ Write-Host "🔑  Connecting to AzureAD..."
 # Connect-AzureAD -Confirm   # TODO: Make this command works.  It fails when running from withing the script. 
 Write-Host "🔑  All Authentications Connected."
 
-$currentContext = get-AzureRMContext
-$currentTenant = $currentContext.Account.ExtendedProperties.Tenants
-$currentSubscription = $currentContext.Account.ExtendedProperties.Subscriptions
+$currentContext = Get-AzContext
+$currentTenant = $currentContext.Tenant.Id
+$currentSubscription = $currentContext.Subscription.Id
 # Get TenantID if not set as argument
 if(!($TenantID)) {    
     Get-AzTenant | Format-Table
@@ -57,7 +75,7 @@ if(!($TenantID)) {
 else {
     Write-Host "🔑  TenantID provided: $TenantID"
 }
-                                                   
+
 # Get Azure Subscription
 if(!($AzureSubscriptionID)) {    
     Get-AzSubscription -TenantId $TenantID | Format-Table
@@ -79,7 +97,7 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     $Guid = New-Guid
     $startDate = Get-Date
     $endDate = $startDate.AddYears(2)
-    $password = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
+    $ADApplicationSecret = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(($Guid))))+"="
 
     try {    
         $ADApplication = New-AzureADApplication -DisplayName "$WebAppNamePrefix-FulfillmentApp"
@@ -88,8 +106,9 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
         Write-Host "🔑  AAD Single Tenant Object ID:" $ADObjectID    
         Write-Host "🔑  AAD Single Tenant Application ID:" $ADApplicationID  
         sleep 5 #this is to give time to AAD to register
-        New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $password -InformationVariable "SaaSAPI"
+        New-AzureADApplicationPasswordCredential -ObjectId $ADObjectID -StartDate $startDate -EndDate $endDate -Value $ADApplicationSecret -InformationVariable "SaaSAPI"
         Write-Host "🔑  ADApplicationID created."
+        
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         Write-Host "🚨🚨   $PSItem.Exception"
@@ -172,95 +191,117 @@ if($LogoURLico) {
     Write-Host "📷  Logo images ICO downloaded."
 }
 
-# Setup Bacpac
-
-# If there is no backpack use the default from main
-if (!($BacpacUrl)) {
-    $BacpacUrl = "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac"
-}
-
-$TempFolderToStoreBacpac = '.\AMPSaaSDatabase'
-$BacpacFileName = "AMPSaaSDB.bacpac"
-$LocalPathToBacpacFile = $TempFolderToStoreBacpac + "\" + $BacpacFileName  
-
-# Create a temporary folder
-New-Item -Path $TempFolderToStoreBacpac -ItemType Directory -Force
-
-# Download Bacpac
-Invoke-WebRequest -Uri $BacpacUrl -OutFile $LocalPathToBacpacFile
-
-$storagepostfix = Get-Random -Minimum 1 -Maximum 1000
-
-$StorageAccountName = "amptmpstorage" + $storagepostfix       #enter storage account name
-
-$ContainerName = "packagefiles" #container name for uploading SQL DB file 
-$BlobName = "blob"
-$resourceGroupForStorageAccount = "amptmpstorage"   #resource group name for the storage account.
-
-Write-host "🕒  Creating a temporary resource group and storage account - $resourceGroupForStorageAccount"
-New-AzResourceGroup -Name $resourceGroupForStorageAccount -Location $location -Force
-New-AzStorageAccount -ResourceGroupName $resourceGroupForStorageAccount -Name $StorageAccountName -Location $location -SkuName Standard_LRS -Kind StorageV2
-$StorageAccountKey = @((Get-AzStorageAccountKey -ResourceGroupName $resourceGroupForStorageAccount -Name $StorageAccountName).Value)
-$key = $StorageAccountKey[0]
-
-$ctx = New-AzstorageContext -StorageAccountName $StorageAccountName  -StorageAccountKey $key
-
-New-AzStorageContainer -Name $ContainerName -Context $ctx -Permission Blob 
-Set-AzStorageBlobContent -File $LocalPathToBacpacFile -Container $ContainerName -Blob $BlobName -Context $ctx -Force
-
-$URLToBacpacFromStorage = (Get-AzStorageBlob -blob $BlobName -Container $ContainerName -Context $ctx).ICloudBlob.uri.AbsoluteUri
-
-Write-host "📜  Uploaded the bacpac file to $URLToBacpacFromStorage"    
-
-
 Write-host "☁  Prepare publish files for the web application"
+
+
 
 Write-host "☁  Preparing the publish files for PublisherPortal"  
 dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
+
+if ($MeteredSchedulerSupport -ne $true)
+{ 
+    Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
+    mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
+    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
+
+}
+
 Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
 
 Write-host "☁  Preparing the publish files for CustomerPortal"
 dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
 Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Publish\CustomerPortal.zip -Force
 
-Write-host "☁  Upload web application files to storage account"
-Set-AzStorageBlobContent -File "..\..\Publish\PublisherPortal.zip" -Container $ContainerName -Blob "PublisherPortal.zip" -Context $ctx -Force
-Set-AzStorageBlobContent -File "..\..\Publish\CustomerPortal.zip" -Container $ContainerName -Blob "CustomerPortal.zip" -Context $ctx -Force
-
-# The base URI where artifacts required by this template are located
-$PathToWebApplicationPackages = ((Get-AzStorageContainer -Container $ContainerName -Context $ctx).CloudBlobContainer.uri.AbsoluteUri)
 
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
 
-#Parameter for ARM template, Make sure to add values for parameters before running the script.
-$ARMTemplateParams = @{
-   webAppNamePrefix             = "$WebAppNamePrefix"
-   TenantID                     = "$TenantID"
-   ADApplicationID              = "$ADApplicationID"
-   ADApplicationSecret          = "$ADApplicationSecret"
-   ADMTApplicationID            = "$ADMTApplicationID"
-   SQLServerName                = "$SQLServerName"
-   SQLAdminLogin                = "$SQLAdminLogin"
-   SQLAdminLoginPassword        = "$SQLAdminLoginPassword"
-   bacpacUrl                    = "$URLToBacpacFromStorage"
-   SAASKeyForbacpac             = ""
-   PublisherAdminUsers          = "$PublisherAdminUsers"
-   PathToWebApplicationPackages = "$PathToWebApplicationPackages"
+# Create RG if not exists
+az group create --location $location --name $ResourceGroupForDeployment
+
+
+Write-host "📜  Start Deploy resources"
+$WebAppNameService=$WebAppNamePrefix+"AmpSvcPlan"
+$WebAppNameAdmin=$WebAppNamePrefix+"-admin"
+$WebAppNamePortal=$WebAppNamePrefix+"-portal"
+$KeyVault=$WebAppNamePrefix+"-kv"
+$KeyVault=$KeyVault -replace '_',''
+$ADApplicationSecretKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=ADApplicationSecret)"' -f $KeyVault
+$DefaultConnectionKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=DefaultConnection)"' -f $KeyVault
+$Connection="Data Source=tcp:"+$SQLServerName+".database.windows.net,1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
+
+
+Write-host "Create SQL Server"
+az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location "$location" --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword
+
+Write-host "Add SQL Server Firewall rules"
+az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowAzureIP --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0"
+
+Write-host "Create SQL DB"
+az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name "AMPSaaSDB"  --edition Standard  --capacity 10 --zone-redundant false 
+
+## Prepare to deploy packages 
+## This step to solve Linux/Windows relative path issue
+if ($IsLinux) 
+{ 
+   $dbSqlFile=(get-item . ).parent.FullName+"/Database/AMP-DB.sql"  
+   $publisherPackage=(get-item . ).parent.parent.FullName+"/Publish/PublisherPortal.zip"  
+   $customerPackage=(get-item . ).parent.parent.FullName+"/Publish/CustomerPortal.zip"  
+}
+else {
+    $dbSqlFile=(get-item . ).parent.FullName+"\Database\AMP-DB.sql"  
+    $publisherPackage=(get-item . ).parent.parent.FullName+"\Publish\PublisherPortal.zip"  
+    $customerPackage=(get-item . ).parent.parent.FullName+"\Publish\CustomerPortal.zip" 
 }
 
+# Deploy Code and database schema
+Write-host "📜  Deploying the database schema"
+$ServerUri = $SQLServerName+".database.windows.net"
+Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile $dbSqlFile
 
-# Create RG if not exists
-New-AzResourceGroup -Name $ResourceGroupForDeployment -Location $location -Force
 
-Write-host "📜  Deploying the ARM template to set up resources"
-# Deploy resources using ARM template
-New-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupForDeployment -TemplateFile $PathToARMTemplate -TemplateParameterObject $ARMTemplateParams
+Write-host "📜  Create Keyvault"
+az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment
 
+Write-host "📜  Add Secrets"
+az keyvault secret set --vault-name $KeyVault  --name ADApplicationSecret --value $ADApplicationSecret
+az keyvault secret set --vault-name $KeyVault  --name DefaultConnection --value $Connection
+
+
+Write-host "📜  Create WebApp Service Plan"
+az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1
+
+Write-host "📜  Create publisher Admin webapp"
+az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:6
+az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] 
+$WebAppNameAdminId=$(az webapp identity show  -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --query principalId -o tsv)
+
+Write-host "📜  Add publisher Admin webapp Identity to KV"
+az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list
+
+Write-host "📜  Add Admin Configuration"
+az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --settings DefaultConnection=$DefaultConnectionKeyVault
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+
+Write-host "📜  Create  customer portal webapp"
+az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:6
+az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] 
+$WebAppNamePortalId=$(az webapp identity show  -g $ResourceGroupForDeployment  -n $WebAppNamePortal --query principalId -o tsv)
+
+Write-host "📜  Add publisher Admin webapp Identity to KV"
+az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list
+
+Write-host "📜  Add Portal Configuration"
+az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --settings DefaultConnection=$DefaultConnectionKeyVault
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport  SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+
+Write-host "📜  Deploying the Publisher Code to Admin portal"
+az webapp deploy --resource-group "$ResourceGroupForDeployment" --name "$WebAppNameAdmin" --src-path $publisherPackage --type zip
+
+Write-host "📜  Deploying the Customer Code to Customer portal"
+az webapp deploy --resource-group "$ResourceGroupForDeployment" --name "$WebAppNamePortal" --src-path $customerPackage  --type zip
 
 Write-host "🧹  Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
-Remove-AzResourceGroup -Name $resourceGroupForStorageAccount -Force 
-Remove-Item –path $TempFolderToStoreBacpac –recurse -Force
 Remove-Item -path ["..\..\Publish"] -recurse -Force
 
 Write-host "🏁  If the intallation completed without error complete the folllowing checklist:"
@@ -270,11 +311,6 @@ Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index"
 Write-host "   https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/"
-Write-host "__ Verify ID Tokens checkbox has been checked-out ✅"
-}
-
-if ($IsADApplicationIDProvided) {  #If provided then show the user where to add the admin page in AAD, otherwise script did this already for the user.
-Write-host "__ Add The following URLs to the single-tenant AAD App Registration in Azure Portal:"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/"
 Write-host "   https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index"

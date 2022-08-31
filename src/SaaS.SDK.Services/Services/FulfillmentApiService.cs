@@ -60,7 +60,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             this.Logger = logger;
         }
 
-
         /// <summary>
         /// Get all subscriptions asynchronously.
         /// </summary>
@@ -71,6 +70,25 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             try
             {
                 var subscriptions = await this.marketplaceClient.Fulfillment.ListSubscriptionsAsync().ToListAsync();
+                return subscriptions.subscriptionResultList();
+            }
+            catch (RequestFailedException ex)
+            {
+                this.ProcessErrorResponse(MarketplaceActionEnum.GET_ALL_SUBSCRIPTIONS, ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get all subscriptions synchronously.
+        /// </summary>
+        /// <returns> List of subscriptions.</returns>
+        public List<SubscriptionResult> GetAllSubscriptions()
+        {
+            this.Logger?.Info($"Inside GetAllSubscriptions() of FulfillmentApiService, trying to get All Subscriptions.");
+            try
+            {
+                List<Subscription> subscriptions = this.marketplaceClient.Fulfillment.ListSubscriptions().ToList();
                 return subscriptions.subscriptionResultList();
             }
             catch (RequestFailedException ex)
@@ -93,6 +111,28 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             try
             {
                 var subscription = (await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(subscriptionId)).Value;
+                return subscription.subscriptionResult();
+            }
+            catch (RequestFailedException ex)
+            {
+                this.ProcessErrorResponse(MarketplaceActionEnum.GET_SUBSCRIPTION, ex);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets Subscription By SubscriptionId synchronously
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>
+        /// Returns Subscription By SubscriptionId.
+        /// </returns>
+        public SubscriptionResult GetSubscriptionById(Guid subscriptionId)
+        {
+            this.Logger?.Info($"Inside GetSubscriptionById() of FulfillmentApiService, trying to gets the Subscription Detail by subscriptionId : {subscriptionId}");
+            try
+            {
+                var subscription = (this.marketplaceClient.Fulfillment.GetSubscription(subscriptionId)).Value;
                 return subscription.subscriptionResult();
             }
             catch (RequestFailedException ex)
@@ -132,7 +172,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// Get AllPlans For SubscriptionId.
         /// </returns>
         /// <exception cref="FulfillmentException">Invalid subscription ID.</exception>
-        public async Task<List<PlanDetailResult>> GetAllPlansForSubscriptionAsync(Guid subscriptionId)
+        public async Task<List<PlanDetailResultExtension>> GetAllPlansForSubscriptionAsync(Guid subscriptionId)
         {
             this.Logger?.Info($"Inside GetAllPlansForSubscriptionAsync() of FulfillmentApiService, trying to Get All Plans for {subscriptionId}");
             if (subscriptionId != default)
@@ -197,7 +237,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             {
                 try 
                 { 
-                    var operationId = await this.marketplaceClient.Fulfillment.UpdateSubscriptionAsync(subscriptionId, new SubscriberPlan { PlanId = "" });
+                    var operationId = await this.marketplaceClient.Fulfillment.UpdateSubscriptionAsync(subscriptionId, new SubscriberPlan { Quantity = subscriptionQuantity });
                     return new SubscriptionUpdateResult() { OperationIdFromClientLib = operationId };
                 }
                 catch (RequestFailedException ex)
@@ -233,6 +273,34 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
                 return null;
             }
         }
+
+        /// <summary>
+        /// Repond Failure on the operation status result.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription.</param>
+        /// <param name="operationId">The operation location.</param>
+        /// <param name="updateOperationStatus">The operation status to patch with.</param>
+        /// <returns>
+        /// Patch Operation Status Result.
+        /// </returns>
+        /// <exception cref="System.Exception">Error occurred while getting the operation result.</exception>
+        public async Task<Response> PatchOperationStatusResultAsync(Guid subscriptionId, Guid operationId, UpdateOperationStatusEnum updateOperationStatus)
+        {
+            this.Logger?.Info($"Inside PatchOperationStatusResultAsync() of FulfillmentApiService, trying to Update Operation Status to { updateOperationStatus} Operation ID : {operationId} Subscription ID : {subscriptionId}");
+            try
+            {
+                UpdateOperation updateOperation = new UpdateOperation();
+                updateOperation.Status = updateOperationStatus;
+                return await this.marketplaceClient.Operations.UpdateOperationStatusAsync(subscriptionId, operationId, updateOperation);
+            }
+            catch (RequestFailedException ex)
+            {
+                this.ProcessErrorResponse(MarketplaceActionEnum.UPDATE_OPERATION_STATUS, ex);
+                return null;
+            }
+        }
+
+
 
         /// <summary>
         /// Deletes the subscription.

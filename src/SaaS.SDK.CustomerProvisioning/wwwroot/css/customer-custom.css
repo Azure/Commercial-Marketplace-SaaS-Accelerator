@@ -1,5 +1,5 @@
 ﻿body {
-    font-family: Segoe UI,Segoe UI Web,Segoe UI Symbol,Helvetica Neue,BBAlpha Sans,S60 Sans,Arial,sans-serif;
+    font-family: 'Segoe UI', 'sans-serif' !important;
     color: black !important;
     font-size: 16px !important;
     height: 100%;
@@ -12,15 +12,16 @@
 }
 
 .cm-top-nav-bar {
-    background-color: #333 !important;
-    margin-bottom: 0;
+    background-color: #004578 !important;
+    margin-bottom: 0px;
+    border: 0px;
+    height:48px;
     border-radius: 0;
-    height: 48px;
 }
 
 .cm-menu-bar {
-    background-color: #333 !important;
-    margin-top: -142px;
+    background-color: #F9F9F9 !important;
+    margin-top: -168px;
 }
 
 .cm-signin {
@@ -61,11 +62,11 @@
     /*border-style: none;
     width: auto;
     padding: 8px;
-    max-width: 100%;
+    
     width: 30%;*/
     border-style: none;
     width: auto;
-    margin-left:-10px;
+    margin-left: -10px;
     padding: 8px;
     max-height: 50px;
 }
@@ -77,13 +78,11 @@
 }
 
 .cm-section-heading {
-    font-family: Segoe UI,Segoe UI Web,Segoe UI Symbol,Helvetica Neue,BBAlpha Sans,S60 Sans,Arial,sans-serif;
-    /*font-family: 'Segoe UI', 'sans-serif' !important;*/
-    font-size: 30px;
-    font-weight: 600;
-    /*background-color: #fff;*/
-    /*border-bottom: 4px solid #2180a6;*/
-    /*text-transform: uppercase;*/
+    font-family: 'Segoe UI', 'sans-serif' !important;
+    font-size: 25px;
+    background-color: #fff;
+    border-bottom: 4px solid #2180a6;
+    text-transform: uppercase;
     margin-bottom: 20px;
     line-height: 40px;
     color: black;
@@ -125,10 +124,6 @@
     margin-top: 40px;
 }
 
-.mt0 {
-    margin-top: 0px !important;
-}
-
 .cm-button-default {
     color: #fff !important;
     background-color: #004578;
@@ -157,12 +152,12 @@
 }
 
     .cm-button-default:hover {
-        /*background-color: #961c1c !important;*/
-        /*border-radius: 5px;
+        background-color: #2180a6;
+        border-radius: 5px;
         padding: 12px 20px;
-        font-size: 18px;*/
-        /*font-weight: bold;*/
-        color: #333;
+        font-size: 18px;
+        font-weight: bold;
+        color: #004578;
     }
 
 .cm-button-error {
@@ -275,7 +270,7 @@
 
 .cm-table {
     background: #ffffff !important;
-    font-size: 14px;
+    font-size: 16px;
 }
 
     .cm-table th {
@@ -288,13 +283,12 @@
 
 .cm-table-head th {
     text-align: center;
-    background: #ffffff !important;
+    background: #F9F9F9 !important;
     font-size: 14px;
-    text-align: left;
 }
 
 .cm-ellipsis {
-    text-align: left !important;
+    text-align: center !important;
 }
 
     .cm-ellipsis a {
@@ -363,68 +357,6 @@ a.cm-dropdown-option {
 .mr420 {
     margin-right: !important;
 }
-
-
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 60px;
-    height: 24px;
-}
-
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    -webkit-transition: .4s;
-    transition: .4s;
-}
-
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 16px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        -webkit-transition: .4s;
-        transition: .4s;
-    }
-
-input:checked + .slider {
-    background-color: #004578;
-}
-
-input:focus + .slider {
-    box-shadow: 0 0 1px #004578;
-}
-
-input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-    border-radius: 34px;
-}
-
-    .slider.round:before {
-        border-radius: 50%;
-    }
-
 .red-star {
     color: red;
 }

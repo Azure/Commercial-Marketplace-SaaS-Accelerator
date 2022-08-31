@@ -1,8 +1,9 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 namespace Microsoft.Marketplace.Saas.Web
 {
     using global::Azure.Identity;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
@@ -25,6 +26,8 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
+    using System;
+
     /// <summary>
     /// Startup.
     /// </summary>
@@ -79,44 +82,62 @@ namespace Microsoft.Marketplace.Saas.Web
                 SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
+                SupportMeteredBilling = Convert.ToBoolean(this.Configuration["SaaSApiConfiguration:supportmeteredbilling"])
             };
             var knownUsers = new KnownUsersModel()
             {
                 KnownUsers = this.Configuration["KnownUsers"],
-
             };
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
-
-   .AddOpenIdConnect(options =>
-   {
-       options.Authority = $"{config.AdAuthenticationEndPoint}/common";
-       options.ClientId = config.MTClientId;
-       options.ResponseType = OpenIdConnectResponseType.IdToken;
-       options.CallbackPath = "/Home/Index";
-       options.SignedOutRedirectUri = config.SignedOutRedirectUri;
-       options.TokenValidationParameters.NameClaimType = "name";
-       options.TokenValidationParameters.ValidateIssuer = false;
-   })
-   .AddCookie();
-
             var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
-            services.AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()));
-            services.AddSingleton<IMeteredBillingApiService>( new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()));
-            services.AddSingleton<SaaSApiClientConfiguration>(config);
-            services.AddSingleton<KnownUsersModel>(knownUsers);
-            services.AddDbContext<SaasKitContext>(options =>
-               options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+
+
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddOpenIdConnect(options =>
+                {
+                    options.Authority = $"{config.AdAuthenticationEndPoint}/common/v2.0";
+                    options.ClientId = config.MTClientId;
+                    options.ResponseType = OpenIdConnectResponseType.IdToken;
+                    options.CallbackPath = "/Home/Index";
+                    options.SignedOutRedirectUri = config.SignedOutRedirectUri;
+                    options.TokenValidationParameters.NameClaimType = "name";
+                    options.TokenValidationParameters.ValidateIssuer = false;
+                })
+                .AddCookie();
+
+            services
+                .AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
+
+            services
+                .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()))
+                .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()))
+                .AddSingleton<SaaSApiClientConfiguration>(config)
+                .AddSingleton<KnownUsersModel>(knownUsers);
+
+            services
+                .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+
 
             InitializeRepositoryServices(services);
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(5);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddMvc(option => option.EnableEndpointRouting = false);
             services.AddControllersWithViews();
+
+            services.Configure<CookieTempDataProviderOptions>(options => {
+                options.Cookie.IsEssential = true;
+            });
         }
 
         /// <summary>
@@ -139,6 +160,7 @@ namespace Microsoft.Marketplace.Saas.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseSession();
             app.UseAuthentication();
             app.UseMvc(routes =>
             {
@@ -171,6 +193,9 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<KnownUserAttribute>();
             services.AddScoped<IEmailService, SMTPEmailService>();
+            services.AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>();
+            services.AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>();
+            services.AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>();
         }
     }
 }

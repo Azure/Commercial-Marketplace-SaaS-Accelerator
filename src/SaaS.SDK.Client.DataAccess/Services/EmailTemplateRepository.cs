@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Collections.Generic;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -65,6 +66,41 @@
             {
                 return string.Empty;
             }
+        }
+
+        /// <summary>
+        /// Gets all email templates
+        /// </summary>
+        /// <returns>
+        /// List of email templates
+        /// </returns>
+        public IEnumerable<EmailTemplate> GetAll()
+        {
+            var templates = this.context.EmailTemplate;
+            return templates;
+        }
+
+        /// <summary>
+        /// Saves email configuration field
+        /// </summary>
+        /// <returns>
+        /// True or False
+        /// </returns>
+        public string SaveEmailTemplateByStatus(EmailTemplate template)
+        {
+            var emailTemplate = this.context.EmailTemplate.Where(a => a.Status == template.Status).FirstOrDefault();
+            if (emailTemplate != null)
+            {
+                emailTemplate.IsActive = template.IsActive;
+                emailTemplate.Subject = template.Subject;
+                emailTemplate.Description = template.Description;
+                emailTemplate.TemplateBody = template.TemplateBody;
+                emailTemplate.ToRecipients = template.ToRecipients;
+                emailTemplate.Bcc = template.Bcc;
+                emailTemplate.Cc = template.Cc;
+                this.context.SaveChanges();
+            }
+            return template.Status;
         }
     }
 }

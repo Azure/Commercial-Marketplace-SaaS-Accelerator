@@ -77,14 +77,23 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             try
             {
                 var updateResult = (await this.meteringClient.Metering.PostUsageEventAsync(usage)).Value;
+                return new MeteringUsageResult()
+                {
+                    Dimension = updateResult.Dimension,
+                    MessageTime = updateResult.MessageTime.Value.UtcDateTime,
+                    PlanId = updateResult.PlanId,
+                    Quantity = (long)updateResult.Quantity,
+                    ResourceId = updateResult.ResourceId.Value,
+                    Status = updateResult.Status.ToString(),
+                    UsagePostedDate = updateResult.EffectiveStartTime.Value.UtcDateTime,
+                    UsageEventId = updateResult.UsageEventId.Value
+                };
             }
             catch (Exception ex)
             {
                 this.ProcessErrorResponse(MarketplaceActionEnum.SUBSCRIPTION_USAGEEVENT, ex);
                 return null;
             }
-
-            return new MeteringUsageResult();
         }
 
         /// <summary>

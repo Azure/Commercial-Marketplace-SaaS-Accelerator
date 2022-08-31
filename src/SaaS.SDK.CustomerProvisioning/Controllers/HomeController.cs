@@ -81,6 +81,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 
         private readonly ISubscriptionStatusHandler notificationStatusHandlers;
 
+        private readonly ApplicationConfigService applicationConfigService;
+
         private readonly ILoggerFactory loggerFactory;
 
         private SubscriptionService subscriptionService = null;
@@ -125,6 +127,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
             this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository);
             this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
             this.applicationConfigRepository = applicationConfigRepository;
+            this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);
             this.emailTemplateRepository = emailTemplateRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.offerAttributesRepository = offerAttributesRepository;
@@ -182,13 +185,16 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
         /// <returns>
         /// The <see cref="IActionResult" />.
         /// </returns>
-        public IActionResult Index(string token = null)
+        public async Task<IActionResult> Index(string token = null)
         {
             try
             {
                 this.logger.LogInformation($"Landing page with token {token}");
                 SubscriptionResult subscriptionDetail = new SubscriptionResult();
                 SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
+
+                this.applicationConfigService.SaveFileToDisk("LogoFile", "contoso-sales.png");
+                this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
 
                 if (this.User.Identity.IsAuthenticated)
                 {
@@ -200,10 +206,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     {
                         this.TempData["ShowWelcomeScreen"] = null;
                         token = token.Replace(' ', '+');
-                        var newSubscription = this.apiService.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
+                        var newSubscription = await this.apiService.ResolveAsync(token).ConfigureAwait(false);
                         if (newSubscription != null && newSubscription.SubscriptionId != default)
                         {
-                            var subscriptionPlanDetail = this.apiService.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             Offers offers = new Offers()
                             {
                                 OfferId = newSubscription.OfferId,
@@ -213,17 +218,17 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                 OfferGuid = Guid.NewGuid(),
                             };
                             Guid newOfferId = this.offersRepository.Add(offers);
-                            List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
-                            var serializedPlans = JsonSerializer.Serialize(subscriptionPlanDetail);
-                            planList = JsonSerializer.Deserialize<List<PlanDetailResultExtension>>(serializedPlans);
-                            planList.ForEach(x =>
+
+                            var subscriptionPlanDetail = await this.apiService.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false);
+                            subscriptionPlanDetail.ForEach(x =>
                             {
                                 x.OfferId = newOfferId;
                                 x.PlanGUID = Guid.NewGuid();
                             });
-                            this.subscriptionService.AddPlanDetailsForSubscription(planList);
+                            this.subscriptionService.AddUpdateAllPlanDetailsForSubscription(subscriptionPlanDetail);
+
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
-                            var subscriptionData = this.apiService.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            var subscriptionData = await this.apiService.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false);
                             var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
                             if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                             {
@@ -244,6 +249,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                             subscriptionExtension.CustomerEmailAddress = this.CurrentUserEmailAddress;
                             subscriptionExtension.CustomerName = this.CurrentUserName;
                             subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
+                            subscriptionExtension.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         }
                     }
                     else
@@ -297,7 +303,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     foreach (var subscription in subscriptionDetail.Subscriptions)
                     {
                         Plans planDetail = this.planRepository.GetById(subscription.PlanId);
-                        subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
+                        subscription.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         subscription.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                     }
 
@@ -483,6 +489,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
+                    subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                 }
 
                 return this.View("Index", subscriptionDetail);
@@ -622,53 +629,49 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
             {
                 try
                 {
-                    var subscriptionId = Guid.Empty;
-                    var planId = string.Empty;
-
-                    if (subscriptionDetail != null)
-                    {
-                        subscriptionId = subscriptionDetail.Id;
-                        planId = subscriptionDetail.PlanId;
-                    }
-
-                    if (subscriptionId != default && !string.IsNullOrEmpty(planId))
+                    if (subscriptionDetail.Id != default && !string.IsNullOrEmpty(subscriptionDetail.PlanId))
                     {
                         try
                         {
+                            //initiate change plan
                             var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-
-                            var jsonResult = await this.apiService.ChangePlanForSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false);
-
+                            var jsonResult = await this.apiService.ChangePlanForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.PlanId).ConfigureAwait(false);
                             var changePlanOperationStatus = OperationStatusEnum.InProgress;
+
                             if (jsonResult != null && jsonResult.OperationId != default)
                             {
+                                int _counter = 0;
+
+                                //loop untill the operation status has moved away from inprogress or notstarted, generally this will be the result of webhooks' action aganist this operation
                                 while (OperationStatusEnum.InProgress.Equals(changePlanOperationStatus) || OperationStatusEnum.NotStarted.Equals(changePlanOperationStatus))
                                 {
-                                    var changePlanOperationResult = await this.apiService.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                    var changePlanOperationResult = await this.apiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                                     changePlanOperationStatus = changePlanOperationResult.Status;
 
-                                    this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId));
-                                    this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
+                                    this.logger.LogInformation($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changePlanOperationStatus }.");
+                                    await this.applicationLogService.AddApplicationLog($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changePlanOperationStatus }.").ConfigureAwait(false);
+
+                                    //wait and check every 5secs
+                                    await Task.Delay(5000);
+                                    _counter++;
+                                    if (_counter > 100)
+                                    {
+                                        //if loop has been executed for more than 100 times then break, to avoid infinite loop just in case
+                                        break;
+                                    }
                                 }
 
-                                var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
-
-                                this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
-                                this.logger.LogInformation("Plan Successfully Changed.");
-                                this.applicationLogService.AddApplicationLog("Plan Successfully Changed.");
-
-                                if (oldValue != null)
+                                if (changePlanOperationStatus == OperationStatusEnum.Succeeded)
                                 {
-                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                                    {
-                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
-                                        SubscriptionId = oldValue.SubscribeId,
-                                        NewValue = planId,
-                                        OldValue = oldValue.PlanId,
-                                        CreateBy = currentUserId,
-                                        CreateDate = DateTime.Now,
-                                    };
-                                    this.subscriptionLogRepository.Save(auditLog);
+                                    this.logger.LogInformation($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
+                                    await this.applicationLogService.AddApplicationLog($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    this.logger.LogInformation($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.");
+                                    await this.applicationLogService.AddApplicationLog($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.").ConfigureAwait(false);
+
+                                    throw new MarketplaceException($"Plan change operation failed with operation status {changePlanOperationStatus}.");
                                 }
                             }
                         }
@@ -707,43 +710,44 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     {
                         try
                         {
-                            var subscriptionId = subscriptionDetail.Id;
-                            var quantity = subscriptionDetail.Quantity;
-
+                            //initiate change quantity
                             var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-
-                            var jsonResult = await this.apiService.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
-
+                            var jsonResult = await this.apiService.ChangeQuantityForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.Quantity).ConfigureAwait(false);
                             var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
                             if (jsonResult != null && jsonResult.OperationId != default)
                             {
+                                int _counter = 0;
+
                                 while (OperationStatusEnum.InProgress.Equals(changeQuantityOperationStatus) || OperationStatusEnum.NotStarted.Equals(changeQuantityOperationStatus))
                                 {
-                                    var changeQuantityOperationResult = await this.apiService.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                    //loop untill the operation status has moved away from inprogress or notstarted, generally this will be the result of webhooks' action aganist this operation
+                                    var changeQuantityOperationResult = await this.apiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                                     changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
-                                    this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(quantity));
-                                    this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId);
+                                    this.logger.LogInformation($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
+                                    await this.applicationLogService.AddApplicationLog($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.").ConfigureAwait(false);
+
+                                    //wait and check every 5secs
+                                    await Task.Delay(5000);
+                                    _counter++;
+                                    if (_counter > 100)
+                                    {
+                                        //if loop has been executed for more than 100 times then break, to avoid infinite loop just in case
+                                        break;
+                                    }
                                 }
 
-                                var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
-
-                                this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
-                                this.logger.LogInformation("Quantity Successfully Changed.");
-                                this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.");
-
-                                if (oldValue != null)
+                                if (changeQuantityOperationStatus == OperationStatusEnum.Succeeded)
                                 {
-                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                                    {
-                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
-                                        SubscriptionId = oldValue.SubscribeId,
-                                        NewValue = quantity.ToString(),
-                                        OldValue = oldValue.Quantity.ToString(),
-                                        CreateBy = currentUserId,
-                                        CreateDate = DateTime.Now,
-                                    };
-                                    this.subscriptionLogRepository.Save(auditLog);
+                                    this.logger.LogInformation($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
+                                    await this.applicationLogService.AddApplicationLog($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    this.logger.LogInformation($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
+                                    await this.applicationLogService.AddApplicationLog($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.").ConfigureAwait(false);
+                                    
+                                    throw new MarketplaceException($"Quantity Change operation failed with operation status {changeQuantityOperationStatus}.");
                                 }
                             }
                         }
@@ -793,6 +797,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
                     subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+                    subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                 }
 
                 return this.View("Index", subscriptionDetail);

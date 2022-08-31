@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
 {
@@ -14,6 +13,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public string ToRecipients { get; set; }
         public string Cc { get; set; }
         public string Bcc { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
     }
 }

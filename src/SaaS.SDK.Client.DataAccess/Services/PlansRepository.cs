@@ -61,7 +61,7 @@
         }
 
         /// <summary>
-        /// Adds the specified plan details.
+        /// Adds/Updates the specified plan details.
         /// </summary>
         /// <param name="planDetails">The plan details.</param>
         /// <returns> Plan Id.</returns>
@@ -69,13 +69,16 @@
         {
             if (planDetails != null && !string.IsNullOrEmpty(planDetails.PlanId))
             {
-                var existingPlan = this.context.Plans.Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
+                var existingPlan = this.context.Plans.Include(p => p.MeteredDimensions).Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
                 if (existingPlan != null)
                 {
+                    //room for improvement as these values dont change we dont make a db trip if something changes?
                     existingPlan.PlanId = planDetails.PlanId;
                     existingPlan.Description = planDetails.Description;
                     existingPlan.DisplayName = planDetails.DisplayName;
                     existingPlan.OfferId = planDetails.OfferId;
+                    existingPlan.IsmeteringSupported = planDetails.IsmeteringSupported;
+                    this.CheckMeteredDimension(planDetails,existingPlan);
                     this.context.Plans.Update(existingPlan);
                     this.context.SaveChanges();
                     return existingPlan.Id;
@@ -89,6 +92,64 @@
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// Adds the specified plan details with information available from GetSubscription API
+        /// This is more relevent for an Unsubscribed subscription where the ListAvailablePlans API wont work
+        /// </summary>
+        /// <param name="planDetails">The plan details.</param>
+        /// <returns> Plan Id.</returns>
+        public int Add(Plans planDetails)
+        {
+            if (planDetails != null && !string.IsNullOrEmpty(planDetails.PlanId))
+            {
+                var existingPlan = this.context.Plans.Include(p => p.MeteredDimensions).Where(s => s.PlanId == planDetails.PlanId).FirstOrDefault();
+                if (existingPlan == null)
+                {
+                    this.context.Plans.Add(planDetails);
+                    this.context.SaveChanges();
+                }
+                return planDetails.Id;
+            }
+
+            return 0;
+        }
+
+
+        /// <summary>
+        /// Check if there is Metered Dimensions exists or updated
+        /// </summary>
+        /// <param name="planDetails">Incoming Plans data from Payload</param>
+        /// <param name="existingPlan">Existing Plans data from database</param>
+        private void CheckMeteredDimension(Plans planDetails, Plans existingPlan)
+        {
+            // Check if Metered Dimension exists or new Metered Dimension to add
+            foreach (MeteredDimensions metered in planDetails.MeteredDimensions)
+            {
+                // Assign Plan.Id to metered PlandId
+                metered.PlanId = existingPlan.Id;
+
+                // Query DB for metered dimension using PlanID and Dimension ID
+                var existingMeteredDimensions = this.context.MeteredDimensions.Where(s => s.PlanId == existingPlan.Id && s.Dimension == metered.Dimension).FirstOrDefault();
+
+                // Check if Metered Dimensions exists
+                if (existingMeteredDimensions != null)
+                {
+                    // Metered Dimension exists. No needs to updated Keys. We could update description if it is modified.
+                    if (existingMeteredDimensions.Description != metered.Description)
+                    {
+                        var existingMetered = existingPlan.MeteredDimensions.Where(s => s.PlanId == existingPlan.Id && s.Dimension == metered.Dimension).FirstOrDefault();
+                        existingMetered.Description = metered.Description;
+                    }
+
+                }
+                else
+                {
+                    // Add new metered Dimension
+                    existingPlan.MeteredDimensions.Add(metered);
+                }
+            }
         }
 
         /// <summary>

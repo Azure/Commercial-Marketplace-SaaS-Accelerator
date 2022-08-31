@@ -44,18 +44,6 @@
                             @Html.HiddenFor(s => s.SubscribeId)
                         </dd>
                     </dl>
-                    @*<div class="row pr-3 pt-3 mt-5 pb-3 text-right" style="background-color:#F2F2F2">
-                            <div class="col-sm-4 text-right  font-weight-bold">
-                                @Html.DisplayName("Change Plan")
-                            </div>
-                            <div class="col-sm-5">
-                                @Html.DropDownListFor(s => s.PlanId, new SelectList(Model.PlanList, "PlanId", "PlanId", Model.PlanId), new { @class = "form-control w-100" })
-                                @Html.HiddenFor(s => s.Id)
-                                @Html.HiddenFor(s => s.PlanId)
-                                @Html.HiddenFor(s => s.SubscribeId)
-                            </div>
-                            <button type="button" onclick="confirmDialog()" class="btn btn-success text-right">Change Plan</button>
-                        </div>*@
                     <div class="text-right">
                         <button type="button" onclick="confirmDialog()" class="cm-button-default mt40 mr20 text-right">Change Plan</button>
                     </div>

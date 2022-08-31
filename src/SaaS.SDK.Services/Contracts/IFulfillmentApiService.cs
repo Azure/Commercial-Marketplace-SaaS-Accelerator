@@ -6,6 +6,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using global::Azure;
+    using Microsoft.Marketplace.SaaS.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 
     /// <summary>
@@ -36,6 +37,13 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
         Task<SubscriptionResult> GetSubscriptionByIdAsync(Guid subscriptionId);
 
         /// <summary>
+        /// Gets the subscription by subscription identifier.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>Subscription Detail By SubscriptionId. </returns>
+        SubscriptionResult GetSubscriptionById(Guid subscriptionId);
+
+        /// <summary>
         /// Resolves the Subscription.
         /// </summary>
         /// <param name="marketPlaceAccessToken">The Market Place access token.</param>
@@ -47,7 +55,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns>Get All Plans For Subscription.</returns>
-        Task<List<PlanDetailResult>> GetAllPlansForSubscriptionAsync(Guid subscriptionId);
+        Task<List<PlanDetailResultExtension>> GetAllPlansForSubscriptionAsync(Guid subscriptionId);
 
         /// <summary>
         /// Activates the subscription.
@@ -82,6 +90,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
         /// Get Operation Status Result.
         /// </returns>
         Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid operationId);
+
+        /// <summary>
+        /// Update the operation status result.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="operationId">The operation identifier.</param>
+        /// <param name="updateOperationStatus">The operation status to patch with.</param>
+        /// <returns>
+        /// Get Operation Status Result.
+        /// </returns>
+        Task<Response> PatchOperationStatusResultAsync(Guid subscriptionId, Guid operationId, UpdateOperationStatusEnum updateOperationStatus);
 
         /// <summary>
         /// Deletes the subscription.

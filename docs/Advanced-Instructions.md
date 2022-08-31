@@ -3,7 +3,7 @@
   - [Overview](#overview)
   - [Deploy web applications and SQL Azure database using an ARM template](#deploy-web-applications-and-sql-azure-database-using-an-arm-template)
   - [Deploy web applications and SQL Azure database using Powershell](#deploy-web-applications-and-sql-azure-database-using-powershell)
-  - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository--create-an-azure-sql-database-single-database-and-prepare)
+  - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository-create-an-azure-sql-database-single-database-and-prepare)
   - [Change configuration](#change-configuration)
   - [Create Web Apps on Azure and deploy the code](#create-web-apps-on-azure-and-deploy-the-code)
     + [Running the solution locally](#running-the-solution-locally)
@@ -11,11 +11,12 @@
   - [Next steps](#next-steps)
     - [Configuring the Customer Provisioning web application](./Customer-Experience.md)
     - [Configuring the Publisher Provisioning web application](./Publisher-Experience.md)
+
 ## Overview
 
 This document describes how to implement the required components to enable the SDK for the SaaS Fulfillment API (v2), Marketplace Metering Service API, and additional components that demonstrate how to build a customer provisioning interface, logging, and administration of the customer's subscriptions.
 
-Learn more about what's included and how to-use the SDK [here.](https://github.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/blob/master/README.md)
+Learn more about what's included and how to-use the SDK [here.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/master/README.md)
 
 Please note: this SDK is community-supported. If you need help or have questions using this SDK, please create a GitHub issue. Do not contact the marketplace pubisher support alias directly regarding use of this SDK. Thank you.
 
@@ -52,28 +53,26 @@ Please note: this SDK is community-supported. If you need help or have questions
 
 ### Using Azure Cloud Shell
    
-   1. Open Powershell in the Azure Cloud (PowerShell) and run the following commands to install Azure modules:
-> Note: Make sure that you are using the latest Powershell to avoid issues in Compress-Archive in 5.1 that got resolved in latest version.
-```powershell
-Install-Module -Name Az -AllowClobber
+   1. Copy the following section to an editor and update it to match your company preference. Replace SOME-UNIQUE-STRING with your Team name or some other random string.
 ```
-   2. Clone the repository
-   3. Navigate to the folder **.\deployment\Templates**
-   4. Run the command below with all the values in quotes updated.
-```
-git clone https://github.com/code4clouds/Microsoft-commercial-marketplace-SaaS-offer-billing-SDK.git -b app-registration --depth 1; `
- cd ./Microsoft-commercial-marketplace-SaaS-offer-billing-SDK/deployment/Templates; `
- Connect-AzureAD -Confirm; .\Deploy.ps1 `
- -WebAppNamePrefix "marketplacesaasgithub" `
- -SQLServerName "marketplacesaasgithub" `
+wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
+chmod +x dotnet-install.sh; `
+./dotnet-install.sh; `
+$ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b main --depth 1; `
+cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
+Connect-AzureAD -Confirm; `
+.\Deploy.ps1 `
+ -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
+ -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `
+ -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
  -PublisherAdminUsers "user@email.com" `
- -BacpacUrl "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US" `
- -PathToARMTemplate ".\deploy.json"
+ -PathToARMTemplate ".\deploy.json" `
 ```
+  2. Paste the updated command in an Azure Cloud Shell PowerShell window.
 
 ### Local deployment
 
@@ -107,8 +106,8 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | SQLAdminLogin | SQL Admin login |
 | SQLAdminLoginPassword | SQL Admin password |
 | PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
-| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/ |
-| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac |
+| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/ |
+| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac |
 | ResourceGroupForDeployment | Name of the resource group to deploy the resources |
 | Location | Location of the resource group |
 | AzureSubscriptionID | Subscription where the resources be deployed |
@@ -127,7 +126,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
     -SQLAdminLogin "adminlogin" `
     -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `
     -PublisherAdminUsers "user@contoso.com" `              
-    -BacpacUrl "https://raw.githubusercontent.com/Azure/Microsoft-commercial-marketplace-transactable-SaaS-offer-SDK/master/deployment/Database/AMPSaaSDB.bacpac" `
+    -BacpacUrl "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac" `
     -AzureSubscriptionID "subscriptionId" `
     -ResourceGroupForDeployment "resourcegroup" `
     -Location "East US" `
@@ -247,6 +246,22 @@ The **Technical Configuration** section of the Marketplace offer with the values
 |Connection webhook | Path to the web hook API in the Provisioning Service. Eg: https://saaskit-portal.azurewebsites.net/api/AzureWebhook
 |Azure Active Directory Tenant ID | Tenant where the AD application is registered
 |Azure Active Directory Application ID | ID of the registered AD application
+
+### Running the webhook locally
+
+You may find yourself wanting to exercise the webhook in your local development environment. There is a challenge here that has been addressed in the webhook code.
+
+There is logic in the webhook to verify the operation that was received via HTTP POST. This is a best practice, but provides challenges when exercising the webhook on your desktop, perhaps by POSTing a webhook payload with Postman or a similar tool. 
+
+To get around this in your development environment, you can set an environmental variable to bypass verifying the operation within the Azure marketplace. Setting this variable on a local development machine can be done in `appsetting.Development.json`. The vey/value pair to add to your environmental variables is as follows.
+
+```json
+environment=development
+```
+
+> ⚠️ This variable should never be set in production. It is for local development purposes only.
+
+Any other value for the environmental variable, including not having the variable present, will result in the webhook authenticating the operation of the request.
 
 ## Next steps
 

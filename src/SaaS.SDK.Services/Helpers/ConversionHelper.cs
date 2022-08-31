@@ -8,7 +8,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
+    using MeteringDimension = Models.MeteringDimension;
+    using RecurrentBillingTerm = Models.RecurrentBillingTerm;
+    using MeteringedQuantityIncluded = Models.MeteringedQuantityIncluded;
     /// <summary>
     /// Conversion Helper.
     /// </summary>
@@ -41,6 +43,8 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                 },
                 Beneficiary = new BeneficiaryResult()
                 {
+                    EmailId = subscription.Beneficiary.EmailId ?? throw new MarketplaceException("Beneficiary Email Id cannot be null"),
+                    ObjectId = subscription.Beneficiary.ObjectId ?? throw new MarketplaceException("Beneficiary Object Id cannot be null"),
                     TenantId = subscription.Beneficiary.TenantId ?? throw new MarketplaceException("Beneficiary Tenant Id cannot be null"),
                 },
                 Term = new TermResult()
@@ -90,7 +94,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
         /// <returns>
         /// PlanDetailResult List.
         /// </returns>
-        public static List<PlanDetailResult> planResults(this IReadOnlyList<Plan> plans)
+        public static List<PlanDetailResultExtension> planResults(this IReadOnlyList<Plan> plans)
         {
             return plans.Select(x => x.planResult()).ToList();
         }
@@ -102,14 +106,68 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
         /// <returns>
         /// PlanDetailResult.
         /// </returns>
-        public static PlanDetailResult planResult(this Plan plan)
+        public static PlanDetailResultExtension planResult(this Plan plan)
         {
-            return new PlanDetailResult()
+            return new PlanDetailResultExtension()
             {
+                Description = plan.Description,
                 DisplayName = plan.DisplayName,
                 PlanId = plan.PlanId,
-                IsPrivate = plan.IsPrivate ?? false
+                IsPrivate = plan.IsPrivate ?? false,
+                HasFreeTrials = plan.HasFreeTrials ?? false,
+                IsPerUserPlan = plan.IsPricePerSeat ?? false,
+                IsStopSell = plan.IsStopSell ?? false,
+                Market = plan.Market,
+                PlanComponents = getPlanComponentsFromPlan(plan)
             };
+        }
+        /// <summary>
+        /// Exctract Meter and Billing dimi
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <returns></returns>
+        public static Models.PlanComponents getPlanComponentsFromPlan(this Plan plan)
+        {
+            Models.PlanComponents components = new Models.PlanComponents();
+            components.RecurrentBillingTerms = new List<RecurrentBillingTerm>();
+            components.MeteringDimensions = new List<MeteringDimension>();
+            //Map MeteringDimesion array
+
+            foreach (SaaS.Models.MeteringDimension meterDim in plan.PlanComponents.MeteringDimensions)
+            {
+                components.MeteringDimensions.Add(
+                                        new MeteringDimension()
+                                        {
+                                            Currency = meterDim.Currency,
+                                            PricePerUnit = meterDim.PricePerUnit,
+                                            UnitOfMeasure = meterDim.UnitOfMeasure,
+                                            DisplayName = meterDim.DisplayName,
+                                            Id = meterDim.Id
+                                        });
+            }
+
+            //Map RecurrentBillingTerms array
+            foreach (SaaS.Models.RecurrentBillingTerm recurrentBilling in plan.PlanComponents.RecurrentBillingTerms)
+            {
+                RecurrentBillingTerm recurrentBillingTerm = new RecurrentBillingTerm();
+                recurrentBillingTerm.MeteredQuantityIncluded = new List<MeteringedQuantityIncluded>();
+                recurrentBillingTerm.Currency = recurrentBilling.Currency;
+                recurrentBillingTerm.Price = recurrentBilling.Price;
+                recurrentBillingTerm.TermDescription = recurrentBilling.TermDescription;
+                recurrentBillingTerm.TermUnit = recurrentBilling.TermUnit.ToString();
+                foreach (SaaS.Models.MeteringedQuantityIncluded metering in recurrentBilling.MeteredQuantityIncluded)
+                {
+                    recurrentBillingTerm.MeteredQuantityIncluded.Add(new MeteringedQuantityIncluded()
+                    {
+                        DimensionId = metering.DimensionId,
+                        Units = metering.Units
+                    });
+                }
+
+                components.RecurrentBillingTerms.Add(recurrentBillingTerm);
+            }
+
+            return components;
         }
 
         /// <summary>
@@ -125,7 +183,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             { 
               ID = operation.Id?.ToString(),
               Status = (Models.OperationStatusEnum)Enum.Parse(typeof(Models.OperationStatusEnum), operation.Status.ToString()),
-              Created = operation.TimeStamp.Value.UtcDateTime
+              Created = operation.TimeStamp.Value.UtcDateTime,
+              SubscriptionId = operation.SubscriptionId?.ToString(), 
+              ActionType = operation.Action?.ToString()
             };
         }
     }

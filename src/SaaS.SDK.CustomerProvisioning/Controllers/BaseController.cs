@@ -31,7 +31,7 @@
         {
             get
             {
-                return (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0) ? this.HttpContext.User.Claims.Where(s => s.Type == ClaimConstants.CLAIM_EMAILADDRESS).FirstOrDefault().Value : string.Empty;
+                return HttpContext?.User?.Claims?.FirstOrDefault(s => s.Type == ClaimConstants.CLAIM_EMAILADDRESS)?.Value ?? string.Empty; 
             }
         }
 
@@ -45,7 +45,7 @@
         {
             get
             {
-                return (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0) ? this.HttpContext.User.Claims.Where(s => s.Type == ClaimConstants.CLAIM_NAME).FirstOrDefault().Value : string.Empty;
+                return HttpContext?.User?.Claims?.FirstOrDefault(s => s.Type == ClaimConstants.CLAIM_NAME)?.Value ?? string.Empty;
             }
         }
 
@@ -55,7 +55,7 @@
         /// <returns> Current Logged User Email.</returns>
         public PartnerDetailViewModel GetCurrentUserDetail()
         {
-            if (this.HttpContext != null && this.HttpContext.User.Identity.IsAuthenticated)
+            if (HttpContext?.User?.Identity?.IsAuthenticated == true)
             {
                 PartnerDetailViewModel partnerDetail = new PartnerDetailViewModel();
                 partnerDetail.FullName = this.CurrentUserName;

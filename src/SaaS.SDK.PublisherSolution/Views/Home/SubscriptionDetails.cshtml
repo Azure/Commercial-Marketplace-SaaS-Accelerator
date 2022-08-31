@@ -1,6 +1,4 @@
-﻿@using Microsoft.Marketplace.SaaS.SDK.Services.Models
-
-@model Microsoft.Marketplace.SaaS.SDK.Services.Models.SubscriptionResultExtension
+﻿@model SubscriptionResultExtension
 @{
     //ViewData["Title"] = "Home";
 }
@@ -59,7 +57,6 @@
                             @Html.DisplayFor(model => model.Purchaser.EmailId)
                             @Html.HiddenFor(model => model.Purchaser.EmailId)
                         </dd>
-
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Azure Tenant ID ")
                         </dt>
@@ -68,20 +65,14 @@
                             @Html.HiddenFor(model => model.Purchaser.TenantId)
                         </dd>
 
-
-
                         @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
                         {
-
-                            for (int i = 0; i < Model.SubscriptionParameters.Count(); i++)
+                            for (var i = 0; i < Model.SubscriptionParameters.Count(); i++)
                             {
-
-                                    if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
-                                    {
+                                if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
+                                {
                                     <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
-                                        @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
-
-
+                                        @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = Model.SubscriptionParameters[i].Type })
                                     </dt>
                                     <dd class="col-sm-9 p-2 p10">
                                         @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
@@ -90,20 +81,41 @@
                                 }
                             }
                         }
+                      
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Beneficiary Email")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Beneficiary.EmailId)
+                            @Html.HiddenFor(model => model.Beneficiary.EmailId)
+                        </dd>  
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Beneficiary Tenant ID ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Beneficiary.TenantId)
+                            @Html.HiddenFor(model => model.Beneficiary.TenantId)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Beneficiary Object ID ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Beneficiary.ObjectId)
+                            @Html.HiddenFor(model => model.Beneficiary.ObjectId)
+                        </dd>
                     </dl>
                 </div>
                 <div class="text-right">
-                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed)
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed)
                     {
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
-                        <button type="submit" asp-action="Subscriptions" class="cm-button-default mt40 text-right">Go to Subscription List</button>
                     }
-                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation)
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation || Model.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed)
                     {
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default mt40 text-right">Activate</button>
                     }
+                    <button type="submit" asp-action="Subscriptions" class="cm-button-default mt40 text-right">Go to Subscription List</button>
                 </div>
-
             }
         </div>
     </form>

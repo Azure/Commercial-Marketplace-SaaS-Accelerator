@@ -21,9 +21,9 @@
         Unsubscribed,
 
         /// <summary>
-        /// The not started
+        /// When status cannot be parsed to any of the other Status types
         /// </summary>
-        NotStarted,
+        UnRecognized,
 
         /// <summary>
         /// Pending Activation
@@ -44,5 +44,10 @@
         /// The unsubscribe failed
         /// </summary>
         UnsubscribeFailed,
+
+        /// <summary>
+        /// The Suspend 
+        /// </summary>
+        Suspend,
     }
 }
