@@ -295,13 +295,10 @@ az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebApp
 az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport  SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 
 Write-host "📜  Deploying the Publisher Code to Admin portal"
-
-Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNameAdmin"  -ArchivePath $publisherPackage -Force
+az webapp deploy --resource-group "$ResourceGroupForDeployment" --name "$WebAppNameAdmin" --src-path $publisherPackage  --async true
 
 Write-host "📜  Deploying the Customer Code to Customer portal"
-
-Publish-AzWebApp -ResourceGroupName "$ResourceGroupForDeployment" -Name "$WebAppNamePortal" -ArchivePath  $customerPackage -Force
-
+az webapp deploy --resource-group "$ResourceGroupForDeployment" --name "$WebAppNamePortal" --src-path $customerPackage  --async true
 
 Write-host "🧹  Cleaning things up!"
 # Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
