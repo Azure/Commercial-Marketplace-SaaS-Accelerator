@@ -14,6 +14,7 @@
   - [Emit usage events](#emit-usage-events)
   - [Unsubscribe](#unsubscribe)
   - [View activity log](#view-activity-log)
+  - [Metered Scheduler Manager](./Metered-Scheduler-Manager-Instruction.md)
 
 ## Overview
 

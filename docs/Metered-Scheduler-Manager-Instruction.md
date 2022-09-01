@@ -5,34 +5,37 @@ Metered Scheduler Manager is a feature where Publisher can schedule **FIX Quanti
 1. Weekly
 1. Monthly
 1. Yearly
-## Enable and Disable Metered Scheduler Manager Feature
-By defualt this feature is enabled and deployed as part of the installion. Publisher can disable this feature during the installion process by passing an optional parameter **MeteredSchedulerSupportEnabled** with **NO** value as part of the installion script. 
+## Enable and Disable Metered Scheduler Manager Feature During Installation
+By defualt this feature is disabled and deployed as part of the installion. Publisher can enable this feature during the installion process by passing an optional parameter **MeteredSchedulerSupportEnabled** with **true** value as part of the installion script. 
+
 
 ``` powershell
-wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
-chmod +x dotnet-install.sh; `
-./dotnet-install.sh; `
-$ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 5.0.0 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.0.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
 .\Deploy.ps1 `
- -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
- -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
+ -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
+ -SQLServerName "marketplace-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
  -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US" `
- -PathToARMTemplate ".\deploy.json" `
- -MeteredSchedulerSupportEnabled "NO"
+ -MeteredSchedulerSupportEnabled true
  ```
 
- Publisher can access **Scheduler Manager Dashboard** from **Home page** or side bar menu.
+## Enable and Disable Metered Scheduler Manager Feature Post Installation
+Publisher can active the **Metered Scheduler** feature by updating Admin portal web configuration and set **SaaSApiConfiguration__SupportmeteredBilling** to **true**
+![home](./images/scheduler-config.png)
 
-![home](./images/scheduler-home.png)
+Publisher can disable the feature by feature by updating Admin portal web configuration and set **SaaSApiConfiguration__SupportmeteredBilling** to **false**
+
+
 
 ## Access Metered Scheduler Manager Dashboard
+ Publisher can access **Scheduler Manager Dashboard** from **Home page** or side bar menu.
+![home](./images/scheduler-home.png)
+
 To access dashboad from **Home page**, Publisher will click on **Scheduler Tile** then publisher will be redirect to dashboard summary page.
 
 ![dashboard](./images/scheduler-dashboard.png)
