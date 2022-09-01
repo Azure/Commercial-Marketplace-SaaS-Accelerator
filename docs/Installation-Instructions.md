@@ -27,7 +27,7 @@ Connect-AzureAD -Confirm; `
  -ADMTApplicationID "xxxx-xxx-xxx-xxx-xxxx" `
  -LogoURLpng "https://company_com/company_logo.png" `
  -LogoURLico "https://company_com/company_logo.ico" `
- -MeteredSchedulerSupport YES|NO default value is YES
+ -MeteredSchedulerSupport true
  ```
  
 ## Parameters
