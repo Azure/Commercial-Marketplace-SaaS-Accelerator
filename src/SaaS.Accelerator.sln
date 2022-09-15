@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.31903.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.UnitTest", "SaaS.SDK.UnitTest\SaaS.SDK.UnitTest.csproj", "{CE51F49B-E40D-425C-A25E-16B6CAF8B58B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.Services.Test", "SaaS.SDK.UnitTest\Marketplace.SaaS.Accelerator.Services.Test.csproj", "{CE51F49B-E40D-425C-A25E-16B6CAF8B58B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.PublisherSolution", "SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj", "{DB6FB916-7EAA-4D25-BFE3-D7C30284C549}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.AdminSite", "SaaS.SDK.PublisherSolution\Marketplace.SaaS.Accelerator.AdminSite.csproj", "{DB6FB916-7EAA-4D25-BFE3-D7C30284C549}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.Provisioning.Services", "SaaS.SDK.Services\SaaS.SDK.Provisioning.Services.csproj", "{B5C169DF-D848-4762-AAB9-B022F1E79466}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.Services", "SaaS.SDK.Services\Marketplace.SaaS.Accelerator.Services.csproj", "{B5C169DF-D848-4762-AAB9-B022F1E79466}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.MeteredTriggerJob", "SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj", "{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.MeteredTriggerJob", "SaaS.SDK.MeteredTriggerJob\Marketplace.SaaS.Accelerator.MeteredTriggerJob.csproj", "{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.DataAccess", "Marketplace.SaaS.Accelerator.DataAccess\Marketplace.SaaS.Accelerator.DataAccess.csproj", "{33EF29F1-A7D9-46B6-B6DB-477EB041F2AD}"
 EndProject
