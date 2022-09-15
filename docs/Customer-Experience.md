@@ -1,7 +1,7 @@
 # Customer Portal - Sample Web Application
 
 ## Table of contents
-- [Customer experience](#customer-experience)
+- [Customer Portal - Sample Web Application](#customer-portal---sample-web-application)
   - [Table of contents](#table-of-contents)
   - [Overview](#overview)
   - [Subscribing to the offer](#subscribing-to-the-offer)
@@ -10,8 +10,7 @@
     - [Unsubscribe](#unsubscribe)
     - [Change Quantity](#change-quantity)
     - [View activity log](#view-activity-log)
-- [Next steps](#next-steps)
-  - [Configuring the Publisher Provisioning web application](./Publisher-Experience.md)
+  - [Next steps](#next-steps)
 
 ## Overview
 
@@ -56,7 +55,7 @@ Assuming that the SaaS offer was published and is available for the known tenant
 
 ### Activate
 
-> The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
+> The below diagram illustrates the flow of information between Azure and the Azure marketplace Accelerator client application.
 ![Information flow between Azure and Provisioning application](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-post-provisioning-api-v2-calls.png)
 
 On the landing page, review the details presented and click **Activate**
@@ -80,7 +79,7 @@ Task<SubscriptionUpdateResult> ActivateSubscriptionAsync(Guid subscriptionId, st
 
 ### Change plan
 
-> The below diagram illustrates the flow of information between Azure and the Azure marketplace SDK client application.
+> The below diagram illustrates the flow of information between Azure and the Azure marketplace SaaS Accelerator application.
 ![Update subscription](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/media/saas-update-api-v2-calls-from-saas-service-a.png)
 1. Log on to the customer provisioning application.
 2. Click **Subscriptions** from the menu on the top, in case you are not on the page that shows you the list of subscriptions. The table on this page lists all the subscriptions and their status.
