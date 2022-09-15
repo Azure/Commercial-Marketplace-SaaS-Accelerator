@@ -156,11 +156,11 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
         # Download Publisher's AppRegistration logo
         if($LogoURLpng) { 
             # Write-Host "📷  Downloading SSO AAD AppRegistration logo image..."
-            # Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.png"
+            # Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\wwwroot\applogo.png"
             # Write-Host "📷  SSO AAD AppRegistration logo image downloaded."    
 
             #Write-Host "🔑  Attaching Image to SSO AAD AppRegistration ObjectID: $ADMTObjectID ..."
-            #$LogoURLpngPath = $(Resolve-Path "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\applogo.png").Path
+            #$LogoURLpngPath = $(Resolve-Path "..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\wwwroot\applogo.png").Path
 
             #TODO: This is broken in PS CLI:  https://stackoverflow.microsoft.com/questions/276511
             # $LogoByteArray = [System.IO.File]::ReadAllBytes($LogoURLpngPath)
@@ -178,16 +178,16 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
 # Download Publisher's PNG logo
 if($LogoURLpng) { 
     Write-Host "📷  Downloading PNG logo images..."
-    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\contoso-sales.png"
-    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\SaaS.SDK.PublisherSolution\wwwroot\contoso-sales.png"
+    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\wwwroot\contoso-sales.png"
+    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\Marketplace.SaaS.Accelerator.PublisherSite\wwwroot\contoso-sales.png"
     Write-Host "📷  Logo images PNG downloaded."
 }
 
 # Download Publisher's FAVICON logo
 if($LogoURLico) { 
     Write-Host "📷  Downloading ICO logo images..."
-    Invoke-WebRequest -Uri $LogoURLico -OutFile "..\..\src\SaaS.SDK.CustomerProvisioning\wwwroot\favicon.ico"
-    Invoke-WebRequest -Uri $LogoURLico -OutFile "..\..\src\SaaS.SDK.PublisherSolution\wwwroot\favicon.ico"
+    Invoke-WebRequest -Uri $LogoURLico -OutFile "..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\wwwroot\favicon.ico"
+    Invoke-WebRequest -Uri $LogoURLico -OutFile "..\..\src\Marketplace.SaaS.Accelerator.PublisherSite\wwwroot\favicon.ico"
     Write-Host "📷  Logo images ICO downloaded."
 }
 
@@ -196,21 +196,20 @@ Write-host "☁  Prepare publish files for the web application"
 
 
 Write-host "☁  Preparing the publish files for PublisherPortal"  
-dotnet publish ..\..\src\SaaS.SDK.PublisherSolution\SaaS.SDK.PublisherSolution.csproj -c debug -o ..\..\Publish\PublisherPortal
+dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.PublisherSite\Marketplace.SaaS.Accelerator.PublisherSite.csproj -c debug -o ..\..\Publish\PublisherPortal
 
 if ($MeteredSchedulerSupport -ne $true)
 { 
     Write-host "☁  Preparing the publish files for Metered Scheduler to PublisherPortal"
     mkdir -p ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob
-    dotnet publish ..\..\src\SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
-
+    dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.MeteredTriggerJob\Marketplace.SaaS.Accelerator.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\PublisherPortal\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
 }
 
-Compress-Archive -Path ..\..\Publish\PublisherPortal\* -DestinationPath ..\..\Publish\PublisherPortal.zip -Force
+Compress-Archive -Path ..\..\Publish\Marketplace.SaaS.Accelerator.PublisherSite\* -DestinationPath ..\..\Publish\Marketplace.SaaS.Accelerator.PublisherSite.zip -Force
 
 Write-host "☁  Preparing the publish files for CustomerPortal"
-dotnet publish ..\..\src\SaaS.SDK.CustomerProvisioning\SaaS.SDK.CustomerProvisioning.csproj -c debug -o ..\..\Publish\CustomerPortal
-Compress-Archive -Path ..\..\Publish\CustomerPortal\* -DestinationPath ..\..\Publish\CustomerPortal.zip -Force
+dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\Marketplace.SaaS.Accelerator.CustomerSite.csproj -c debug -o ..\..\Publish\CustomerPortal
+Compress-Archive -Path ..\..\Publish\Marketplace.SaaS.Accelerator.CustomerSite\* -DestinationPath ..\..\Publish\Marketplace.SaaS.Accelerator.CustomerSite.zip -Force
 
 
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
