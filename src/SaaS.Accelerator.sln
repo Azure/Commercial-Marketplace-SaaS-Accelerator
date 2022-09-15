@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.Provisioning.Servi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.MeteredTriggerJob", "SaaS.SDK.MeteredTriggerJob\SaaS.SDK.MeteredTriggerJob.csproj", "{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.Accelerator.DataAccess", "SaaS.Accelerator.DataAccess\SaaS.Accelerator.DataAccess.csproj", "{23354EBA-3868-45F3-AF79-54C1B989862F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.DataAccess", "SaaS.Accelerator.DataAccess\Marketplace.SaaS.Accelerator.DataAccess.csproj", "{23354EBA-3868-45F3-AF79-54C1B989862F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.Accelerator.CustomerSite", "SaaS.Accelerator.CustomerSite\SaaS.Accelerator.CustomerSite.csproj", "{B06B5FAD-FFF9-4604-8308-5F33A1C47563}"
 EndProject
