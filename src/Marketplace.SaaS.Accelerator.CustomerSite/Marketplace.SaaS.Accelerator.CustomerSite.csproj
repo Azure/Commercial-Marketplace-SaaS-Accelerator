@@ -31,7 +31,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Marketplace.SaaS.Accelerator.Services\Marketplace.SaaS.Accelerator.Services.csproj" />
-    <ProjectReference Include="..\SaaS.SDK.Services\Marketplace.SaaS.Accelerator.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
