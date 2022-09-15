@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <AssemblyName>SaaS.SDK.CustomerProvisioning</AssemblyName>
-    <RootNamespace>SaaS.SDK.CustomerProvisioning</RootNamespace>
+    <AssemblyName>Marketplace.SaaS.Accelerator.CustomerSite</AssemblyName>
+    <RootNamespace>Marketplace.SaaS.Accelerator.CustomerSIte</RootNamespace>
     <Company>Microsoft</Company>
     <Authors>Microsoft.Marketplace</Authors>
-    <Product>SaaS.SDK</Product>
+    <Product>Marketplace.SaaS.Accelerator</Product>
   </PropertyGroup>
 
   <ItemGroup>
