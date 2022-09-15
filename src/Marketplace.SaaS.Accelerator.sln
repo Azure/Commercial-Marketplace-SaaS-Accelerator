@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.31903.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.Services.Test", "SaaS.SDK.UnitTest\Marketplace.SaaS.Accelerator.Services.Test.csproj", "{CE51F49B-E40D-425C-A25E-16B6CAF8B58B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.AdminSite", "SaaS.SDK.PublisherSolution\Marketplace.SaaS.Accelerator.AdminSite.csproj", "{DB6FB916-7EAA-4D25-BFE3-D7C30284C549}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.Services", "SaaS.SDK.Services\Marketplace.SaaS.Accelerator.Services.csproj", "{B5C169DF-D848-4762-AAB9-B022F1E79466}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.MeteredTriggerJob", "SaaS.SDK.MeteredTriggerJob\Marketplace.SaaS.Accelerator.MeteredTriggerJob.csproj", "{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.DataAccess", "Marketplace.SaaS.Accelerator.DataAccess\Marketplace.SaaS.Accelerator.DataAccess.csproj", "{33EF29F1-A7D9-46B6-B6DB-477EB041F2AD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.CustomerSite", "Marketplace.SaaS.Accelerator.CustomerSite\Marketplace.SaaS.Accelerator.CustomerSite.csproj", "{3374E585-5D71-4E64-BB07-D4A6A034AD14}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.AdminSite", "Marketplace.SaaS.Accelerator.AdminSite\Marketplace.SaaS.Accelerator.AdminSite.csproj", "{6E3D415D-6562-4D0A-9237-045FC90E4A9B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.MeteredTriggerJob", "Marketplace.SaaS.Accelerator.MeteredTriggerJob\Marketplace.SaaS.Accelerator.MeteredTriggerJob.csproj", "{2DA75C8D-18A1-4F5C-904D-32D6AE3BCD21}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.Services", "Marketplace.SaaS.Accelerator.Services\Marketplace.SaaS.Accelerator.Services.csproj", "{D54B4D38-C44D-4E4F-A3EB-EEFBE6E97950}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.Services.Test", "Marketplace.SaaS.Accelerator.Services.Test\Marketplace.SaaS.Accelerator.Services.Test.csproj", "{873CE475-1270-4902-9D0A-E95F5FB06DF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,22 +21,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CE51F49B-E40D-425C-A25E-16B6CAF8B58B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CE51F49B-E40D-425C-A25E-16B6CAF8B58B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CE51F49B-E40D-425C-A25E-16B6CAF8B58B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CE51F49B-E40D-425C-A25E-16B6CAF8B58B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB6FB916-7EAA-4D25-BFE3-D7C30284C549}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB6FB916-7EAA-4D25-BFE3-D7C30284C549}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB6FB916-7EAA-4D25-BFE3-D7C30284C549}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB6FB916-7EAA-4D25-BFE3-D7C30284C549}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5C169DF-D848-4762-AAB9-B022F1E79466}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5C169DF-D848-4762-AAB9-B022F1E79466}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5C169DF-D848-4762-AAB9-B022F1E79466}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5C169DF-D848-4762-AAB9-B022F1E79466}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F9B5BBEB-4ED9-49B7-A308-51FB5A6E1A03}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33EF29F1-A7D9-46B6-B6DB-477EB041F2AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{33EF29F1-A7D9-46B6-B6DB-477EB041F2AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33EF29F1-A7D9-46B6-B6DB-477EB041F2AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +29,22 @@ Global
 		{3374E585-5D71-4E64-BB07-D4A6A034AD14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3374E585-5D71-4E64-BB07-D4A6A034AD14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3374E585-5D71-4E64-BB07-D4A6A034AD14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E3D415D-6562-4D0A-9237-045FC90E4A9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E3D415D-6562-4D0A-9237-045FC90E4A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E3D415D-6562-4D0A-9237-045FC90E4A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E3D415D-6562-4D0A-9237-045FC90E4A9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DA75C8D-18A1-4F5C-904D-32D6AE3BCD21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DA75C8D-18A1-4F5C-904D-32D6AE3BCD21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DA75C8D-18A1-4F5C-904D-32D6AE3BCD21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DA75C8D-18A1-4F5C-904D-32D6AE3BCD21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D54B4D38-C44D-4E4F-A3EB-EEFBE6E97950}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D54B4D38-C44D-4E4F-A3EB-EEFBE6E97950}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D54B4D38-C44D-4E4F-A3EB-EEFBE6E97950}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D54B4D38-C44D-4E4F-A3EB-EEFBE6E97950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{873CE475-1270-4902-9D0A-E95F5FB06DF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{873CE475-1270-4902-9D0A-E95F5FB06DF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{873CE475-1270-4902-9D0A-E95F5FB06DF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{873CE475-1270-4902-9D0A-E95F5FB06DF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
