@@ -141,9 +141,18 @@ namespace MeteredTriggerHelper
 
                 if ((status == "Accepted"))
                 {
-                    Console.WriteLine($"Save Scheduler Item Id: {item.Id}");
-                    scheduler.NextRunTime = item.NextRunTime.Value.ToUniversalTime();
-                    schedulerService.SaveSchedulerDetail(scheduler);
+                    Console.WriteLine($"Meter event Accepted, Save Scheduler NextRun for ItemId: {item.Id}");
+
+                    //ignore nextruntime for OneTime
+                    if(item.Frequency != SchedulerFrequencyEnum.OneTime.ToString())
+                    {
+                        scheduler.NextRunTime = item.NextRunTime.Value.ToUniversalTime();
+                        schedulerService.SaveSchedulerDetail(scheduler);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Meter reporting for Scheduler Item Id: {item.Id} failed with status {status}");
                 }
             }
             catch (Exception ex)
@@ -172,6 +181,7 @@ namespace MeteredTriggerHelper
                 case SchedulerFrequencyEnum.Weekly: { return startDate.Value.AddDays(7); }
                 case SchedulerFrequencyEnum.Monthly: { return startDate.Value.AddMonths(1); }
                 case SchedulerFrequencyEnum.Yearly: { return startDate.Value.AddYears(1); }
+                case SchedulerFrequencyEnum.OneTime: { return startDate; }
                 default:
                     { return null; }
             }
@@ -179,11 +189,12 @@ namespace MeteredTriggerHelper
 
         public enum SchedulerFrequencyEnum
         {
-            Hourly,
+            Hourly=1,
             Daily,
             Weekly,
             Monthly,
-            Yearly
+            Yearly,
+            OneTime
         }
     }
 }

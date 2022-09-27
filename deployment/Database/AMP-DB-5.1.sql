@@ -886,7 +886,12 @@ BEGIN
 END
 GO
 
-
+IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'OneTime')
+BEGIN
+    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('OneTime')
+    
+END
+GO
 
 INSERT INTO [DatabaseVersionHistory] 
 
