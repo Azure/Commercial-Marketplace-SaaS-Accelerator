@@ -367,3 +367,5 @@ src/SaaS.SDK.PublisherSolution/appsettings.Development.json
 src/SaaS.SDK.MeteredTriggerJob/appsettings.Development.json
 src/SaaS.SDK.CustomerProvisioning/appsettings.Development.json
 
+.vscode/launch.json
+.vscode/tasks.json
