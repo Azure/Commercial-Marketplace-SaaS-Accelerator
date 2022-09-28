@@ -1,0 +1,340 @@
+html,
+body {
+    margin: 0;
+    overflow-x: hidden; /* Prevent scroll on narrow devices */
+    /*background-color: #666666;*/
+    background-color: #f2f2f2;
+    font-family: 'Segoe UI';
+}
+
+body {
+    padding-top: 55px;
+    /*background-color: #666666;*/
+    background-color: #f2f2f2;
+}
+
+@media (max-width: 991.98px) {
+    .offcanvas-collapse {
+        position: fixed;
+        top: 56px;
+        bottom: 0;
+        left: 100%;
+        width: 100%;
+        padding-right: 1rem;
+        padding-left: 1rem;
+        overflow-y: auto;
+        margin-top: -10px;
+        visibility: hidden;
+        background-color: #343a40;
+        transition: visibility .3s ease-in-out, -webkit-transform .3s ease-in-out;
+        transition: transform .3s ease-in-out, visibility .3s ease-in-out;
+        transition: transform .3s ease-in-out, visibility .3s ease-in-out, -webkit-transform .3s ease-in-out;
+    }
+
+        .offcanvas-collapse.open {
+            visibility: visible;
+            -webkit-transform: translateX(-100%);
+            transform: translateX(-100%);
+        }
+}
+
+
+
+.mycontainer {
+    margin-top: -8px;
+    display: flex;
+    height: 100vh;
+}
+
+.class2 {
+    flex: 1 1 auto;
+    background: #f2f2f2;
+    overflow: auto;
+}
+
+.class1 {
+    flex: 0 0 10px;
+    background-color: #333;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+.nav-scroller {
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+    /*margin-top: -143px;*/
+    /*height: 2.75rem;*/
+    /*overflow-y: auto;*/
+}
+
+.custom {
+    padding-left: 20px;
+    align-self: center;
+}
+
+.customcards {
+    box-shadow: rgb(0 0 0 / 13%) 0 1.6px 3.6px 0, rgb(0 0 0 / 11%) 0 0.3px 0.9px 0;
+    width: 100%;
+    padding: 20px;
+    align-self: center;
+}
+
+.nav-item .nav-link {
+    margin-block: -12px;
+    padding-left: 10px;
+}
+
+.nav-scroller .nav {
+    display: -ms-flexbox;
+    display: flex;
+    /* -ms-flex-wrap: nowrap;*/
+    /* flex-wrap: nowrap;*/
+    padding-bottom: 1rem;
+    margin-top: -1px;
+    overflow-x: auto;
+    color: rgba(255, 255, 255, .75);
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+.nav-underline .nav-link {
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    font-size: 14px;
+    line-height: 20px;
+    font-family: Segoe UI Web,Segoe UI Symbol,Helvetica Neue,BBAlpha Sans,S60 Sans,Arial,sans-serif;
+    color: #c2c2c2;
+    /*background-color: #666666;*/
+}
+
+    .nav-underline .nav-link:hover {
+        background-color: #666666;
+        font-weight:600;
+        /*font-size: 1rem;*/
+        color: #fff;
+    }
+
+    .nav-underline .nav-link:active {
+        color: #fff;
+        font-size: .875rem;
+    }
+
+.nav-underline .active {
+    color: #fff;
+    font-size: .875rem;
+    /*background-color: #666666;*/
+}
+
+
+
+.navbar-collapse.collapsing {
+    height: 100%;
+    left: -75%;
+    transition: height 0s ease;
+}
+
+.navbar-collapse.show {
+    height: 100%;
+    left: 200px;
+    transition: left 400ms ease-in-out;
+}
+
+.navbar-toggler.collapsed ~ .navbar-collapse {
+    width: 10px;
+    transition: left 400ms ease-in;
+}
+
+.minline {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.format-left {
+    padding-left: 10px;
+}
+
+.page-title-header h1 {
+    padding-left: 100px;
+    font-size: 20px;
+    text-transform: uppercase;
+    line-height: 24px;
+}
+
+.pagequicklink {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.format-cards {
+    width: 66.6666%;
+}
+
+.left-nav {
+    width: 180px;
+}
+
+.navbar-text {
+    /*font-weight:bold;*/
+}
+
+
+
+#homepage-programs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(340px,1fr));
+    width: 100%;
+}
+
+    #homepage-programs > li#onedash-menu-homepage1 {
+        border-color: #d13438;
+    }
+
+    #homepage-programs > li#onedash-menu-homepage2 {
+        border-color: #881798;
+    }
+
+    #homepage-programs > li#onedash-menu-homepage3 {
+        border-color: #004e8c;
+    }
+    #homepage-programs > li#onedash-menu-homepage5 {
+        border-color: #288c00;
+    }
+
+    #homepage-programs > li#onedash-menu-homepage4 {
+        border-color: #8B4513;
+    }
+
+    #homepage-programs > li {
+        display: flex;
+        flex-flow: row;
+        float: left;
+        min-height: 120px;
+        background-color: #fff;
+        margin-right: 24px;
+        margin-bottom: 28px;
+        position: relative;
+        box-shadow: rgb(0 0 0 / 13%) 0 1.6px 3.6px 0, rgb(0 0 0 / 11%) 0 0.3px 0.9px 0;
+        border-left: solid 4px;
+        border-radius: 2px;
+    }
+
+        #homepage-programs > li .programCardLink {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            display: block;
+            color: transparent;
+            z-index: 2;
+        }
+
+        #homepage-programs > li .programCardContentWrapper {
+            display: block;
+            padding: 16px 12px 16px 16px;
+            width: 100%;
+        }
+
+        #homepage-programs > li .programCardIcon1.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
+            background-color: #d13438;
+            margin-bottom: 10px;
+        }
+
+        #homepage-programs > li .programCardIcon2.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
+            background-color: #881798;
+            margin-bottom: 10px;
+        }
+
+        #homepage-programs > li .programCardIcon3.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
+            background-color: #004e8c;
+            margin-bottom: 10px;
+        }
+        #homepage-programs > li .programCardIcon5.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
+            background-color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        #homepage-programs > li .programCardIcon4.wrap-win-icon-RecruitmentManagement, .homepage-recommendations > li .recommendationsCardIcon.wrap-win-icon-RecruitmentManagement {
+            background-color: #8B4513;
+            margin-bottom: 10px;
+        }
+
+        #homepage-programs > li .programCardIcon1 {
+            height: 28px;
+            width: 28px;
+            border-radius: 30px;
+            margin-right: 8px;
+            display: flex;
+            flex-flow: column;
+            float: left;
+            flex-wrap: nowrap;
+            justify-content: center;
+        }
+
+        #homepage-programs > li .programCardIcon2 {
+            height: 28px;
+            width: 28px;
+            border-radius: 30px;
+            margin-right: 8px;
+            display: flex;
+            flex-flow: column;
+            float: left;
+            flex-wrap: nowrap;
+            justify-content: center;
+        }
+
+        #homepage-programs > li .programCardIcon3 {
+            height: 28px;
+            width: 28px;
+            border-radius: 30px;
+            margin-right: 8px;
+            display: flex;
+            flex-flow: column;
+            float: left;
+            flex-wrap: nowrap;
+            justify-content: center;
+        }
+
+        #homepage-programs > li .programCardIcon4 {
+            height: 28px;
+            width: 28px;
+            border-radius: 30px;
+            margin-right: 8px;
+            display: flex;
+            flex-flow: column;
+            float: left;
+            flex-wrap: nowrap;
+            justify-content: center;
+        }
+        #homepage-programs > li .programCardIcon5 {
+            height: 28px;
+            width: 28px;
+            border-radius: 30px;
+            margin-right: 8px;
+            display: flex;
+            flex-flow: column;
+            float: left;
+            flex-wrap: nowrap;
+            justify-content: center;
+        }
+.text-white-50 {
+    color: rgba(255, 255, 255, .5);
+}
+
+.bg-purple {
+    background-color: #6f42c1;
+}
+
+.lh-100 {
+    line-height: 1;
+}
+
+.lh-125 {
+    line-height: 1.25;
+}
+
+.lh-150 {
+    line-height: 1.5;
+}
