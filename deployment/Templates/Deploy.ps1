@@ -203,7 +203,7 @@ if ($MeteredSchedulerSupport -ne $true)
 Compress-Archive -Path ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite\* -DestinationPath ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite.zip -Force
 
 Write-host "☁  Preparing the publish files for Customer Site"
-dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\Marketplace.SaaS.Accelerator.CustomerSite.csproj -c debug -o ..\..\Publish\CustomerSite
+dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\Marketplace.SaaS.Accelerator.CustomerSite.csproj -c debug -o ..\..\Publish\Marketplace.SaaS.Accelerator.CustomerSite
 Compress-Archive -Path ..\..\Publish\Marketplace.SaaS.Accelerator.CustomerSite\* -DestinationPath ..\..\Publish\Marketplace.SaaS.Accelerator.CustomerSite.zip -Force
 
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
