@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerato
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.Services.Test", "Marketplace.SaaS.Accelerator.Services.Test\Marketplace.SaaS.Accelerator.Services.Test.csproj", "{873CE475-1270-4902-9D0A-E95F5FB06DF2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.PublisherSite", "Marketplace.SaaS.Accelerator.PublisherSite\Marketplace.SaaS.Accelerator.PublisherSite.csproj", "{3D16E62A-ABCC-4A16-BB40-75B0E441315F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,10 +45,6 @@ Global
 		{873CE475-1270-4902-9D0A-E95F5FB06DF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{873CE475-1270-4902-9D0A-E95F5FB06DF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{873CE475-1270-4902-9D0A-E95F5FB06DF2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3D16E62A-ABCC-4A16-BB40-75B0E441315F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3D16E62A-ABCC-4A16-BB40-75B0E441315F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3D16E62A-ABCC-4A16-BB40-75B0E441315F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3D16E62A-ABCC-4A16-BB40-75B0E441315F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
