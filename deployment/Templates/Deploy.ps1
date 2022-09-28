@@ -191,13 +191,13 @@ if($LogoURLico) {
 Write-host "☁  Prepare publish files for the web application"
 
 Write-host "☁  Preparing the publish files for Admin Site"  
-dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.AdminSite\Marketplace.SaaS.Accelerator.AdminSite.csproj -c debug -o ..\..\Publish\AdminSite
+dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.AdminSite\Marketplace.SaaS.Accelerator.AdminSite.csproj -c debug -o ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite\
 
 if ($MeteredSchedulerSupport -ne $true)
 { 
     Write-host "☁  Preparing the publish files for Metered Scheduler to Admin Site"
-    mkdir -p ..\..\Publish\Publish\Marketplace.SaaS.Accelerator.AdminSite\app_data\jobs\triggered\MeteredTriggerJob
-    dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.MeteredTriggerJob\Marketplace.SaaS.Accelerator.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
+    mkdir -p ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite\app_data\jobs\triggered\MeteredTriggerJob
+    dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.MeteredTriggerJob\Marketplace.SaaS.Accelerator.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
 }
 
 Compress-Archive -Path ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite\* -DestinationPath ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite.zip -Force
@@ -235,13 +235,13 @@ az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServe
 if ($IsLinux) 
 { 
    $dbSqlFile=(get-item . ).parent.FullName+"/Database/AMP-DB.sql"  
-   $publisherPackage=(get-item . ).parent.parent.FullName+"/Publish/AdminSite.zip"  
-   $customerPackage=(get-item . ).parent.parent.FullName+"/Publish/CustomerSite.zip"  
+   $publisherPackage=(get-item . ).parent.parent.FullName+"/Publish/Marketplace.SaaS.Accelerator.AdminSite.zip"  
+   $customerPackage=(get-item . ).parent.parent.FullName+"/Publish/Marketplace.SaaS.Accelerator.CustomerSite.zip"  
 }
 else {
     $dbSqlFile=(get-item . ).parent.FullName+"\Database\AMP-DB.sql"  
-    $publisherPackage=(get-item . ).parent.parent.FullName+"\Publish\AdminSite.zip"  
-    $customerPackage=(get-item . ).parent.parent.FullName+"\Publish\CustomerSite.zip" 
+    $publisherPackage=(get-item . ).parent.parent.FullName+"\Publish\Marketplace.SaaS.Accelerator.AdminSite.zip"  
+    $customerPackage=(get-item . ).parent.parent.FullName+"\Publish\Marketplace.SaaS.Accelerator.CustomerSite.zip" 
 }
 
 # Deploy Code and database schema
