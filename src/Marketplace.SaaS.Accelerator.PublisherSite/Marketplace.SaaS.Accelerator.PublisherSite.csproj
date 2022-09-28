@@ -59,7 +59,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SaaS.SDK.Services\SaaS.SDK.Provisioning.Services.csproj" />
+    <ProjectReference Include="..\Marketplace.SaaS.Accelerator.Services\Marketplace.SaaS.Accelerator.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
