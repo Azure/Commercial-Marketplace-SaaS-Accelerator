@@ -199,10 +199,25 @@
                 DimensionId = meteredPlanSchedulerModel.DimensionId,
                 FrequencyId = meteredPlanSchedulerModel.FrequencyId,
                 Quantity = meteredPlanSchedulerModel.Quantity,
-                StartDate = meteredPlanSchedulerModel.StartDate.Value.ToUniversalTime(),
+                StartDate = meteredPlanSchedulerModel.StartDate,
                 NextRunTime = meteredPlanSchedulerModel.NextRunTime
             };
             return this.schedulerRepository.Save(meteredPlanScheduler);
+        }
+
+        /// <summary>
+        /// Saves the Metered Plan Scheduler Management Model NextRunTime.
+        /// </summary>
+        /// <param name="MeteredPlanSchedulerManagementModel">The Metered Plan Scheduler Management model.</param>
+        /// <returns> Scheduler Id.</returns>
+        public int? UpdateSchedulerNextRunTime(MeteredPlanSchedulerManagementModel meteredPlanSchedulerModel)
+        {
+            MeteredPlanSchedulerManagement meteredPlanScheduler = new MeteredPlanSchedulerManagement
+            {
+                Id = meteredPlanSchedulerModel.Id,
+                NextRunTime = meteredPlanSchedulerModel.NextRunTime
+            };
+            return this.schedulerRepository.UpdateNextRunDate(meteredPlanScheduler);
         }
 
         /// <summary>
@@ -224,6 +239,7 @@
             };
              this.schedulerRepository.Remove(meteredPlanScheduler);
         }
+
         /// <summary>
         /// Remove Scheduler by Id
         /// </summary>
