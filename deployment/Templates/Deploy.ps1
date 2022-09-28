@@ -221,7 +221,6 @@ $ADApplicationSecretKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=ADAp
 $DefaultConnectionKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=DefaultConnection)"' -f $KeyVault
 $Connection="Data Source=tcp:"+$SQLServerName+".database.windows.net,1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
 
-
 Write-host "Create SQL Server"
 az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location "$location" --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword
 
@@ -250,14 +249,12 @@ Write-host "📜  Deploying the database schema"
 $ServerUri = $SQLServerName+".database.windows.net"
 Invoke-Sqlcmd -ServerInstance $ServerUri -database "AMPSaaSDB" -Username $SQLAdminLogin -Password $SQLAdminLoginPassword  -InputFile $dbSqlFile
 
-
 Write-host "📜  Create Keyvault"
 az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment
 
 Write-host "📜  Add Secrets"
 az keyvault secret set --vault-name $KeyVault  --name ADApplicationSecret --value $ADApplicationSecret
 az keyvault secret set --vault-name $KeyVault  --name DefaultConnection --value $Connection
-
 
 Write-host "📜  Create WebApp Service Plan"
 az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1
@@ -268,7 +265,7 @@ az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --
 $WebAppNameAdminId=$(az webapp identity show  -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --query principalId -o tsv)
 
 Write-host "📜  Add publisher Admin webapp Identity to KV"
-az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list
+az keyvault set-policy --name $KeyVault --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list
 
 Write-host "📜  Add Admin Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --settings DefaultConnection=$DefaultConnectionKeyVault
