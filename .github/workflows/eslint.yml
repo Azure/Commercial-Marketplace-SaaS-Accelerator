@@ -17,6 +17,17 @@ on:
     branches: [ "main" ]
   schedule:
     - cron: '44 22 * * 6'
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
 
 jobs:
   eslint:
