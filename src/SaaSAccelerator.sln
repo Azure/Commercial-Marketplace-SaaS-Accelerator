@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.31903.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.DataAccess", "Marketplace.SaaS.Accelerator.DataAccess\Marketplace.SaaS.Accelerator.DataAccess.csproj", "{33EF29F1-A7D9-46B6-B6DB-477EB041F2AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "Marketplace.SaaS.Accelerator.DataAccess\DataAccess.csproj", "{33EF29F1-A7D9-46B6-B6DB-477EB041F2AD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.CustomerSite", "Marketplace.SaaS.Accelerator.CustomerSite\Marketplace.SaaS.Accelerator.CustomerSite.csproj", "{3374E585-5D71-4E64-BB07-D4A6A034AD14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerSite", "Marketplace.SaaS.Accelerator.CustomerSite\CustomerSite.csproj", "{3374E585-5D71-4E64-BB07-D4A6A034AD14}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.AdminSite", "Marketplace.SaaS.Accelerator.AdminSite\Marketplace.SaaS.Accelerator.AdminSite.csproj", "{6E3D415D-6562-4D0A-9237-045FC90E4A9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdminSite", "Marketplace.SaaS.Accelerator.AdminSite\AdminSite.csproj", "{6E3D415D-6562-4D0A-9237-045FC90E4A9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.MeteredTriggerJob", "Marketplace.SaaS.Accelerator.MeteredTriggerJob\Marketplace.SaaS.Accelerator.MeteredTriggerJob.csproj", "{2DA75C8D-18A1-4F5C-904D-32D6AE3BCD21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MeteredTriggerJob", "Marketplace.SaaS.Accelerator.MeteredTriggerJob\MeteredTriggerJob.csproj", "{2DA75C8D-18A1-4F5C-904D-32D6AE3BCD21}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.Services", "Marketplace.SaaS.Accelerator.Services\Marketplace.SaaS.Accelerator.Services.csproj", "{D54B4D38-C44D-4E4F-A3EB-EEFBE6E97950}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Marketplace.SaaS.Accelerator.Services\Services.csproj", "{D54B4D38-C44D-4E4F-A3EB-EEFBE6E97950}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.SaaS.Accelerator.Services.Test", "Marketplace.SaaS.Accelerator.Services.Test\Marketplace.SaaS.Accelerator.Services.Test.csproj", "{873CE475-1270-4902-9D0A-E95F5FB06DF2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Test", "Marketplace.SaaS.Accelerator.Services.Test\Services.Test.csproj", "{873CE475-1270-4902-9D0A-E95F5FB06DF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

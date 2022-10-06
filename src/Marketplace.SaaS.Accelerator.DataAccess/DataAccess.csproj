@@ -5,7 +5,7 @@
     <Authors>Microsoft.Marketplace</Authors>
     <Company>Microsoft</Company>
     <Product>Marketplace.SaaS.Accelerator</Product>
-	<AssemblyName>Marketplace.SaaS.Accelerator.DataAccess</AssemblyName>
+	<AssemblyName>DataAccess</AssemblyName>
 	<RootNamespace>Marketplace.SaaS.Accelerator.DataAccess</RootNamespace>
   </PropertyGroup>
 

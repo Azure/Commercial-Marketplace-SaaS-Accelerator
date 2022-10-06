@@ -5,7 +5,7 @@
 	  <Authors>Microsoft.Marketplace</Authors>
 	  <Company>Microsoft</Company>
 	  <Product>Marketplace.SaaS.Accelerator</Product>
-	  <AssemblyName>Marketplace.SaaS.Accelerator.AdminSite</AssemblyName>
+	  <AssemblyName>AdminSite</AssemblyName>
 	  <RootNamespace>Marketplace.SaaS.Accelerator.AdminSite</RootNamespace>
   </PropertyGroup>
 
@@ -61,7 +61,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Marketplace.SaaS.Accelerator.Services\Marketplace.SaaS.Accelerator.Services.csproj" />
+    <ProjectReference Include="..\Marketplace.SaaS.Accelerator.Services\Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
