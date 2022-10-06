@@ -153,11 +153,11 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
         # Download Publisher's AppRegistration logo
         if($LogoURLpng) { 
             # Write-Host "📷  Downloading SSO AAD AppRegistration logo image..."
-            # Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\wwwroot\applogo.png"
+            # Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\CustomerSite\wwwroot\applogo.png"
             # Write-Host "📷  SSO AAD AppRegistration logo image downloaded."    
 
             #Write-Host "🔑  Attaching Image to SSO AAD AppRegistration ObjectID: $ADMTObjectID ..."
-            #$LogoURLpngPath = $(Resolve-Path "..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\wwwroot\applogo.png").Path
+            #$LogoURLpngPath = $(Resolve-Path "..\..\src\CustomerSite\wwwroot\applogo.png").Path
 
             #TODO: This is broken in PS CLI:  https://stackoverflow.microsoft.com/questions/276511
             # $LogoByteArray = [System.IO.File]::ReadAllBytes($LogoURLpngPath)
@@ -175,36 +175,36 @@ if (!($ADMTApplicationID)) {   # AAD App Registration - Create Multi-Tenant App 
 # Download Publisher's PNG logo
 if($LogoURLpng) { 
     Write-Host "📷  Downloading PNG logo images..."
-    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\wwwroot\contoso-sales.png"
-    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\Marketplace.SaaS.Accelerator.AdminSite\wwwroot\contoso-sales.png"
+    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\CustomerSite\wwwroot\contoso-sales.png"
+    Invoke-WebRequest -Uri $LogoURLpng -OutFile "..\..\src\AdminSite\wwwroot\contoso-sales.png"
     Write-Host "📷  Logo images PNG downloaded."
 }
 
 # Download Publisher's FAVICON logo
 if($LogoURLico) { 
     Write-Host "📷  Downloading ICO logo images..."
-    Invoke-WebRequest -Uri $LogoURLico -OutFile "..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\wwwroot\favicon.ico"
-    Invoke-WebRequest -Uri $LogoURLico -OutFile "..\..\src\Marketplace.SaaS.Accelerator.AdminSite\wwwroot\favicon.ico"
+    Invoke-WebRequest -Uri $LogoURLico -OutFile "..\..\src\CustomerSite\wwwroot\favicon.ico"
+    Invoke-WebRequest -Uri $LogoURLico -OutFile "..\..\src\AdminSite\wwwroot\favicon.ico"
     Write-Host "📷  Logo images ICO downloaded."
 }
 
-Write-host "☁  Prepare publish files for the web application"
+Write-host "☁  Prepare publish files faS.Accelerator.or the web application"
 
 Write-host "☁  Preparing the publish files for Admin Site"  
-dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.AdminSite\Marketplace.SaaS.Accelerator.AdminSite.csproj -c debug -o ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite\
+dotnet publish ..\..\src\AdminSite\AdminSite.csproj -c debug -o ..\..\Publish\AdminSite\
 
 if ($MeteredSchedulerSupport -ne $true)
 { 
     Write-host "☁  Preparing the publish files for Metered Scheduler to Admin Site"
-    mkdir -p ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite\app_data\jobs\triggered\MeteredTriggerJob
-    dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.MeteredTriggerJob\Marketplace.SaaS.Accelerator.MeteredTriggerJob.csproj -c debug -o ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
+    mkdir -p ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob
+    dotnet publish ..\..\src\MeteredTriggerJob\MeteredTriggerJob.csproj -c debug -o ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
 }
 
-Compress-Archive -Path ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite\* -DestinationPath ..\..\Publish\Marketplace.SaaS.Accelerator.AdminSite.zip -Force
+Compress-Archive -Path ..\..\Publish\AdminSite\* -DestinationPath ..\..\Publish\AdminSite.zip -Force
 
 Write-host "☁  Preparing the publish files for Customer Site"
-dotnet publish ..\..\src\Marketplace.SaaS.Accelerator.CustomerSite\Marketplace.SaaS.Accelerator.CustomerSite.csproj -c debug -o ..\..\Publish\Marketplace.SaaS.Accelerator.CustomerSite
-Compress-Archive -Path ..\..\Publish\Marketplace.SaaS.Accelerator.CustomerSite\* -DestinationPath ..\..\Publish\Marketplace.SaaS.Accelerator.CustomerSite.zip -Force
+dotnet publish ..\..\src\CustomerSite\CustomerSite.csproj -c debug -o ..\..\Publish\CustomerSite
+Compress-Archive -Path ..\..\Publish\CustomerSite\* -DestinationPath ..\..\Publish\CustomerSite.zip -Force
 
 Write-host "☁ Path to web application packages $PathToWebApplicationPackages"
 
@@ -235,13 +235,13 @@ az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServe
 if ($IsLinux) 
 { 
    $dbSqlFile=(get-item . ).parent.FullName+"/Database/AMP-DB.sql"  
-   $publisherPackage=(get-item . ).parent.parent.FullName+"/Publish/Marketplace.SaaS.Accelerator.AdminSite.zip"  
-   $customerPackage=(get-item . ).parent.parent.FullName+"/Publish/Marketplace.SaaS.Accelerator.CustomerSite.zip"  
+   $publisherPackage=(get-item . ).parent.parent.FullName+"/Publish/AdminSite.zip"  
+   $customerPackage=(get-item . ).parent.parent.FullName+"/Publish/CustomerSite.zip"  
 }
 else {
     $dbSqlFile=(get-item . ).parent.FullName+"\Database\AMP-DB.sql"  
-    $publisherPackage=(get-item . ).parent.parent.FullName+"\Publish\Marketplace.SaaS.Accelerator.AdminSite.zip"  
-    $customerPackage=(get-item . ).parent.parent.FullName+"\Publish\Marketplace.SaaS.Accelerator.CustomerSite.zip" 
+    $publisherPackage=(get-item . ).parent.parent.FullName+"\Publish\AdminSite.zip"  
+    $customerPackage=(get-item . ).parent.parent.FullName+"\Publish\CustomerSite.zip" 
 }
 
 # Deploy Code and database schema
