@@ -61,11 +61,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Marketplace.SaaS.Accelerator.Services\Services.csproj" />
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\PublishProfiles\" />
+    <ProjectReference Include="..\Services\Services.csproj" />
   </ItemGroup>
 
 
