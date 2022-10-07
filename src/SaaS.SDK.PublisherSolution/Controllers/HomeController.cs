@@ -486,7 +486,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     SubscriptionUsageViewModel usageViewModel = new SubscriptionUsageViewModel();
                     usageViewModel.SubscriptionDetail = subscriptionDetail;
                     usageViewModel.MeteredAuditLogs = new List<MeteredAuditLogs>();
-                    usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId).OrderByDescending(s => s.CreatedDate).ToList();
+                    usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId, true).OrderByDescending(s => s.CreatedDate).ToList();
                     usageViewModel.DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description");
                     return this.View(usageViewModel);
                 }

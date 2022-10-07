@@ -5,12 +5,17 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection.Metadata;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Threading.Tasks;
     using Microsoft.Marketplace.Metering;
     using Microsoft.Marketplace.Metering.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Newtonsoft.Json.Linq;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Metered Api Client.
@@ -91,19 +96,31 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             }
             catch (Exception ex)
             {
-                this.ProcessErrorResponse(MarketplaceActionEnum.SUBSCRIPTION_USAGEEVENT, ex);
-                return null;
+                if (ex.Message.IndexOf("usageEventId") > 0)
+                {
+                    string usageEventException = ex.Message;
+                    int from = usageEventException.IndexOf("{\"usageEventId\"");
+                    int to = usageEventException.LastIndexOf("},\"message\"");
+                    String errorPayload = usageEventException.Substring(from, (to - from));
+                    var data = JsonConvert.DeserializeObject<MeteringUsageResult>(errorPayload);
+                    return data;
+                }
+                else
+                {
+                    this.ProcessErrorResponse(MarketplaceActionEnum.SUBSCRIPTION_USAGEEVENT, ex);
+                    return null;
+                }
             }
         }
 
-        /// <summary>
-        /// Manage Subscription Batch Usage.
-        /// </summary>
-        /// <param name="subscriptionBatchUsageRequest">The subscription batch usage request.</param>
-        /// <returns>
-        /// Subscription Usage.
-        /// </returns>
-        public async Task<MeteringBatchUsageResult> EmitBatchUsageEventAsync(IEnumerable<MeteringUsageRequest> subscriptionBatchUsageRequest)
+    /// <summary>
+    /// Manage Subscription Batch Usage.
+    /// </summary>
+    /// <param name="subscriptionBatchUsageRequest">The subscription batch usage request.</param>
+    /// <returns>
+    /// Subscription Usage.
+    /// </returns>
+    public async Task<MeteringBatchUsageResult> EmitBatchUsageEventAsync(IEnumerable<MeteringUsageRequest> subscriptionBatchUsageRequest)
         {
             this.Logger?.Info($"Inside ManageSubscriptionUsageAsync() of FulfillmentApiClient, with number of request items :: {subscriptionBatchUsageRequest.Count()} and trying to Manage Subscription Batch Usage :: {subscriptionBatchUsageRequest.FirstOrDefault()?.ResourceId}");
 

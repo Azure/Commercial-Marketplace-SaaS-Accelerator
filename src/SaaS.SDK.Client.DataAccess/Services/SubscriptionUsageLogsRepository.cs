@@ -82,9 +82,16 @@
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns> Metered Audit Logs.</returns>
-        public List<MeteredAuditLogs> GetMeteredAuditLogsBySubscriptionId(int subscriptionId)
+        public List<MeteredAuditLogs> GetMeteredAuditLogsBySubscriptionId(int subscriptionId, bool format = false)
         {
-            return this.context.MeteredAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.Id == subscriptionId).OrderByDescending(s => s.CreatedDate).Select(FormatJson).ToList();
+            if (format)
+            {
+                return this.context.MeteredAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.Id == subscriptionId).OrderByDescending(s => s.CreatedDate).Select(FormatJson).ToList();
+            }
+            else
+            {
+                return this.context.MeteredAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.Id == subscriptionId).OrderByDescending(s => s.CreatedDate).ToList();
+            }
         }
 
         /// <summary>
@@ -105,7 +112,7 @@
             MeteringUsageResponseAttributes parsedResponse = JsonSerializer.Deserialize<MeteringUsageResponseAttributes>(logs.ResponseJson);
             if (parsedResponse != null)
             {
-                logs.ResponseJson = "Usage Event Id: " + parsedResponse.UsagePostedDate;
+                logs.ResponseJson = "Usage Event Id: " + parsedResponse.UsageEventId;
                 logs.ResponseJson += "\r\nStatus: " + parsedResponse.Status;
                 logs.ResponseJson += "\r\nResourceId: " + parsedResponse.ResourceId;
                 logs.ResponseJson += "\r\nQuantity: " + parsedResponse.Quantity;

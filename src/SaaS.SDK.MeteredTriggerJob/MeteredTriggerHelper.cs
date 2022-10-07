@@ -58,7 +58,7 @@ namespace MeteredTriggerHelper
 
                     // Print the scheduled Item and the expected run date
                     PrintScheduler(scheduledItem, _nextRunTime);
-                    Console.WriteLine($"Calculated time difference to run this schedule event is {DateTime.UtcNow.Subtract(_nextRunTime.Value).Hours}");
+                    Console.WriteLine($"Calculated time difference to run this schedule event is {DateTime.UtcNow.Subtract(_nextRunTime.Value).Hours} hours.");
                     
                     //Trigger the Item Now
                     if ((_nextRunTime.HasValue) && DateTime.UtcNow.Subtract(_nextRunTime.Value).Hours == 0)
@@ -67,7 +67,7 @@ namespace MeteredTriggerHelper
                     }
                     else
                     {
-                        Console.WriteLine($"Item Id: {scheduledItem.Id} next run will be {_nextRunTime}");
+                        Console.WriteLine($"Item Id: {scheduledItem.Id} future run will be at {_nextRunTime} UTC");
                     }
                 }
             }
@@ -139,7 +139,7 @@ namespace MeteredTriggerHelper
                 {
                     Console.WriteLine($"STEP:4 Meter event Accepted, Save Scheduler NextRun for ItemId: {item.Id} ");
 
-                    //Ignore updating Nextruntime value for OneTime frequency as they always depend on start time value
+                    //Ignore updating NextRuntime value for OneTime frequency as they always depend on StartTime value
                     Enum.TryParse(item.Frequency, out SchedulerFrequencyEnum itemFrequency);
                     if (itemFrequency != SchedulerFrequencyEnum.OneTime)
                     {
@@ -161,14 +161,13 @@ namespace MeteredTriggerHelper
 
         public static void PrintScheduler(SchedulerManagerViewModel item, DateTime? nextRun)
         {
-            Console.WriteLine($"Scheduler : {item.Frequency}");
-            Console.WriteLine($"SubId : {item.AMPSubscriptionId}");
-            Console.WriteLine($"Plan : {item.PlanId}");
-            Console.WriteLine($"Dim : {item.Dimension}");
-            Console.WriteLine($"Start Date : {item.StartDate}");
-            Console.WriteLine($"current NextRun : {item.NextRunTime}");
-            Console.WriteLine($"Expected NextRun : {nextRun}");
-
+            Console.WriteLine($"Item Id: {item.Id}" +
+                              $"Expected NextRun : {nextRun} " +
+                              $"SubId : {item.AMPSubscriptionId} " +
+                              $"Plan : {item.PlanId} " +
+                              $"Dim : {item.Dimension} " +
+                              $"Start Date : {item.StartDate} " +
+                              $"NextRun : {item.NextRunTime}");
         }
 
         public static DateTime? GetNextRunTime(DateTime? startDate, SchedulerFrequencyEnum frequency)
