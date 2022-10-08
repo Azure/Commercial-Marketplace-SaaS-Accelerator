@@ -44,30 +44,40 @@ namespace MeteredTriggerHelper
             //Get all Scheduled Data
             List<SchedulerManagerViewModel> getAllSchedulerManagerViewData = schedulerService.GetAllSchedulerManagerList();
 
+            //GetCurrentUTC time
+            DateTime _currentUTCTime = DateTime.UtcNow;
+
             //Process each scheduler frequency
             foreach (SchedulerFrequencyEnum frequency in Enum.GetValues(typeof(SchedulerFrequencyEnum)))
             {
-                Console.WriteLine($"Checking all {frequency} scheduled items");
+                Console.WriteLine($"==== Checking all {frequency} scheduled items ====");
 
                 var scheduledItems = getAllSchedulerManagerViewData.Where(a => a.Frequency == frequency.ToString()).ToList();
                 foreach (var scheduledItem in scheduledItems)
                 {
-                    // Get current run time.
+                    Console.WriteLine();
+                    
+                    // Get the run time.
                     //Always pickup the NextRuntime, when its firstRun or OneTime then pickup StartDate as the NextRunTime will be null
                     DateTime? _nextRunTime = scheduledItem.NextRunTime ?? scheduledItem.StartDate;
+                    int timeDifferentInHours = _currentUTCTime.Subtract(_nextRunTime.Value).Hours;
 
                     // Print the scheduled Item and the expected run date
                     PrintScheduler(scheduledItem, _nextRunTime);
-                    Console.WriteLine($"Calculated time difference to run this schedule event is {DateTime.UtcNow.Subtract(_nextRunTime.Value).Hours} hours.");
-                    
-                    //Trigger the Item Now
-                    if ((_nextRunTime.HasValue) && DateTime.UtcNow.Subtract(_nextRunTime.Value).Hours == 0)
+
+                    //Past scheduler items
+                    if (timeDifferentInHours > 0)
                     {
-                        TriggerSchedulerItem(scheduledItem, frequency, billingApiService, schedulerService, subscriptionUsageLogsRepository);
+                        Console.WriteLine($"Item Id: {scheduledItem.Id} will never be run as {_nextRunTime} has passed. Please check audit logs if its has run previously.");
+                        continue;
+                    }else if(timeDifferentInHours < 0) 
+                    {
+                        Console.WriteLine($"Item Id: {scheduledItem.Id} future run will be at {_nextRunTime} UTC. Time for the run is {timeDifferentInHours} hours");
+                        continue;
                     }
                     else
                     {
-                        Console.WriteLine($"Item Id: {scheduledItem.Id} future run will be at {_nextRunTime} UTC");
+                        TriggerSchedulerItem(scheduledItem, frequency, billingApiService, schedulerService, subscriptionUsageLogsRepository);
                     }
                 }
             }
@@ -80,7 +90,7 @@ namespace MeteredTriggerHelper
         {
             try
             {
-                Console.WriteLine($"==== Started Triggering Scheduler for Item Id: {item.Id}====");
+                Console.WriteLine($"---- Item Id: {item.Id} Triggering meter event ----");
 
                 var subscriptionUsageRequest = new MeteringUsageRequest()
                 {
@@ -95,16 +105,16 @@ namespace MeteredTriggerHelper
                 var responseJson = string.Empty;
                 try
                 {
-                    Console.WriteLine($"STEP:1 Execute EmitUsageEventAsync for request {requestJson}");
+                    Console.WriteLine($"Item Id: {item.Id} Request {requestJson}");
                     meteringUsageResult = billingApiService.EmitUsageEventAsync(subscriptionUsageRequest).ConfigureAwait(false).GetAwaiter().GetResult();
                     responseJson = JsonSerializer.Serialize(meteringUsageResult);
-                    Console.WriteLine($"STEP:2 Got the following result {responseJson}");
+                    Console.WriteLine($"Item Id: {item.Id} Response {responseJson}");
                 }
                 catch (MarketplaceException marketplaceException)
                 {
                     responseJson = JsonSerializer.Serialize(marketplaceException.Message);
                     meteringUsageResult.Status = marketplaceException.ErrorCode;
-                    Console.WriteLine($"Error during executing EmitUsageEventAsync got the following error {responseJson}");
+                    Console.WriteLine($" Item Id: {item.Id} Error during EmitUsageEventAsync {responseJson}");
                 }
 
                 UpdateSchedulerItem(item, requestJson, responseJson, meteringUsageResult.Status, schedulerService, subscriptionUsageLogsRepository);
@@ -121,7 +131,7 @@ namespace MeteredTriggerHelper
         {
             try
             {
-                Console.WriteLine($"STEP:3 Save Audit information for metered: {item.Dimension}");
+                Console.WriteLine($"Item Id: {item.Id} Save Audit information");
                 var scheduler = schedulerService.GetSchedulerDetailById(item.Id);
                 var newMeteredAuditLog = new MeteredAuditLogs()
                 {
@@ -137,7 +147,7 @@ namespace MeteredTriggerHelper
 
                 if ((status == "Accepted"))
                 {
-                    Console.WriteLine($"STEP:4 Meter event Accepted, Save Scheduler NextRun for ItemId: {item.Id} ");
+                    Console.WriteLine($"Item Id: {item.Id} Meter event Accepted, save Scheduler NextRun if applicable");
 
                     //Ignore updating NextRuntime value for OneTime frequency as they always depend on StartTime value
                     Enum.TryParse(item.Frequency, out SchedulerFrequencyEnum itemFrequency);
@@ -149,9 +159,9 @@ namespace MeteredTriggerHelper
                 }
                 else
                 {
-                    Console.WriteLine($"Meter reporting for Scheduler Item Id: {item.Id} failed with status {status}");
+                    Console.WriteLine($"Item Id: {item.Id} failed with status {status}");
                 }
-                Console.WriteLine($"==== Completed Triggering Scheduler for Item Id: {item.Id}====");
+                Console.WriteLine($"Item Id: {item.Id} Complet Triggering Meter event.");
             }
             catch (Exception ex)
             {
@@ -161,7 +171,7 @@ namespace MeteredTriggerHelper
 
         public static void PrintScheduler(SchedulerManagerViewModel item, DateTime? nextRun)
         {
-            Console.WriteLine($"Item Id: {item.Id}" +
+            Console.WriteLine($"Item Id: {item.Id} " +
                               $"Expected NextRun : {nextRun} " +
                               $"SubId : {item.AMPSubscriptionId} " +
                               $"Plan : {item.PlanId} " +
