@@ -46,21 +46,22 @@ namespace MeteredTriggerHelper
 
             //GetCurrentUTC time
             DateTime _currentUTCTime = DateTime.UtcNow;
+            TimeSpan ts = new TimeSpan(DateTime.UtcNow.Hour, 0, 0);
+            _currentUTCTime = _currentUTCTime.Date + ts;
 
             //Process each scheduler frequency
             foreach (SchedulerFrequencyEnum frequency in Enum.GetValues(typeof(SchedulerFrequencyEnum)))
             {
-                Console.WriteLine($"==== Checking all {frequency} scheduled items ====");
+                Console.WriteLine();
+                Console.WriteLine($"==== Checking all {frequency} scheduled items at {_currentUTCTime} UTC. ====");
 
                 var scheduledItems = getAllSchedulerManagerViewData.Where(a => a.Frequency == frequency.ToString()).ToList();
                 foreach (var scheduledItem in scheduledItems)
                 {
-                    Console.WriteLine();
-                    
                     // Get the run time.
                     //Always pickup the NextRuntime, when its firstRun or OneTime then pickup StartDate as the NextRunTime will be null
                     DateTime? _nextRunTime = scheduledItem.NextRunTime ?? scheduledItem.StartDate;
-                    int timeDifferentInHours = _currentUTCTime.Subtract(_nextRunTime.Value).Hours;
+                    int timeDifferentInHours =  (int)_currentUTCTime.Subtract(_nextRunTime.Value).TotalHours;
 
                     // Print the scheduled Item and the expected run date
                     PrintScheduler(scheduledItem, _nextRunTime);
@@ -68,7 +69,7 @@ namespace MeteredTriggerHelper
                     //Past scheduler items
                     if (timeDifferentInHours > 0)
                     {
-                        Console.WriteLine($"Item Id: {scheduledItem.Id} will never be run as {_nextRunTime} has passed. Please check audit logs if its has run previously.");
+                        Console.WriteLine($"Item Id: {scheduledItem.Id} will not run as {_nextRunTime} has passed. Please check audit logs if its has run previously.");
                         continue;
                     }else if(timeDifferentInHours < 0) 
                     {
@@ -90,7 +91,7 @@ namespace MeteredTriggerHelper
         {
             try
             {
-                Console.WriteLine($"---- Item Id: {item.Id} Triggering meter event ----");
+                Console.WriteLine($"---- Item Id: {item.Id} Start Triggering meter event ----");
 
                 var subscriptionUsageRequest = new MeteringUsageRequest()
                 {
@@ -155,7 +156,7 @@ namespace MeteredTriggerHelper
                     {
                         scheduler.NextRunTime = GetNextRunTime(item.NextRunTime ?? item.StartDate, itemFrequency);
                         
-                        Console.WriteLine($"Item Id: {item.Id} Saving Scheduler NextRunTime to {scheduler.NextRunTime}");
+                        Console.WriteLine($"Item Id: {item.Id} Updating Scheduler NextRunTime from {item.NextRunTime} to {scheduler.NextRunTime}");
 
                         schedulerService.UpdateSchedulerNextRunTime(scheduler);
                     }
@@ -164,7 +165,7 @@ namespace MeteredTriggerHelper
                 {
                     Console.WriteLine($"Item Id: {item.Id} failed with status {status}");
                 }
-                Console.WriteLine($"Item Id: {item.Id} Complet Triggering Meter event.");
+                Console.WriteLine($"Item Id: {item.Id} Complete Triggering Meter event.");
             }
             catch (Exception ex)
             {
