@@ -64,7 +64,7 @@ namespace MeteredTriggerHelper
                     int timeDifferentInHours =  (int)_currentUTCTime.Subtract(_nextRunTime.Value).TotalHours;
 
                     // Print the scheduled Item and the expected run date
-                    PrintScheduler(scheduledItem, _nextRunTime);
+                    PrintScheduler(scheduledItem, _nextRunTime, timeDifferentInHours);
 
                     //Past scheduler items
                     if (timeDifferentInHours > 0)
@@ -73,7 +73,7 @@ namespace MeteredTriggerHelper
                         continue;
                     }else if(timeDifferentInHours < 0) 
                     {
-                        Console.WriteLine($"Item Id: {scheduledItem.Id} future run will be at {_nextRunTime} UTC. Time for the run is {timeDifferentInHours} hours");
+                        Console.WriteLine($"Item Id: {scheduledItem.Id} future run will be at {_nextRunTime} UTC.");
                         continue;
                     }
                     else
@@ -173,7 +173,7 @@ namespace MeteredTriggerHelper
             }
         }
 
-        public static void PrintScheduler(SchedulerManagerViewModel item, DateTime? nextRun)
+        public static void PrintScheduler(SchedulerManagerViewModel item, DateTime? nextRun, int timeDifferenceInHours)
         {
             Console.WriteLine($"Item Id: {item.Id} " +
                               $"Expected NextRun : {nextRun} " +
@@ -181,7 +181,8 @@ namespace MeteredTriggerHelper
                               $"Plan : {item.PlanId} " +
                               $"Dim : {item.Dimension} " +
                               $"Start Date : {item.StartDate} " +
-                              $"NextRun : {item.NextRunTime}");
+                              $"NextRun : {item.NextRunTime}" +
+                              $"TimeDifferenceInHours : {timeDifferenceInHours}");
         }
 
         public static DateTime? GetNextRunTime(DateTime? startDate, SchedulerFrequencyEnum frequency)
