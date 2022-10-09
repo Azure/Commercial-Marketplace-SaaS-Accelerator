@@ -131,7 +131,7 @@ namespace MeteredTriggerHelper
         {
             try
             {
-                Console.WriteLine($"Item Id: {item.Id} Save Audit information");
+                Console.WriteLine($"Item Id: {item.Id} Saving Audit information");
                 var scheduler = schedulerService.GetSchedulerDetailById(item.Id);
                 var newMeteredAuditLog = new MeteredAuditLogs()
                 {
@@ -147,13 +147,16 @@ namespace MeteredTriggerHelper
 
                 if ((status == "Accepted"))
                 {
-                    Console.WriteLine($"Item Id: {item.Id} Meter event Accepted, save Scheduler NextRun if applicable");
+                    Console.WriteLine($"Item Id: {item.Id} Meter event Accepted");
 
                     //Ignore updating NextRuntime value for OneTime frequency as they always depend on StartTime value
                     Enum.TryParse(item.Frequency, out SchedulerFrequencyEnum itemFrequency);
                     if (itemFrequency != SchedulerFrequencyEnum.OneTime)
                     {
                         scheduler.NextRunTime = GetNextRunTime(item.NextRunTime ?? item.StartDate, itemFrequency);
+                        
+                        Console.WriteLine($"Item Id: {item.Id} Saving Scheduler NextRunTime to {scheduler.NextRunTime}");
+
                         schedulerService.UpdateSchedulerNextRunTime(scheduler);
                     }
                 }
