@@ -163,7 +163,7 @@ namespace MeteredTriggerHelper
                 }
                 else
                 {
-                    Console.WriteLine($"Item Id: {item.Id} failed with status {status}");
+                    Console.WriteLine($"Item Id: {item.Id} failed with status {status}. NextRunTime will not be updated.");
                 }
                 Console.WriteLine($"Item Id: {item.Id} Complete Triggering Meter event.");
             }

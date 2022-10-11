@@ -59,7 +59,7 @@
         public List<SchedulerManagerViewModel> GetAllSchedulerManagerList()
         {
             List<SchedulerManagerViewModel> schedulerList = new List<SchedulerManagerViewModel>();
-            var allSchedulerViewData = this.schedulerViewRepository.GetAll();
+            var allSchedulerViewData = this.schedulerViewRepository.GetAll().OrderBy(s => s.AMPSubscriptionId);
             foreach (var item in allSchedulerViewData)
             {
                 SchedulerManagerViewModel schedulerView = new SchedulerManagerViewModel();
