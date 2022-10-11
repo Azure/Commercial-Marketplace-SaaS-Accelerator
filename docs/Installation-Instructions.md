@@ -5,18 +5,17 @@ You can install the SaaS Accelerator code using a __single command__ line within
    1. Copy the following section to an editor and update it to match your company preference. Replace `SOME-UNIQUE-STRING` with your Team name or some other random string.
 
 ``` powershell
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 5.0.0 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.0.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
 .\Deploy.ps1 `
- -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
- -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
+ -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
+ -SQLServerName "marketplace-SOME-UNIQUE-STRING" `
  -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
+ -SQLAdminLoginPassword "" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -Location "East US" `
- -PathToARMTemplate ".\deploy.json" `
+ -Location "East US"  
  ```
 
   The following lines are optional:
@@ -28,14 +27,9 @@ Connect-AzureAD -Confirm; `
  -ADMTApplicationID "xxxx-xxx-xxx-xxx-xxxx" `
  -LogoURLpng "https://company_com/company_logo.png" `
  -LogoURLico "https://company_com/company_logo.ico" `
- -MeteredSchedulerSupport YES|NO default value is YES
+ -MeteredSchedulerSupport true
  ```
-
-   2. Open Powershell in the Azure Cloud (PowerShell)
-![CloudShell Imge](images/portal-cloudshell.png) 
-   3. Paste the new single command and run the command to install the SaaS Accelerator:
-
-
+ 
 ## Parameters
 
 | Parameter | Description |
@@ -49,14 +43,11 @@ Connect-AzureAD -Confirm; `
 | SQLAdminLogin | SQL Admin login |
 | SQLAdminLoginPassword | SQL Admin password |
 | PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
-| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/ |
-| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac |
 | ResourceGroupForDeployment | Name of the resource group to deploy the resources |
 | Location | Location of the resource group |
 | AzureSubscriptionID | Subscription where the resources be deployed |
-| PathToARMTemplate | Local Path to the ARM Template |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
-| MeteredSchedulerSupport | Metered Scheduler is deployed by Default. Pass NO to disable the feature |
+| MeteredSchedulerSupport | Enable the metered scheduler. This is deployed by default. Use **true** to enable the feature. More information [here](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/main/docs/Metered-Scheduler-Manager-Instruction.md).
 ## Alternative Deployments
 There are other ways to deploy the SaaS Accelerator environment (e.g. development, maual deployment, etc).  Additional instruction can be found [here](Advanced-Instructions.md).
