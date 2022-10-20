@@ -1,8 +1,6 @@
 # SaaS Accelerator Metered Scheduler Manager 
 Metered Scheduler Manager is a feature where Publisher can schedule **FIX Quantity** metered emiting tasks. The scheduler will monitor these tasks and trigger event based on the scheduled frequency time. Currenty the scheduler support the following time base trigger
-1. Hourly
-1. Daily
-1. Weekly
+1. Onetime (milestone based)
 1. Monthly
 1. Yearly
 ## Enable and Disable Metered Scheduler Manager Feature During Installation
