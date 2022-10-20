@@ -609,6 +609,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         RequestJson = requestJson,
                         ResponseJson = responseJson,
                         StatusCode = meteringUsageResult.Status,
+                        RunBy = "Manual",
                         SubscriptionId = subscriptionData.SubscriptionDetail.Id,
                         SubscriptionUsageDate = DateTime.UtcNow,
                         CreatedBy = currentUserDetail == null ? 0 : currentUserDetail.UserId,

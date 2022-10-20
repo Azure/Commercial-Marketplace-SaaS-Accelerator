@@ -85,7 +85,9 @@ namespace MeteredTriggerHelper
 
         }
 
-        public static void TriggerSchedulerItem(SchedulerManagerViewModel item, SchedulerFrequencyEnum frequency, IMeteredBillingApiService billingApiService,
+        public static void TriggerSchedulerItem(SchedulerManagerViewModel item, 
+                                                SchedulerFrequencyEnum frequency, 
+                                                IMeteredBillingApiService billingApiService,
                                                 MeteredPlanSchedulerManagementService schedulerService,
                                                 ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
         {
@@ -118,7 +120,12 @@ namespace MeteredTriggerHelper
                     Console.WriteLine($" Item Id: {item.Id} Error during EmitUsageEventAsync {responseJson}");
                 }
 
-                UpdateSchedulerItem(item, requestJson, responseJson, meteringUsageResult.Status, schedulerService, subscriptionUsageLogsRepository);
+                UpdateSchedulerItem(item, 
+                                    requestJson, 
+                                    responseJson, 
+                                    meteringUsageResult.Status, 
+                                    schedulerService, 
+                                    subscriptionUsageLogsRepository);
             }
             catch (Exception ex)
             {
@@ -126,9 +133,12 @@ namespace MeteredTriggerHelper
             }
 
         }
-        public static void UpdateSchedulerItem(SchedulerManagerViewModel item, string requestJson, string responseJson, string status, 
-                                                MeteredPlanSchedulerManagementService schedulerService,
-                                                ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
+        public static void UpdateSchedulerItem(SchedulerManagerViewModel item, 
+                                               string requestJson, 
+                                               string responseJson, 
+                                               string status, 
+                                               MeteredPlanSchedulerManagementService schedulerService,
+                                               ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
         {
             try
             {
@@ -139,6 +149,7 @@ namespace MeteredTriggerHelper
                     RequestJson = requestJson,
                     ResponseJson = responseJson,
                     StatusCode = status,
+                    RunBy = $"Scheduler - {scheduler.SchedulerName}",
                     SubscriptionId = scheduler.SubscriptionId,
                     SubscriptionUsageDate = DateTime.UtcNow,
                     CreatedBy = 0,
@@ -189,9 +200,6 @@ namespace MeteredTriggerHelper
         {
             switch (frequency)
             {
-                case SchedulerFrequencyEnum.Hourly: { return startDate.Value.AddHours(1); }
-                case SchedulerFrequencyEnum.Daily: { return startDate.Value.AddDays(1); }
-                case SchedulerFrequencyEnum.Weekly: { return startDate.Value.AddDays(7); }
                 case SchedulerFrequencyEnum.Monthly: { return startDate.Value.AddMonths(1); }
                 case SchedulerFrequencyEnum.Yearly: { return startDate.Value.AddYears(1); }
                 case SchedulerFrequencyEnum.OneTime: { return startDate; }
@@ -202,12 +210,9 @@ namespace MeteredTriggerHelper
 
         public enum SchedulerFrequencyEnum
         {
-            Hourly=1,
-            Daily,
-            Weekly,
+            OneTime = 1,
             Monthly,
             Yearly,
-            OneTime
         }
     }
 }
