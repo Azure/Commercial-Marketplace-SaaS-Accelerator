@@ -9,6 +9,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public string RequestJson { get; set; }
         public string ResponseJson { get; set; }
         public string StatusCode { get; set; }
+        public string RunBy { get; set; }
         public DateTime? CreatedDate { get; set; }
         public int CreatedBy { get; set; }
         public DateTime? SubscriptionUsageDate { get; set; }

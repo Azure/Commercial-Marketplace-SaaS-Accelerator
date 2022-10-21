@@ -72,17 +72,22 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
                     entity.StartDate = entity.StartDate.Value.AddMinutes(-1 * minute);
                 }
             }
-            var existingEntity = this.context.MeteredPlanSchedulerManagement.Where(s => (s.SubscriptionId == entity.SubscriptionId)&&(s.PlanId == entity.PlanId) && (s.DimensionId == entity.DimensionId)).FirstOrDefault();
-            if (existingEntity != null)
+            var existingEntity = this.context.MeteredPlanSchedulerManagement.Where(s => 
+                                    (s.SubscriptionId == entity.SubscriptionId) &&
+                                    (s.PlanId == entity.PlanId) && 
+                                    (s.DimensionId == entity.DimensionId) &&
+                                    (s.SchedulerName == entity.SchedulerName))
+                                .FirstOrDefault();
+            if (existingEntity != null) //This call will only be hit from UIO when updating an exiting schedule event which is why we are setting NextRunTime to null
             {
                 existingEntity.Quantity = entity.Quantity;
-                existingEntity.SchedulerName = entity.SchedulerName;
                 existingEntity.FrequencyId = entity.FrequencyId;
-                existingEntity.StartDate = entity.StartDate.Value.ToUniversalTime();
-                existingEntity.NextRunTime = entity.NextRunTime.HasValue? entity.NextRunTime.Value.ToUniversalTime():null;
+                existingEntity.StartDate = entity.StartDate;
+                existingEntity.NextRunTime = null; 
                 this.context.MeteredPlanSchedulerManagement.Update(existingEntity);
                 this.context.SaveChanges();
                 return existingEntity.Id;
+
             }
             else
             {
@@ -93,6 +98,29 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
             }
 
         }
+
+        /// <summary>
+        /// This will only update NextRun date and called when the meter trigger event is run
+        /// </summary>
+        /// <param name="meterPlanSchduleEvent"></param>
+        /// <returns></returns>
+        public int UpdateNextRunDate(MeteredPlanSchedulerManagement meterPlanSchduleEvent)
+        {
+            var existingEntity = this.context.MeteredPlanSchedulerManagement.Where(s => s.Id == meterPlanSchduleEvent.Id).FirstOrDefault();
+            if (existingEntity != null)
+            {
+                existingEntity.NextRunTime =  meterPlanSchduleEvent.NextRunTime;
+                this.context.MeteredPlanSchedulerManagement.Update(existingEntity);
+                this.context.SaveChanges();
+                return existingEntity.Id;
+            }
+            else
+            {
+                return 0;
+
+            }
+        }
+
         /// <summary>
         /// Remove record from Schedule Management
         /// </summary>

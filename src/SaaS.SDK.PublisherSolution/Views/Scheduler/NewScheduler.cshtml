@@ -65,6 +65,16 @@
         <form method="post" id="frmSchedulerEvents" asp-action="AddNewScheduledTrigger" asp-controller="Scheduler" >
             <div style="align-content:center">
                 <table>
+
+                    <tr>
+                        <th colspan="2">
+                            * Select atleast an hour later than current time as the current time is scheduler event is already passed<br />
+                            * To update an existing scheduler item please use the same Name, Subid, Plan and Dimension.
+                            <hr />
+                            <br />
+                        </th>
+                    </tr>
+
                     <tr>
                         <th>Scheduler Name&nbsp;&nbsp;</th>
                         <th>@Html.TextBoxFor(s => s.SchedulerName, "",  new { @class = "form-control", required = "required" , pattern = @"^[a-zA-Z0-9-_]+$" })</th>
@@ -107,6 +117,7 @@
 
                        </th>
                     </tr>
+
 
                 </table>
             </div>

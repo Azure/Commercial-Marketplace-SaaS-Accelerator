@@ -851,23 +851,10 @@ BEGIN
 END
 GO
 
-IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Hourly')
-BEGIN
-    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('Hourly')
-    
-END
-GO
 
-IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Daily')
+IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'OneTime')
 BEGIN
-    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ( 'Daily')
-    
-END
-GO
-
-IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'Weekly')
-BEGIN
-    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('Weekly')
+    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('OneTime')
     
 END
 GO
@@ -885,7 +872,6 @@ BEGIN
     
 END
 GO
-
 
 
 INSERT INTO [DatabaseVersionHistory] 
@@ -1384,3 +1370,7 @@ GO
 
 
 
+--------------------Upgrade scripts------------------------------------------
+
+ALTER TABLE MeteredAuditLogs ADD RunBy  VARCHAR(255)
+GO
