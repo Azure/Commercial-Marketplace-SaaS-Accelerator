@@ -1,9 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Microsoft.Marketplace.SaaS.SDK.Services</RootNamespace>
-    <AssemblyName>Microsoft.Marketplace.SaaS.SDK.Services</AssemblyName>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <Authors>Microsoft.Marketplace</Authors>
+	  <Company>Microsoft</Company>
+	  <Product>Marketplace.SaaS.Accelerator</Product>
+	  <AssemblyName>Services</AssemblyName>
+	  <RootNamespace>Marketplace.SaaS.Accelerator.Services</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj" />
+    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

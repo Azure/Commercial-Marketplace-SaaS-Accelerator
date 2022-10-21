@@ -14,11 +14,11 @@
 
 ## Overview
 
-This document describes how to implement the required components to enable the SDK for the SaaS Fulfillment API (v2), Marketplace Metering Service API, and additional components that demonstrate how to build a customer provisioning interface, logging, and administration of the customer's subscriptions.
+This document describes how to implement the required components to enable the SaaS Accelerator for the SaaS Fulfillment API (v2), Marketplace Metering Service API, and additional components that demonstrate how to build a customer provisioning interface, logging, and administration of the customer's subscriptions.
 
-Learn more about what's included and how to-use the SDK [here.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/master/README.md)
+Learn more about what's included and how to-use the SaaS Accelerator [here.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/master/README.md)
 
-Please note: this SDK is community-supported. If you need help or have questions using this SDK, please create a GitHub issue. Do not contact the marketplace pubisher support alias directly regarding use of this SDK. Thank you.
+Please note: this SaaS Accelerator is community-supported. If you need help or have questions using this SaaS Accelerator, please create a GitHub issue. Do not contact the marketplace publisher support alias directly regarding use of this SaaS Accelerator. Thank you.
 
 ## Deploy web applications and SQL Azure database using an ARM template
 
@@ -145,7 +145,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 ## Change configuration
 
-Open the files **appsettings.json** under the project **SaaS.SDK.CustomerProvisioning** and **SaaS.SDK.PublisherSolution** update the values as follows:
+Open the files **appsettings.json** under the project **CustomerSite** and **AdminSite** update the values as follows:
 - **GrantType** - Leave this as `client_credentials`
 - **ClientId** - Azure Active Directory Application ID (the value for marketplace offer in Partner Center, under technical configuration tab). Steps to register an Azure AD application are [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration)
 - **ClientSecret** - Secret from the Azure Active Directory Application
@@ -211,8 +211,8 @@ There are many ways to create Web App resources on [App Service](https://docs.mi
 - [Continuous deployment](https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment)
 
 You can use any of the methods above to create the web apps and deploy the code, but for the rest of this document, let's assume the use of [Visual Studio method](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-dotnet#publish-your-web-app) to deploy the following two apps. Give appropriate names to indicate the applications' roles, for example, **\<yourname\>provisioning**, and **\<yourname\>publisher**. Please remember that these names will be the dns prefix for the host names of your applications and will eventually be available as yournameprovisioning.azurewebsites.net and yournamepublisher.azurewebsites.net.
-1. **Customer provisioning sample web application**, create and deploy the provisioning sample web application project in folder [src/SaaS.SDK.CustomerProvisioning](../src/SaaS.SDK.CustomerProvisioning)
-1. **Publisher sample web application**, create and deploy the provisioning sample web application project in folder [src/SaaS.SDK.CustomerProvisioning](../src/SaaS.SDK.PublisherSolution)
+1. **Customer provisioning sample web application**, create and deploy the provisioning sample web application project in folder [src/CustomerSite](../src/CustomerSite)
+1. **Publisher sample web application**, create and deploy the provisioning sample web application project in folder [src/CustomerSite](../src/AdminSite)
 
 Deploying the debug release, and choosing "self-contained" deployment mode is useful for the initial deployments.
 
@@ -230,7 +230,7 @@ Press **F5** in Visual Studio 2019 to run the application locally.
 
 ## Landing page and webhook settings for the SaaS offer on Partner Center
 
-The landing page and the webhook endpoint are implemented in the **SaaS.SDK.CustomerProvisioning** application. 
+The landing page and the webhook endpoint are implemented in the **CustomerSite** application. 
 
 The landing page is the home page of the solution, for example, if you have deployed the solution to \<yourappname\>, the landing page value should be **https://\<yourappname\>.azurewebsites.net**.
 

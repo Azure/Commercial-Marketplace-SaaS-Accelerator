@@ -203,6 +203,9 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         /// <exception cref="FulfillmentException">Invalid subscription ID.</exception>
         public async Task<SubscriptionUpdateResult> ChangePlanForSubscriptionAsync(Guid subscriptionId, string subscriptionPlanID)
         {
+            // security: protect from injection
+            subscriptionPlanID = subscriptionPlanID.Replace(Environment.NewLine, "");
+
             this.Logger?.Info($"Inside ChangePlanForSubscriptionAsync() of FulfillmentApiService, trying to Change Plan By {subscriptionId} with New Plan {subscriptionPlanID}");
             if (subscriptionId != default)
             {

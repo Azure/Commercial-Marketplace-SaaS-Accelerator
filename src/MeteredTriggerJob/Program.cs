@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using global::Azure.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
+using Azure.Identity;
+using MeteredTriggerHelper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Marketplace.Metering;
+using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
+using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
-using MeteredTriggerHelper;
-namespace MeteredTriggerHelper
+
+namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob
 {
     class Program
     {

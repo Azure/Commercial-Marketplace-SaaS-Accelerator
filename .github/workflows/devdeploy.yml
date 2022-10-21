@@ -15,10 +15,10 @@ on:
       - main
 
 env:  
-  CUSTOMER_PROJECT: './src/SaaS.SDK.CustomerProvisioning/SaaS.SDK.CustomerProvisioning.csproj'
-  CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH: './src/SaaS.SDK.CustomerProvisioning/publish'
-  PUBLISHER_PROJECT: './src/SaaS.SDK.PublisherSolution/SaaS.SDK.PublisherSolution.csproj'
-  PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH: './src/SaaS.SDK.PublisherSolution/publish'
+  CUSTOMER_PROJECT: './src/Marketplace.SaaS.Accelerator.CustomerSite/Marketplace.SaaS.Accelerator.CustomerSite.csproj'
+  CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.CustomerSite/publish'
+  PUBLISHER_PROJECT: './src/Marketplace.SaaS.Accelerator.AdminSite/Marketplace.SaaS.Accelerator.AdminSite.csproj'
+  PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/publish'
   DOTNET_CORE_VERSION: '6.0.x'
   
 jobs:

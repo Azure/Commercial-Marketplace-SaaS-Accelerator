@@ -1,5 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
+
+using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+
 namespace Microsoft.Marketplace.SaaS.SDK.Services.UnitTest
 {
     using System;
@@ -9,9 +14,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.UnitTest
     using global::Azure.Identity;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Marketplace.Metering;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>

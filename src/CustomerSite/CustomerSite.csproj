@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <AssemblyName>SaaS.SDK.CustomerProvisioning</AssemblyName>
-    <RootNamespace>SaaS.SDK.CustomerProvisioning</RootNamespace>
-    <Company>Microsoft</Company>
-    <Authors>Microsoft.Marketplace</Authors>
-    <Product>SaaS.SDK</Product>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <Authors>Microsoft.Marketplace</Authors>
+	  <Company>Microsoft</Company>
+	  <Product>Marketplace.SaaS.Accelerator</Product>
+	  <AssemblyName>CustomerSite</AssemblyName>
+	  <RootNamespace>Marketplace.SaaS.Accelerator.CustomerSite</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,8 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SaaS.SDK.Client.DataAccess\SaaS.SDK.Client.DataAccess.csproj" />
-    <ProjectReference Include="..\SaaS.SDK.Services\SaaS.SDK.Provisioning.Services.csproj" />
+    <ProjectReference Include="..\Services\Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

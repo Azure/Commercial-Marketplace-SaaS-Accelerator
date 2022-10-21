@@ -352,18 +352,12 @@ MigrationBackup/
 # IDEA project dev tools
 .DS_Store
 src/.idea/.gitignore
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/riderModule.iml
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/.gitignore
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/.name
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/contentModel.xml
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/indexLayout.xml
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/modules.xml
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/projectSettingsUpdater.xml
-src/.idea/.idea.Microsoft.Marketplace.SaaS.SDK/.idea/vcs.xml
 
 # ignoring developer settings file
 appsettings.Development.json
-src/SaaS.SDK.PublisherSolution/appsettings.Development.json
-src/SaaS.SDK.MeteredTriggerJob/appsettings.Development.json
-src/SaaS.SDK.CustomerProvisioning/appsettings.Development.json
+src/Marketplace.SaaS.Accelerator.AdminSite/appsettings.Development.json
+src/Marketplace.SaaS.Accelerator.MeteredTriggerJob/appsettings.Development.json
+src/Marketplace.SaaS.Accelerator.CustomerSite/appsettings.Development.json
 
+.vscode/launch.json
+.vscode/tasks.json

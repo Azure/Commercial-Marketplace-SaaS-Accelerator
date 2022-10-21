@@ -4,7 +4,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <Authors>Microsoft.Marketplace</Authors>
     <Company>Microsoft</Company>
-    <Product>SaaS.SDK</Product>
+    <Product>Marketplace.SaaS.Accelerator</Product>
+	<AssemblyName>DataAccess</AssemblyName>
+	<RootNamespace>Marketplace.SaaS.Accelerator.DataAccess</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

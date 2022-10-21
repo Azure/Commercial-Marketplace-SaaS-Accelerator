@@ -16,7 +16,7 @@ For ARM Template steps are in the following order
 18. Create Azure SQL database
 19. Enable Azure SQL Server VNET Integration
 20. Enable Azure SQL Server Private link
-21. Enable Azure SQL Server and Database audit, advace threading ..etc
+21. Enable Azure SQL Server and Database audit, advance threading ..etc
 22. Enable Azure SQL Server and Database diagnostic and metric Data to Log Analytics
 23. Store Azure SQL database connection string in KeyVault
 24. Upload the SQL Schema file
@@ -26,7 +26,7 @@ For ARM Template steps are in the following order
 26. Enable SaaS Portal App Service Plan diagnostic and metric Data to Log Analytics
 
 27. Create SaaS Portal Web App and reference SaaS Portal App ServicePlan 
-28. Link SaaS Portal Web App Cofiguration to KeyVault
+28. Link SaaS Portal Web App Configuration to KeyVault
 29. Add VNET Inegration Configuration please refer to [docs](https://docs.microsoft.com/en-us/azure/app-service/overview-vnet-integration)
 30. Enable SaaS Portal Web App VNET Integration
 31. Enable SaaS Portal Web App Private link
@@ -36,8 +36,8 @@ For ARM Template steps are in the following order
 34. Create SaaS Admin App Service Plan 
 35. Enable SaaS Admin App Service Plan diagnostic and metric Data to Log Analytics
 36. Create SaaS Admin Web App and reference SaaS Admin App ServicePlan 
-37. Link SaaS Admin Web App Cofiguration to KeyVault
-38. Add VNET Inegration Configuration please refer to [docs](https://docs.microsoft.com/en-us/azure/app-service/overview-vnet-integration)
+37. Link SaaS Admin Web App Configuration to KeyVault
+38. Add VNET Integration Configuration please refer to [docs](https://docs.microsoft.com/en-us/azure/app-service/overview-vnet-integration)
 39. Enable SaaS Admin Web App VNET Integration
 40. Enable SaaS Admin Web App Private link
 41. Enable SaaS Admin Web App diagnostic and metric Data to Log Analytics
@@ -52,7 +52,7 @@ For ARM Template steps are in the following order
 50. Enable Application Gateway Application Insight
 
 
-** These step for mutli region deployment only**. 
+** These step for multi-region deployment only**. 
 
 51. Deploy Azure Traffic Manager 
 52. Enable Geo Replication for SQL Server

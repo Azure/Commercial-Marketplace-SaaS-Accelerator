@@ -1,5 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
+
+using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+
 namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 {
     using System;
@@ -12,7 +15,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
@@ -21,7 +23,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>Home Controller.</summary>
-    /// <seealso cref="Microsoft.Marketplace.SaasKit.Web.Controllers.BaseController"/>
+    /// <seealso cref="BaseController"/>
     public class HomeController : BaseController
     {
         /// <summary>
