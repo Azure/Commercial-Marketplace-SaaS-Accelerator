@@ -267,7 +267,8 @@ Write-host "📜  Create WebApp Service Plan"
 az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1
 
 Write-host "📜  Create publisher Admin webapp"
-az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:6 --always-on true
+az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin --runtime dotnet:6
+az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true
 az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] 
 $WebAppNameAdminId=$(az webapp identity show  -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --query principalId -o tsv)
 
