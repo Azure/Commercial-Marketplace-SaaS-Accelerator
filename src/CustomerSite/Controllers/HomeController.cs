@@ -1,6 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
@@ -8,19 +13,13 @@ using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.StatusHandlers;
-
-namespace Microsoft.Marketplace.SaasKit.Client.Controllers;
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
+namespace Marketplace.SaaS.Accelerator.CustomerSite.Controllers;
 
 /// <summary>Home Controller.</summary>
 /// <seealso cref="BaseController"/>

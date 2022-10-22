@@ -1,12 +1,11 @@
-﻿using Marketplace.SaaS.Accelerator.Services.Models;
+﻿using System.Linq;
+using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
-
-namespace Microsoft.Marketplace.SaasKit.Client.Controllers;
-
-using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
+
+namespace Marketplace.SaaS.Accelerator.CustomerSite.Controllers;
 
 /// <summary>
 ///  Sets a BaseController.

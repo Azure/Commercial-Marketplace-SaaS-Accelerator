@@ -1,8 +1,8 @@
-namespace Microsoft.Marketplace.SaasKit.Client;
-
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+
+namespace Marketplace.SaaS.Accelerator.CustomerSite;
 
 /// <summary>
 /// Program.

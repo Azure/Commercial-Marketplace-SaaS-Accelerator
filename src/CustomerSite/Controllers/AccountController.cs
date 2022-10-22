@@ -1,9 +1,9 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.Controllers;
-
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
+
+namespace Marketplace.SaaS.Accelerator.CustomerSite.Controllers;
 
 /// <summary>
 /// Defines the <see cref="AccountController" />.
