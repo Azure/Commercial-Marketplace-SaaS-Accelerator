@@ -1,52 +1,51 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services;
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
+/// <summary>
+/// Application Log Service.
+/// </summary>
+public class ApplicationLogService
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    /// <summary>
+    /// The application log repository.
+    /// </summary>
+    private readonly IApplicationLogRepository applicationLogRepository;
 
     /// <summary>
-    /// Application Log Service.
+    /// Initializes a new instance of the <see cref="ApplicationLogService"/> class.
     /// </summary>
-    public class ApplicationLogService
+    /// <param name="applicationLogRepository">The application log repository.</param>
+    public ApplicationLogService(IApplicationLogRepository applicationLogRepository)
     {
-        /// <summary>
-        /// The application log repository.
-        /// </summary>
-        private readonly IApplicationLogRepository applicationLogRepository;
+        this.applicationLogRepository = applicationLogRepository;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationLogService"/> class.
-        /// </summary>
-        /// <param name="applicationLogRepository">The application log repository.</param>
-        public ApplicationLogService(IApplicationLogRepository applicationLogRepository)
+    /// <summary>
+    /// Adds the application log.
+    /// </summary>
+    /// <param name="logMessage">The log message.</param>
+    public async Task AddApplicationLog(string logMessage)
+    {
+        ApplicationLog newLog = new ApplicationLog()
         {
-            this.applicationLogRepository = applicationLogRepository;
-        }
+            ActionTime = DateTime.Now,
+            LogDetail = logMessage,
+        };
 
-        /// <summary>
-        /// Adds the application log.
-        /// </summary>
-        /// <param name="logMessage">The log message.</param>
-        public async Task AddApplicationLog(string logMessage)
-        {
-            ApplicationLog newLog = new ApplicationLog()
-            {
-                ActionTime = DateTime.Now,
-                LogDetail = logMessage,
-            };
+        await this.applicationLogRepository.AddLog(newLog);
+    }
 
-            await this.applicationLogRepository.AddLog(newLog);
-        }
-
-        /// <summary>
-        /// Updates the application log.
-        /// </summary>
-        /// <param name="logMessage">The log message.</param>
-        public IEnumerable<ApplicationLog> GetAllLogs()
-        {
-            return this.applicationLogRepository.GetLogs();
-        }
+    /// <summary>
+    /// Updates the application log.
+    /// </summary>
+    /// <param name="logMessage">The log message.</param>
+    public IEnumerable<ApplicationLog> GetAllLogs()
+    {
+        return this.applicationLogRepository.GetLogs();
     }
 }

@@ -1,28 +1,27 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models;
+
+/// <summary>
+/// Subscription Log Attributes.
+/// </summary>
+public enum SubscriptionLogAttributes
 {
     /// <summary>
-    /// Subscription Log Attributes.
+    /// The plan
     /// </summary>
-    public enum SubscriptionLogAttributes
-    {
-        /// <summary>
-        /// The plan
-        /// </summary>
-        Plan = 1,
+    Plan = 1,
 
-        /// <summary>
-        /// The status
-        /// </summary>
-        Status = 2,
+    /// <summary>
+    /// The status
+    /// </summary>
+    Status = 2,
 
-        /// <summary>
-        /// The quantity
-        /// </summary>
-        Quantity = 3,
+    /// <summary>
+    /// The quantity
+    /// </summary>
+    Quantity = 3,
 
-        /// <summary>
-        /// The deployment
-        /// </summary>
-        Deployment = 4,
-    }
+    /// <summary>
+    /// The deployment
+    /// </summary>
+    Deployment = 4,
 }

@@ -1,7 +1,6 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
+﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models;
+
+public class KnownUsersModel
 {
-    public class KnownUsersModel
-    {
-        public string KnownUsers { get; set; }
-    }
+    public string KnownUsers { get; set; }
 }

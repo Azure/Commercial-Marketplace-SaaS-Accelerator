@@ -13,47 +13,46 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
 
-namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob
+namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob;
+
+class Program
 {
-    class Program
+    static void Main (string[] args)
     {
-        static void Main (string[] args)
+
+        Console.WriteLine($"MeteredExecutor Webjob Started at: {DateTime.Now}");
+
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddEnvironmentVariables()
+            .Build();
+
+        var config = new SaaSApiClientConfiguration()
         {
+            AdAuthenticationEndPoint = configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
+            ClientId = configuration["SaaSApiConfiguration:ClientId"],
+            ClientSecret = configuration["SaaSApiConfiguration:ClientSecret"],
+            GrantType = configuration["SaaSApiConfiguration:GrantType"],
+            Resource = configuration["SaaSApiConfiguration:Resource"],
+            TenantId = configuration["SaaSApiConfiguration:TenantId"],
+            SupportMeteredBilling = Convert.ToBoolean(configuration["SaaSApiConfiguration:SupportMeteredBilling"])
+        };
 
-            Console.WriteLine($"MeteredExecutor Webjob Started at: {DateTime.Now}");
+        var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
 
-            IConfiguration configuration = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .Build();
+        var services = new ServiceCollection()
+                        .AddDbContext<SaasKitContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")))
+                        .AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>()
+                        .AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>()
+                        .AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>()
+                        .AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>()
+                        .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()))
+                        .AddSingleton<Executor, Executor>()
+                        .BuildServiceProvider();
 
-            var config = new SaaSApiClientConfiguration()
-            {
-                AdAuthenticationEndPoint = configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
-                ClientId = configuration["SaaSApiConfiguration:ClientId"],
-                ClientSecret = configuration["SaaSApiConfiguration:ClientSecret"],
-                GrantType = configuration["SaaSApiConfiguration:GrantType"],
-                Resource = configuration["SaaSApiConfiguration:Resource"],
-                TenantId = configuration["SaaSApiConfiguration:TenantId"],
-                SupportMeteredBilling = Convert.ToBoolean(configuration["SaaSApiConfiguration:SupportMeteredBilling"])
-            };
+        services
+            .GetService<Executor>()
+                .Execute();
+        Console.WriteLine($"MeteredExecutor Webjob Ended at: {DateTime.Now}");
 
-            var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
-
-            var services = new ServiceCollection()
-                            .AddDbContext<SaasKitContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")))
-                            .AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>()
-                            .AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>()
-                            .AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>()
-                            .AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>()
-                            .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()))
-                            .AddSingleton<Executor, Executor>()
-                            .BuildServiceProvider();
-
-            services
-                .GetService<Executor>()
-                    .Execute();
-            Console.WriteLine($"MeteredExecutor Webjob Ended at: {DateTime.Now}");
-
-        }
     }
 }

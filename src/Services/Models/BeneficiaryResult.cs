@@ -1,49 +1,48 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Models;
+
+using System;
+using System.Text.Json.Serialization;
+
+/// <summary>
+/// Beneficiary Result.
+/// </summary>
+public class BeneficiaryResult
 {
-    using System;
-    using System.Text.Json.Serialization;
+    /// <summary>
+    /// Gets or sets the tenant identifier.
+    /// </summary>
+    /// <value>
+    /// The tenant identifier.
+    /// </value>
+    [JsonPropertyName("tenantId")]
+    public Guid TenantId { get; set; }
 
     /// <summary>
-    /// Beneficiary Result.
+    /// Gets or sets the email identifier.
     /// </summary>
-    public class BeneficiaryResult
-    {
-        /// <summary>
-        /// Gets or sets the tenant identifier.
-        /// </summary>
-        /// <value>
-        /// The tenant identifier.
-        /// </value>
-        [JsonPropertyName("tenantId")]
-        public Guid TenantId { get; set; }
+    /// <value>
+    /// The email identifier.
+    /// </value>
+    [JsonPropertyName("emailId")]
+    public string EmailId { get; set; }
 
-        /// <summary>
-        /// Gets or sets the email identifier.
-        /// </summary>
-        /// <value>
-        /// The email identifier.
-        /// </value>
-        [JsonPropertyName("emailId")]
-        public string EmailId { get; set; }
+    /// <summary>
+    /// Gets or sets the Puid
+    /// </summary>
+    /// <value>
+    /// The Puid
+    /// </value>
+    [JsonPropertyName("puid")]
+    public string Puid { get; set; }
 
-        /// <summary>
-        /// Gets or sets the Puid
-        /// </summary>
-        /// <value>
-        /// The Puid
-        /// </value>
-        [JsonPropertyName("puid")]
-        public string Puid { get; set; }
-
-        /// <summary>
-        /// Gets or sets the object identifier.
-        /// </summary>
-        /// <value>
-        /// The object identifier.
-        /// </value>
-        [JsonPropertyName("objectId")]
-        public Guid ObjectId { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the object identifier.
+    /// </summary>
+    /// <value>
+    /// The object identifier.
+    /// </value>
+    [JsonPropertyName("objectId")]
+    public Guid ObjectId { get; set; }
 }
