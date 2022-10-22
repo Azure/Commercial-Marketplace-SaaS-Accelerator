@@ -1,6 +1,6 @@
 ﻿using System;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Models;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 
 namespace Marketplace.SaaS.Accelerator.Services.Helpers;
 

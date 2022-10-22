@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+namespace Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
 public partial class SchedulerManagerView
 {

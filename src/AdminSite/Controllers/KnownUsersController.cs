@@ -1,4 +1,6 @@
-﻿using Marketplace.SaaS.Accelerator.Services.Utilities;
+﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 
@@ -6,8 +8,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
 /// <summary>
 /// KnownUsers Controller.

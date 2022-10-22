@@ -1,15 +1,15 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
-
-using System;
+﻿using System;
 using System.Linq;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+
+namespace Marketplace.SaaS.Accelerator.DataAccess.Services;
 
 /// <summary>
 /// Repository to access Plan events.
 /// </summary>
-/// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IPlanEventsMappingRepository" />
+/// <seealso cref="IPlanEventsMappingRepository" />
 public class PlanEventsMappingRepository : IPlanEventsMappingRepository
 {
     /// <summary>

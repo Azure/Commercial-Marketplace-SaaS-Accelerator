@@ -1,7 +1,7 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+﻿using System;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
-using System;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+namespace Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 
 /// <summary>
 /// Audit Log Repository.

@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
 namespace Marketplace.SaaS.Accelerator.Services.Models;
 

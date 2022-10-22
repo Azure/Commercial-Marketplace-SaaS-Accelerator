@@ -1,7 +1,7 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+﻿using System.Collections.Generic;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
-using System.Collections.Generic;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+namespace Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 
 /// <summary>
 /// Repository to access application configuration.

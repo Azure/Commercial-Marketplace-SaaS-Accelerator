@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Marketplace.SaaS.Accelerator.AdminSite.Controllers;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Services;
 
 namespace SaaS.SDK.PublisherSolution.Controllers;

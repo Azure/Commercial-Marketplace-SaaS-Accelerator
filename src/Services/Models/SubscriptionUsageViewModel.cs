@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
 namespace Marketplace.SaaS.Accelerator.Services.Models;
 

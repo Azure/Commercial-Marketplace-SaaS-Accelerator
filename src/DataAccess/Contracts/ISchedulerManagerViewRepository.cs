@@ -1,11 +1,8 @@
-﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
-namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+namespace Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 
 /// <summary>
 /// Scheduler Manager View for Metered Plan.

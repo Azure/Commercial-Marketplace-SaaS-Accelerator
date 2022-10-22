@@ -1,16 +1,16 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+
+namespace Marketplace.SaaS.Accelerator.DataAccess.Services;
 
 /// <summary>
 /// Repository to access users.
 /// </summary>
-/// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IUsersRepository" />
+/// <seealso cref="IUsersRepository" />
 public class UsersRepository : IUsersRepository
 {
     /// <summary>

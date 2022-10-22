@@ -1,9 +1,9 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.DataAccess.DataModel;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+
+namespace Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 
 /// <summary>
 /// Repository to access plans.

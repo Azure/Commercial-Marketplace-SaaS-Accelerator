@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
@@ -10,7 +11,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
