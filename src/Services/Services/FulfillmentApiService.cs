@@ -19,7 +19,7 @@ namespace Marketplace.SaaS.Accelerator.Services.Services;
 /// <summary>
 /// Fulfillment API Client Action-List For Subscriptions.
 /// </summary>
-/// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IFulfilmentApiClient" />
+/// <seealso cref="Marketplace.SaaS.Accelerator.Services.Contracts.IFulfilmentApiClient" />
 public class FulfillmentApiService : BaseApiService, IFulfillmentApiService
 {
 

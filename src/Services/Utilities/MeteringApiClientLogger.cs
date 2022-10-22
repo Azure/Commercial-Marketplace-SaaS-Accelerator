@@ -11,7 +11,7 @@ namespace Marketplace.SaaS.Accelerator.Services.Utilities;
 /// <summary>
 /// Logger.
 /// </summary>
-/// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.ILogger" />
+/// <seealso cref="Marketplace.SaaS.Accelerator.Services.ILogger" />
 public class MeteringApiClientLogger : ILogger
 {
     /// <summary>
