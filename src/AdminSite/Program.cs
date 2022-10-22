@@ -1,47 +1,47 @@
-namespace Microsoft.Marketplace.Saas.Web
+namespace Marketplace.SaaS.Accelerator.AdminSite;
+
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Marketplace.SaaS.Accelerator.AdminSite;
+
+/// <summary>
+/// Program.
+/// </summary>
+public class Program
 {
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
+    /// <summary>
+    /// Defines the entry point of the application.
+    /// </summary>
+    /// <param name="args">The arguments.</param>
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder
+                .AddConsole();
+        });
+
+        ILogger logger = loggerFactory.CreateLogger<Program>();
+        logger.LogInformation("Publisher portal initialized!!");
+    }
 
     /// <summary>
-    /// Program.
+    /// Creates the host builder.
     /// </summary>
-    public class Program
+    /// <param name="args">The arguments.</param>
+    /// <returns> host bulder.</returns>
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+Host.CreateDefaultBuilder(args)
+    .ConfigureLogging(logging =>
     {
-        /// <summary>
-        /// Defines the entry point of the application.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-            var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder
-                    .AddConsole();
-            });
-
-            ILogger logger = loggerFactory.CreateLogger<Program>();
-            logger.LogInformation("Publisher portal initialized!!");
-        }
-
-        /// <summary>
-        /// Creates the host builder.
-        /// </summary>
-        /// <param name="args">The arguments.</param>
-        /// <returns> host bulder.</returns>
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-    Host.CreateDefaultBuilder(args)
-        .ConfigureLogging(logging =>
-        {
-            logging.ClearProviders();
-            logging.AddConsole();
-        })
-        .ConfigureWebHostDefaults(webBuilder =>
-        {
-            webBuilder.UseUrls("https://*:5081", "http://*:5080");
-            webBuilder.UseStartup<Startup>();
-        });
-    }
+        logging.ClearProviders();
+        logging.AddConsole();
+    })
+    .ConfigureWebHostDefaults(webBuilder =>
+    {
+        webBuilder.UseUrls("https://*:5081", "http://*:5080");
+        webBuilder.UseStartup<Startup>();
+    });
 }

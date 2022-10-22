@@ -1,71 +1,71 @@
-﻿namespace Microsoft.Marketplace.Saas.Web.Controllers
+﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
+
+namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
+
+using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+
+/// <summary>
+/// KnownUsers Controller.
+/// </summary>
+[ServiceFilter(typeof(KnownUserAttribute))]
+public class KnownUsersController : BaseController
 {
-    using System;
-    using System.Collections.Generic;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;   
+    private readonly IKnownUsersRepository knownUsersRepository;
+    private readonly ILogger<OffersController> logger;
 
     /// <summary>
-    /// KnownUsers Controller.
+    /// Initializes a new instance of the <see cref="KnownUsersController" /> class.
     /// </summary>
-    [ServiceFilter(typeof(KnownUserAttribute))]
-    public class KnownUsersController : BaseController
+    /// <param name = "knownUsersRepository" > The known users repository.</param>
+    /// <param name="logger">The logger.</param>
+
+    public KnownUsersController(IKnownUsersRepository knownUsersRepository, ILogger<OffersController> logger)
     {
-        private readonly IKnownUsersRepository knownUsersRepository;
-        private readonly ILogger<OffersController> logger;
+        this.knownUsersRepository = knownUsersRepository;
+        this.logger = logger;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KnownUsersController" /> class.
-        /// </summary>
-        /// <param name = "knownUsersRepository" > The known users repository.</param>
-        /// <param name="logger">The logger.</param>
-
-        public KnownUsersController(IKnownUsersRepository knownUsersRepository, ILogger<OffersController> logger)
+    /// <summary>
+    /// Indexes this instance.
+    /// </summary>
+    /// <returns>All known users.</returns>
+    public IActionResult Index()
+    {
+        this.logger.LogInformation("KnownUsers Controller / Index");
+        try
         {
-            this.knownUsersRepository = knownUsersRepository;
-            this.logger = logger;
+            var getAllKnownUsers = this.knownUsersRepository.GetAllKnownUsers();
+            return this.View(getAllKnownUsers);
         }
-
-        /// <summary>
-        /// Indexes this instance.
-        /// </summary>
-        /// <returns>All known users.</returns>
-        public IActionResult Index()
+        catch (Exception ex)
         {
-            this.logger.LogInformation("KnownUsers Controller / Index");
-            try
-            {
-                var getAllKnownUsers = this.knownUsersRepository.GetAllKnownUsers();
-                return this.View(getAllKnownUsers);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, ex.Message);
-                return this.View("Error", ex);
-            }
+            this.logger.LogError(ex, ex.Message);
+            return this.View("Error", ex);
         }
+    }
 
-        /// <summary>
-        /// Save known users.
-        /// </summary>
-        /// <param name="knownUsers">The list of known users</param>
-        /// <returns> Json.</returns>
-        public JsonResult SaveKnownUsers([FromBody] IEnumerable<KnownUsers> knownUsers)
+    /// <summary>
+    /// Save known users.
+    /// </summary>
+    /// <param name="knownUsers">The list of known users</param>
+    /// <returns> Json.</returns>
+    public JsonResult SaveKnownUsers([FromBody] IEnumerable<KnownUsers> knownUsers)
+    {
+
+        this.logger.LogInformation("KnownUsers Controller / SaveKnownUsers");
+        try
         {
-
-            this.logger.LogInformation("KnownUsers Controller / SaveKnownUsers");
-            try
-            {
-                return Json(this.knownUsersRepository.SaveAllKnownUsers(knownUsers));
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, ex.Message);
-                return Json(string.Empty);
-            }
+            return Json(this.knownUsersRepository.SaveAllKnownUsers(knownUsers));
+        }
+        catch (Exception ex)
+        {
+            this.logger.LogError(ex, ex.Message);
+            return Json(string.Empty);
         }
     }
 }

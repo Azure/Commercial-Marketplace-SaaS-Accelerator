@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Microsoft.Marketplace.Saas.Web": {
+    "namespace Marketplace.SaaS.Accelerator.AdminSite": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
