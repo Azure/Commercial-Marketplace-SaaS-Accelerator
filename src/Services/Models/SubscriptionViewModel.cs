@@ -1,6 +1,6 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models;
+﻿using System.Collections.Generic;
 
-using System.Collections.Generic;
+namespace Marketplace.SaaS.Accelerator.Services.Models;
 
 /// <summary>
 /// Subscription ViewModel.

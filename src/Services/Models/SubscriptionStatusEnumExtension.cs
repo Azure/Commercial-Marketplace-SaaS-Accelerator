@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models;
+﻿namespace Marketplace.SaaS.Accelerator.Services.Models;
 
 /// <summary>
 /// Enumerator witrh new  status.

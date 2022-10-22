@@ -1,9 +1,9 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services;
-
-using System;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+﻿using System;
+using Marketplace.SaaS.Accelerator.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
+namespace Marketplace.SaaS.Accelerator.Services.Services;
 
 /// <summary>
 /// Users Service.

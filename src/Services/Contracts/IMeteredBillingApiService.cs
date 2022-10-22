@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Models;
+
+namespace Marketplace.SaaS.Accelerator.Services.Contracts;
 
 /// <summary>
 /// Metered ApiClient Interface.

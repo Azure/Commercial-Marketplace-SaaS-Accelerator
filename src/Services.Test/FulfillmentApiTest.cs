@@ -1,5 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
+
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
+using Marketplace.SaaS.Accelerator.Services.Services;
+
 namespace Marketplace.SaaS.Accelerator.Services.Test;
 
 using System;
@@ -8,9 +13,6 @@ using System.Threading.Tasks;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Marketplace.SaaS;
-using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
-using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 /// <summary>

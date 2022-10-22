@@ -1,4 +1,8 @@
-﻿namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
+﻿using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
+
+namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 
 using System;
 using System.Collections.Generic;
@@ -6,9 +10,6 @@ using System.Linq;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;

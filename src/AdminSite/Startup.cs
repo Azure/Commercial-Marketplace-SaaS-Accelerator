@@ -1,5 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
+
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
+
 namespace Marketplace.SaaS.Accelerator.AdminSite;
 
 using global::Azure.Identity;
@@ -18,11 +25,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Marketplace.Metering;
 using Microsoft.Marketplace.SaaS;
-using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;

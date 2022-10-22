@@ -1,14 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services;
 
 using System;
 using System.Net;
 using System.Text.Json;
-using global::Azure;
-using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+using Azure;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
+using Marketplace.SaaS.Accelerator.Services.Models;
+
+namespace Marketplace.SaaS.Accelerator.Services.Services;
 
 /// <summary>
 /// Base API Service.
@@ -40,7 +41,7 @@ public class BaseApiService
     public void ProcessErrorResponse(MarketplaceActionEnum marketplaceAction, Exception ex)
     {
         int statusCode = 0;
-        if (ex.InnerException != null && ex.InnerException is Identity.Client.MsalServiceException msalInnerException)
+        if (ex.InnerException != null && ex.InnerException is Microsoft.Identity.Client.MsalServiceException msalInnerException)
         {
             statusCode = msalInnerException.StatusCode;
         }

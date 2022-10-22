@@ -1,10 +1,9 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
+namespace Marketplace.SaaS.Accelerator.Services.Models;
 
 /// <summary>
 /// Subscription Usage ViewModel.

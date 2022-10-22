@@ -1,14 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
 
 using System;
 using System.Text.Json;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+
+namespace Marketplace.SaaS.Accelerator.Services.StatusHandlers;
 
 /// <summary>
 /// Status handler to handle the subscription in PendingFulfillment.

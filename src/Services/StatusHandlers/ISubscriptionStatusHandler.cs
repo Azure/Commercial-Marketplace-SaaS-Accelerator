@@ -1,6 +1,6 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
+﻿using System;
 
-using System;
+namespace Marketplace.SaaS.Accelerator.Services.StatusHandlers;
 
 /// <summary>
 /// Contract for all Subscription Status Handlers.

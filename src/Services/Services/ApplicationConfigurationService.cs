@@ -1,11 +1,11 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
+namespace Marketplace.SaaS.Accelerator.Services.Services;
 
 /// <summary>
 /// Application Config Service.

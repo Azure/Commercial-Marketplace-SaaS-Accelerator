@@ -1,9 +1,9 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+
+namespace Marketplace.SaaS.Accelerator.Services.Services;
 
 /// <summary>
 /// Service to enable operations over offers.
