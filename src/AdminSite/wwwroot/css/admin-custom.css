@@ -481,7 +481,7 @@ button.navbar-toggler:focus, button.navbar-toggler:hover {
 /* The Modal (background) */
 .modal {
     display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
+    /*position: fixed;*/ /* Stay in place */
     z-index: 1; /* Sit on top */
     left: 0;
     top: 0;
@@ -499,6 +499,10 @@ button.navbar-toggler:focus, button.navbar-toggler:hover {
     padding: 20px;
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.modal-backdrop {
+    z-index: -1;
 }
 
 /* The Close Button */
