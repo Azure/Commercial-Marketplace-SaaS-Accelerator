@@ -1,134 +1,133 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
+﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+
+/// <summary>
+/// Metered Dimensions Repository.
+/// </summary>
+/// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IMeteredDimensionsRepository" />
+public class MeteredDimensionsRepository : IMeteredDimensionsRepository
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    /// <summary>
+    /// The context.
+    /// </summary>
+    private readonly SaasKitContext context;
 
     /// <summary>
-    /// Metered Dimensions Repository.
+    /// The disposed.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IMeteredDimensionsRepository" />
-    public class MeteredDimensionsRepository : IMeteredDimensionsRepository
+    private bool disposed = false;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MeteredDimensionsRepository"/> class.
+    /// </summary>
+    /// <param name="context">The this.context.</param>
+    public MeteredDimensionsRepository(SaasKitContext context)
     {
-        /// <summary>
-        /// The context.
-        /// </summary>
-        private readonly SaasKitContext context;
+        this.context = context;
+    }
 
-        /// <summary>
-        /// The disposed.
-        /// </summary>
-        private bool disposed = false;
+    /// <summary>
+    /// Gets this instance.
+    /// </summary>
+    /// <returns>
+    /// List of Metered Dimensions.
+    /// </returns>
+    public IEnumerable<MeteredDimensions> Get()
+    {
+        return this.context.MeteredDimensions.Include(s => s.Plan);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MeteredDimensionsRepository"/> class.
-        /// </summary>
-        /// <param name="context">The this.context.</param>
-        public MeteredDimensionsRepository(SaasKitContext context)
+    /// <summary>
+    /// Gets the specified identifier.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    /// <returns> Metered Dimensions.</returns>
+    public MeteredDimensions Get(int id)
+    {
+        return this.context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Id == id).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Adds the specified dimension details.
+    /// </summary>
+    /// <param name="dimensionDetails">The dimension details.</param>
+    /// <returns> dimension id.</returns>
+    public int Save(MeteredDimensions dimensionDetails)
+    {
+        if (dimensionDetails != null && !string.IsNullOrEmpty(dimensionDetails.Dimension))
         {
-            this.context = context;
-        }
-
-        /// <summary>
-        /// Gets this instance.
-        /// </summary>
-        /// <returns>
-        /// List of Metered Dimensions.
-        /// </returns>
-        public IEnumerable<MeteredDimensions> Get()
-        {
-            return this.context.MeteredDimensions.Include(s => s.Plan);
-        }
-
-        /// <summary>
-        /// Gets the specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns> Metered Dimensions.</returns>
-        public MeteredDimensions Get(int id)
-        {
-            return this.context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Id == id).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Adds the specified dimension details.
-        /// </summary>
-        /// <param name="dimensionDetails">The dimension details.</param>
-        /// <returns> dimension id.</returns>
-        public int Save(MeteredDimensions dimensionDetails)
-        {
-            if (dimensionDetails != null && !string.IsNullOrEmpty(dimensionDetails.Dimension))
+            var existingDimension = this.context.MeteredDimensions.Where(s => s.Dimension == dimensionDetails.Dimension).FirstOrDefault();
+            if (existingDimension != null)
             {
-                var existingDimension = this.context.MeteredDimensions.Where(s => s.Dimension == dimensionDetails.Dimension).FirstOrDefault();
-                if (existingDimension != null)
-                {
-                    existingDimension.Description = dimensionDetails.Description;
+                existingDimension.Description = dimensionDetails.Description;
 
-                    this.context.MeteredDimensions.Update(existingDimension);
-                    this.context.SaveChanges();
-                    return existingDimension.Id;
-                }
-                else
-                {
-                    this.context.MeteredDimensions.Add(dimensionDetails);
-                    this.context.SaveChanges();
-                    return dimensionDetails.Id;
-                }
+                this.context.MeteredDimensions.Update(existingDimension);
+                this.context.SaveChanges();
+                return existingDimension.Id;
             }
-
-            return 0;
-        }
-
-        /// <summary>
-        /// Removes the specified dimension details.
-        /// </summary>
-        /// <param name="dimensionDetails">The dimension details.</param>
-        public void Remove(MeteredDimensions dimensionDetails)
-        {
-            this.context.MeteredDimensions.Remove(dimensionDetails);
-            this.context.SaveChanges();
-        }
-
-        /// <summary>
-        /// Gets the dimensions from plan identifier.
-        /// </summary>
-        /// <param name="planId">The plan identifier.</param>
-        /// <returns>
-        /// List of MeteredDimensions.
-        /// </returns>
-        public List<MeteredDimensions> GetDimensionsByPlanId(string planId)
-        {
-            return this.context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Plan != null && s.Plan.PlanId == planId).ToList();
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
+            else
             {
-                if (disposing)
-                {
-                    this.context.Dispose();
-                }
+                this.context.MeteredDimensions.Add(dimensionDetails);
+                this.context.SaveChanges();
+                return dimensionDetails.Id;
             }
-
-            this.disposed = true;
         }
+
+        return 0;
+    }
+
+    /// <summary>
+    /// Removes the specified dimension details.
+    /// </summary>
+    /// <param name="dimensionDetails">The dimension details.</param>
+    public void Remove(MeteredDimensions dimensionDetails)
+    {
+        this.context.MeteredDimensions.Remove(dimensionDetails);
+        this.context.SaveChanges();
+    }
+
+    /// <summary>
+    /// Gets the dimensions from plan identifier.
+    /// </summary>
+    /// <param name="planId">The plan identifier.</param>
+    /// <returns>
+    /// List of MeteredDimensions.
+    /// </returns>
+    public List<MeteredDimensions> GetDimensionsByPlanId(string planId)
+    {
+        return this.context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Plan != null && s.Plan.PlanId == planId).ToList();
+    }
+
+    /// <summary>
+    /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+    /// </summary>
+    public void Dispose()
+    {
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Releases unmanaged and - optionally - managed resources.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!this.disposed)
+        {
+            if (disposing)
+            {
+                this.context.Dispose();
+            }
+        }
+
+        this.disposed = true;
     }
 }
