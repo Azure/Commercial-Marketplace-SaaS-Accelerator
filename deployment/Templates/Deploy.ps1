@@ -290,7 +290,7 @@ Write-host "📜  Deploying the Customer Code to Customer Site"
 az webapp deploy --resource-group "$ResourceGroupForDeployment" --name "$WebAppNamePortal" --src-path $customerPackage  --type zip
 
 Write-host "🧹  Cleaning things up!"
-# Cleanup : Delete the temporary storage account and the resource group created to host the bacpac file.
+# Cleanup : Remove publish related temporary files.
 Remove-Item -path ["..\..\Publish"] -recurse -Force
 
 Write-host "🏁  If the intallation completed without error complete the folllowing checklist:"

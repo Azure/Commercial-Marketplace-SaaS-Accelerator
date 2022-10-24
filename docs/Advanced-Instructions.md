@@ -126,7 +126,6 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
     -SQLAdminLogin "adminlogin" `
     -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `
     -PublisherAdminUsers "user@contoso.com" `              
-    -BacpacUrl "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac" `
     -AzureSubscriptionID "subscriptionId" `
     -ResourceGroupForDeployment "resourcegroup" `
     -Location "East US" `
