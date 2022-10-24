@@ -107,7 +107,6 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | SQLAdminLoginPassword | SQL Admin password |
 | PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
 | PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/ |
-| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac |
 | ResourceGroupForDeployment | Name of the resource group to deploy the resources |
 | Location | Location of the resource group |
 | AzureSubscriptionID | Subscription where the resources be deployed |
