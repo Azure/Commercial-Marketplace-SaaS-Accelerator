@@ -76,14 +76,18 @@
 
                 </table>
                 <br />
-
             </div>
+            <p>
+                This Log will show all the events on this subscription run by Manual or by any Scheduler item for this subscription.
+            </p>
+
             <table class="table table-bordered dt-responsive cm-table" width=50%>
                 <thead class="cm-table-head">
                     <tr>
                         <th width="10%">ID</th>
                         <th width="10%">Status</th>
                         <th width="10%">Submit Date</th>
+                        <th width="10%">Run By</th>
                         <th width="10%"></th>
                     </tr>
                 </thead>
@@ -98,6 +102,7 @@
                                 @if (log.CreatedDate != null && log.CreatedDate.HasValue)
                                 {@log.CreatedDate.Value.ToString()}
                             </td>
+                            <td>@log.RunBy</td>
                             <td><button id="detailBtn" class="cm-button-default-small" onclick="ShowDetail('@log.RequestJson','@log.ResponseJson')">Detail</button></td>
                         </tr>
                     }

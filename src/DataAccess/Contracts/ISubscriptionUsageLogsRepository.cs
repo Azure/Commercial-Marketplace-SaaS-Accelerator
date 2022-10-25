@@ -15,7 +15,8 @@
         /// Gets the metered audit logs by subscription identifier.
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="format">Specify to format the result properly.</param>
         /// <returns> Metered Audit Logs.</returns>
-        List<MeteredAuditLogs> GetMeteredAuditLogsBySubscriptionId(int subscriptionId);
+        List<MeteredAuditLogs> GetMeteredAuditLogsBySubscriptionId(int subscriptionId, bool format = false);
     }
 }

@@ -5,6 +5,7 @@ Metered Scheduler Manager is a feature where Publisher can schedule **FIX Quanti
 1. Weekly
 1. Monthly
 1. Yearly
+1. OneTime
 ## Enable and Disable Metered Scheduler Manager Feature During Installation
 By defualt this feature is disabled and deployed as part of the installion. Publisher can enable this feature during the installion process by passing an optional parameter **MeteredSchedulerSupportEnabled** with **true** value as part of the installion script. 
 

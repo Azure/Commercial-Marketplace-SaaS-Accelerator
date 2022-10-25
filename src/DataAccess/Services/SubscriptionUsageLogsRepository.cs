@@ -81,10 +81,18 @@
         /// Gets the metered audit logs by subscription identifier.
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="format">Specify to format the result properly.</param>
         /// <returns> Metered Audit Logs.</returns>
-        public List<MeteredAuditLogs> GetMeteredAuditLogsBySubscriptionId(int subscriptionId)
+        public List<MeteredAuditLogs> GetMeteredAuditLogsBySubscriptionId(int subscriptionId, bool format = false)
         {
-            return this.context.MeteredAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.Id == subscriptionId).OrderByDescending(s => s.CreatedDate).Select(FormatJson).ToList();
+            if (format)
+            {
+                return this.context.MeteredAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.Id == subscriptionId).OrderByDescending(s => s.CreatedDate).Select(FormatJson).ToList();
+            }
+            else
+            {
+                return this.context.MeteredAuditLogs.Include(s => s.Subscription).Where(s => s.Subscription.Id == subscriptionId).OrderByDescending(s => s.CreatedDate).ToList();
+            }
         }
 
         /// <summary>
