@@ -59,7 +59,11 @@
                                 <tr>
                                     <th>Subscription Usage Date(UTC)</th>
                                     <th>Status Code</th>
-                                </tr>
+                                    <th>Request</th>
+                                    <th>Response</th>
+                                    <th>RunBy</th>
+
+                                    </tr>
                             </thead>
                             <tbody>
                                 @for (var i = 0; i < Model.MeteredAuditLogs.Count; i++)
@@ -74,6 +78,7 @@
                                         <td class="text-left">@meteredAuditLog.StatusCode</td>
                                         <td class="text-left" style="white-space: pre-line">@meteredAuditLog.RequestJson</td>
                                         <td class="text-left" style="white-space: pre-line">@meteredAuditLog.ResponseJson</td>
+                                        <td>@meteredAuditLog.RunBy</td>
                                     </tr>
                                 }
                             </tbody>

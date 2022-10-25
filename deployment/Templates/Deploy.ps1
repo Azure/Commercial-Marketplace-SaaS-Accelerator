@@ -193,12 +193,10 @@ Write-host "☁  Prepare publish files faS.Accelerator.or the web application"
 Write-host "☁  Preparing the publish files for Admin Site"  
 dotnet publish ..\..\src\AdminSite\AdminSite.csproj -c debug -o ..\..\Publish\AdminSite\
 
-if ($MeteredSchedulerSupport -ne $true)
-{ 
-    Write-host "☁  Preparing the publish files for Metered Scheduler to Admin Site"
-    mkdir -p ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob
-    dotnet publish ..\..\src\MeteredTriggerJob\MeteredTriggerJob.csproj -c debug -o ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
-}
+
+Write-host "☁  Preparing the publish files for Metered Scheduler to Admin Site"
+mkdir -p ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob
+dotnet publish ..\..\src\MeteredTriggerJob\MeteredTriggerJob.csproj -c debug -o ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
 
 Compress-Archive -Path ..\..\Publish\AdminSite\* -DestinationPath ..\..\Publish\AdminSite.zip -Force
 

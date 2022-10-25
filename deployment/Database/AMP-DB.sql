@@ -1,4 +1,4 @@
-/*Basic version 5.0 Schema*/
+/*Basic version 6.0 Schema*/
 GO
 /****** Object:  Table [dbo].[ApplicationConfiguration]    Script Date: 05-15-2020 12.56.43 PM ******/
 SET ANSI_NULLS ON
@@ -886,6 +886,13 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT * FROM [dbo].[SchedulerFrequency] WHERE [Frequency] = 'OneTime')
+BEGIN
+    INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('OneTime')
+    
+END
+GO
+
 
 
 INSERT INTO [DatabaseVersionHistory] 
@@ -1384,3 +1391,7 @@ GO
 
 
 
+--------------------Upgrade scripts------------------------------------------
+
+ALTER TABLE MeteredAuditLogs ADD RunBy  VARCHAR(255)
+GO

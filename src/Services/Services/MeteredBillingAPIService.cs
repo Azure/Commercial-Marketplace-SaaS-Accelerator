@@ -11,6 +11,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
     using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Metered Api Client.
@@ -91,8 +92,20 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
             }
             catch (Exception ex)
             {
-                this.ProcessErrorResponse(MarketplaceActionEnum.SUBSCRIPTION_USAGEEVENT, ex);
-                return null;
+                if (ex.Message.IndexOf("usageEventId") > 0)
+                {
+                    string usageEventException = ex.Message;
+                    int from = usageEventException.IndexOf("{\"usageEventId\"");
+                    int to = usageEventException.LastIndexOf("},\"message\"");
+                    String errorPayload = usageEventException.Substring(from, (to - from));
+                    var data = JsonConvert.DeserializeObject<MeteringUsageResult>(errorPayload);
+                    return data;
+                }
+                else
+                {
+                    this.ProcessErrorResponse(MarketplaceActionEnum.SUBSCRIPTION_USAGEEVENT, ex);
+                    return null;
+                }
             }
         }
 
