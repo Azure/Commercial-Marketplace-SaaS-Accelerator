@@ -22,11 +22,15 @@ namespace MeteredTriggerHelper
         private ISchedulerManagerViewRepository schedulerViewRepository;
         private ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository;
         private readonly IMeteredBillingApiService billingApiService;
-        
+        private readonly IApplicationConfigRepository applicationConfigRepository;
+
 
         public Executor(ISchedulerFrequencyRepository frequencyRepository,
-                               IMeteredPlanSchedulerManagementRepository schedulerRepository,
-                               ISchedulerManagerViewRepository schedulerViewRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredBillingApiService billingApiService)
+                        IMeteredPlanSchedulerManagementRepository schedulerRepository,
+                        ISchedulerManagerViewRepository schedulerViewRepository, 
+                        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, 
+                        IMeteredBillingApiService billingApiService,
+                        IApplicationConfigRepository applicationConfigRepository)
         {
             this.frequencyRepository = frequencyRepository;
             this.schedulerRepository = schedulerRepository;
@@ -34,7 +38,9 @@ namespace MeteredTriggerHelper
             this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
             this.schedulerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, this.schedulerRepository, this.schedulerViewRepository, this.subscriptionUsageLogsRepository);
             this.billingApiService = billingApiService;
-            
+            this.applicationConfigRepository = applicationConfigRepository;
+
+
         }
 
         public void Execute()
@@ -56,48 +62,57 @@ namespace MeteredTriggerHelper
             //Process each scheduler frequency
             foreach (SchedulerFrequencyEnum frequency in Enum.GetValues(typeof(SchedulerFrequencyEnum)))
             {
-                Console.WriteLine();
-                Console.WriteLine($"==== Checking all {frequency} scheduled items at {_currentUTCTime} UTC. ====");
+                var ableToParse = bool.TryParse(this.applicationConfigRepository.GetValueByName($"Enable{frequency}MeterSchedules"), out bool runSchedulerForThisFrequency);
 
-                var scheduledItems = getAllSchedulerManagerViewData
-                                        .Where(a => a.Frequency == frequency.ToString())
-                                        .ToList();
-
-                foreach (var scheduledItem in scheduledItems)
+                if (ableToParse && runSchedulerForThisFrequency)
                 {
-                    // Get the run time.
-                    //Always pickup the NextRuntime, when its firstRun or OneTime then pickup StartDate as the NextRunTime will be null
-                    DateTime? _nextRunTime = scheduledItem.NextRunTime ?? scheduledItem.StartDate;
-                    int timeDifferentInHours = (int)_currentUTCTime.Subtract(_nextRunTime.Value).TotalHours;
+                    Console.WriteLine();
+                    Console.WriteLine($"==== Checking all {frequency} scheduled items at {_currentUTCTime} UTC. ====");
 
-                    // Print the scheduled Item and the expected run date
-                    PrintScheduler(scheduledItem, 
-                                   _nextRunTime, 
-                                   timeDifferentInHours);
+                    var scheduledItems = getAllSchedulerManagerViewData
+                                            .Where(a => a.Frequency == frequency.ToString())
+                                            .ToList();
 
-                    //Past scheduler items
-                    if (timeDifferentInHours > 0)
+                    foreach (var scheduledItem in scheduledItems)
                     {
-                        Console.WriteLine($"Item Id: {scheduledItem.Id} will not run as {_nextRunTime} has passed. Please check audit logs if its has run previously.");
-                        continue;
+                        // Get the run time.
+                        //Always pickup the NextRuntime, durnig firstRun or OneTime then pickup StartDate, as the NextRunTime will be null
+                        DateTime? _nextRunTime = scheduledItem.NextRunTime ?? scheduledItem.StartDate;
+                        int timeDifferentInHours = (int)_currentUTCTime.Subtract(_nextRunTime.Value).TotalHours;
+
+                        // Print the scheduled Item and the expected run date
+                        PrintScheduler(scheduledItem,
+                                       _nextRunTime,
+                                       timeDifferentInHours);
+
+                        //Past scheduler items
+                        if (timeDifferentInHours > 0)
+                        {
+                            Console.WriteLine($"Item Id: {scheduledItem.Id} will not run as {_nextRunTime} has passed. Please check audit logs if its has run previously.");
+                            continue;
+                        }
+                        else if (timeDifferentInHours < 0)
+                        {
+                            Console.WriteLine($"Item Id: {scheduledItem.Id} future run will be at {_nextRunTime} UTC.");
+                            continue;
+                        }
+                        else if (timeDifferentInHours == 0)
+                        {
+                            TriggerSchedulerItem(scheduledItem,
+                                                 frequency,
+                                                 billingApiService,
+                                                 schedulerService,
+                                                 subscriptionUsageLogsRepository);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Item Id: {scheduledItem.Id} will not run as it doesnt match the time any difference. {_nextRunTime} UTC.");
+                        }
                     }
-                    else if (timeDifferentInHours < 0)
-                    {
-                        Console.WriteLine($"Item Id: {scheduledItem.Id} future run will be at {_nextRunTime} UTC.");
-                        continue;
-                    }
-                    else if (timeDifferentInHours == 0)
-                    {
-                        TriggerSchedulerItem(scheduledItem, 
-                                             frequency, 
-                                             billingApiService, 
-                                             schedulerService, 
-                                             subscriptionUsageLogsRepository);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Item Id: {scheduledItem.Id} will not run as it doesnt match the time any difference. {_nextRunTime} UTC.");
-                    }
+                }
+                else
+                {
+                    Console.WriteLine($"{frequency} scheduled items will not be run as its disabled in the application config.");
                 }
             }
         }
@@ -227,16 +242,6 @@ namespace MeteredTriggerHelper
                 default:
                     { return null; }
             }
-        }
-
-        public enum SchedulerFrequencyEnum
-        {
-            Hourly=1,
-            Daily,
-            Weekly,
-            Monthly,
-            Yearly,
-            OneTime
         }
     }
 }
