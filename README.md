@@ -14,7 +14,7 @@
   - [Technology and Versions](#technology-and-versions)
   - [Security](#security)
   - [Prerequisites](#prerequisites)
-  - [Releases](#releases)
+  - [Releases](./releases)
   - [Contributing](#contributing)
   - [Developers](#developers)
   - [License](#license)
