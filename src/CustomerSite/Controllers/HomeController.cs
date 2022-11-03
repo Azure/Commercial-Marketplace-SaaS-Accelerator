@@ -302,11 +302,16 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     this.TempData["ShowWelcomeScreen"] = "True";
                     SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
                     subscriptionDetail.Subscriptions = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, default, true).ToList();
+                    var allPlans = this.planRepository.Get().ToList();
+                    var allOffers = this.offersRepository.GetAll().ToList();
+
                     foreach (var subscription in subscriptionDetail.Subscriptions)
                     {
-                        Plans planDetail = this.planRepository.GetById(subscription.PlanId);
+                        var planDetail = allPlans.FirstOrDefault(p => p.PlanId == subscription.PlanId);
+                        var offerDetails = allOffers.FirstOrDefault(o => o.OfferGuid == planDetail?.OfferId);
                         subscription.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         subscription.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
+                        subscription.OfferId = offerDetails?.OfferName;
                     }
 
                     subscriptionDetail.SaaSAppUrl = this.apiService.GetSaaSAppURL();

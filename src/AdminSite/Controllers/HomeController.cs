@@ -243,11 +243,15 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
                     var allSubscriptionDetails = this.subscriptionRepo.Get().ToList();
                     var allPlans = this.planRepository.Get().ToList();
+                    var allOffers = this.offersRepository.GetAll().ToList();
                     foreach (var subscription in allSubscriptionDetails)
                     {
-                        Plans planDetail = allPlans.FirstOrDefault(p => p.PlanId == subscription.AmpplanId);
+                        var planDetail = allPlans.FirstOrDefault(p => p.PlanId == subscription.AmpplanId);
+                        var offerDetails = allOffers.FirstOrDefault(o => o.OfferGuid == planDetail?.OfferId);
                         SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription, planDetail);
                         subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
+                        subscriptionDetailExtension.OfferId = offerDetails?.OfferName;
+
                         if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                         {
                             allSubscriptions.Add(subscriptionDetailExtension);
@@ -335,9 +339,9 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 var plandetails = this.planRepository.GetById(oldValue.PlanId);
                 subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                 subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
-                subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
                 var detailsFromAPI = await this.fulfillApiService.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false);
                 subscriptionDetail.Beneficiary = detailsFromAPI.Beneficiary;
+                subscriptionDetail.OfferId = detailsFromAPI.OfferId;
             }
 
             return this.View(subscriptionDetail);
