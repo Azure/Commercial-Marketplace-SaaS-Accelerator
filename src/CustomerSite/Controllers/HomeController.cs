@@ -252,6 +252,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                             subscriptionExtension.CustomerName = this.CurrentUserName;
                             subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
                             subscriptionExtension.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
+                            subscriptionExtension.AcceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("AcceptSubscriptionUpdates"));
                         }
                     }
                     else
@@ -306,6 +307,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     {
                         Plans planDetail = this.planRepository.GetById(subscription.PlanId);
                         subscription.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
+                        subscription.AcceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("AcceptSubscriptionUpdates"));
                         subscription.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                     }
 
@@ -637,6 +639,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                         {
                             //initiate change plan
                             var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                            var currentSubscription = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionDetail.Id);
                             var jsonResult = await this.apiService.ChangePlanForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.PlanId).ConfigureAwait(false);
                             var changePlanOperationStatus = OperationStatusEnum.InProgress;
 
@@ -667,6 +670,16 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                                 {
                                     this.logger.LogInformation($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
                                     await this.applicationLogService.AddApplicationLog($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
+                                    this.subscriptionService.UpdateSubscriptionPlan(subscriptionDetail.Id, subscriptionDetail.PlanId);
+                                    this.subscriptionLogRepository.Save(new SubscriptionAuditLogs
+                                    {
+                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
+                                        SubscriptionId = subscriptionDetail.SubscribeId,
+                                        CreateBy = currentUserId,
+                                        CreateDate = DateTime.Now,
+                                        OldValue = currentSubscription.PlanId,
+                                        NewValue = subscriptionDetail.PlanId
+                                    });
                                 }
                                 else
                                 {
