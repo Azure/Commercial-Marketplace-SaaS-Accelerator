@@ -695,6 +695,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     {
                         //initiate change plan
                         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                        var currentSubscription = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionDetail.Id);
                         var jsonResult = await this.fulfillApiService.ChangePlanForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.PlanId).ConfigureAwait(false);
                         var changePlanOperationStatus = OperationStatusEnum.InProgress;
 
@@ -725,6 +726,16 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                             {
                                 this.logger.LogInformation($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
                                 await this.applicationLogService.AddApplicationLog($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
+                                this.subscriptionService.UpdateSubscriptionPlan(subscriptionDetail.Id, subscriptionDetail.PlanId);
+                                this.subscriptionLogRepository.Save(new SubscriptionAuditLogs
+                                {
+                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Plan),
+                                    SubscriptionId = subscriptionDetail.SubscribeId,
+                                    CreateBy = currentUserId,
+                                    CreateDate = DateTime.Now,
+                                    OldValue = currentSubscription.PlanId,
+                                    NewValue = subscriptionDetail.PlanId
+                                });
                             }
                             else
                             {
@@ -843,8 +854,11 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
                 foreach (SubscriptionResult subscription in subscriptions)
                 {
+                    var customerUserId = 0;
+                    var currentSubscription = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscription.Id);
+                    
                     // Step 2: Check if they Exist in DB - Create if dont exist
-                    if (this.subscriptionRepo.GetById(subscription.Id) == null)
+                    if (currentSubscription == null)
                     {
                         // Step 3: Add/Update the Offer
                         Guid OfferId = this.offersRepository.Add(new Offers()
@@ -857,7 +871,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         });
 
                         // Step 4: Add/Update the Plans. For Unsubscribed Only Add current plan from subscription information
-                        if(subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Unsubscribed)
+                        if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Unsubscribed)
                         {
                             PlanDetailResultExtension planDetails = new PlanDetailResultExtension
                             {
@@ -882,26 +896,50 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                         }
 
                         // Step 5: Add/Update the current user from Subscription information
-                        var customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Beneficiary.EmailId, EmailAddress = subscription.Beneficiary.EmailId });
-
-                        // Step 6: Add Subscription
-                        var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription, customerUserId);
-
-                        // Step 7: Add Subscription Audit
-                        if (subscribeId > 0 && subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
-                        {
-                            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                            {
-                                Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
-                                SubscriptionId = subscribeId,
-                                NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
-                                OldValue = "None",
-                                CreateBy = currentUserId,
-                                CreateDate = DateTime.Now,
-                            };
-                            this.subscriptionLogRepository.Save(auditLog);
-                        }
+                        customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Beneficiary.EmailId, EmailAddress = subscription.Beneficiary.EmailId });
                     }
+
+                    // Step 6: Add Subscription
+                    var subscriptionId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription, customerUserId);
+
+                    // Step 7: Add Subscription Audit
+                    if (currentSubscription != null && subscription.SaasSubscriptionStatus.ToString() != currentSubscription.SubscriptionStatus.ToString())
+                    {
+                        this.subscriptionLogRepository.Save(new SubscriptionAuditLogs()
+                        {
+                            Attribute = $"{Convert.ToString(SubscriptionLogAttributes.Status)}-Refresh",
+                            SubscriptionId = subscriptionId,
+                            NewValue = subscription.SaasSubscriptionStatus.ToString(),
+                            OldValue = currentSubscription.SubscriptionStatus.ToString(),
+                            CreateBy = currentUserId,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+                    if (currentSubscription != null && subscription.PlanId != currentSubscription.PlanId)
+                    {
+                        this.subscriptionLogRepository.Save(new SubscriptionAuditLogs()
+                        {
+                            Attribute =$"{Convert.ToString(SubscriptionLogAttributes.Plan)}-Refresh",
+                            SubscriptionId = subscriptionId,
+                            NewValue = subscription.PlanId.ToString(),
+                            OldValue = currentSubscription.PlanId,
+                            CreateBy = currentUserId,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+                    if (currentSubscription != null && subscription.Quantity != currentSubscription.Quantity)
+                    {
+                        this.subscriptionLogRepository.Save(new SubscriptionAuditLogs()
+                        {
+                            Attribute = $"{Convert.ToString(SubscriptionLogAttributes.Quantity)}-Refresh",
+                            SubscriptionId = subscriptionId,
+                            NewValue = subscription.Quantity.ToString(),
+                            OldValue = currentSubscription.Quantity.ToString(),
+                            CreateBy = currentUserId,
+                            CreateDate = DateTime.Now
+                        });
+                    }
+
                 }
             }
             catch (Exception ex)

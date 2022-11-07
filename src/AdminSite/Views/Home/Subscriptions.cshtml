@@ -171,7 +171,9 @@
             dangerMode: true,
         })
             .then((willChange) => {
-                if (willChange) {
+                if (willChange) {           
+                    $("#frmButton").prop("disabled", true);
+                    $("#frmSpinner").prop("hidden", false);
                     $("#frmSubscriptionDetail").submit();
                 }
             });
