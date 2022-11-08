@@ -1,6 +1,6 @@
 ﻿@model List<Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SubscriptionAuditLogs>
 
-<div class="modal-dialog modal-lg mt200">
+<div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
         <div class="modal-header header-bg">
             <h4><span class="cm-section-heading"> Activity Log</span></h4>
@@ -10,9 +10,9 @@
             <div class="card card-header mb0 pb0">
                 <dl class="row">
                     <dt class="col-2 text-right"><b>Plan</b></dt>
-                    <dd class="col-3 text-left">@Model.First().Subscription.AmpplanId</dd>
+                    <dd class="col-3 text-left">@Model.FirstOrDefault()?.Subscription?.AmpplanId</dd>
                     <dt class="col-3 text-right"><b>Subscription</b></dt>
-                    <dd class="col-4 text-left">@Model.First().Subscription.Name</dd>
+                    <dd class="col-4 text-left">@Model.FirstOrDefault()?.Subscription?.Name</dd>
                 </dl>
             </div>
             <table class="table-bordered table-responsive cm-table">
