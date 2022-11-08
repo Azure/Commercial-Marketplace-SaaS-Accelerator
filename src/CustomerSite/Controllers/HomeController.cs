@@ -350,7 +350,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                     subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
-                    return this.View(subscriptionDetail);
+                    return this.PartialView(subscriptionDetail);
                 }
                 else
                 {
@@ -379,7 +379,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                 if (this.User.Identity.IsAuthenticated)
                 {
                     var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-                    return this.View(subscriptionDetail);
+                    return this.PartialView(subscriptionDetail);
                 }
                 else
                 {
@@ -407,7 +407,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                 {
                     List<SubscriptionAuditLogs> subscriptionAudit = new List<SubscriptionAuditLogs>();
                     subscriptionAudit = this.subscriptionLogRepository.GetSubscriptionBySubscriptionId(subscriptionId).ToList();
-                    return this.View(subscriptionAudit);
+                    return this.PartialView(subscriptionAudit);
                 }
                 else
                 {
