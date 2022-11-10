@@ -550,8 +550,8 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
             {
                 if (this.User.Identity.IsAuthenticated)
                 {
-                    var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-                    return this.PartialView(subscriptionDetail);
+                    var subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
+                    return this.View(subscriptionDetail);
                 }
                 else
                 {

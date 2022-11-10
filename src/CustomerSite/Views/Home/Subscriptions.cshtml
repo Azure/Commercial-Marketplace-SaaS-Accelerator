@@ -128,7 +128,11 @@
                 $('#myModal').modal();
             },
             error: function () {
-                alert("Content load failed.");
+                swal({
+                    title: "Error",
+                    text: "Content load failed.",
+                    icon: "Error"
+                })
             }
         });
     }
@@ -145,7 +149,11 @@
 
             },
             error: function () {
-                alert("Content load failed.");
+                swal({
+                    title: "Error",
+                    text: "Content load failed.",
+                    icon: "Error"
+                })
             }
         });
     }
@@ -161,18 +169,16 @@
                 $('#myModal').modal();
             },
             error: function () {
-                alert("Content load failed.");
+                swal({
+                    title: "Error",
+                    text: "Content load failed.",
+                    icon: "Error"
+                })
             }
         });
     }
 
     function confirmDialog() {
-        //var isConfirm = confirm('Are you sure you want to change the plan?');
-        //debugger
-        //if (isConfirm) {
-        //    $("#frmSubscriptionDetail").submit();
-        //}
-
         var newPlanName = $('#PlanId').val();
         swal({
             text: "Are you sure you want to switch to " + newPlanName + " plan?",
@@ -191,15 +197,9 @@
     }
 
     function confirmQuantityDialog() {
-        //var isConfirm = confirm('Are you sure you want to change the plan?');
-        //debugger
-        //if (isConfirm) {
-        //    $("#frmSubscriptionDetail").submit();
-        //}
-
-        var newPlanName = $('#PlanId').val();
+        var newQuantity = $('#Quantity').val();
         swal({
-            text: "Are you sure you want to Change the quantity?",
+            text: "Are you sure you want to Change the quantity to " + newQuantity + "?",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -207,6 +207,8 @@
             .then((willChange) => {
                 debugger;
                 if (willChange) {
+                    $("#frmButton").prop("disabled", true);
+                    $("#frmSpinner").prop("hidden", false);
                     $("#frmSubscriptionQuantityDetail").submit();
                 }
             });

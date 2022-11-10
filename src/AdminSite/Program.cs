@@ -40,7 +40,7 @@ namespace Microsoft.Marketplace.Saas.Web
         })
         .ConfigureWebHostDefaults(webBuilder =>
         {
-            webBuilder.UseUrls("https://*:5081", "http://*:5080");
+            //webBuilder.UseUrls("https://*:5081", "http://*:5080");
             webBuilder.UseStartup<Startup>();
         });
     }
