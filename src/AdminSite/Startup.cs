@@ -72,16 +72,16 @@ namespace Microsoft.Marketplace.Saas.Web
             var config = new SaaSApiClientConfiguration()
             {
                 AdAuthenticationEndPoint = this.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
-                ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
-                ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
+                ClientId = this.Configuration["SaaSApiConfiguration:ClientId"] ?? Guid.Empty.ToString(),
+                ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"] ?? String.Empty,
                 FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
-                MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],
+                MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"] ?? Guid.Empty.ToString(),
                 FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
                 GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
                 Resource = this.Configuration["SaaSApiConfiguration:Resource"],
                 SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
-                TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
+                TenantId = this.Configuration["SaaSApiConfiguration:TenantId"] ?? Guid.Empty.ToString(),
                 SupportMeteredBilling = Convert.ToBoolean(this.Configuration["SaaSApiConfiguration:supportmeteredbilling"])
             };
             var knownUsers = new KnownUsersModel()
