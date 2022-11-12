@@ -1,21 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Authors>Microsoft.Marketplace</Authors>
-    <Company>Microsoft</Company>
-    <Product>Marketplace.SaaS.Accelerator</Product>
-	<AssemblyName>DataAccess</AssemblyName>
-	<RootNamespace>Marketplace.SaaS.Accelerator.DataAccess</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Authors>Microsoft.Marketplace</Authors>
+		<Company>Microsoft</Company>
+		<Product>Marketplace.SaaS.Accelerator</Product>
+		<AssemblyName>DataAccess</AssemblyName>
+		<RootNamespace>Marketplace.SaaS.Accelerator.DataAccess</RootNamespace>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Context\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Context\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
 </Project>

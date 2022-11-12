@@ -6,10 +6,17 @@ The customer portal and the publisher portal sample web applications use SQL Ser
 
 ## Install Using SQL Scripts
 
-The SQL scripts build on top of each other. When setting up your database, do the following.
+The project uses EntityFramework Core Code-First approach to the database design and maintainance.
+When deploying a new version of the accelerator the `dotnet-ef` tool is used to generate a migration script from your current database state to the latest state. All necesary changes will be automatically applied during deployment
 
-1. Start with a blank database
-2. Run AMP-DB-2.1.sql
+When installing the accelerator for the first time, a fresh db creation script is auto-generated based on the latest version of the code and automatically creates the db schema and seeds the initial data required for operation.
+
+## Upgrading
+If you are upgrading from v6.0.2 or above there is no special action to take. Just run the `deploy-code` script against your installation.
+
+If you are upgrading from v6 or v6.0.1 you need to run the `deploy-code` script using the `-TryFixDatabase` flag. This will ensure that your DB gets updated with the required initial state data for migrations to run property.
+
+There is currently no direct migration path from a version before v6. Please create an issue on the project and we will try and address it.
 
 ## Description
 

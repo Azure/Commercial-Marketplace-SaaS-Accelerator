@@ -195,6 +195,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 .HasForeignKey(e => e.DimensionId);
                 
             });
+           
             modelBuilder.Entity<OfferAttributes>(entity =>
             {
                 entity.Property(e => e.Id).HasColumnName("ID");
@@ -492,17 +493,15 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<SchedulerFrequency>(entity =>
+            {
+                entity.Property(e => e.Frequency).IsUnicode(false);
 
-            modelBuilder.Entity<SchedulerFrequency>()
-            .Property(e => e.Frequency)
-            .IsUnicode(false);
-
-            modelBuilder.Entity<SchedulerFrequency>()
-                .HasMany(e => e.MeteredPlanSchedulerManagements)
-                .WithOne(e => e.SchedulerFrequency)
-                .HasForeignKey(e => e.FrequencyId);
-
-
+                entity.HasMany(e => e.MeteredPlanSchedulerManagements)
+                      .WithOne(e => e.SchedulerFrequency)
+                      .HasForeignKey(e => e.FrequencyId);
+            });
+            
             modelBuilder.Entity<Plans>()
             .HasMany(e => e.MeteredPlanSchedulerManagements)
             .WithOne(e => e.Plan)
@@ -514,25 +513,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             .WithOne(e => e.Subscriptions)
             .HasForeignKey(e => e.SubscriptionId);
 
-
-
-            
-
-            modelBuilder.Entity<SchedulerManagerView>()
-                .Property(e => e.PlanId)
-                .IsUnicode(false);
-
-            modelBuilder.Entity<SchedulerManagerView>()
-                .Property(e => e.Dimension)
-                .IsUnicode(false);
-
-            modelBuilder.Entity<SchedulerManagerView>()
-                .Property(e => e.Frequency)
-                .IsUnicode(false);
-
-
-
-
+            modelBuilder.Entity<SchedulerManagerView>(entity => { 
+                entity.Property(e => e.PlanId).IsUnicode(false);
+                entity.Property(e => e.Dimension).IsUnicode(false);
+                entity.Property(e => e.Frequency).IsUnicode(false);
+            });
 
             OnModelCreatingPartial(modelBuilder);
         }
