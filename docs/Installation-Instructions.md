@@ -19,7 +19,7 @@ Connect-AzureAD -Confirm; `
  -SQLAdminLoginPassword "" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -Location "East US" ;
+ -Location "East US"; `
 .\Deploy-Code.ps1 `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub";
