@@ -60,7 +60,7 @@ if ($TryFixDatabase -eq $true){
 	#manually create the migrations table and initialize the db to the initial migration
 	Write-host "## !!!Attempting to upgrade database to migration compatibility.!!!"	
 	$createTable = "CREATE TABLE [__EFMigrationsHistory] ([MigrationId] nvarchar(150) NOT NULL,[ProductVersion] nvarchar(32) NOT NULL,CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId]));"
-	$updateTable = "INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES (N'20221111162140_Initial', N'6.0.1');"
+	$updateTable = "INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion]) VALUES (N'20221116194140_Initial', N'6.0.1');"
 
 	Invoke-Sqlcmd -query $createTable -ServerInstance $Server -database $Database -Username $User -Password $Pass
 	Invoke-Sqlcmd -query $updateTable -ServerInstance $Server -database $Database -Username $User -Password $Pass

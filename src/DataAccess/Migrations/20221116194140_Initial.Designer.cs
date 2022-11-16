@@ -12,7 +12,7 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 {
     [DbContext(typeof(SaasKitContext))]
-    [Migration("20221111162140_Initial")]
+    [Migration("20221116194140_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -646,12 +646,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SchedulerManagerView", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
                     b.Property<Guid>("AMPSubscriptionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -662,6 +656,9 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.Property<string>("Frequency")
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("NextRunTime")
                         .HasColumnType("datetime2");
@@ -685,9 +682,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.Property<string>("SubscriptionName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("SchedulerManagerView");
+                    b.ToView("SchedulerManagerView");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SubscriptionAttributeValues", b =>

@@ -254,28 +254,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SchedulerManagerView",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SchedulerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubscriptionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PurchaserEmail = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AMPSubscriptionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PlanId = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    Dimension = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    Frequency = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
-                    Quantity = table.Column<double>(type: "float", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    NextRunTime = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SchedulerManagerView", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SubscriptionAttributeValues",
                 columns: table => new
                 {
@@ -585,8 +563,8 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 table: "Subscriptions",
                 column: "UserId");
 
-
             migrationBuilder.SeedData();
+            migrationBuilder.SeedViews();
             migrationBuilder.SeedStoredProcedures();
         }
 
@@ -635,9 +613,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 name: "PlanEventsOutPut");
 
             migrationBuilder.DropTable(
-                name: "SchedulerManagerView");
-
-            migrationBuilder.DropTable(
                 name: "SubscriptionAttributeValues");
 
             migrationBuilder.DropTable(
@@ -672,6 +647,9 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+
+            migrationBuilder.DeSeedAll();
         }
     }
 }

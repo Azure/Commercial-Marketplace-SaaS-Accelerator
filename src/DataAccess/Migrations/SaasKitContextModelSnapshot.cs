@@ -44,7 +44,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ApplicationConfiguration", (string)null);
+                    b.ToTable("ApplicationConfiguration");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.ApplicationLog", b =>
@@ -65,7 +65,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ApplicationLog", (string)null);
+                    b.ToTable("ApplicationLog");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.DatabaseVersionHistory", b =>
@@ -91,7 +91,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.Property<decimal>("VersionNumber")
                         .HasColumnType("decimal(6,2)");
 
-                    b.ToTable("DatabaseVersionHistory", (string)null);
+                    b.ToTable("DatabaseVersionHistory");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.EmailTemplate", b =>
@@ -147,7 +147,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmailTemplate", (string)null);
+                    b.ToTable("EmailTemplate");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Events", b =>
@@ -171,7 +171,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("EventsId");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.KnownUsers", b =>
@@ -194,7 +194,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("KnownUsers", (string)null);
+                    b.ToTable("KnownUsers");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.MeteredAuditLogs", b =>
@@ -236,7 +236,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("MeteredAuditLogs", (string)null);
+                    b.ToTable("MeteredAuditLogs");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.MeteredDimensions", b =>
@@ -267,7 +267,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasIndex("PlanId");
 
-                    b.ToTable("MeteredDimensions", (string)null);
+                    b.ToTable("MeteredDimensions");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.MeteredPlanSchedulerManagement", b =>
@@ -312,7 +312,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("MeteredPlanSchedulerManagement", (string)null);
+                    b.ToTable("MeteredPlanSchedulerManagement");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.OfferAttributes", b =>
@@ -383,7 +383,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("OfferAttributes", (string)null);
+                    b.ToTable("OfferAttributes");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Offers", b =>
@@ -416,7 +416,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Offers", (string)null);
+                    b.ToTable("Offers");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.PlanAttributeMapping", b =>
@@ -446,7 +446,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.HasKey("PlanAttributeId")
                         .HasName("PK__PlanAttr__8B476A98C058FAF2");
 
-                    b.ToTable("PlanAttributeMapping", (string)null);
+                    b.ToTable("PlanAttributeMapping");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.PlanAttributeOutput", b =>
@@ -480,7 +480,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.HasKey("RowNumber")
                         .HasName("PK__PlanAttr__AAAC09D888FE3E40");
 
-                    b.ToTable("PlanAttributeOutput", (string)null);
+                    b.ToTable("PlanAttributeOutput");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.PlanEventsMapping", b =>
@@ -521,7 +521,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PlanEventsMapping", (string)null);
+                    b.ToTable("PlanEventsMapping");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.PlanEventsOutPut", b =>
@@ -562,7 +562,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.HasKey("RowNumber")
                         .HasName("PK__PlanEven__AAAC09D8C9229532");
 
-                    b.ToTable("PlanEventsOutPut", (string)null);
+                    b.ToTable("PlanEventsOutPut");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Plans", b =>
@@ -604,7 +604,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Plans", (string)null);
+                    b.ToTable("Plans");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Roles", b =>
@@ -622,7 +622,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SchedulerFrequency", b =>
@@ -639,17 +639,11 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SchedulerFrequency", (string)null);
+                    b.ToTable("SchedulerFrequency");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SchedulerManagerView", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
                     b.Property<Guid>("AMPSubscriptionId")
                         .HasColumnType("uniqueidentifier");
 
@@ -660,6 +654,9 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.Property<string>("Frequency")
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("NextRunTime")
                         .HasColumnType("datetime2");
@@ -683,9 +680,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.Property<string>("SubscriptionName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("SchedulerManagerView", (string)null);
+                    b.ToView("SchedulerManagerView");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SubscriptionAttributeValues", b =>
@@ -724,7 +719,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SubscriptionAttributeValues", (string)null);
+                    b.ToTable("SubscriptionAttributeValues");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SubscriptionAuditLogs", b =>
@@ -763,7 +758,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasIndex("SubscriptionId");
 
-                    b.ToTable("SubscriptionAuditLogs", (string)null);
+                    b.ToTable("SubscriptionAuditLogs");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SubscriptionEmailOutput", b =>
@@ -783,7 +778,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
-                    b.ToTable("SubscriptionEmailOutput", (string)null);
+                    b.ToTable("SubscriptionEmailOutput");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SubscriptionParametersOutput", b =>
@@ -873,7 +868,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.HasKey("RowNumber")
                         .HasName("PK__Subscrip__AAAC09D8BA727059");
 
-                    b.ToTable("SubscriptionParametersOutput", (string)null);
+                    b.ToTable("SubscriptionParametersOutput");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Subscriptions", b =>
@@ -937,7 +932,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscriptions", (string)null);
+                    b.ToTable("Subscriptions");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Users", b =>
@@ -963,7 +958,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.ValueTypes", b =>
@@ -991,7 +986,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.HasKey("ValueTypeId")
                         .HasName("PK__ValueTyp__A51E9C5AEA096123");
 
-                    b.ToTable("ValueTypes", (string)null);
+                    b.ToTable("ValueTypes");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.WebJobSubscriptionStatus", b =>
@@ -1020,7 +1015,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WebJobSubscriptionStatus", (string)null);
+                    b.ToTable("WebJobSubscriptionStatus");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.KnownUsers", b =>
