@@ -7,6 +7,40 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.Custom
 {
     internal static class Migration_Seed
     {
+        public static void DeSeedAll(this MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.Sql(@"DROP VIEW [dbo].[SchedulerManagerView]");
+            migrationBuilder.Sql(@"DROP PROCEDURE [dbo].[spGetSubscriptionParameters]");
+            migrationBuilder.Sql(@"DROP PROCEDURE [dbo].[spGetPlanEvents]");
+            migrationBuilder.Sql(@"DROP PROCEDURE [dbo].[spGetOfferParameters]");
+            migrationBuilder.Sql(@"DROP PROCEDURE [dbo].[spGetFormattedEmailBody]");
+        }
+
+        public static void SeedViews(this MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.Sql(@"
+
+CREATE VIEW [dbo].[SchedulerManagerView]
+	AS SELECT 
+	m.Id,
+	m.SchedulerName,
+	s.AMPSubscriptionId,
+	s.Name as SubscriptionName,
+	s.PurchaserEmail,
+	p.PlanId,
+	d.Dimension,
+	f.Frequency,
+	m.Quantity,
+	m.StartDate,
+	m.NextRunTime
+	FROM MeteredPlanSchedulerManagement m
+	inner join SchedulerFrequency f	on m.FrequencyId=f.Id
+	inner join Subscriptions s on m.SubscriptionId=s.Id
+	inner join Plans p on m.PlanId=p.Id
+	inner join MeteredDimensions d on m.DimensionId=d.Id
+");
+        }
+
         public static void SeedStoredProcedures(this MigrationBuilder migrationBuilder)
         {
             //SQL Stored Procedures
@@ -14,7 +48,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.Custom
             migrationBuilder.Sql(@"
 /*   
 Exec spGetSubscriptionParameters '53ff9e28-a55b-65e1-ff75-709aec6420fd','a35d4259-f3c9-429b-a871-21c4593fa4bf'  
-*/  
+*/
 EXEC(N'
 CREATE Procedure [dbo].[spGetSubscriptionParameters]  
 (  
@@ -92,8 +126,8 @@ SELECT
 --,OEM.ARMTemplateId  
 ,ISNULL(OEM.Isactive,0) Isactive  
 ,ISNULL(OEM.CopyToCustomer,0) CopyToCustomer
-,ISNULL(OEM.SuccessStateEmails,'')SuccessStateEmails  
-,ISNULL(OEM.FailureStateEmails,'')FailureStateEmails  
+,ISNULL(OEM.SuccessStateEmails,'''')SuccessStateEmails  
+,ISNULL(OEM.FailureStateEmails,'''')FailureStateEmails  
 ,E.EventsId as EventId  
   
 ,E.EventsName  

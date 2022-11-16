@@ -513,7 +513,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             .WithOne(e => e.Subscriptions)
             .HasForeignKey(e => e.SubscriptionId);
 
-            modelBuilder.Entity<SchedulerManagerView>(entity => { 
+            modelBuilder.Entity<SchedulerManagerView>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("SchedulerManagerView");
                 entity.Property(e => e.PlanId).IsUnicode(false);
                 entity.Property(e => e.Dimension).IsUnicode(false);
                 entity.Property(e => e.Frequency).IsUnicode(false);
