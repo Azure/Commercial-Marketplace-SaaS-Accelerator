@@ -16,5 +16,15 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         /// The Yearly.
         /// </summary>
         P1Y,
+        
+        /// <summary>
+        /// The Yearly.
+        /// </summary>
+        P2Y,
+        
+        /// <summary>
+        /// The Yearly.
+        /// </summary>
+        P3Y,
     }
 }

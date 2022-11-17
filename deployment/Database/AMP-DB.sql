@@ -1,4 +1,4 @@
-/*Basic version 6.0 Schema*/
+/*Basic version 6.0.1 Schema*/
 GO
 /****** Object:  Table [dbo].[ApplicationConfiguration]    Script Date: 05-15-2020 12.56.43 PM ******/
 SET ANSI_NULLS ON

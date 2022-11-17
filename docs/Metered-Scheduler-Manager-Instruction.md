@@ -11,7 +11,7 @@ By defualt this feature is disabled and deployed as part of the installion. Publ
 
 
 ``` powershell
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.0.0 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.0.1 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
 Connect-AzureAD -Confirm; `
 .\Deploy.ps1 `
