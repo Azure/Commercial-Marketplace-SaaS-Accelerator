@@ -106,13 +106,13 @@ namespace MeteredTriggerHelper
                         }
                         else
                         {
-                            Console.WriteLine($"Item Id: {scheduledItem.Id} will not run as it doesnt match the time any difference. {_nextRunTime} UTC.");
+                            Console.WriteLine($"Item Id: {scheduledItem.Id} will not run as it doesn't match any time difference logic. {_nextRunTime} UTC.");
                         }
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"{frequency} scheduled items will not be run as its disabled in the application config.");
+                    Console.WriteLine($"{frequency} scheduled items will not be run as it's disabled in the application config.");
                 }
             }
         }
