@@ -193,12 +193,10 @@ Write-host "☁  Prepare publish files faS.Accelerator.or the web application"
 Write-host "☁  Preparing the publish files for Admin Site"  
 dotnet publish ..\..\src\AdminSite\AdminSite.csproj -c debug -o ..\..\Publish\AdminSite\
 
-if ($MeteredSchedulerSupport -ne $true)
-{ 
-    Write-host "☁  Preparing the publish files for Metered Scheduler to Admin Site"
-    mkdir -p ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob
-    dotnet publish ..\..\src\MeteredTriggerJob\MeteredTriggerJob.csproj -c debug -o ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
-}
+
+Write-host "☁  Preparing the publish files for Metered Scheduler to Admin Site"
+mkdir -p ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob
+dotnet publish ..\..\src\MeteredTriggerJob\MeteredTriggerJob.csproj -c debug -o ..\..\Publish\AdminSite\app_data\jobs\triggered\MeteredTriggerJob  --runtime win-x64 --self-contained true 
 
 Compress-Archive -Path ..\..\Publish\AdminSite\* -DestinationPath ..\..\Publish\AdminSite.zip -Force
 
@@ -261,6 +259,7 @@ az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService -
 
 Write-host "📜  Create publisher Admin webapp"
 az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:6
+az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true
 az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] 
 $WebAppNameAdminId=$(az webapp identity show  -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --query principalId -o tsv)
 
