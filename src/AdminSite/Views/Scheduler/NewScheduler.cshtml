@@ -66,6 +66,15 @@
             <div style="align-content:center">
                 <table>
                     <tr>
+                        <th colspan="2">
+                            * Select a First Run Date at least an hour later than the current time.<br />
+                            * To update an existing scheduler item, please use the same Name, Subscription id, Plan and Dimension.
+                            <hr />
+                            <br />
+                        </th>
+                    </tr>
+
+                    <tr>
                         <th>Scheduler Name&nbsp;&nbsp;</th>
                         <th>@Html.TextBoxFor(s => s.SchedulerName, "",  new { @class = "form-control", required = "required" , pattern = @"^[a-zA-Z0-9-_]+$" })</th>
                     </tr>

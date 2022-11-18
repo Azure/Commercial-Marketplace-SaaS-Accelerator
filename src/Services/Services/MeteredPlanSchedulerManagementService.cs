@@ -59,7 +59,7 @@
         public List<SchedulerManagerViewModel> GetAllSchedulerManagerList()
         {
             List<SchedulerManagerViewModel> schedulerList = new List<SchedulerManagerViewModel>();
-            var allSchedulerViewData = this.schedulerViewRepository.GetAll();
+            var allSchedulerViewData = this.schedulerViewRepository.GetAll().OrderBy(s => s.AMPSubscriptionId);
             foreach (var item in allSchedulerViewData)
             {
                 SchedulerManagerViewModel schedulerView = new SchedulerManagerViewModel();
@@ -182,7 +182,6 @@
 
         }
 
-
         /// <summary>
         /// Saves the Metered Plan Scheduler Management Model attributes.
         /// </summary>
@@ -199,31 +198,27 @@
                 DimensionId = meteredPlanSchedulerModel.DimensionId,
                 FrequencyId = meteredPlanSchedulerModel.FrequencyId,
                 Quantity = meteredPlanSchedulerModel.Quantity,
-                StartDate = meteredPlanSchedulerModel.StartDate.Value.ToUniversalTime(),
+                StartDate = meteredPlanSchedulerModel.StartDate,
                 NextRunTime = meteredPlanSchedulerModel.NextRunTime
             };
             return this.schedulerRepository.Save(meteredPlanScheduler);
         }
 
         /// <summary>
-        ///  Remove Scheduler record by model
+        /// Saves the Metered Plan Scheduler Management Model NextRunTime.
         /// </summary>
-        /// <param name="meteredPlanSchedulerModel">The Metered Plan Scheduler Management model</param>
-        public void DeleteSchedulerDetail(MeteredPlanSchedulerManagementModel meteredPlanSchedulerModel)
+        /// <param name="MeteredPlanSchedulerManagementModel">The Metered Plan Scheduler Management model.</param>
+        /// <returns> Scheduler Id.</returns>
+        public int? UpdateSchedulerNextRunTime(MeteredPlanSchedulerManagementModel meteredPlanSchedulerModel)
         {
             MeteredPlanSchedulerManagement meteredPlanScheduler = new MeteredPlanSchedulerManagement
             {
                 Id = meteredPlanSchedulerModel.Id,
-                SchedulerName=meteredPlanSchedulerModel.SchedulerName,
-                PlanId = meteredPlanSchedulerModel.PlanId,
-                SubscriptionId = meteredPlanSchedulerModel.SubscriptionId,
-                DimensionId = meteredPlanSchedulerModel.DimensionId,
-                FrequencyId = meteredPlanSchedulerModel.FrequencyId,
-                Quantity = meteredPlanSchedulerModel.Quantity,
-                StartDate = meteredPlanSchedulerModel.StartDate
+                NextRunTime = meteredPlanSchedulerModel.NextRunTime
             };
-             this.schedulerRepository.Remove(meteredPlanScheduler);
+            return this.schedulerRepository.UpdateNextRunDate(meteredPlanScheduler);
         }
+
         /// <summary>
         /// Remove Scheduler by Id
         /// </summary>
