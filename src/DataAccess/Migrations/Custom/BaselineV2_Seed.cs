@@ -5,43 +5,18 @@ using System.Text;
 
 namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.Custom
 {
-    internal static class Migration_Seed
+    internal static class BaselineV2_Seed
     {
-        public static void DeSeedAll(this MigrationBuilder migrationBuilder)
+        public static void BaselineV2_DeSeedAll(this MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(@"DROP VIEW [dbo].[SchedulerManagerView]");
             migrationBuilder.Sql(@"DROP PROCEDURE [dbo].[spGetSubscriptionParameters]");
             migrationBuilder.Sql(@"DROP PROCEDURE [dbo].[spGetPlanEvents]");
             migrationBuilder.Sql(@"DROP PROCEDURE [dbo].[spGetOfferParameters]");
             migrationBuilder.Sql(@"DROP PROCEDURE [dbo].[spGetFormattedEmailBody]");
         }
 
-        public static void SeedViews(this MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.Sql(@"
 
-CREATE VIEW [dbo].[SchedulerManagerView]
-	AS SELECT 
-	m.Id,
-	m.SchedulerName,
-	s.AMPSubscriptionId,
-	s.Name as SubscriptionName,
-	s.PurchaserEmail,
-	p.PlanId,
-	d.Dimension,
-	f.Frequency,
-	m.Quantity,
-	m.StartDate,
-	m.NextRunTime
-	FROM MeteredPlanSchedulerManagement m
-	inner join SchedulerFrequency f	on m.FrequencyId=f.Id
-	inner join Subscriptions s on m.SubscriptionId=s.Id
-	inner join Plans p on m.PlanId=p.Id
-	inner join MeteredDimensions d on m.DimensionId=d.Id
-");
-        }
-
-        public static void SeedStoredProcedures(this MigrationBuilder migrationBuilder)
+        public static void BaselineV2_SeedStoredProcedures(this MigrationBuilder migrationBuilder)
         {
             //SQL Stored Procedures
 
@@ -66,22 +41,22 @@ SELECT
 ,isnull(SAV.PlanAttributeId,PA.PlanAttributeId) PlanAttributeId  
 ,ISNULL(SAV.PlanId,@PlanId) PlanId   
 ,ISNULL(PA.OfferAttributeID ,OA.ID)  OfferAttributeID  
-,ISNULL(OA.DisplayName,'')DisplayName  
-,ISNULL(OA.Type,'')Type  
-,ISNULL(VT.ValueType,'') ValueType  
+,ISNULL(OA.DisplayName,'''')DisplayName  
+,ISNULL(OA.Type,'''')Type  
+,ISNULL(VT.ValueType,'''') ValueType  
 ,ISnull(OA.DisplaySequence,0)DisplaySequence  
 ,isnull(PA.IsEnabled,0) IsEnabled  
 ,isnull(OA.IsRequired,0) IsRequired  
-,ISNULL(Value,'')Value  
+,ISNULL(Value,'''')Value  
 ,ISNULL(SubscriptionId,@SubscriptionId) SubscriptionId  
 ,ISNULL(SAV.OfferID,OA.OfferId) OfferID  
 ,SAV.UserId  
 ,SAV.CreateDate  
 ,ISNULL(oA.FromList,0) FromList  
-,ISNULL(OA.ValuesList,'') ValuesList  
+,ISNULL(OA.ValuesList,'''') ValuesList  
 ,ISNULL(OA.Max,0) Max  
 ,ISNULL(OA.Min,0) Min
-,ISNULL(VT.HTMLType,'') HTMLType  
+,ISNULL(VT.HTMLType,'''') HTMLType  
 from   
 [dbo].[OfferAttributes] OA  
 Inner  join   
@@ -366,7 +341,7 @@ EXEC(N'
 ')");
         }
 
-        public static void SeedData(this MigrationBuilder migrationBuilder)
+        public static void BaselineV2_SeedData(this MigrationBuilder migrationBuilder)
         {
             var seedDate = DateTime.Now;
             migrationBuilder.Sql(@$"
@@ -377,11 +352,8 @@ VALUES
     ('String','{seedDate}','string'),
     ('Date','{seedDate}','date')
 ");
-            migrationBuilder.Sql(@$"
-INSERT INTO Roles 
-    (name) 
-VALUES ('PublisherAdmin')
-");
+          
+            migrationBuilder.Sql(@$"INSERT INTO Roles (name) VALUES ('PublisherAdmin')");
 
             migrationBuilder.Sql(@$"
 INSERT INTO Events
@@ -408,7 +380,27 @@ VALUES
 	('IsAutomaticProvisioningSupported','false','Skip Activation - Automatic Provisioning Supported'),
 	('IsEmailEnabledForPendingActivation','false','Email Enabled For Pending Activation')
 ");
-
+            
+            migrationBuilder.Sql(@$"
+IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'AcceptSubscriptionUpdates')
+BEGIN
+    INSERT INTO ApplicationConfiguration (Name,Value,Description)
+    VALUES ('AcceptSubscriptionUpdates','false','Accepts subscriptions plan or quantity updates')
+END
+GO
+IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'LogoFile')
+BEGIN
+    INSERT INTO ApplicationConfiguration (Name,Value,Description)
+    VALUES ('LogoFile','','Logo File')
+END
+GO
+IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'FaviconFile')
+BEGIN
+    INSERT INTO ApplicationConfiguration (Name,Value,Description)
+    VALUES ('FaviconFile','','Favicon File')
+END
+GO
+");
             migrationBuilder.Sql(@$"
 INSERT INTO EmailTemplate
 	([Status],[Description],[InsertDate],[TemplateBody],[Subject],[IsActive])

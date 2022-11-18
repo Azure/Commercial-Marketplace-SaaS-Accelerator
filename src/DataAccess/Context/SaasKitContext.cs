@@ -161,6 +161,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
+                entity.Property(e => e.RunBy)
+                   .HasMaxLength(255)
+                   .IsUnicode(false);
+
                 entity.Property(e => e.StatusCode)
                     .HasMaxLength(100)
                     .IsUnicode(false);
@@ -191,11 +195,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasConstraintName("FK__MeteredDi__PlanI__6383C8BA");
 
                 entity.HasMany(e => e.MeteredPlanSchedulerManagements)
-                .WithOne(e => e.MeteredDimensions)
-                .HasForeignKey(e => e.DimensionId);
-                
+                    .WithOne(e => e.MeteredDimensions)
+                    .HasForeignKey(e => e.DimensionId);
             });
-           
+
             modelBuilder.Entity<OfferAttributes>(entity =>
             {
                 entity.Property(e => e.Id).HasColumnName("ID");
@@ -312,6 +315,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.Property(e => e.PlanId)
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.HasMany(e => e.MeteredPlanSchedulerManagements)
+                     .WithOne(e => e.Plan)
+                     .HasForeignKey(e => e.PlanId);
             });
 
             modelBuilder.Entity<Roles>(entity =>
@@ -446,6 +453,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .WithMany(p => p.Subscriptions)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK__Subscript__UserI__656C112C");
+
+                entity.HasMany(e => e.MeteredPlanSchedulerManagements)
+                   .WithOne(e => e.Subscriptions)
+                   .HasForeignKey(e => e.SubscriptionId);
             });
 
             modelBuilder.Entity<Users>(entity =>
@@ -493,25 +504,42 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<MeteredPlanSchedulerManagement>(entity =>
+            {
+                entity.Property(e => e.SchedulerName)
+                      .HasMaxLength(50)
+                      .IsRequired();
+
+                entity.Property(e => e.SubscriptionId)
+                      .IsRequired();
+
+                entity.Property(e => e.PlanId)
+                    .IsRequired();
+
+                entity.Property(e => e.DimensionId)
+                    .IsRequired();
+
+                entity.Property(e => e.Quantity)
+                    .IsRequired();
+
+                entity.Property(e => e.FrequencyId)
+                    .IsRequired();
+
+                entity.Property(e => e.StartDate)
+                    .IsRequired();
+            });
+
             modelBuilder.Entity<SchedulerFrequency>(entity =>
             {
-                entity.Property(e => e.Frequency).IsUnicode(false);
+                entity.Property(e => e.Frequency)
+                      .IsUnicode(false)
+                      .IsRequired()
+                      .HasMaxLength(50);
 
                 entity.HasMany(e => e.MeteredPlanSchedulerManagements)
                       .WithOne(e => e.SchedulerFrequency)
                       .HasForeignKey(e => e.FrequencyId);
             });
-            
-            modelBuilder.Entity<Plans>()
-            .HasMany(e => e.MeteredPlanSchedulerManagements)
-            .WithOne(e => e.Plan)
-            .HasForeignKey(e => e.PlanId);
-
-
-            modelBuilder.Entity<Subscriptions>()
-            .HasMany(e => e.MeteredPlanSchedulerManagements)
-            .WithOne(e => e.Subscriptions)
-            .HasForeignKey(e => e.SubscriptionId);
 
             modelBuilder.Entity<SchedulerManagerView>(entity =>
             {

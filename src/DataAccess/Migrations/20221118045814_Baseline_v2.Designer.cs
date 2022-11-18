@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 
@@ -11,9 +12,10 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 {
     [DbContext(typeof(SaasKitContext))]
-    partial class SaasKitContextModelSnapshot : ModelSnapshot
+    [Migration("20221118045814_Baseline_v2")]
+    partial class Baseline_v2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,11 +223,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(500)");
 
-                    b.Property<string>("RunBy")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
-
                     b.Property<string>("StatusCode")
                         .HasMaxLength(100)
                         .IsUnicode(false)
@@ -273,59 +270,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.HasIndex("PlanId");
 
                     b.ToTable("MeteredDimensions");
-                });
-
-            modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.MeteredPlanSchedulerManagement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int?>("DimensionId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<int?>("FrequencyId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("NextRunTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("PlanId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<double?>("Quantity")
-                        .IsRequired()
-                        .HasColumnType("float");
-
-                    b.Property<string>("SchedulerName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime?>("StartDate")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("SubscriptionId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DimensionId");
-
-                    b.HasIndex("FrequencyId");
-
-                    b.HasIndex("PlanId");
-
-                    b.HasIndex("SubscriptionId");
-
-                    b.ToTable("MeteredPlanSchedulerManagement");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.OfferAttributes", b =>
@@ -636,66 +580,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SchedulerFrequency", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Frequency")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("SchedulerFrequency");
-                });
-
-            modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SchedulerManagerView", b =>
-                {
-                    b.Property<Guid>("AMPSubscriptionId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Dimension")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
-
-                    b.Property<string>("Frequency")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("NextRunTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PlanId")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
-
-                    b.Property<string>("PurchaserEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Quantity")
-                        .HasColumnType("float");
-
-                    b.Property<string>("SchedulerName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SubscriptionName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToView("SchedulerManagerView");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SubscriptionAttributeValues", b =>
@@ -1064,41 +948,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.Navigation("Plan");
                 });
 
-            modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.MeteredPlanSchedulerManagement", b =>
-                {
-                    b.HasOne("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.MeteredDimensions", "MeteredDimensions")
-                        .WithMany("MeteredPlanSchedulerManagements")
-                        .HasForeignKey("DimensionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SchedulerFrequency", "SchedulerFrequency")
-                        .WithMany("MeteredPlanSchedulerManagements")
-                        .HasForeignKey("FrequencyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Plans", "Plan")
-                        .WithMany("MeteredPlanSchedulerManagements")
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Subscriptions", "Subscriptions")
-                        .WithMany("MeteredPlanSchedulerManagements")
-                        .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MeteredDimensions");
-
-                    b.Navigation("Plan");
-
-                    b.Navigation("SchedulerFrequency");
-
-                    b.Navigation("Subscriptions");
-                });
-
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SubscriptionAuditLogs", b =>
                 {
                     b.HasOne("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Subscriptions", "Subscription")
@@ -1119,16 +968,9 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.MeteredDimensions", b =>
-                {
-                    b.Navigation("MeteredPlanSchedulerManagements");
-                });
-
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Plans", b =>
                 {
                     b.Navigation("MeteredDimensions");
-
-                    b.Navigation("MeteredPlanSchedulerManagements");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Roles", b =>
@@ -1136,16 +978,9 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.Navigation("KnownUsers");
                 });
 
-            modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SchedulerFrequency", b =>
-                {
-                    b.Navigation("MeteredPlanSchedulerManagements");
-                });
-
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Subscriptions", b =>
                 {
                     b.Navigation("MeteredAuditLogs");
-
-                    b.Navigation("MeteredPlanSchedulerManagements");
 
                     b.Navigation("SubscriptionAuditLogs");
                 });
