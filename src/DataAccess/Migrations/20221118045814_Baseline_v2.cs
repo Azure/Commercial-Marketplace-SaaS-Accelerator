@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Baseline_v2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -241,19 +241,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SchedulerFrequency",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Frequency = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SchedulerFrequency", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SubscriptionAttributeValues",
                 columns: table => new
                 {
@@ -456,46 +443,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MeteredPlanSchedulerManagement",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SchedulerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SubscriptionId = table.Column<int>(type: "int", nullable: true),
-                    PlanId = table.Column<int>(type: "int", nullable: true),
-                    DimensionId = table.Column<int>(type: "int", nullable: true),
-                    FrequencyId = table.Column<int>(type: "int", nullable: true),
-                    Quantity = table.Column<double>(type: "float", nullable: true),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    NextRunTime = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_MeteredPlanSchedulerManagement", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_MeteredPlanSchedulerManagement_MeteredDimensions_DimensionId",
-                        column: x => x.DimensionId,
-                        principalTable: "MeteredDimensions",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_MeteredPlanSchedulerManagement_Plans_PlanId",
-                        column: x => x.PlanId,
-                        principalTable: "Plans",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_MeteredPlanSchedulerManagement_SchedulerFrequency_FrequencyId",
-                        column: x => x.FrequencyId,
-                        principalTable: "SchedulerFrequency",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_MeteredPlanSchedulerManagement_Subscriptions_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalTable: "Subscriptions",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SubscriptionAuditLogs",
                 columns: table => new
                 {
@@ -534,26 +481,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 column: "PlanId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MeteredPlanSchedulerManagement_DimensionId",
-                table: "MeteredPlanSchedulerManagement",
-                column: "DimensionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MeteredPlanSchedulerManagement_FrequencyId",
-                table: "MeteredPlanSchedulerManagement",
-                column: "FrequencyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MeteredPlanSchedulerManagement_PlanId",
-                table: "MeteredPlanSchedulerManagement",
-                column: "PlanId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MeteredPlanSchedulerManagement_SubscriptionId",
-                table: "MeteredPlanSchedulerManagement",
-                column: "SubscriptionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SubscriptionAuditLogs_SubscriptionID",
                 table: "SubscriptionAuditLogs",
                 column: "SubscriptionID");
@@ -563,9 +490,9 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 table: "Subscriptions",
                 column: "UserId");
 
-            migrationBuilder.SeedData();
-            migrationBuilder.SeedViews();
-            migrationBuilder.SeedStoredProcedures();
+
+            migrationBuilder.BaselineV2_SeedStoredProcedures();
+            migrationBuilder.BaselineV2_SeedData();
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -592,7 +519,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 name: "MeteredAuditLogs");
 
             migrationBuilder.DropTable(
-                name: "MeteredPlanSchedulerManagement");
+                name: "MeteredDimensions");
 
             migrationBuilder.DropTable(
                 name: "OfferAttributes");
@@ -634,22 +561,15 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "MeteredDimensions");
-
-            migrationBuilder.DropTable(
-                name: "SchedulerFrequency");
+                name: "Plans");
 
             migrationBuilder.DropTable(
                 name: "Subscriptions");
 
             migrationBuilder.DropTable(
-                name: "Plans");
-
-            migrationBuilder.DropTable(
                 name: "Users");
 
-
-            migrationBuilder.DeSeedAll();
+            migrationBuilder.BaselineV2_DeSeedAll();
         }
     }
 }

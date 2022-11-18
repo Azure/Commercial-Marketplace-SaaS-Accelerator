@@ -21,9 +21,6 @@ Connect-AzureAD -Confirm; `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
  -Location "East US"; `
-.\Deploy-Code.ps1 `
- -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
- -ResourceGroupForDeployment "MarketplaceSaasGitHub";
  ```
 
   The following lines are optional:
@@ -50,9 +47,10 @@ If you are already have deployed the SaaS Accelerator, but you want to update it
 ``` powershell
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b <branch-to-deploy> --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
-.\Deploy-Code.ps1 `
+.\Deploy.ps1 `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
- -ResourceGroupForDeployment "MarketplaceSaasGitHub";
+ -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
+ -CodeOnlyDeploy
  ```
 
 ## Parameters

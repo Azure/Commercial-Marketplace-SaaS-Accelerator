@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 
@@ -11,9 +12,10 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 {
     [DbContext(typeof(SaasKitContext))]
-    partial class SaasKitContextModelSnapshot : ModelSnapshot
+    [Migration("20221118211554_Baseline_v6")]
+    partial class Baseline_v6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

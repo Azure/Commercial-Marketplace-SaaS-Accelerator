@@ -12,8 +12,8 @@ using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 {
     [DbContext(typeof(SaasKitContext))]
-    [Migration("20221116194140_Initial")]
-    partial class Initial
+    [Migration("20221118203340_Baseline_v5")]
+    partial class Baseline_v5
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -281,27 +281,35 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int?>("DimensionId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int?>("FrequencyId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("NextRunTime")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("PlanId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<double?>("Quantity")
+                        .IsRequired()
                         .HasColumnType("float");
 
                     b.Property<string>("SchedulerName")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("StartDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("SubscriptionId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -636,8 +644,10 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Frequency")
+                        .IsRequired()
+                        .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
 
@@ -1055,19 +1065,27 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 {
                     b.HasOne("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.MeteredDimensions", "MeteredDimensions")
                         .WithMany("MeteredPlanSchedulerManagements")
-                        .HasForeignKey("DimensionId");
+                        .HasForeignKey("DimensionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.SchedulerFrequency", "SchedulerFrequency")
                         .WithMany("MeteredPlanSchedulerManagements")
-                        .HasForeignKey("FrequencyId");
+                        .HasForeignKey("FrequencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Plans", "Plan")
                         .WithMany("MeteredPlanSchedulerManagements")
-                        .HasForeignKey("PlanId");
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Subscriptions", "Subscriptions")
                         .WithMany("MeteredPlanSchedulerManagements")
-                        .HasForeignKey("SubscriptionId");
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("MeteredDimensions");
 
