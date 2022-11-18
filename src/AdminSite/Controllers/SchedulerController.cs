@@ -56,16 +56,22 @@
         /// <param name="offerAttributeRepository">The offer attribute repository.</param>
         /// <param name="offerRepository">The offer repository.</param>
         /// <param name="logger">The logger.</param>
-        public SchedulerController(ISubscriptionsRepository subscriptionRepository, IMeteredDimensionsRepository meteredRepository,
-            ISchedulerFrequencyRepository frequencyRepository, IPlansRepository plansRepository,
-            IMeteredPlanSchedulerManagementRepository schedulerRepository,ISchedulerManagerViewRepository schedulerViewRepository, IUsersRepository usersRepository, ILogger<SchedulerController> logger, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
+        public SchedulerController(ISubscriptionsRepository subscriptionRepository, 
+                                   IMeteredDimensionsRepository meteredRepository,
+                                   ISchedulerFrequencyRepository frequencyRepository, 
+                                   IPlansRepository plansRepository,
+                                   IMeteredPlanSchedulerManagementRepository schedulerRepository,
+                                   ISchedulerManagerViewRepository schedulerViewRepository, 
+                                   IUsersRepository usersRepository, 
+                                   ILogger<SchedulerController> logger, 
+                                   ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
+
         {
             this.usersRepository= usersRepository;
             this.logger = logger;
             this.meteredRepository = meteredRepository;
             this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository);
             this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
-
         }
 
         /// <summary>
@@ -192,7 +198,6 @@
             }
             return this.PartialView("Error", "Subscription is Invalid");
         }
-
 
         public IActionResult AddNewScheduledTrigger(SchedulerUsageViewModel schedulerUsageViewModel)
         {

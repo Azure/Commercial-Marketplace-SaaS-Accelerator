@@ -45,6 +45,7 @@ namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob
                             .AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>()
                             .AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>()
                             .AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>()
+                            .AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>()
                             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()))
                             .AddSingleton<Executor, Executor>()
                             .BuildServiceProvider();

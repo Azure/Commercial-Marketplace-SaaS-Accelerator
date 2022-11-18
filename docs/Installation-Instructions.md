@@ -34,8 +34,7 @@ Connect-AzureAD -Confirm; `
  -ADApplicationSecret "xxxx-xxx-xxx-xxx-xxxx" `
  -ADMTApplicationID "xxxx-xxx-xxx-xxx-xxxx" `
  -LogoURLpng "https://company_com/company_logo.png" `
- -LogoURLico "https://company_com/company_logo.ico" `
- -MeteredSchedulerSupport true
+ -LogoURLico "https://company_com/company_logo.ico"
  ```
 The scripts above will perform these actions:
    - Create required App Registration for SaaS Marketplace API authentication
