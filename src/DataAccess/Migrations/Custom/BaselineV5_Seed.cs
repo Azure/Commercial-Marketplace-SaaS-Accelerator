@@ -25,7 +25,7 @@ INSERT INTO [dbo].[SchedulerFrequency] (Frequency) VALUES ('Yearly')
         public static void BaselineV5_SeedViews(this MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-
+EXEC(N'
 CREATE VIEW [dbo].[SchedulerManagerView]
 	AS SELECT 
 	m.Id,
@@ -44,7 +44,7 @@ CREATE VIEW [dbo].[SchedulerManagerView]
 	inner join Subscriptions s on m.SubscriptionId=s.Id
 	inner join Plans p on m.PlanId=p.Id
 	inner join MeteredDimensions d on m.DimensionId=d.Id
-");
+')");
         }
 
         public static void BaselineV5_DeSeedAll(this MigrationBuilder migrationBuilder)

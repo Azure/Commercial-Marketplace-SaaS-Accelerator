@@ -47,10 +47,9 @@ If you are already have deployed the SaaS Accelerator, but you want to update it
 ``` powershell
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b <branch-to-deploy> --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
-.\Deploy.ps1 `
+.\Upgrade.ps1 `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -CodeOnlyDeploy
  ```
 
 ## Parameters
