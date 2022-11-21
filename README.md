@@ -45,11 +45,11 @@ This project accelerates the SaaS offer onboarding experience for those building
 
 ### Additional technical documents
 
-1. [Advanced installation](docs/Advanced-Instructions.md) - This document details more manual installation instructions and how to set up a local development environment.
-2. [Enterprise reference architectures](docs/Enterprise-Reference-Architecture.md)
-3. [Single region architectures](./docs/Enterprise-Reference-Architecture-Single-region.md)
-4. [Multi-region architectures](./docs/Enterprise-Reference-Architecture-multi-region-saas-rg.md)
-5. [Advanced installation checklist](./docs/Enterprise-Reference-Architecture-Checklist.md)
+<!-- 1. [Advanced installation](docs/Advanced-Instructions.md) - This document details more manual installation instructions and how to set up a local development environment.  -->
+1. [Enterprise reference architectures](docs/Enterprise-Reference-Architecture.md)
+2. [Single region architectures](./docs/Enterprise-Reference-Architecture-Single-region.md)
+3. [Multi-region architectures](./docs/Enterprise-Reference-Architecture-multi-region-saas-rg.md)
+4. [Advanced installation checklist](./docs/Enterprise-Reference-Architecture-Checklist.md)
 
 ### Monitoring
 The following documents provide HOW-TOs setup Azure Monitoring and Alerting for the resources deployed by the SaaS Accelerator:
