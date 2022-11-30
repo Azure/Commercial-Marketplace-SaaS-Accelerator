@@ -28,13 +28,6 @@ $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $KeyVault=$WebAppNamePrefix+"-kv"
 
-Write-host "#### Deploying new database ####" 
-$ConnectionString = az keyvault secret show `
-	--vault-name $KeyVault `
-	--name "DefaultConnection" `
-	--query "{value:value}" `
-	--output tsv
-
 #### THIS SECTION DEPLOYS CODE AND DATABASE CHANGES
 Write-host "#### Deploying new database ####" 
 $ConnectionString = az keyvault secret show `
@@ -42,7 +35,7 @@ $ConnectionString = az keyvault secret show `
 	--name "DefaultConnection" `
 	--query "{value:value}" `
 	--output tsv
-	
+
 #Extract components from ConnectionString since Invoke-Sqlcmd needs them separately
 $Server = String-Between -source $ConnectionString -start "Data Source=" -end ";"
 $Database = String-Between -source $ConnectionString -start "Initial Catalog=" -end ";"
@@ -85,13 +78,16 @@ BEGIN
 	        VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1'), (N'20221118211554_Baseline_v6', N'6.0.1');
 END;
 GO"
-Invoke-Sqlcmd -query $compatibilityScript -ServerInstance $Server -database $Database -Username $User -Password $Pass
 
+Invoke-Sqlcmd -query $compatibilityScript -ServerInstance $Server -database $Database -Username $User -Password $Pass
+Write-host "## Ran compatibility script against database"
+Invoke-Sqlcmd -inputFile script.sql -ServerInstance $Server -database $Database -Username $User -Password $Pass
 Write-host "## Ran migration against database"	
 
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
 Remove-Item -Path script.sql
 Write-host "#### Database Deployment complete ####"	
+
 
 
 Write-host "#### Deploying new code ####" 
