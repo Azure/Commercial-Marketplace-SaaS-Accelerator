@@ -15,9 +15,9 @@ on:
       - main
 
 env:  
-  CUSTOMER_PROJECT: './src/Marketplace.SaaS.Accelerator.CustomerSite/Marketplace.SaaS.Accelerator.CustomerSite.csproj'
+  CUSTOMER_PROJECT: './src/CustomerSite/CustomerSite.csproj'
   CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.CustomerSite/publish'
-  PUBLISHER_PROJECT: './src/Marketplace.SaaS.Accelerator.AdminSite/Marketplace.SaaS.Accelerator.AdminSite.csproj'
+  PUBLISHER_PROJECT: './src/AdminSite/AdminSite.csproj'
   PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/publish'
   DOTNET_CORE_VERSION: '6.0.x'
   
