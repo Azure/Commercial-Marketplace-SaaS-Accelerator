@@ -6,10 +6,10 @@ The customer portal and the publisher portal sample web applications use SQL Ser
 
 ## Install Using SQL Scripts
 
-The SQL scripts build on top of each other. When setting up your database, do the following.
+The project uses EntityFramework Core Code-First approach to the database design and maintainance.
+When deploying a new version of the accelerator the `dotnet-ef` tool is used to generate a migration script from your current database state to the latest state. All necesary changes will be automatically applied during deployment
 
-1. Start with a blank database
-2. Run AMP-DB-2.1.sql
+When installing the accelerator for the first time, a fresh db creation script is auto-generated based on the latest version of the code and automatically creates the db schema and seeds the initial data required for operation.
 
 ## Description
 
