@@ -70,26 +70,26 @@ public class Startup
             options.MinimumSameSitePolicy = SameSiteMode.None;
         });
 
-        var config = new SaaSApiClientConfiguration()
-        {
-            AdAuthenticationEndPoint = this.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
-            ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
-            ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
-            FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
-            MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],
-            FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
-            GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
-            Resource = this.Configuration["SaaSApiConfiguration:Resource"],
-            SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
-            SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
-            TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
-            SupportMeteredBilling = Convert.ToBoolean(this.Configuration["SaaSApiConfiguration:supportmeteredbilling"])
-        };
-        var knownUsers = new KnownUsersModel()
-        {
-            KnownUsers = this.Configuration["KnownUsers"],
-        };
-        var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
+            var config = new SaaSApiClientConfiguration()
+            {
+                AdAuthenticationEndPoint = this.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
+                ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
+                ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
+                FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
+                MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],
+                FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
+                GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
+                Resource = this.Configuration["SaaSApiConfiguration:Resource"],
+                SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
+                SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
+                TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
+                SupportMeteredBilling = Convert.ToBoolean(this.Configuration["SaaSApiConfiguration:supportmeteredbilling"])
+            };
+            var knownUsers = new KnownUsersModel()
+            {
+                KnownUsers = this.Configuration["KnownUsers"],
+            };
+            var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
 
 
         services
