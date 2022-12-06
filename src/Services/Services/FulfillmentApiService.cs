@@ -20,16 +20,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
     /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IFulfilmentApiClient" />
     public class FulfillmentApiService : BaseApiService, IFulfillmentApiService
     {
-
-
-        /// <summary>
-        /// Gets or sets the logger.
-        /// </summary>
-        /// <value>
-        /// The logger.
-        /// </value>
-        protected ILogger Logger { get; set; }
-
         /// <summary>
         /// Gets or sets the SDK settings.
         /// </summary>
@@ -57,7 +47,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         {
             this.marketplaceClient = marketplaceClient;
             this.ClientConfiguration = sdkSettings;
-            this.Logger = logger;
         }
 
         /// <summary>

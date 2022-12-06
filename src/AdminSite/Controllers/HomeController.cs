@@ -362,7 +362,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
-                    this.logger.LogInformation("GetSubscriptionByIdAsync SubscriptionID :{0} :: planID:{1}:: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(operation));
+                    this.logger.LogInformation("GetSubscriptionByIdAsync SubscriptionID :{0} :: planID:{1}:: operation:{2}", subscriptionId, planId, operation);
 
                     this.TempData["ShowWelcomeScreen"] = false;
                     var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
