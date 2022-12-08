@@ -10,7 +10,7 @@ You can install the SaaS Accelerator code using a __single command__ line within
 
 ``` powershell
 dotnet tool install --global dotnet-ef; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.0.1 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.1.1 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 Connect-AzureAD -Confirm; `
 .\Deploy.ps1 `
@@ -20,7 +20,7 @@ Connect-AzureAD -Confirm; `
  -SQLAdminLoginPassword "" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -Location "East US"; `
+ -Location "East US" `
  ```
 
   The following lines are optional:
