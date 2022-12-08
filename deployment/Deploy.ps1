@@ -128,30 +128,42 @@ if (!($ADApplicationID)) {   # AAD App Registration - Create Single Tenant App R
     }
 }
 
-$restbody = "" +`
-"{ \`"displayName\`": \`"$WebAppNamePrefix-LandingpageAppReg\`"," +`
-" \`"api\`":{\`"requestedAccessTokenVersion\`": 2}," +`
-" \`"signInAudience\`" : \`"AzureADandPersonalMicrosoftAccount\`"," +`
-" \`"web\`": " +`
-"{ \`"redirectUris\`": " +`
-"[" +`
-"\`"https://$WebAppNamePrefix-portal.azurewebsites.net\`"," +`
-"\`"https://$WebAppNamePrefix-portal.azurewebsites.net/\`"," +`
-"\`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index\`"," +`
-"\`"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/\`"," +`
-"\`"https://$WebAppNamePrefix-admin.azurewebsites.net\`"," +`
-"\`"https://$WebAppNamePrefix-admin.azurewebsites.net/\`"," +`
-"\`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index\`"," +`
-"\`"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/\`"" +`
-"]," +`
-" \`"logoutUrl\`": \`"https://$WebAppNamePrefix-portal.azurewebsites.net/logout\`"," +`
-"\`"implicitGrantSettings\`": " +`
-"{ \`"enableIdTokenIssuance\`": true }}," +`
-" \`"requiredResourceAccess\`": " +`
-" [{\`"resourceAppId\`": \`"00000003-0000-0000-c000-000000000000\`", " +`
-" \`"resourceAccess\`": " +`
-" [{ \`"id\`": \`"e1fe6dd8-ba31-4d61-89e7-88639da4683d\`"," +`
-" \`"type\`": \`"Scope\`" }]}] }" 
+$restbody = @"
+{
+    "displayName" : "$WebAppNamePrefix-LandingpageAppReg",
+    "api": 
+    {
+        "requestedAccessTokenVersion" : 2
+    },
+    "signInAudience" : "AzureADandPersonalMicrosoftAccount",
+    "web":
+    { 
+        "redirectUris": 
+        [
+            "https://$WebAppNamePrefix-portal.azurewebsites.net",
+            "https://$WebAppNamePrefix-portal.azurewebsites.net/",
+            "https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index",
+            "https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net/",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
+        ],
+        "logoutUrl": "https://$WebAppNamePrefix-portal.azurewebsites.net/logout",
+        "implicitGrantSettings": 
+            { "enableIdTokenIssuance" : true }
+    },
+    "requiredResourceAccess":
+    [{
+        "resourceAppId": "00000003-0000-0000-c000-000000000000",
+        "resourceAccess":
+            [{ 
+                "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+                "type": "Scope" 
+            }]
+    }]
+}
+"@
 
 Write-Host $restbody
 
@@ -228,8 +240,8 @@ $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $KeyVault=$WebAppNamePrefix+"-kv"
 $KeyVault=$KeyVault -replace '_',''
-$ADApplicationSecretKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=ADApplicationSecret)"' -f $KeyVault
-$DefaultConnectionKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=DefaultConnection)"' -f $KeyVault
+$ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=ADApplicationSecret)"
+$DefaultConnectionKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=DefaultConnection)"
 $ServerUri = $SQLServerName+".database.windows.net"
 $Connection="Data Source=tcp:"+$ServerUri+",1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
 
@@ -287,7 +299,7 @@ az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secre
 
 Write-host "📜  Add Portal Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --settings DefaultConnection=$DefaultConnectionKeyVault
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport  SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/  SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 
 Write-host "📜  Deploying the Publisher Code to Admin Site"
 az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --src-path "../Publish/AdminSite.zip" --type zip
