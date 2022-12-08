@@ -20,14 +20,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
     public class MeteredBillingApiService : BaseApiService, IMeteredBillingApiService
     {
         /// <summary>
-        /// Gets or sets the logger.
-        /// </summary>
-        /// <value>
-        /// The logger.
-        /// </value>
-        protected ILogger Logger { get; set; }
-
-        /// <summary>
         /// Gets or sets the SDK settings.
         /// </summary>
         /// <value>
@@ -52,7 +44,6 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
         {
             this.meteringClient = meteringClient;
             this.ClientConfiguration = sdkSettings;
-            this.Logger = logger;
         }
 
         /// <summary>
