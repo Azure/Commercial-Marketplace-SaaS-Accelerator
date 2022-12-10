@@ -2,6 +2,8 @@
 
 You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal ([video tutorial](https://youtu.be/BVZTj6fssQ8)).
 
+> Note: use the Azure Cloud Shell's PowerShell shell, not the default bash shell.
+
    1. Copy the following section to an editor and update it to match your company preference. 
       - Replace `SOME-UNIQUE-STRING` with your Team name or some other meaningful name for your depth. (Ensure that the final name does not exceed 24 characters)
       - Replace `user@emai.com` with a valid email from your org that will use the portal for the first time. Once deployed, this account will be able to login to the administration panel and give access to more users.
@@ -10,7 +12,7 @@ You can install the SaaS Accelerator code using a __single command__ line within
 
 ``` powershell
 dotnet tool install --global dotnet-ef; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.0.1 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.1.1 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 Connect-AzureAD -Confirm; `
 .\Deploy.ps1 `
@@ -20,7 +22,7 @@ Connect-AzureAD -Confirm; `
  -SQLAdminLoginPassword "" `
  -PublisherAdminUsers "user@email.com" `
  -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -Location "East US"; `
+ -Location "East US" `
  ```
 
   The following lines are optional:

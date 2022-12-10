@@ -78,7 +78,7 @@
                     existingPlan.DisplayName = planDetails.DisplayName;
                     existingPlan.OfferId = planDetails.OfferId;
                     existingPlan.IsmeteringSupported = planDetails.IsmeteringSupported;
-                    this.CheckMeteredDimension(planDetails,existingPlan);
+                    this.CheckMeteredDimension(planDetails, existingPlan);
                     this.context.Plans.Update(existingPlan);
                     this.context.SaveChanges();
                     return existingPlan.Id;
@@ -214,34 +214,28 @@
         /// <returns> List type="of Plan attributes.</returns>
         public IEnumerable<PlanAttributesModel> GetPlanAttributes(Guid planGuId, Guid offerId)
         {
-            try
+            var offerAttributescCall = this.context.PlanAttributeOutput.FromSqlRaw("dbo.spGetOfferParameters {0}", planGuId);
+            var offerAttributes = offerAttributescCall.ToList();
+
+            List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
+
+            if (offerAttributes != null && offerAttributes.Count() > 0)
             {
-                var offerAttributescCall = this.context.PlanAttributeOutput.FromSqlRaw("dbo.spGetOfferParameters {0}", planGuId);
-                var offerAttributes = offerAttributescCall.ToList();
-
-                List<PlanAttributesModel> attributesList = new List<PlanAttributesModel>();
-
-                if (offerAttributes != null && offerAttributes.Count() > 0)
+                foreach (var offerAttribute in offerAttributes)
                 {
-                    foreach (var offerAttribute in offerAttributes)
-                    {
-                        PlanAttributesModel planAttributes = new PlanAttributesModel();
-                        planAttributes.PlanAttributeId = offerAttribute.PlanAttributeId;
-                        planAttributes.PlanId = offerAttribute.PlanId;
-                        planAttributes.OfferAttributeId = offerAttribute.OfferAttributeId;
-                        planAttributes.IsEnabled = offerAttribute.IsEnabled;
-                        planAttributes.DisplayName = offerAttribute.DisplayName;
-                        planAttributes.Type = offerAttribute.Type;
-                        attributesList.Add(planAttributes);
-                    }
+                    PlanAttributesModel planAttributes = new PlanAttributesModel();
+                    planAttributes.PlanAttributeId = offerAttribute.PlanAttributeId;
+                    planAttributes.PlanId = offerAttribute.PlanId;
+                    planAttributes.OfferAttributeId = offerAttribute.OfferAttributeId;
+                    planAttributes.IsEnabled = offerAttribute.IsEnabled;
+                    planAttributes.DisplayName = offerAttribute.DisplayName;
+                    planAttributes.Type = offerAttribute.Type;
+                    attributesList.Add(planAttributes);
                 }
+            }
 
-                return attributesList;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return attributesList;
+
         }
 
         /// <summary>
@@ -252,42 +246,35 @@
         /// <returns> Plan Events Model.</returns>
         public IEnumerable<PlanEventsModel> GetEventsByPlan(Guid planGuId, Guid offerId)
         {
-            try
+            var allEvents = this.context.PlanEventsOutPut.FromSqlRaw("dbo.spGetPlanEvents {0}", planGuId).ToList();
+
+            List<PlanEventsModel> eventsList = new List<PlanEventsModel>();
+
+            if (allEvents != null && allEvents.Count() > 0)
             {
-                var allEvents = this.context.PlanEventsOutPut.FromSqlRaw("dbo.spGetPlanEvents {0}", planGuId).ToList();
-
-                List<PlanEventsModel> eventsList = new List<PlanEventsModel>();
-
-                if (allEvents != null && allEvents.Count() > 0)
+                foreach (var events in allEvents)
                 {
-                    foreach (var events in allEvents)
+                    PlanEventsModel planEvent = new PlanEventsModel();
+                    planEvent.Id = events.Id;
+                    planEvent.PlanId = events.PlanId;
+                    planEvent.Isactive = events.Isactive;
+                    planEvent.SuccessStateEmails = events.SuccessStateEmails;
+                    planEvent.FailureStateEmails = events.FailureStateEmails;
+                    planEvent.EventsName = events.EventsName;
+                    planEvent.EventId = events.EventId;
+                    planEvent.CopyToCustomer = events.CopyToCustomer ?? false;
+                    if (planEvent.EventsName != "Pending Activation")
                     {
-                        PlanEventsModel planEvent = new PlanEventsModel();
-                        planEvent.Id = events.Id;
-                        planEvent.PlanId = events.PlanId;
-                        planEvent.Isactive = events.Isactive;
-                        planEvent.SuccessStateEmails = events.SuccessStateEmails;
-                        planEvent.FailureStateEmails = events.FailureStateEmails;
-                        planEvent.EventsName = events.EventsName;
-                        planEvent.EventId = events.EventId;
-                        planEvent.CopyToCustomer = events.CopyToCustomer ?? false;
-                        if (planEvent.EventsName != "Pending Activation")
-                        {
-                            eventsList.Add(planEvent);
-                        }
-                        else if (!Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
-                        {
-                            eventsList.Add(planEvent);
-                        }
+                        eventsList.Add(planEvent);
+                    }
+                    else if (!Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
+                    {
+                        eventsList.Add(planEvent);
                     }
                 }
+            }
 
-                return eventsList;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            return eventsList;
         }
 
         /// <summary>
