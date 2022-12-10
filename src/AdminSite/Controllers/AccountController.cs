@@ -29,7 +29,7 @@
         /// <returns>
         /// The <see cref="IActionResult" />.
         /// </returns>
-        public override SignOutResult SignOut()
+        public new SignOutResult SignOut()
         {
             return this.SignOut(
                 new AuthenticationProperties
