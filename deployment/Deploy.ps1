@@ -50,8 +50,8 @@ if ($SQLAdminLogin -eq "") {
 if ($SQLAdminLoginPassword -eq "") {
     $SQLAdminLoginPassword = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((New-Guid))))+"="
 }
-if($SQLDatabaseName -eq "") {
-   $SQLDatabaseName = "AMPSaaSDB"
+if ($SQLDatabaseName -eq "") {
+    $SQLDatabaseName = "AMPSaaSDB"
 }
 
 $SaaSApiConfiguration_CodeHash= git log --format='%H' -1
@@ -237,8 +237,8 @@ $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $KeyVault=$WebAppNamePrefix+"-kv"
 $KeyVault=$KeyVault -replace '_',''
-$ADApplicationSecretKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=ADApplicationSecret)"' -f $KeyVault
-$DefaultConnectionKeyVault='"@Microsoft.KeyVault(VaultName={0};SecretName=DefaultConnection)"' -f $KeyVault
+$ADApplicationSecretKeyVault='"@Microsoft.KeyVault(VaultName=' + $KeyVault+ ';SecretName=ADApplicationSecret)"'
+$DefaultConnectionKeyVault='"@Microsoft.KeyVault(VaultName=' + $KeyVault+ ';SecretName=DefaultConnection)"'
 $ServerUri = $SQLServerName+".database.windows.net"
 $Connection="Data Source=tcp:"+$ServerUri+",1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
 
