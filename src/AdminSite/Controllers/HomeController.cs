@@ -292,7 +292,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 {
                     List<SubscriptionAuditLogs> subscriptionAudit = new List<SubscriptionAuditLogs>();
                     subscriptionAudit = this.subscriptionLogRepository.GetSubscriptionBySubscriptionId(subscriptionId).ToList();
-                    return this.View(subscriptionAudit);
+                    return this.PartialView(subscriptionAudit);
                 }
                 else
                 {
@@ -551,7 +551,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                 if (this.User.Identity.IsAuthenticated)
                 {
                     var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-                    return this.View(subscriptionDetail);
+                    return this.PartialView(subscriptionDetail);
                 }
                 else
                 {
@@ -643,7 +643,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     var subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                     subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
-                    return this.View(subscriptionDetail);
+                    return this.PartialView(subscriptionDetail);
                 }
                 else
                 {

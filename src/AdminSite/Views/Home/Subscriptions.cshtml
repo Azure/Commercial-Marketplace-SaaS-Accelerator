@@ -6,7 +6,7 @@
 }
 
 <div class="text-center">
-    <div class="container">
+    <div>
         <br />
         @if (!Model.IsSuccess && !string.IsNullOrEmpty(Model.ErrorMessage))
         {
@@ -15,7 +15,7 @@
             </div>
         }
         <form method="post">
-            <div class="">
+            <div>
                 <div class="card-body">
                     <div class="text-left">
                         <span class="cm-section-heading">Subscriptions</span>
@@ -27,7 +27,7 @@
                         <input type="text" size="50" id="filterTextBox" placeholder="Enter any text to filter subscriptions" onkeyup="filterSubscriptions()">
                         <input type="checkbox" class="statusCheckbox" id="SubscribedOnly" onchange="filterSubscriptions()"/> Hide Unsubscribed
                     </div>
-                    <div>
+                    <div class="table-responsive mt20">
                         @if (Model.Subscriptions.Count() > 0)
                         {
                             <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20" width="100%">
