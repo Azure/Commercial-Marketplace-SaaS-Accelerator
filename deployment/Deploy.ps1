@@ -35,7 +35,7 @@ Param(
 # Install-Module -Name AzureAD
 
 $ErrorActionPreference = "Stop"
-
+$startTime = Get-Date
 #region Set up Variables and Default Parameters
 
 if ($ResourceGroupForDeployment -eq "") {
@@ -368,5 +368,6 @@ Write-host "      ➡️ Landing Page section:       https://$WebAppNamePrefix-p
 Write-host "      ➡️ Connection Webhook section: https://$WebAppNamePrefix-portal.azurewebsites.net/api/AzureWebhook"
 Write-host "      ➡️ Tenant ID:                  $TenantID"
 Write-host "      ➡️ AAD Application ID section: $ADApplicationID"
-
+$duration = (Get-Date) - $startTime
+Write-Host "Deployment Complete in $($duration.Minutes)m:$($duration.Seconds)s"
 #endregion
