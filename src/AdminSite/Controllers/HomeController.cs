@@ -848,7 +848,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     var currentSubscription = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscription.Id);
                     
                     // Step 2: Check if they Exist in DB - Create if dont exist
-                    if (currentSubscription == null)
+                    if (currentSubscription.Name == null)
                     {
                         // Step 3: Add/Update the Offer
                         Guid OfferId = this.offersRepository.Add(new Offers()
