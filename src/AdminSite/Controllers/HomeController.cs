@@ -643,7 +643,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
                     var subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                     subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
-                    return this.PartialView(subscriptionDetail);
+                    return this.View(subscriptionDetail);
                 }
                 else
                 {
