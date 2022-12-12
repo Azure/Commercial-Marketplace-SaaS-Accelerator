@@ -238,21 +238,21 @@ if (!($ADMTApplicationID)) {
 #endregion
 
 #region Prepare Code Packages
-
 Write-host "📜 Prepare publish files for the application"
-Write-host "   🔵 Preparing Admin Site"  
-dotnet publish ../src/AdminSite/AdminSite.csproj -c debug -o ../Publish/AdminSite/ -v q
+if (!(Test-Path '../Publish')) {		
+	Write-host "   🔵 Preparing Admin Site"  
+	dotnet publish ../src/AdminSite/AdminSite.csproj -c debug -o ../Publish/AdminSite/ -v q
 
-Write-host "   🔵 Preparing Metered Scheduler"
-dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -c debug -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob/ -v q --runtime win-x64 --self-contained true 
+	Write-host "   🔵 Preparing Metered Scheduler"
+	dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -c debug -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob/ -v q --runtime win-x64 --self-contained true 
 
-Write-host "   🔵 Preparing Customer Site"
-dotnet publish ../src/CustomerSite/CustomerSite.csproj -c debug -o ../Publish/CustomerSite/ -v q
+	Write-host "   🔵 Preparing Customer Site"
+	dotnet publish ../src/CustomerSite/CustomerSite.csproj -c debug -o ../Publish/CustomerSite/ -v q
 
-Write-host "   🔵 Zipping packages"
-Compress-Archive -Path ../Publish/AdminSite/* -DestinationPath ../Publish/AdminSite.zip -Force
-Compress-Archive -Path ../Publish/CustomerSite/* -DestinationPath ../Publish/CustomerSite.zip -Force
-
+	Write-host "   🔵 Zipping packages"
+	Compress-Archive -Path ../Publish/AdminSite/* -DestinationPath ../Publish/AdminSite.zip -Force
+	Compress-Archive -Path ../Publish/CustomerSite/* -DestinationPath ../Publish/CustomerSite.zip -Force
+}
 #endregion
 
 #region Deploy Azure Resources Infrastructure
@@ -343,7 +343,7 @@ az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppName
 Write-host "   🔵 Clean up"
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
 Remove-Item -Path script.sql
-Remove-Item -Path ../Publish -recurse -Force
+#Remove-Item -Path ../Publish -recurse -Force
 
 #endregion
 
