@@ -934,7 +934,10 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                var errorMessage = $"Message: {ex.Message} ({ex.InnerException})";
+                logger.LogError(errorMessage);
+                applicationLogService.AddApplicationLog(errorMessage).GetAwaiter().GetResult();
+                
                 return BadRequest();
             }
 
