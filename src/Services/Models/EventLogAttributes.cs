@@ -1,18 +1,17 @@
-﻿namespace Marketplace.SaaS.Accelerator.Services.Models
+﻿namespace Marketplace.SaaS.Accelerator.Services.Models;
+
+/// <summary>
+/// Event Log Attributes.
+/// </summary>
+public enum EventLogAttributes
 {
     /// <summary>
-    /// Event Log Attributes.
+    /// The activate
     /// </summary>
-    public enum EventLogAttributes
-    {
-        /// <summary>
-        /// The activate
-        /// </summary>
-        Activate = 1,
+    Activate = 1,
 
-        /// <summary>
-        /// The un subscribe
-        /// </summary>
-        UnSubscribe = 2,
-    }
+    /// <summary>
+    /// The un subscribe
+    /// </summary>
+    UnSubscribe = 2,
 }

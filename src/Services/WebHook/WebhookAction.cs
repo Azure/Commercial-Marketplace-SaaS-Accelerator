@@ -4,60 +4,59 @@
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace Marketplace.SaaS.Accelerator.Services.WebHook
+namespace Marketplace.SaaS.Accelerator.Services.WebHook;
+
+/// <summary>
+/// Enum Representation for Web hook Action.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum WebhookAction
 {
+    /// (When the resource has been deleted)
     /// <summary>
-    /// Enum Representation for Web hook Action.
+    /// The unsubscribe
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum WebhookAction
-    {
-        /// (When the resource has been deleted)
-        /// <summary>
-        /// The unsubscribe
-        /// </summary>
-        [EnumMember(Value = "Unsubscribe")]
-        Unsubscribe,
+    [EnumMember(Value = "Unsubscribe")]
+    Unsubscribe,
 
-        /// (When the change plan operation has completed)
-        /// <summary>
-        /// The change plan
-        /// </summary>
-        [EnumMember(Value = "ChangePlan")]
-        ChangePlan,
+    /// (When the change plan operation has completed)
+    /// <summary>
+    /// The change plan
+    /// </summary>
+    [EnumMember(Value = "ChangePlan")]
+    ChangePlan,
 
-        /// (When the change quantity operation has completed),
-        /// <summary>
-        /// The change quantity
-        /// </summary>
-        [EnumMember(Value = "ChangeQuantity")]
-        ChangeQuantity,
+    /// (When the change quantity operation has completed),
+    /// <summary>
+    /// The change quantity
+    /// </summary>
+    [EnumMember(Value = "ChangeQuantity")]
+    ChangeQuantity,
 
-        /// (When resource has been suspended)
-        /// <summary>
-        /// The suspend
-        /// </summary>
-        [EnumMember(Value = "Suspend")]
-        Suspend,
+    /// (When resource has been suspended)
+    /// <summary>
+    /// The suspend
+    /// </summary>
+    [EnumMember(Value = "Suspend")]
+    Suspend,
 
-        /// (When resource has been reinstated after suspension)
-        /// <summary>
-        /// The reinstate
-        /// </summary>
-        [EnumMember(Value = "Reinstate")]
-        Reinstate,
+    /// (When resource has been reinstated after suspension)
+    /// <summary>
+    /// The reinstate
+    /// </summary>
+    [EnumMember(Value = "Reinstate")]
+    Reinstate,
 
-        /// (When resource has been reinstated after suspension)
-        /// <summary>
-        /// The reinstate
-        /// </summary>
-        [EnumMember(Value = "Renew")]
-        Renew,
+    /// (When resource has been reinstated after suspension)
+    /// <summary>
+    /// The reinstate
+    /// </summary>
+    [EnumMember(Value = "Renew")]
+    Renew,
         
-        /// <summary>
-        /// The transfer
-        /// </summary>
-        [EnumMember(Value = "Transfer")]
-        Transfer,
-    }
+    /// <summary>
+    /// The transfer
+    /// </summary>
+    [EnumMember(Value = "Transfer")]
+    Transfer,
 }

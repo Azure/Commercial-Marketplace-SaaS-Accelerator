@@ -3,37 +3,36 @@
 
 using System.Text.Json.Serialization;
 
-namespace Marketplace.SaaS.Accelerator.Services.Models
+namespace Marketplace.SaaS.Accelerator.Services.Models;
+
+/// <summary>
+/// Shows Operation Status.
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum OperationStatusEnum
 {
     /// <summary>
-    /// Shows Operation Status.
+    /// The not started
     /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum OperationStatusEnum
-    {
-        /// <summary>
-        /// The not started
-        /// </summary>
-        NotStarted,
+    NotStarted,
 
-        /// <summary>
-        /// The in progress
-        /// </summary>
-        InProgress,
+    /// <summary>
+    /// The in progress
+    /// </summary>
+    InProgress,
 
-        /// <summary>
-        /// The failed
-        /// </summary>
-        Failed,
+    /// <summary>
+    /// The failed
+    /// </summary>
+    Failed,
 
-        /// <summary>
-        /// The succeeded
-        /// </summary>
-        Succeeded,
+    /// <summary>
+    /// The succeeded
+    /// </summary>
+    Succeeded,
 
-        /// <summary>
-        /// The conflict
-        /// </summary>
-        Conflict,
-    }
+    /// <summary>
+    /// The conflict
+    /// </summary>
+    Conflict,
 }

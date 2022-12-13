@@ -3,30 +3,29 @@
 
 using System;
 
-namespace Marketplace.SaaS.Accelerator.Services.Models.Attributes
+namespace Marketplace.SaaS.Accelerator.Services.Models.Attributes;
+
+/// <summary>
+/// FromRequestHeaderAttribute to set the Header Key with each Request.
+/// </summary>
+/// <seealso cref="System.Attribute" />
+[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+public class FromRequestHeaderAttribute : Attribute
 {
     /// <summary>
-    /// FromRequestHeaderAttribute to set the Header Key with each Request.
+    /// Initializes a new instance of the <see cref="FromRequestHeaderAttribute"/> class.
     /// </summary>
-    /// <seealso cref="System.Attribute" />
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public class FromRequestHeaderAttribute : Attribute
+    /// <param name="headerKey">The header key.</param>
+    public FromRequestHeaderAttribute(string headerKey)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FromRequestHeaderAttribute"/> class.
-        /// </summary>
-        /// <param name="headerKey">The header key.</param>
-        public FromRequestHeaderAttribute(string headerKey)
-        {
-            this.HeaderKey = headerKey;
-        }
-
-        /// <summary>
-        /// Gets or sets the header key.
-        /// </summary>
-        /// <value>
-        /// The header key.
-        /// </value>
-        public string HeaderKey { get; set; }
+        this.HeaderKey = headerKey;
     }
+
+    /// <summary>
+    /// Gets or sets the header key.
+    /// </summary>
+    /// <value>
+    /// The header key.
+    /// </value>
+    public string HeaderKey { get; set; }
 }

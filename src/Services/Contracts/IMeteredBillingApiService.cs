@@ -5,25 +5,24 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.Services.Models;
 
-namespace Marketplace.SaaS.Accelerator.Services.Contracts
+namespace Marketplace.SaaS.Accelerator.Services.Contracts;
+
+/// <summary>
+/// Metered ApiClient Interface.
+/// </summary>
+public interface IMeteredBillingApiService
 {
     /// <summary>
-    /// Metered ApiClient Interface.
+    /// Emits the usage event asynchronous.
     /// </summary>
-    public interface IMeteredBillingApiService
-    {
-        /// <summary>
-        /// Emits the usage event asynchronous.
-        /// </summary>
-        /// <param name="usageEventRequest">The usage event request.</param>
-        /// <returns>Event usage.</returns>
-        Task<MeteringUsageResult> EmitUsageEventAsync(MeteringUsageRequest usageEventRequest);
+    /// <param name="usageEventRequest">The usage event request.</param>
+    /// <returns>Event usage.</returns>
+    Task<MeteringUsageResult> EmitUsageEventAsync(MeteringUsageRequest usageEventRequest);
 
-        /// <summary>
-        /// Emits the batch usage event asynchronous.
-        /// </summary>
-        /// <param name="batchUsageEventRequest">The batch usage event request.</param>
-        /// <returns> Batch Usage.</returns>
-        Task<MeteringBatchUsageResult> EmitBatchUsageEventAsync(IEnumerable<MeteringUsageRequest> batchUsageEventRequest);
-    }
+    /// <summary>
+    /// Emits the batch usage event asynchronous.
+    /// </summary>
+    /// <param name="batchUsageEventRequest">The batch usage event request.</param>
+    /// <returns> Batch Usage.</returns>
+    Task<MeteringBatchUsageResult> EmitBatchUsageEventAsync(IEnumerable<MeteringUsageRequest> batchUsageEventRequest);
 }

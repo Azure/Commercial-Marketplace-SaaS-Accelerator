@@ -1,13 +1,12 @@
-﻿namespace Marketplace.SaaS.Accelerator.Services.Models
+﻿namespace Marketplace.SaaS.Accelerator.Services.Models;
+
+/// <summary>
+/// Sets Subscription Operation Status.
+/// </summary>
+public enum MainMenuStatusEnum
 {
     /// <summary>
-    /// Sets Subscription Operation Status.
+    /// Is Active Enable
     /// </summary>
-    public enum MainMenuStatusEnum
-    {
-        /// <summary>
-        /// Is Active Enable
-        /// </summary>
-        IsLicenseManagementEnabled,
-    }
+    IsLicenseManagementEnabled,
 }

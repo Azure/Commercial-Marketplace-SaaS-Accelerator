@@ -3,20 +3,19 @@
 
 using Marketplace.SaaS.Accelerator.Services.Models.Attributes;
 
-namespace Marketplace.SaaS.Accelerator.Services.Models
+namespace Marketplace.SaaS.Accelerator.Services.Models;
+
+/// <summary>
+/// Get Fulfillment Result.
+/// </summary>
+public class SaaSApiResult
 {
     /// <summary>
-    /// Get Fulfillment Result.
+    /// Gets or sets the request identifier.
     /// </summary>
-    public class SaaSApiResult
-    {
-        /// <summary>
-        /// Gets or sets the request identifier.
-        /// </summary>
-        /// <value>
-        /// The request identifier.
-        /// </value>
-        [FromRequestHeader("x-ms-requestid")]
-        public string RequestID { get; set; }
-    }
+    /// <value>
+    /// The request identifier.
+    /// </value>
+    [FromRequestHeader("x-ms-requestid")]
+    public string RequestID { get; set; }
 }

@@ -4,32 +4,31 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace Marketplace.SaaS.Accelerator.DataAccess.Entities
+namespace Marketplace.SaaS.Accelerator.DataAccess.Entities;
+
+public partial class MeteringUsageResponseAttributes
 {
-    public partial class MeteringUsageResponseAttributes
-    {
-        [JsonPropertyName("status")]
-        public string Status { get; set; }
+    [JsonPropertyName("status")]
+    public string Status { get; set; }
 
-        [JsonPropertyName("effectiveStartTime")]
-        public DateTime? UsagePostedDate { get; set; }
+    [JsonPropertyName("effectiveStartTime")]
+    public DateTime? UsagePostedDate { get; set; }
 
-        [JsonPropertyName("usageEventId")]
-        public Guid UsageEventId { get; set; }
+    [JsonPropertyName("usageEventId")]
+    public Guid UsageEventId { get; set; }
 
-        [JsonPropertyName("messageTime")]
-        public DateTime MessageTime { get; set; }
+    [JsonPropertyName("messageTime")]
+    public DateTime MessageTime { get; set; }
 
-        [JsonPropertyName("resourceId")]
-        public Guid ResourceId { get; set; }
+    [JsonPropertyName("resourceId")]
+    public Guid ResourceId { get; set; }
 
-        [JsonPropertyName("quantity")]
-        public long Quantity { get; set; }
+    [JsonPropertyName("quantity")]
+    public long Quantity { get; set; }
 
-        [JsonPropertyName("dimension")]
-        public string Dimension { get; set; }
+    [JsonPropertyName("dimension")]
+    public string Dimension { get; set; }
 
-        [JsonPropertyName("planId")]
-        public string PlanId { get; set; }
-    }
+    [JsonPropertyName("planId")]
+    public string PlanId { get; set; }
 }

@@ -25,142 +25,141 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Marketplace.SaaS;
 
-namespace Marketplace.SaaS.Accelerator.CustomerSite
+namespace Marketplace.SaaS.Accelerator.CustomerSite;
+
+/// <summary>
+/// Defines the <see cref="Startup" />.
+/// </summary>
+public class Startup
 {
     /// <summary>
-    /// Defines the <see cref="Startup" />.
+    /// Initializes a new instance of the <see cref="Startup"/> class.
     /// </summary>
-    public class Startup
+    /// <param name="configuration">The configuration<see cref="IConfiguration"/>.</param>
+    public Startup(IConfiguration configuration)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Startup"/> class.
-        /// </summary>
-        /// <param name="configuration">The configuration<see cref="IConfiguration"/>.</param>
-        public Startup(IConfiguration configuration)
-        {
-            this.Configuration = configuration;
-        }
+        this.Configuration = configuration;
+    }
 
-        /// <summary>
-        /// Gets the Configuration.
-        /// </summary>
-        public IConfiguration Configuration { get; }
+    /// <summary>
+    /// Gets the Configuration.
+    /// </summary>
+    public IConfiguration Configuration { get; }
 
-        /// <summary>
-        /// The ConfigureServices.
-        /// </summary>
-        /// <param name="services">The services<see cref="IServiceCollection"/>.</param>
-        public void ConfigureServices(IServiceCollection services)
+    /// <summary>
+    /// The ConfigureServices.
+    /// </summary>
+    /// <param name="services">The services<see cref="IServiceCollection"/>.</param>
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var loggerFactory = LoggerFactory.Create(builder =>
         {
-            var loggerFactory = LoggerFactory.Create(builder =>
+            builder
+                .AddConsole();
+        });
+
+        services.Configure<CookiePolicyOptions>(options =>
+        {
+            // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+            options.CheckConsentNeeded = context => true;
+            options.MinimumSameSitePolicy = SameSiteMode.None;
+        });
+
+        var config = new SaaSApiClientConfiguration()
+        {
+            AdAuthenticationEndPoint = this.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
+            ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
+            ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
+            MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],
+            FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
+            FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
+            GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
+            Resource = this.Configuration["SaaSApiConfiguration:Resource"],
+            SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
+            SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
+            TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
+            Environment = this.Configuration["SaaSApiConfiguration:Environment"]
+        };
+        var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
+
+        services
+            .AddAuthentication(options =>
             {
-                builder
-                    .AddConsole();
+                options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddOpenIdConnect(options =>
+            {
+                options.Authority = $"{config.AdAuthenticationEndPoint}/common/v2.0";
+                options.ClientId = config.MTClientId;
+                options.ResponseType = OpenIdConnectResponseType.IdToken;
+                options.CallbackPath = "/Home/Index";
+                options.SignedOutRedirectUri = config.SignedOutRedirectUri;
+                options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_NAME; //This does not seem to take effect on User.Identity. See Note in CustomClaimsTransformation.cs
+                options.TokenValidationParameters.ValidateIssuer = false;
             });
+        services
+            .AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+        services
+            .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()))
+            .AddSingleton<SaaSApiClientConfiguration>(config);
 
-            var config = new SaaSApiClientConfiguration()
-            {
-                AdAuthenticationEndPoint = this.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
-                ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
-                ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
-                MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],
-                FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
-                FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
-                GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
-                Resource = this.Configuration["SaaSApiConfiguration:Resource"],
-                SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
-                SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
-                TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
-                Environment = this.Configuration["SaaSApiConfiguration:Environment"]
-            };
-            var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
+        services
+            .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
-            services
-                .AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                })
-                .AddCookie()
-                .AddOpenIdConnect(options =>
-                {
-                    options.Authority = $"{config.AdAuthenticationEndPoint}/common/v2.0";
-                    options.ClientId = config.MTClientId;
-                    options.ResponseType = OpenIdConnectResponseType.IdToken;
-                    options.CallbackPath = "/Home/Index";
-                    options.SignedOutRedirectUri = config.SignedOutRedirectUri;
-                    options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_NAME; //This does not seem to take effect on User.Identity. See Note in CustomClaimsTransformation.cs
-                    options.TokenValidationParameters.ValidateIssuer = false;
-                });
-            services
-               .AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
+        InitializeRepositoryServices(services);
 
-            services
-                .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()))
-                .AddSingleton<SaaSApiClientConfiguration>(config);
+        services.AddMvc(option => option.EnableEndpointRouting = false);
+    }
 
-            services
-                .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
-
-            InitializeRepositoryServices(services);
-
-            services.AddMvc(option => option.EnableEndpointRouting = false);
-        }
-
-        /// <summary>
-        /// The Configure.
-        /// </summary>
-        /// <param name="app">The app<see cref="IApplicationBuilder" />.</param>
-        /// <param name="env">The env<see cref="IWebHostEnvironment" />.</param>
-        /// <param name="loggerFactory">The loggerFactory<see cref="ILoggerFactory" />.</param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+    /// <summary>
+    /// The Configure.
+    /// </summary>
+    /// <param name="app">The app<see cref="IApplicationBuilder" />.</param>
+    /// <param name="env">The env<see cref="IWebHostEnvironment" />.</param>
+    /// <param name="loggerFactory">The loggerFactory<see cref="ILoggerFactory" />.</param>
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+    {
+        if (env.IsDevelopment())
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
-            app.UseAuthentication();
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseDeveloperExceptionPage();
         }
-
-        private static void InitializeRepositoryServices(IServiceCollection services)
+        else
         {
-            services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
-            services.AddScoped<IPlansRepository, PlansRepository>();
-            services.AddScoped<IUsersRepository, UsersRepository>();
-            services.AddScoped<ISubscriptionLogRepository, SubscriptionLogRepository>();
-            services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
-            services.AddScoped<IWebhookProcessor, WebhookProcessor>();
-            services.AddScoped<IWebhookHandler, WebHookHandler>();
-            services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
-            services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
-            services.AddScoped<IOffersRepository, OffersRepository>();
-            services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
-            services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
-            services.AddScoped<IEventsRepository, EventsRepository>();
-            services.AddScoped<IEmailService, SMTPEmailService>();
+            app.UseExceptionHandler("/Home/Error");
+            app.UseHsts();
         }
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+        app.UseCookiePolicy();
+        app.UseAuthentication();
+        app.UseMvc(routes =>
+        {
+            routes.MapRoute(
+                name: "default",
+                template: "{controller=Home}/{action=Index}/{id?}");
+        });
+    }
+
+    private static void InitializeRepositoryServices(IServiceCollection services)
+    {
+        services.AddScoped<ISubscriptionsRepository, SubscriptionsRepository>();
+        services.AddScoped<IPlansRepository, PlansRepository>();
+        services.AddScoped<IUsersRepository, UsersRepository>();
+        services.AddScoped<ISubscriptionLogRepository, SubscriptionLogRepository>();
+        services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
+        services.AddScoped<IWebhookProcessor, WebhookProcessor>();
+        services.AddScoped<IWebhookHandler, WebHookHandler>();
+        services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
+        services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
+        services.AddScoped<IOffersRepository, OffersRepository>();
+        services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();
+        services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
+        services.AddScoped<IEventsRepository, EventsRepository>();
+        services.AddScoped<IEmailService, SMTPEmailService>();
     }
 }

@@ -5,31 +5,30 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
 
-namespace Marketplace.SaaS.Accelerator.Services.Models
+namespace Marketplace.SaaS.Accelerator.Services.Models;
+
+/// <summary>
+/// Plan Component Details.
+/// </summary>
+/// <seealso cref="Microsoft.Marketplace.SaasKit.Models.SaaSApiResult" />
+public class PlanComponents
 {
+
+    [JsonPropertyName("recurrentBillingTerms")]
+    [DisplayName("recurrentBillingTerms")]
     /// <summary>
-    /// Plan Component Details.
+    /// Gets or Sets RecurrentBillingTerm
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaasKit.Models.SaaSApiResult" />
-    public class PlanComponents
-    {
-
-        [JsonPropertyName("recurrentBillingTerms")]
-        [DisplayName("recurrentBillingTerms")]
-        /// <summary>
-        /// Gets or Sets RecurrentBillingTerm
-        /// </summary>
-        public List<RecurrentBillingTerm> RecurrentBillingTerms { get; set; }
+    public List<RecurrentBillingTerm> RecurrentBillingTerms { get; set; }
 
 
-        [JsonPropertyName("meteringDimensions")]
-        [DisplayName("meteringDimensions")]
-        /// <summary>
-        /// Gets or Sets MeteringDimensions
-        /// </summary>
-        public List<MeteringDimension> MeteringDimensions { get; set; }
+    [JsonPropertyName("meteringDimensions")]
+    [DisplayName("meteringDimensions")]
+    /// <summary>
+    /// Gets or Sets MeteringDimensions
+    /// </summary>
+    public List<MeteringDimension> MeteringDimensions { get; set; }
 
 
         
-    }
 }

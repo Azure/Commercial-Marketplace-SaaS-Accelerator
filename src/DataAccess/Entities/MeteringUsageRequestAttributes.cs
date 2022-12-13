@@ -3,14 +3,13 @@
 
 using System;
 
-namespace Marketplace.SaaS.Accelerator.DataAccess.Entities
+namespace Marketplace.SaaS.Accelerator.DataAccess.Entities;
+
+public partial class MeteringUsageRequestAttributes
 {
-    public partial class MeteringUsageRequestAttributes
-    {
-        public double Quantity { get; set; }
-        public Guid ResourceId { get; set; }
-        public string Dimension { get; set; }
-        public DateTime EffectiveStartTime { get; set; }
-        public string PlanId { get; set; }
-    }
+    public double Quantity { get; set; }
+    public Guid ResourceId { get; set; }
+    public string Dimension { get; set; }
+    public DateTime EffectiveStartTime { get; set; }
+    public string PlanId { get; set; }
 }

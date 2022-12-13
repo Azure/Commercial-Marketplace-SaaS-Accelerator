@@ -1,7 +1,6 @@
-﻿namespace Marketplace.SaaS.Accelerator.Services.Models
+﻿namespace Marketplace.SaaS.Accelerator.Services.Models;
+
+public class KnownUsersModel
 {
-    public class KnownUsersModel
-    {
-        public string KnownUsers { get; set; }
-    }
+    public string KnownUsers { get; set; }
 }
