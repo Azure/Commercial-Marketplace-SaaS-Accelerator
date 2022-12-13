@@ -1,11 +1,9 @@
-﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+﻿using System;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
+namespace Marketplace.SaaS.Accelerator.Services.StatusHandlers
 {
-    using System;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-
     /// <summary>
     /// Base class for all the subscription status handlers. Provides common methods to access plan / subscription and user details.
     /// </summary>

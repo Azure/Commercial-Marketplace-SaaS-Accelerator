@@ -1,14 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
+namespace Marketplace.SaaS.Accelerator.Services.Models
 {
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Text.Json.Serialization;
     /// <summary>
     /// Plan Details.
     /// </summary>

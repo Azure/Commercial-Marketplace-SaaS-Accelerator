@@ -1,16 +1,15 @@
-﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+﻿using System.Net;
+using System.Net.Mail;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Models;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+namespace Marketplace.SaaS.Accelerator.Services.Services
 {
-    using System.Net;
-    using System.Net.Mail;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-
     /// <summary>
     /// Service to send emails using SMTP settings.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.Contracts.IEmailService" />
+    /// <seealso cref="IEmailService" />
     public class SMTPEmailService : IEmailService
     {
         /// <summary>

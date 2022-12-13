@@ -1,18 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.Services.Models;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+namespace Marketplace.SaaS.Accelerator.Services.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text.Json;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-
     /// <summary>
     /// Subscriptions Service.
     /// </summary>

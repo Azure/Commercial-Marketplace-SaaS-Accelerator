@@ -4,6 +4,11 @@
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
 
 namespace Microsoft.Marketplace.Saas.Web
 {
@@ -23,11 +28,6 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
     using Microsoft.Marketplace.Metering;
     using Microsoft.Marketplace.SaaS;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using System;
 
     /// <summary>

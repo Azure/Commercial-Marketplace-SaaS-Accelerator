@@ -1,8 +1,8 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace Marketplace.SaaS.Accelerator.Services.Models
+{
     /// <summary>
     /// Offers View Model.
     /// </summary>

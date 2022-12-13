@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Azure.Identity;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Marketplace.Metering;
 using Microsoft.Marketplace.SaaS;
-using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Marketplace.SaaS.Accelerator.Services.Test;

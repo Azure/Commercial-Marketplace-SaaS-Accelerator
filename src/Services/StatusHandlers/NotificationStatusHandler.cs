@@ -1,14 +1,13 @@
-﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+﻿using System;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Helpers;
+using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
+namespace Marketplace.SaaS.Accelerator.Services.StatusHandlers
 {
-    using System;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-
     /// <summary>
     /// Status handler to send out notifications based on the last status of the subscription.
     /// </summary>

@@ -3,15 +3,15 @@ using Azure.Identity;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
 using MeteredTriggerHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Marketplace.Metering;
-using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
 
 namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob
 {

@@ -1,7 +1,7 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Contracts
-{
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+﻿using Marketplace.SaaS.Accelerator.Services.Models;
 
+namespace Marketplace.SaaS.Accelerator.Services.Contracts
+{
     /// <summary>
     /// Contract for Emails service smtp /send grid.
     /// </summary>

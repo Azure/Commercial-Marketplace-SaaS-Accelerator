@@ -3,7 +3,11 @@
 
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
-using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
+using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.StatusHandlers;
 
 namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 {
@@ -17,11 +21,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>Home Controller.</summary>
     /// <seealso cref="BaseController"/>

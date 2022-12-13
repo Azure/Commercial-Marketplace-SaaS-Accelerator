@@ -1,13 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
+using Marketplace.SaaS.Accelerator.Services.Models;
+using Microsoft.Marketplace.SaaS.Models;
+
+namespace Marketplace.SaaS.Accelerator.Services.Helpers
 {
-    using Microsoft.Marketplace.SaaS.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using MeteringDimension = Models.MeteringDimension;
     using RecurrentBillingTerm = Models.RecurrentBillingTerm;
     using MeteringedQuantityIncluded = Models.MeteringedQuantityIncluded;
@@ -133,7 +135,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             components.MeteringDimensions = new List<MeteringDimension>();
             //Map MeteringDimesion array
 
-            foreach (SaaS.Models.MeteringDimension meterDim in plan.PlanComponents.MeteringDimensions)
+            foreach (Microsoft.Marketplace.SaaS.Models.MeteringDimension meterDim in plan.PlanComponents.MeteringDimensions)
             {
                 components.MeteringDimensions.Add(
                                         new MeteringDimension()
@@ -147,7 +149,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
             }
 
             //Map RecurrentBillingTerms array
-            foreach (SaaS.Models.RecurrentBillingTerm recurrentBilling in plan.PlanComponents.RecurrentBillingTerms)
+            foreach (Microsoft.Marketplace.SaaS.Models.RecurrentBillingTerm recurrentBilling in plan.PlanComponents.RecurrentBillingTerms)
             {
                 RecurrentBillingTerm recurrentBillingTerm = new RecurrentBillingTerm();
                 recurrentBillingTerm.MeteredQuantityIncluded = new List<MeteringedQuantityIncluded>();
@@ -155,7 +157,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
                 recurrentBillingTerm.Price = recurrentBilling.Price;
                 recurrentBillingTerm.TermDescription = recurrentBilling.TermDescription;
                 recurrentBillingTerm.TermUnit = recurrentBilling.TermUnit.ToString();
-                foreach (SaaS.Models.MeteringedQuantityIncluded metering in recurrentBilling.MeteredQuantityIncluded)
+                foreach (Microsoft.Marketplace.SaaS.Models.MeteringedQuantityIncluded metering in recurrentBilling.MeteredQuantityIncluded)
                 {
                     recurrentBillingTerm.MeteredQuantityIncluded.Add(new MeteringedQuantityIncluded()
                     {

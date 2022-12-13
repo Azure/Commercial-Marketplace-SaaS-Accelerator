@@ -1,13 +1,11 @@
-﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+namespace Marketplace.SaaS.Accelerator.Services.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-
     /// <summary>
     /// Application Log Service.
     /// </summary>

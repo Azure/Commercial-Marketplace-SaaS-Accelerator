@@ -3,17 +3,17 @@
 
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.StatusHandlers;
+using Marketplace.SaaS.Accelerator.Services.WebHook;
 
 namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
 {
     using System;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
     /// Handler For the WebHook Actions.

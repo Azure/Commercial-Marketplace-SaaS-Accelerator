@@ -3,6 +3,13 @@
 
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
+using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.StatusHandlers;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
 
 namespace Microsoft.Marketplace.Saas.Web.Controllers
 {
@@ -17,14 +24,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
     /// Home Controller.

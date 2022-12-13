@@ -1,14 +1,12 @@
-﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Microsoft.AspNetCore.Http;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+namespace Marketplace.SaaS.Accelerator.Services.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-
     /// <summary>
     /// Application Config Service.
     /// </summary>

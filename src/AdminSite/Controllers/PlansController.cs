@@ -1,4 +1,7 @@
 ﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
 
 namespace Microsoft.Marketplace.Saas.Web.Controllers
 {
@@ -8,9 +11,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
     using System.Text.Json;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
 
     /// <summary>
     /// Plans Controller.

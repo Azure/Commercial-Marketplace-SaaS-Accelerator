@@ -1,5 +1,8 @@
 ﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
 
 namespace Microsoft.Marketplace.Saas.Web.Controllers
 {
@@ -10,10 +13,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
     /// Offers Controller.

@@ -1,15 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
-using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-using Microsoft.Marketplace.SaaS.SDK.Services.Models;
+using System.Threading.Tasks;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
+namespace Marketplace.SaaS.Accelerator.Services.WebHook
 {
-    using System;
-    using System.Threading.Tasks;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-
     /// <summary>
     /// The webhook processor.
     /// </summary>

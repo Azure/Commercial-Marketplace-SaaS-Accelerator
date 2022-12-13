@@ -5,11 +5,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Azure.Identity;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
+using Marketplace.SaaS.Accelerator.Services.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Marketplace.SaaS;
-using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
-using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Marketplace.SaaS.Accelerator.Services.Test;

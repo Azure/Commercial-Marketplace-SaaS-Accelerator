@@ -3,12 +3,13 @@
 
 
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.WebHook;
 
 namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
 {
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
     using System;
     using System.Text.Json;

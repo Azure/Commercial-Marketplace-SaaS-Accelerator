@@ -1,11 +1,10 @@
-﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Models;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+namespace Marketplace.SaaS.Accelerator.Services.Services
 {
-    using System;
-    using System.Collections.Generic;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-
     /// <summary>
     /// Service to enable operations over offers.
     /// </summary>

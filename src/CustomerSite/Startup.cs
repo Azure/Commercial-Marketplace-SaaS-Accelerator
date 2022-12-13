@@ -4,6 +4,11 @@
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
+using Marketplace.SaaS.Accelerator.Services.WebHook;
 
 namespace Microsoft.Marketplace.SaasKit.Client
 {
@@ -19,10 +24,6 @@ namespace Microsoft.Marketplace.SaasKit.Client
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
-    using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
     using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
     using global::Azure.Identity;
     using Microsoft.Marketplace.SaaS;
