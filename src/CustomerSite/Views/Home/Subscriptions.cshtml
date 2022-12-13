@@ -61,7 +61,7 @@
                                                         @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                         {
                                                             <a class="dropdown-item cm-dropdown-option" asp-action="ViewSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
-                                                            @if (subscription.IsAutomaticProvisioningSupported == true)
+                                                            @if (subscription.AcceptSubscriptionUpdates == true)
                                                             {
                                                                 <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>      
                                                                 @if (subscription.IsPerUserPlan)
@@ -128,7 +128,11 @@
                 $('#myModal').modal();
             },
             error: function () {
-                alert("Content load failed.");
+                swal({
+                    title: "Error",
+                    text: "Content load failed.",
+                    icon: "Error"
+                })
             }
         });
     }
@@ -145,7 +149,11 @@
 
             },
             error: function () {
-                alert("Content load failed.");
+                swal({
+                    title: "Error",
+                    text: "Content load failed.",
+                    icon: "Error"
+                })
             }
         });
     }
@@ -161,18 +169,16 @@
                 $('#myModal').modal();
             },
             error: function () {
-                alert("Content load failed.");
+                swal({
+                    title: "Error",
+                    text: "Content load failed.",
+                    icon: "Error"
+                })
             }
         });
     }
 
     function confirmDialog() {
-        //var isConfirm = confirm('Are you sure you want to change the plan?');
-        //debugger
-        //if (isConfirm) {
-        //    $("#frmSubscriptionDetail").submit();
-        //}
-
         var newPlanName = $('#PlanId').val();
         swal({
             text: "Are you sure you want to switch to " + newPlanName + " plan?",
@@ -183,21 +189,17 @@
             .then((willChange) => {
                 debugger;
                 if (willChange) {
+                    $("#frmButton").prop("disabled", true);
+                    $("#frmSpinner").prop("hidden", false);
                     $("#frmSubscriptionDetail").submit();
                 }
             });
     }
 
     function confirmQuantityDialog() {
-        //var isConfirm = confirm('Are you sure you want to change the plan?');
-        //debugger
-        //if (isConfirm) {
-        //    $("#frmSubscriptionDetail").submit();
-        //}
-
-        var newPlanName = $('#PlanId').val();
+        var newQuantity = $('#Quantity').val();
         swal({
-            text: "Are you sure you want to Change the quantity?",
+            text: "Are you sure you want to Change the quantity to " + newQuantity + "?",
             icon: "warning",
             buttons: true,
             dangerMode: true,
@@ -205,6 +207,8 @@
             .then((willChange) => {
                 debugger;
                 if (willChange) {
+                    $("#frmButton").prop("disabled", true);
+                    $("#frmSpinner").prop("hidden", false);
                     $("#frmSubscriptionQuantityDetail").submit();
                 }
             });

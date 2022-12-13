@@ -66,5 +66,11 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
         ///   <c>true</c> if this instance is automatic provisioning supported; otherwise, <c>false</c>.
         /// </value>
         public bool IsAutomaticProvisioningSupported { get; set; }
+       
+        
+        /// <summary>
+        /// Gets or sets a value indicating if we allow subscription updates on the customer side.
+        /// </summary>
+        public bool AcceptSubscriptionUpdates { get; set; }
     }
 }

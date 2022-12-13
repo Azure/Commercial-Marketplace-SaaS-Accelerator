@@ -252,6 +252,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                             subscriptionExtension.CustomerName = this.CurrentUserName;
                             subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
                             subscriptionExtension.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
+                            subscriptionExtension.AcceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("AcceptSubscriptionUpdates"));
                         }
                     }
                     else
@@ -306,6 +307,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Controllers
                     {
                         Plans planDetail = this.planRepository.GetById(subscription.PlanId);
                         subscription.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
+                        subscription.AcceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("AcceptSubscriptionUpdates"));
                         subscription.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
                     }
 
