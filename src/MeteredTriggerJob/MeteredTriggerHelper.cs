@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -10,7 +9,7 @@ using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 
-namespace MeteredTriggerHelper
+namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob
 {
     public class Executor
     {
