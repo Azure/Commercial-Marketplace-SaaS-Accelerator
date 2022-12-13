@@ -1,24 +1,22 @@
-﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Marketplace.Saas.Web.Controllers
+namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text.Json;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.AspNetCore.Mvc.Rendering;
-    using System.Web;
-
     /// <summary>
     /// Scheduler Controller.
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.Saas.Web.Controllers.BaseController" />
+    /// <seealso cref="BaseController" />
     [ServiceFilter(typeof(KnownUserAttribute))]
     public class SchedulerController : BaseController
     {
