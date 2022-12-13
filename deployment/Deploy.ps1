@@ -370,4 +370,5 @@ Write-host "      ➡️ Tenant ID:                  $TenantID"
 Write-host "      ➡️ AAD Application ID section: $ADApplicationID"
 $duration = (Get-Date) - $startTime
 Write-Host "Deployment Complete in $($duration.Minutes)m:$($duration.Seconds)s"
+Write-Host "DO NOT CLOSE THIS SCREEN.  Please make sure you copy or perform the actions above before closing."
 #endregion
