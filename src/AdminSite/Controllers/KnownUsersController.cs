@@ -1,10 +1,12 @@
-﻿namespace Microsoft.Marketplace.Saas.Web.Controllers
+﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+
+namespace Microsoft.Marketplace.Saas.Web.Controllers
 {
     using System;
     using System.Collections.Generic;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;   
 

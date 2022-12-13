@@ -1,4 +1,6 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
+﻿using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
     using System;
     using System.Collections.Generic;

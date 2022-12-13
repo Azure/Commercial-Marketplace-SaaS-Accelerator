@@ -1,10 +1,12 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
+﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Services
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>

@@ -1,5 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
+
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+
 namespace Microsoft.Marketplace.Saas.Web.Controllers
 {
     using System;
@@ -20,7 +24,6 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>

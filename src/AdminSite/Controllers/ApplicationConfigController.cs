@@ -4,13 +4,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Marketplace.Saas.Web.Controllers;
 using Microsoft.Marketplace.SaaS.SDK.Services.Services;
 using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
 namespace SaaS.SDK.PublisherSolution.Controllers
 {

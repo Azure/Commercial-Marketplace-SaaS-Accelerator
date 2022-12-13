@@ -1,8 +1,8 @@
-﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
-{
-    using System;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+﻿using System;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
+namespace Marketplace.SaaS.Accelerator.DataAccess.Contracts
+{
     /// <summary>
     /// Repository to access users.
     /// </summary>

@@ -1,7 +1,9 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
+﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+
+namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
 {
     using System;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>

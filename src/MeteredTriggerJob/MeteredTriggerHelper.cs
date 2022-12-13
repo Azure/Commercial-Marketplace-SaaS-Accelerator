@@ -5,10 +5,11 @@ using System.Linq;
 using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System.Text.Json;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
 using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
 using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
 
 namespace MeteredTriggerHelper

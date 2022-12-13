@@ -1,8 +1,9 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
+﻿using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+
+namespace Microsoft.Marketplace.SaaS.SDK.Services.Helpers
 {
     using System;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 
     /// <summary>
     /// Email Helper.
