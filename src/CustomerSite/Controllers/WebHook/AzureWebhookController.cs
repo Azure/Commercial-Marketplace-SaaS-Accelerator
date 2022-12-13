@@ -2,19 +2,17 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 
+using System;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Microsoft.Marketplace.SaasKit.Client.Controllers.WebHook
+namespace Marketplace.SaaS.Accelerator.CustomerSite.Controllers.WebHook
 {
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
-    using System;
-    using System.Text.Json;
-    using System.Threading.Tasks;
-
     /// <summary>
     /// Azure Web hook.
     /// </summary>

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
+using System;
+using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
@@ -8,13 +10,10 @@ using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.StatusHandlers;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
+using Microsoft.Extensions.Logging;
 
-namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
+namespace Marketplace.SaaS.Accelerator.CustomerSite.WebHook
 {
-    using System;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-
     /// <summary>
     /// Handler For the WebHook Actions.
     /// </summary>
@@ -171,7 +170,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             }
             else
             {
-                var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, SaaS.Models.UpdateOperationStatusEnum.Failure);
+                var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
                 if (patchOperation != null && patchOperation.Status != 200)
                 {
                     await this.applicationLogService.AddApplicationLog($"Plan Change operation PATCH failed with statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
@@ -219,7 +218,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             }
             else
             {
-                var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, SaaS.Models.UpdateOperationStatusEnum.Failure);
+                var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
                 if (patchOperation != null && patchOperation.Status != 200)
                 {
                     await this.applicationLogService.AddApplicationLog($"Quantity Change operation PATCH failed with status statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
@@ -268,7 +267,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.WebHook
             }
             else
             {
-                var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, SaaS.Models.UpdateOperationStatusEnum.Failure);
+                var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
                 if (patchOperation != null && patchOperation.Status != 200)
                 {
                     await this.applicationLogService.AddApplicationLog($"Reinstate operation PATCH failed with status statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);

@@ -1,6 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
+using Azure.Identity;
+using Marketplace.SaaS.Accelerator.CustomerSite.WebHook;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
@@ -9,27 +11,22 @@ using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Marketplace.SaaS;
 
-namespace Microsoft.Marketplace.SaasKit.Client
+namespace Marketplace.SaaS.Accelerator.CustomerSite
 {
-    using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-    using Microsoft.Marketplace.SaaS.SDK.Services.WebHook;
-    using global::Azure.Identity;
-    using Microsoft.Marketplace.SaaS;
-    using Microsoft.AspNetCore.Authentication;
-    using System.IdentityModel.Tokens.Jwt;
-
     /// <summary>
     /// Defines the <see cref="Startup" />.
     /// </summary>
