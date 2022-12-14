@@ -273,11 +273,11 @@ $Connection="Data Source=tcp:"+$ServerUri+",1433;Initial Catalog=AMPSaaSDB;User 
 
 Write-host "   🔵 Resource Group"
 Write-host "      ➡️ Create Resource Group"
-az group create --location $location --name $ResourceGroupForDeployment --output $azCliOutput
+az group create --location "$Location" --name $ResourceGroupForDeployment --output $azCliOutput
 
 Write-host "   🔵 SQL Server"
 Write-host "      ➡️ Create Sql Server"
-az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $location --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword --output $azCliOutput
+az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location "$Location" --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword --output $azCliOutput
 Write-host "      ➡️ Add SQL Server Firewall rules"
 az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowAzureIP --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0" --output $azCliOutput
 if ($env:ACC_CLOUD -eq $null){
