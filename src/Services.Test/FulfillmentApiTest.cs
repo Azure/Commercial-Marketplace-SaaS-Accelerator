@@ -1,5 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
+
+using Xunit;
+
 namespace Microsoft.Marketplace.SaasKit.UnitTest
 {
     using System;
@@ -11,64 +14,47 @@ namespace Microsoft.Marketplace.SaasKit.UnitTest
     using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
     using Microsoft.Marketplace.SaaS.SDK.Services.Exceptions;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     /// <summary>
     /// FulfillmentApi Test Class.
     /// </summary>
-    [TestClass]
-    public class FulfillmentApiTest
+    [Collection("FulfillmentApiTest collection")]
+   public class FulfillmentApiTest
+{
+    private FulfillmentApiService fulfillApiService;
+    private SaaSApiClientConfiguration configuration = new SaaSApiClientConfiguration();
+
+    public FulfillmentApiTest()
     {
-        /// <summary>
-        /// The client.
-        /// </summary>
-        private FulfillmentApiService fulfillApiService;
+        var builder = new ConfigurationBuilder();
 
-        /// <summary>
-        /// The configuration.
-        /// </summary>
-        private SaaSApiClientConfiguration configuration = new SaaSApiClientConfiguration();
+        IConfigurationRoot config = new ConfigurationBuilder()
+           .AddJsonFile("appsettings.test.json")
+           .Build();
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FulfillmentApiTest" /> class.
-        /// </summary>
-        public FulfillmentApiTest()
-        {
-            var builder = new ConfigurationBuilder();
-
-            IConfigurationRoot config = new ConfigurationBuilder()
-               .AddJsonFile("appsettings.test.json")
-               .Build();
-
-            this.configuration = config.GetSection("AppSetting").Get<SaaSApiClientConfiguration>();
-            var creds = new ClientSecretCredential(configuration.TenantId.ToString(), configuration.ClientId.ToString(), configuration.ClientSecret);
-            this.fulfillApiService = new FulfillmentApiService(new MarketplaceSaaSClient(creds), sdkSettings:this.configuration, null);
-        }
-
-        /// <summary>
-        /// Gets the subscription by identifier.
-        /// </summary>
-        /// <returns>Test Subscription By Identifier.</returns>
-        [TestMethod]
-        public async Task GetSubscriptionByID()
-        {
-            var allSubscriptions = await this.fulfillApiService.GetAllSubscriptionAsync().ConfigureAwait(false);
-            var subscriptionId = allSubscriptions.FirstOrDefault().Id;
-            var subscriptionDetail = await this.fulfillApiService.GetSubscriptionByIdAsync(subscriptionId);
-            Assert.IsNotNull(subscriptionDetail);
-            Assert.AreEqual(subscriptionId, subscriptionDetail?.Id);
-        }
-
-        /// <summary>
-        /// Gets the subscription by identifier exception.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [ExpectedException(typeof(MarketplaceException), "Subscription Not Found")]
-        [TestMethod]
-        public async Task GetSubscriptionByIDException()
-        {
-            var subscriptionId = Guid.NewGuid();
-            _ = await this.fulfillApiService.GetSubscriptionByIdAsync(subscriptionId);
-        }
+        this.configuration = config.GetSection("AppSetting").Get<SaaSApiClientConfiguration>();
+        var creds = new ClientSecretCredential(configuration.TenantId.ToString(), configuration.ClientId.ToString(), configuration.ClientSecret);
+        this.fulfillApiService = new FulfillmentApiService(new MarketplaceSaaSClient(creds), sdkSettings:this.configuration, null);
     }
+
+    [Fact]
+    public async Task GetSubscriptionByID()
+    {
+        var allSubscriptions = await this.fulfillApiService.GetAllSubscriptionAsync().ConfigureAwait(false);
+        var subscriptionId = allSubscriptions.FirstOrDefault().Id;
+        var subscriptionDetail = await this.fulfillApiService.GetSubscriptionByIdAsync(subscriptionId);
+        Assert.NotNull(subscriptionDetail);
+        Assert.Equal(subscriptionId, subscriptionDetail?.Id);
+    }
+
+    [Fact]
+    public async Task GetSubscriptionByIDException()
+    {
+        var subscriptionId = Guid.NewGuid();
+
+        var ex = await Assert.ThrowsAsync<MarketplaceException>(() => this.fulfillApiService.GetSubscriptionByIdAsync(subscriptionId));
+        Assert.Equal("Subscription Not Found", ex.Message);
+    }
+}
+
 }

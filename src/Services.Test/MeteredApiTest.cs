@@ -4,6 +4,7 @@
 using Microsoft.Marketplace.SaaS.SDK.Services.Configurations;
 using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaaS.SDK.Services.Services;
+using Xunit;
 
 namespace Microsoft.Marketplace.SaaS.SDK.Services.UnitTest
 {
@@ -19,7 +20,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.UnitTest
     /// <summary>
     /// Metered API Test.
     /// </summary>
-    [TestClass]
+    [Collection("MeteredApiTest collection")]
     public class MeteredApiTest
     {
         /// <summary>The client.</summary>
@@ -52,7 +53,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.UnitTest
         /// Gets the subscription by identifier.
         /// </summary>
         /// <returns>Test Subscription Usage.</returns>
-        [TestMethod]
+        [Fact]
         public async Task TestSubscriptionUsage()
         {
             var allSubscriptions = await this.fulfillApiService.GetAllSubscriptionAsync().ConfigureAwait(false);
@@ -67,16 +68,16 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.UnitTest
                 ResourceId = defaultSubscription.Id,
             };
             var response = this.merteringService.EmitUsageEventAsync(subscriptionUsageRequest).Result;
-            Assert.AreEqual(response.Status, "Accepted");
-            Assert.AreEqual(response.ResourceId, defaultSubscription?.Id);
-            Assert.AreEqual(response.PlanId, defaultSubscription?.PlanId);
+            Assert.Equals(response.Status, "Accepted");
+            Assert.Equals(response.ResourceId, defaultSubscription?.Id);
+            Assert.Equals(response.PlanId, defaultSubscription?.PlanId);
         }
 
         /// <summary>
         /// Test subscription batch usage.
         /// </summary>
         /// <returns>Test Subscription Batch Usage.</returns>
-        [TestMethod]
+        [Fact]
         public async Task TestSubscriptionBatchUsage()
         {
             var allSubscriptions = await this.fulfillApiService.GetAllSubscriptionAsync().ConfigureAwait(false);
@@ -102,7 +103,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.Services.UnitTest
                 },
             };
             var response = await this.merteringService.EmitBatchUsageEventAsync(subscriptionUsageRequest);
-            Assert.AreEqual(response.Count, 2);
+            Assert.Equals(response.Count, 2);
         }
     }
 }
