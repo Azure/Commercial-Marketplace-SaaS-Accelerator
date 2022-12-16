@@ -48,10 +48,10 @@ public class OfferModel
     public int? UserID { get; set; }
 
     /// <summary>
-    /// Gets or sets the offer gu identifier.
+    /// Gets or sets the offer guid identifier.
     /// </summary>
     /// <value>
-    /// The offer gu identifier.
+    /// The offer guid identifier.
     /// </value>
     public Guid? OfferGuid { get; set; }
 }

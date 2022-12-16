@@ -68,13 +68,29 @@ public class OffersController : BaseController
         try
         {
             this.TempData["ShowWelcomeScreen"] = "True";
+
+            OffersListViewModel viewModel = new OffersListViewModel()
+            {
+                LineItems = new List<OffersListViewModel.OfferListItem>()
+            };
+
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
 
-            List<OfferModel> getAllOffersData = this.offersService.GetAllOffers();
+            List<OfferModel> offers = this.offersService.GetAllOffers();
 
+            foreach (var offer in offers)
+            {
+                var listItem = new OffersListViewModel.OfferListItem()
+                {
+                    OfferName = offer.OfferName,
+                    OfferId = offer.OfferID,
+                    OfferGuid = offer.OfferGuid.GetValueOrDefault()
+                };
 
+                viewModel.LineItems.Add(listItem);
+            }
 
-            return this.View(getAllOffersData);
+            return this.View(viewModel);
         }
         catch (Exception ex)
         {
@@ -128,7 +144,7 @@ public class OffersController : BaseController
 
             var offerDetailsViewModel = new OfferDetailsViewModel()
             {
-                OfferID = offerModel.OfferID,
+                OfferId = offerModel.OfferID,
                 Id = offerModel.Id,
                 OfferGuid = offerModel.OfferGuid.GetValueOrDefault(),
                 OfferName = offerModel.OfferName,

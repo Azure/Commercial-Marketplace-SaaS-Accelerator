@@ -1,6 +1,6 @@
-﻿@model List<Marketplace.SaaS.Accelerator.Services.Models.OfferModel>
+﻿@model Marketplace.SaaS.Accelerator.AdminSite.Models.Offer.OffersListViewModel
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Offers";
 }
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
@@ -8,26 +8,29 @@
     <div class="">
         <div class="card-body" style="margin-left:-30px;">
             <div class="text-left">
-                <span class="cm-section-heading">Offer</span>
+                <span class="cm-section-heading">Offer Input Fields for Landing Page</span>
+                <div>
+                    Define fields to show up on the landing page when customer is subscribing to the offer.
+                </div>
             </div>
             <div id="myModal">
-                @if (Model != null && Model.Count() > 0)
+                @if (Model != null && Model.LineItems.Any())
                 {
                     <div class="table-responsive mt20">
                         <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
                             <thead class="cm-table-head">
                                 <tr>
-                                    <th>Offer Id</th>
+                                    <th>Offer ID</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @{ var i = 0;}
-                                @foreach (var item in Model)
+                                @foreach (var item in Model.LineItems)
                                 {
                                     <tr>
                                         <td class="text-left">
-                                            @item.OfferID
+                                            @item.OfferId
                                         </td>
                                         <td class="text-left cm-ellipsis">
                                             <div class="nav-item dropdown">

@@ -6,7 +6,7 @@ namespace Marketplace.SaaS.Accelerator.AdminSite.Models.Offer;
 /// <summary>
 /// Offer View Model.
 /// </summary>
-public class OfferDetailsViewModel
+public record OfferDetailsViewModel
 {
     /// <summary>
     /// Gets or sets the identifier.
@@ -22,7 +22,7 @@ public class OfferDetailsViewModel
     /// <value>
     /// The offer identifier.
     /// </value>
-    public string OfferID { get; set; }
+    public string OfferId { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the offer.

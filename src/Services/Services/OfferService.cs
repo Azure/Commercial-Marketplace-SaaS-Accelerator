@@ -52,6 +52,8 @@ public class OfferService
         return offersList;
     }
 
+
+
     /// <summary>
     /// Gets the offer on identifier.
     /// </summary>

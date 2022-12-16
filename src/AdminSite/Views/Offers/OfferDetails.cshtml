@@ -1,4 +1,5 @@
-﻿@model OfferDetailsViewModel
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Marketplace.SaaS.Accelerator.AdminSite.Models.Offer.OfferDetailsViewModel
 
 <div class="container-fluid card-body">
     <div>
@@ -8,13 +9,13 @@
 
                     <div class="container mrtop maxwidth" style="float: left; margin-left: -20px;">
                         <div class="card card-header mb0 pb0 maxwidth">
-                            <input type='hidden' id='OfferID' name='OfferID' value="@Model.OfferID"/>
+                            <input type='hidden' id='OfferID' name='OfferID' value="@Model.OfferId"/>
                             <input type='hidden' id='OfferName' name='OfferName' value="@Model.OfferName"/>
                             <input type='hidden' id='OfferGuid' name='OfferGuid' value="@Model.OfferGuid"/>
                             <input type='hidden' id='Id' name='Id' value="@Model.Id"/>
                             <dl class="row">
                                 <dt class="col-2 text-right" style="margin-left: -100px;"><span>Offer name</span></dt>
-                                <dd class="col-3 text-left">@Model.OfferID</dd>
+                                <dd class="col-3 text-left">@Model.OfferId</dd>
                             </dl>
                         </div>
                         <div id="tableload mb0 pb0">
