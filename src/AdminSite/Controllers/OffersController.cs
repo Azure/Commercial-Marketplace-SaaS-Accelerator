@@ -27,13 +27,11 @@ public class OffersController : BaseController
 
     private readonly IApplicationConfigRepository applicationConfigRepository;
 
-    private readonly IOffersRepository offersRepository;
-
     private readonly IOfferAttributesRepository offersAttributeRepository;
 
     private readonly ILogger<OffersController> logger;
 
-    private OfferService offersService;
+    private readonly OfferService offersService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OffersController"/> class.
@@ -52,11 +50,10 @@ public class OffersController : BaseController
         IOfferAttributesRepository offersAttributeRepository, 
         ILogger<OffersController> logger)
     {
-        this.offersRepository = offersRepository;
         this.applicationConfigRepository = applicationConfigRepository;
         this.usersRepository = usersRepository;
         this.valueTypesRepository = valueTypesRepository;
-        this.offersService = new OfferService(this.offersRepository);
+        this.offersService = new OfferService(offersRepository);
         this.offersAttributeRepository = offersAttributeRepository;
         this.logger = logger;
     }
