@@ -1,4 +1,4 @@
-﻿@model List<Marketplace.SaaS.Accelerator.Services.Models.OffersModel>
+﻿@model List<Marketplace.SaaS.Accelerator.Services.Models.OfferModel>
 @{
     ViewData["Title"] = "Index";
 }
@@ -8,7 +8,7 @@
     <div class="">
         <div class="card-body" style="margin-left:-30px;">
             <div class="text-left">
-                <span class="cm-section-heading">Offers</span>
+                <span class="cm-section-heading">Offer</span>
             </div>
             <div id="myModal">
                 @if (Model != null && Model.Count() > 0)
@@ -33,7 +33,7 @@
                                             <div class="nav-item dropdown">
                                                 <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                 <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                    <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewOfferdetailsById('@item.OfferGuId')">Edit</a>
+                                                    <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewOfferdetailsById('@item.OfferGuid')">Edit</a>
                                                 </div>
                                             </div>
                                         </td>
@@ -46,11 +46,10 @@
                 }
                 else
                 {
-
                     <div class="cm-panel-default mt40">
                         <div class="p-3 mr420">
                             <p>
-                                You do not have any Offers!
+                                You do not have any Offer!
                             </p>
                         </div>
                     </div>
@@ -65,15 +64,15 @@
         $.ajax({
             type: "Get",
             url: "Offers/OfferDetails",
-            data: { offerGuId: offerGuId },
+            data: { offerGuid: offerGuId },
             contentType: "application/json; charset=utf-8",
             datatype: "json",
             success: function (data) {
                 $('#myModal').html(data);
-                //$('#myModal').modal();
             },
             error: function () {
-                alert("Content load failed.");
+                alert("Failed to load offer details.");
+
             }
         });
     }

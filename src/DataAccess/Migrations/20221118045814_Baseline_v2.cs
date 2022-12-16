@@ -119,7 +119,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Offers",
+                name: "Offer",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -525,7 +525,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                 name: "OfferAttributes");
 
             migrationBuilder.DropTable(
-                name: "Offers");
+                name: "Offer");
 
             migrationBuilder.DropTable(
                 name: "PlanAttributeMapping");

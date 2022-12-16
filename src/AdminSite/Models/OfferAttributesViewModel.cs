@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Marketplace.SaaS.Accelerator.Services.Models;
+namespace Marketplace.SaaS.Accelerator.AdminSite.Models;
 
 /// <summary>
 /// Offer Attributes Model.
 /// </summary>
-public class OfferAttributesModel
+public class OfferAttributesViewModel
 {
     /// <summary>
     /// Gets or sets the attribute identifier.
@@ -106,7 +106,7 @@ public class OfferAttributesModel
     public int? DisplaySequence { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether this <see cref="OfferAttributesModel"/> is isactive.
+    /// Gets or sets a value indicating whether this <see cref="OfferAttributesViewModel"/> is isactive.
     /// </summary>
     /// <value>
     ///   <c>true</c> if isactive; otherwise, <c>false</c>.

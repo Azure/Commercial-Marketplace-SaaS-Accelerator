@@ -23,7 +23,7 @@ public partial class SaasKitContext : DbContext
     public virtual DbSet<MeteredAuditLogs> MeteredAuditLogs { get; set; }
     public virtual DbSet<MeteredDimensions> MeteredDimensions { get; set; }
     public virtual DbSet<OfferAttributes> OfferAttributes { get; set; }
-    public virtual DbSet<Offers> Offers { get; set; }
+    public virtual DbSet<Offer> Offers { get; set; }
     public virtual DbSet<PlanAttributeMapping> PlanAttributeMapping { get; set; }
     public virtual DbSet<PlanAttributeOutput> PlanAttributeOutput { get; set; }
     public virtual DbSet<PlanEventsMapping> PlanEventsMapping { get; set; }
@@ -224,7 +224,7 @@ public partial class SaasKitContext : DbContext
             entity.Property(e => e.ValuesList).IsUnicode(false);
         });
 
-        modelBuilder.Entity<Offers>(entity =>
+        modelBuilder.Entity<Offer>(entity =>
         {
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
 

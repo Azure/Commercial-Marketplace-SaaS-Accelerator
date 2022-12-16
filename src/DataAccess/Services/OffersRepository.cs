@@ -8,7 +8,7 @@ using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 namespace Marketplace.SaaS.Accelerator.DataAccess.Services;
 
 /// <summary>
-/// Repository to access offers.
+/// Repository to access offer.
 /// </summary>
 /// <seealso cref="IOffersRepository" />
 public class OffersRepository : IOffersRepository
@@ -33,12 +33,12 @@ public class OffersRepository : IOffersRepository
     }
 
     /// <summary>
-    /// Gets all offers.
+    /// Gets all offer.
     /// </summary>
     /// <returns>
-    /// List of offers.
+    /// List of offer.
     /// </returns>
-    public IEnumerable<Offers> GetAll()
+    public IEnumerable<Offer> GetAll()
     {
         return this.context.Offers;
     }
@@ -47,8 +47,8 @@ public class OffersRepository : IOffersRepository
     /// Gets the specified identifier.
     /// </summary>
     /// <param name="id">The identifier.</param>
-    /// <returns> Offers.</returns>
-    public Offers Get(int id)
+    /// <returns> Offer.</returns>
+    public Offer Get(int id)
     {
         return this.context.Offers.Where(s => s.Id == id).FirstOrDefault();
     }
@@ -58,7 +58,7 @@ public class OffersRepository : IOffersRepository
     /// </summary>
     /// <param name="offerDetails">The offer details.</param>
     /// <returns> Offer Id.</returns>
-    public Guid Add(Offers offerDetails)
+    public Guid Add(Offer offerDetails)
     {
         if (offerDetails != null)
         {
@@ -87,19 +87,19 @@ public class OffersRepository : IOffersRepository
     /// </summary>
     /// <param name="offerGuId">The offer identifier.</param>
     /// <returns>Offer by the given identifier.</returns>
-    public Offers GetOfferById(Guid offerGuId)
+    public Offer GetOfferById(Guid offerGuId)
     {
         return this.context.Offers.Where(s => s.OfferGuid == offerGuId).FirstOrDefault();
     }
 
     /// <summary>
-    /// Gets the offers by user.
+    /// Gets the offer by user.
     /// </summary>
     /// <param name="userId">The user identifier.</param>
     /// <returns>
-    /// List of offers by user.
+    /// List of offer by user.
     /// </returns>
-    public IEnumerable<Offers> GetOffersByUser(int userId)
+    public IEnumerable<Offer> GetOffersByUser(int userId)
     {
         var getAllOffers = this.context.Offers.Where(s => s.UserId == userId);
         return getAllOffers;
@@ -112,7 +112,7 @@ public class OffersRepository : IOffersRepository
     /// <returns>
     /// Offer model.
     /// </returns>
-    public Offers GetOfferByInternalId(int id)
+    public Offer GetOfferByInternalId(int id)
     {
         return this.context.Offers.Where(s => s.Id == id).FirstOrDefault();
     }
@@ -121,7 +121,7 @@ public class OffersRepository : IOffersRepository
     /// Removes the specified plan details.
     /// </summary>
     /// <param name="offerDetails">The offer details.</param>
-    public void Remove(Offers offerDetails)
+    public void Remove(Offer offerDetails)
     {
         var existingOffers = this.context.Offers.Where(s => s.Id == offerDetails.Id).FirstOrDefault();
         if (existingOffers != null)

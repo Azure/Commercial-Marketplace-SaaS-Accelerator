@@ -2,7 +2,7 @@
 
 namespace Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
-public partial class Offers
+public partial class Offer
 {
     public int Id { get; set; }
     public string OfferId { get; set; }

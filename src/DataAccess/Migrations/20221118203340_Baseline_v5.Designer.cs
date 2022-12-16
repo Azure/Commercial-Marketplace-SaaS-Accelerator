@@ -397,7 +397,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                     b.ToTable("OfferAttributes");
                 });
 
-            modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Offers", b =>
+            modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.Offer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -427,7 +427,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Offers");
+                    b.ToTable("Offer");
                 });
 
             modelBuilder.Entity("Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities.PlanAttributeMapping", b =>

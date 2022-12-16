@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace Marketplace.SaaS.Accelerator.Services.Models;
+namespace Marketplace.SaaS.Accelerator.AdminSite.Models;
 
 /// <summary>
-/// Offers Model.
+/// Offer View Model.
 /// </summary>
-public class OffersModel
+public class OfferDetailsViewModel
 {
     /// <summary>
     /// Gets or sets the identifier.
@@ -32,26 +33,18 @@ public class OffersModel
     public string OfferName { get; set; }
 
     /// <summary>
-    /// Gets or sets the create date.
+    /// Gets or sets the offer unique identifier.
     /// </summary>
     /// <value>
-    /// The create date.
+    /// The offer unique identifier.
     /// </value>
-    public DateTime? CreateDate { get; set; }
+    public Guid OfferGuid { get; set; }
 
     /// <summary>
-    /// Gets or sets the user identifier.
+    /// Gets or sets the offer attributes.
     /// </summary>
     /// <value>
-    /// The user identifier.
+    /// The offer attributes.
     /// </value>
-    public int? UserID { get; set; }
-
-    /// <summary>
-    /// Gets or sets the offer gu identifier.
-    /// </summary>
-    /// <value>
-    /// The offer gu identifier.
-    /// </value>
-    public Guid? OfferGuId { get; set; }
+    public List<OfferAttributesViewModel> OfferAttributes { get; set; }
 }

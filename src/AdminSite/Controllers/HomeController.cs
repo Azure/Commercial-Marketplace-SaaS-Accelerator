@@ -851,7 +851,7 @@ public class HomeController : BaseController
                 if (currentSubscription.Name == null)
                 {
                     // Step 3: Add/Update the Offer
-                    Guid OfferId = this.offersRepository.Add(new Offers()
+                    Guid OfferId = this.offersRepository.Add(new Offer()
                     {
                         OfferId = subscription.OfferId,
                         OfferName = subscription.OfferId,

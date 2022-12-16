@@ -210,7 +210,7 @@ public class HomeController : BaseController
                     var newSubscription = await this.apiService.ResolveAsync(token).ConfigureAwait(false);
                     if (newSubscription != null && newSubscription.SubscriptionId != default)
                     {
-                        Offers offers = new Offers()
+                        Offer offer = new Offer()
                         {
                             OfferId = newSubscription.OfferId,
                             OfferName = newSubscription.OfferId,
@@ -218,7 +218,7 @@ public class HomeController : BaseController
                             CreateDate = DateTime.Now,
                             OfferGuid = Guid.NewGuid(),
                         };
-                        Guid newOfferId = this.offersRepository.Add(offers);
+                        Guid newOfferId = this.offersRepository.Add(offer);
 
                         var subscriptionPlanDetail = await this.apiService.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false);
                         subscriptionPlanDetail.ForEach(x =>
