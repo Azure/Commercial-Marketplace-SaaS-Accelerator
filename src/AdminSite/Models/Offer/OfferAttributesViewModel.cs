@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Marketplace.SaaS.Accelerator.AdminSite.Models;
+namespace Marketplace.SaaS.Accelerator.AdminSite.Models.Offer;
 
 /// <summary>
 /// Offer Attributes Model.

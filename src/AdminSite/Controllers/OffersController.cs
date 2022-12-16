@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using Marketplace.SaaS.Accelerator.AdminSite.Models;
+using Marketplace.SaaS.Accelerator.AdminSite.Models.Offer;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Models;
@@ -67,11 +67,12 @@ public class OffersController : BaseController
         this.logger.LogInformation("Offer Controller / Index");
         try
         {
-            List<OfferModel> getAllOffersData = new List<OfferModel>();
             this.TempData["ShowWelcomeScreen"] = "True";
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
 
-            getAllOffersData = this.offersService.GetAllOffers();
+            List<OfferModel> getAllOffersData = this.offersService.GetAllOffers();
+
+
 
             return this.View(getAllOffersData);
         }

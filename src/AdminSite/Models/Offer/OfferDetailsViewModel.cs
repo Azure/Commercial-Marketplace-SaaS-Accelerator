@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Marketplace.SaaS.Accelerator.AdminSite.Models;
+namespace Marketplace.SaaS.Accelerator.AdminSite.Models.Offer;
 
 /// <summary>
 /// Offer View Model.
