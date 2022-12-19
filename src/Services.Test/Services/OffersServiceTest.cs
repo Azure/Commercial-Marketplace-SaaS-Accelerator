@@ -17,16 +17,39 @@ public class OffersServiceTest
     [TestInitialize]
     public void Initialize()
     {
-        var offerRepoMock = new Mock<IOffersRepository>();
-            offerRepoMock
+        var mockOfferRepo = new Mock<IOffersRepository>();
+            mockOfferRepo
                 .Setup(x => x.GetOfferById(It.IsAny<Guid>()))
                 .Returns(CreateTestOfferEntity());
 
-            offerRepoMock
+            mockOfferRepo
                 .Setup(x => x.GetAll())
                 .Returns(CreateTestOfferEntities());
 
-        offerService = new OfferService(offerRepoMock.Object);
+            var mockAttributesRepo = new Mock<IOfferAttributesRepository>();
+                mockAttributesRepo.Setup(x => x.GetAllOfferAttributesByOfferId(It.IsAny<Guid>()))
+                    .Returns(CreateOfferAttributes());
+                mockAttributesRepo.Setup(x => x.Add(It.IsAny<OfferAttributes>()))
+                    .Returns(1)
+                    .Verifiable();
+            
+
+        offerService = new OfferService(mockOfferRepo.Object, mockAttributesRepo.Object);
+    }
+
+    [TestMethod]
+    public void CanGetOfferAttributesByOfferId()
+    {
+        var attributes = offerService.GetOfferAttributesById(Guid.NewGuid());
+        Assert.IsNotNull(attributes);
+    }
+
+    [TestMethod]
+    public void CanAddAttributes()
+    {
+        var attribute = CreateOfferAttribute(1);
+
+        offerService.AddOfferAttributes(attribute);
     }
 
     [TestMethod]
@@ -72,4 +95,45 @@ public class OffersServiceTest
 
         return offers;
     }
+
+    private IEnumerable<OfferAttributes> CreateOfferAttributes()
+    {
+        var offerAttributes = new List<OfferAttributes>();
+
+        int idCounter = 1;
+
+        for (int i = 0; i < 3; i++)
+        {
+            var offerAttribute = CreateOfferAttribute(idCounter);
+
+            offerAttributes.Add(offerAttribute);
+        }
+
+        return offerAttributes;
+    }
+
+    private OfferAttributes CreateOfferAttribute(int idCounter)
+    {
+        return new OfferAttributes()
+        {
+            CreateDate = DateTime.Now,
+            Description = "Description",
+            DisplayName = "DisplayName",
+            DisplaySequence = idCounter,
+            FromList = false,
+            Id = idCounter,
+            OfferId = Guid.NewGuid(),
+            UserId = 1,
+            IsDelete = false,
+            Isactive = true,
+            IsRequired = false,
+            Max = 1,
+            Min = 1,
+            ParameterId = "ParameterId",
+            Type = "Type",
+            ValueTypeId = 1,
+            ValuesList = "ValuesList"
+        };
+    }
+
 }

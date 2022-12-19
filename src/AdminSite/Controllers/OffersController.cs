@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using Marketplace.SaaS.Accelerator.AdminSite.Models.Offer;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
@@ -11,7 +10,6 @@ using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
@@ -27,8 +25,6 @@ public class OffersController : BaseController
 
     private readonly IValueTypesRepository valueTypesRepository;
 
-    private readonly IOfferAttributesRepository offersAttributeRepository;
-
     private readonly ILogger<OffersController> logger;
 
     private readonly OfferService offersService;
@@ -38,20 +34,17 @@ public class OffersController : BaseController
     /// </summary>
     /// <param name="usersRepository">The users repository.</param>
     /// <param name="valueTypesRepository">The value types repository.</param>
-    /// <param name="offersAttributeRepository">The offers attribute repository.</param>
     /// <param name="saasKitContext">Context for DB connectivity</param>
     /// <param name="logger">The logger.</param>
     public OffersController(
         IUsersRepository usersRepository, 
         IValueTypesRepository valueTypesRepository, 
-        IOfferAttributesRepository offersAttributeRepository,
         SaasKitContext saasKitContext,
         ILogger<OffersController> logger)
     {
         this.usersRepository = usersRepository;
         this.valueTypesRepository = valueTypesRepository;
         this.offersService = new OfferService(saasKitContext);
-        this.offersAttributeRepository = offersAttributeRepository;
         this.logger = logger;
     }
 
@@ -109,34 +102,17 @@ public class OffersController : BaseController
 
         try
         {
-            var offerModel = this.offersService.GetOfferById(offerGuid);
-
             var offerAttributesViewModels = new List<OfferAttributesViewModel>();
-            var offerAttributeEntities = this.offersAttributeRepository.GetInputAttributesByOfferId(offerGuid);
+            
+            var offerModel = this.offersService.GetOfferById(offerGuid);
+            var offerAttributesModels = this.offersService.GetOfferAttributesById(offerGuid);
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
             
-            foreach (var offerAttributeEntity in offerAttributeEntities)
+            foreach (OfferAttributesModel offerAttributesModel in offerAttributesModels)
             {
-                offerAttributesViewModels.Add(new OfferAttributesViewModel()
-                {
-                    AttributeID = offerAttributeEntity.Id,
-                    ParameterId = offerAttributeEntity.ParameterId,
-                    DisplayName = offerAttributeEntity.DisplayName,
-                    Description = offerAttributeEntity.Description,
-                    ValueTypeId = offerAttributeEntity.ValueTypeId,
-                    FromList = offerAttributeEntity.FromList,
-                    ValuesList = offerAttributeEntity.ValuesList,
-                    Max = offerAttributeEntity.Max,
-                    Min = offerAttributeEntity.Min,
-                    Type = offerAttributeEntity.Type,
-                    DisplaySequence = offerAttributeEntity.DisplaySequence,
-                    Isactive = offerAttributeEntity.Isactive,
-                    IsRequired = offerAttributeEntity.IsRequired ?? false,
-                    IsDelete = offerAttributeEntity.IsDelete ?? false,
-                    CreateDate = DateTime.Now,
-                    UserId = currentUserDetail?.UserId ?? 0,
-                    OfferId = offerAttributeEntity.OfferId
-                });
+                var offerAttributesViewModel = MapOfferAttributesViewModel(offerAttributesModel, currentUserDetail);
+
+                offerAttributesViewModels.Add(offerAttributesViewModel);
             }
 
             var offerDetailsViewModel = new OfferDetailsViewModel()
@@ -178,34 +154,17 @@ public class OffersController : BaseController
         try
         {
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
+            
             if (offerDetailsData.OfferAttributes != null)
             {
                 // query
-                var validItems = offerDetailsData.OfferAttributes.Where(i => i.IsRemove == false);
+                var offerAttributesViewModels = offerDetailsData.OfferAttributes.Where(i => i.IsRemove == false);
 
-                foreach (var offerAttribute in validItems)
+                foreach (var offerAttributeViewModel in offerAttributesViewModels)
                 {
-                    var newOfferAttribute = new OfferAttributes()
-                    {
-                        Id = offerAttribute.AttributeID,
-                        ParameterId = offerAttribute.ParameterId,
-                        DisplayName = offerAttribute.DisplayName,
-                        Description = offerAttribute.Description,
-                        ValueTypeId = offerAttribute.ValueTypeId,
-                        FromList = offerAttribute.FromList,
-                        ValuesList = offerAttribute.ValuesList,
-                        Max = offerAttribute.Max,
-                        Min = offerAttribute.Min,
-                        Type = offerAttribute.Type,
-                        DisplaySequence = offerAttribute.DisplaySequence,
-                        Isactive = offerAttribute.Isactive,
-                        IsRequired = offerAttribute.IsRequired,
-                        IsDelete = offerAttribute.IsDelete,
-                        CreateDate = DateTime.Now,
-                        UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
-                        OfferId = offerDetailsData.OfferGuid,
-                    };
-                    this.offersAttributeRepository.Add(newOfferAttribute);
+                    var newOfferAttribute = MapOfferAttributes(offerDetailsData, offerAttributeViewModel, currentUserDetail);
+
+                    this.offersService.AddOfferAttributes(newOfferAttribute);
                 }
 
                 var valueTypes = this.valueTypesRepository.GetAll().ToList();
@@ -225,5 +184,53 @@ public class OffersController : BaseController
             this.logger.LogError(ex, ex.Message);
             return this.View("Error", ex);
         }
+    }
+
+    private OfferAttributes MapOfferAttributes(OfferDetailsViewModel offerDetailsData, OfferAttributesViewModel offerAttributeViewModel, Users currentUserDetail)
+    {
+        return new OfferAttributes()
+        {
+            Id = offerAttributeViewModel.AttributeId,
+            ParameterId = offerAttributeViewModel.ParameterId,
+            DisplayName = offerAttributeViewModel.DisplayName,
+            Description = offerAttributeViewModel.Description,
+            ValueTypeId = offerAttributeViewModel.ValueTypeId,
+            FromList = offerAttributeViewModel.FromList,
+            ValuesList = offerAttributeViewModel.ValuesList,
+            Max = offerAttributeViewModel.Max,
+            Min = offerAttributeViewModel.Min,
+            Type = offerAttributeViewModel.Type,
+            DisplaySequence = offerAttributeViewModel.DisplaySequence,
+            Isactive = offerAttributeViewModel.IsActive,
+            IsRequired = offerAttributeViewModel.IsRequired,
+            IsDelete = offerAttributeViewModel.IsDelete,
+            CreateDate = DateTime.Now,
+            UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
+            OfferId = offerDetailsData.OfferGuid,
+        };
+    }
+
+    private OfferAttributesViewModel MapOfferAttributesViewModel(OfferAttributesModel offerAttributesModel, Users currentUserDetail)
+    {
+        return new OfferAttributesViewModel()
+        {
+            AttributeId = offerAttributesModel.Id,
+            ParameterId = offerAttributesModel.ParameterId,
+            DisplayName = offerAttributesModel.DisplayName,
+            Description = offerAttributesModel.Description,
+            ValueTypeId = offerAttributesModel.ValueTypeId,
+            FromList = offerAttributesModel.FromList,
+            ValuesList = offerAttributesModel.ValuesList,
+            Max = offerAttributesModel.Max,
+            Min = offerAttributesModel.Min,
+            Type = offerAttributesModel.Type,
+            DisplaySequence = offerAttributesModel.DisplaySequence,
+            IsActive = offerAttributesModel.IsActive,
+            IsRequired = offerAttributesModel.IsRequired ?? false,
+            IsDelete = offerAttributesModel.IsDelete ?? false,
+            CreateDate = DateTime.Now,
+            UserId = currentUserDetail?.UserId ?? 0,
+            OfferId = offerAttributesModel.OfferId
+        };
     }
 }

@@ -109,7 +109,7 @@
                                                 @Model.PlanEvents[i].EventName
                                             </td>
                                             <td>
-                                                @Html.CheckBoxFor(model => model.PlanEvents[i].Isactive, new { name = "PlanEvents[@i].Isactive", id = string.Format("PlanEvents_Isactive_{0}", @i) })
+                                                @Html.CheckBoxFor(model => model.PlanEvents[i].Isactive, new { name = "PlanEvents[@i].IsActive", id = string.Format("PlanEvents_Isactive_{0}", @i) })
                                                 @*<input type="checkbox" id="PlanEvents_IsEnabled_@i" name="PlanEvents[@i].IsEnabled" value="@Model.PlanEvents[i].IsEnabled" />*@
                                             </td>
                                             <td>

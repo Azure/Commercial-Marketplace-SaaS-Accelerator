@@ -68,7 +68,7 @@
                                                 <input type="text" style="width: 70px;" id="OfferAttributes_DisplaySequence_@i" name="OfferAttributes[@i].DisplaySequence" value="@Model.OfferAttributes[i].DisplaySequence"/>
                                             </td>
                                             <td>
-                                                @Html.CheckBoxFor(model => model.OfferAttributes[i].Isactive, new { name = "OfferAttributes[@i].Isactive", id = string.Format("OfferAttributes_Isactive_{0}", @i) })
+                                                @Html.CheckBoxFor(model => model.OfferAttributes[i].IsActive, new { name = "OfferAttributes[@i].IsActive", id = string.Format("OfferAttributes_Isactive_{0}", @i) })
                                             </td>
                                             <td>
                                                 @Html.CheckBoxFor(model => model.OfferAttributes[i].IsRequired, new { name = "OfferAttributes[@i].IsRequired", id = string.Format("OfferAttributes_IsRequired_{0}", @i) })
@@ -109,7 +109,7 @@
                                         <input type='text' style='width: 70px;' id='OfferAttributes_DisplaySequence_itemIndex' name='OfferAttributes[itemIndex].DisplaySequence'/>
                                     </td>
                                     <td>
-                                        @Html.CheckBox("OfferAttributes[itemIndex].Isactive", new { @id = "OfferAttributes_Isactive_itemIndex" })
+                                        @Html.CheckBox("OfferAttributes[itemIndex].IsActive", new { @id = "OfferAttributes_Isactive_itemIndex" })
                                     </td>
                                     <td>
                                         @Html.CheckBox("OfferAttributes[itemIndex].IsRequired", new { @id = "OfferAttributes_IsRequired_itemIndex" })
