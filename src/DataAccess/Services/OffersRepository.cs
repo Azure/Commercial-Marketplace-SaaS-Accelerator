@@ -14,9 +14,9 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Services;
 public class OffersRepository : IOffersRepository
 {
     /// <summary>
-    /// The context.
+    /// The dbContext.
     /// </summary>
-    private readonly SaasKitContext context;
+    private readonly SaasKitContext dbContext;
 
     /// <summary>
     /// The disposed.
@@ -26,10 +26,10 @@ public class OffersRepository : IOffersRepository
     /// <summary>
     /// Initializes a new instance of the <see cref="OffersRepository"/> class.
     /// </summary>
-    /// <param name="context">The this.context.</param>
-    public OffersRepository(SaasKitContext context)
+    /// <param name="dbContext">dbContext from EF</param>
+    public OffersRepository(SaasKitContext dbContext)
     {
-        this.context = context;
+        this.dbContext = dbContext;
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public class OffersRepository : IOffersRepository
     /// </returns>
     public IEnumerable<Offer> GetAll()
     {
-        return this.context.Offers;
+        return this.dbContext.Offers;
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public class OffersRepository : IOffersRepository
     /// <returns> Offer.</returns>
     public Offer Get(int id)
     {
-        return this.context.Offers.Where(s => s.Id == id).FirstOrDefault();
+        return this.dbContext.Offers.FirstOrDefault(s => s.Id == id);
     }
 
     /// <summary>
@@ -62,19 +62,20 @@ public class OffersRepository : IOffersRepository
     {
         if (offerDetails != null)
         {
-            var existingOffer = this.context.Offers.Where(s => s.OfferId == offerDetails.OfferId).FirstOrDefault();
+            var existingOffer = this.dbContext.Offers.FirstOrDefault(s => s.OfferId == offerDetails.OfferId);
+
             if (existingOffer != null)
             {
                 existingOffer.OfferId = offerDetails.OfferId;
                 existingOffer.OfferName = offerDetails.OfferName;
-                this.context.Offers.Update(existingOffer);
-                this.context.SaveChanges();
+                this.dbContext.Offers.Update(existingOffer);
+                this.dbContext.SaveChanges();
                 return existingOffer.OfferGuid;
             }
             else
             {
-                this.context.Offers.Add(offerDetails);
-                this.context.SaveChanges();
+                this.dbContext.Offers.Add(offerDetails);
+                this.dbContext.SaveChanges();
                 return offerDetails.OfferGuid;
             }
         }
@@ -89,7 +90,7 @@ public class OffersRepository : IOffersRepository
     /// <returns>Offer by the given identifier.</returns>
     public Offer GetOfferById(Guid offerGuId)
     {
-        return this.context.Offers.Where(s => s.OfferGuid == offerGuId).FirstOrDefault();
+        return this.dbContext.Offers.FirstOrDefault(s => s.OfferGuid == offerGuId);
     }
 
     /// <summary>
@@ -101,7 +102,7 @@ public class OffersRepository : IOffersRepository
     /// </returns>
     public IEnumerable<Offer> GetOffersByUser(int userId)
     {
-        var getAllOffers = this.context.Offers.Where(s => s.UserId == userId);
+        var getAllOffers = this.dbContext.Offers.Where(s => s.UserId == userId);
         return getAllOffers;
     }
 
@@ -114,7 +115,7 @@ public class OffersRepository : IOffersRepository
     /// </returns>
     public Offer GetOfferByInternalId(int id)
     {
-        return this.context.Offers.Where(s => s.Id == id).FirstOrDefault();
+        return this.dbContext.Offers.FirstOrDefault(s => s.Id == id);
     }
 
     /// <summary>
@@ -123,11 +124,11 @@ public class OffersRepository : IOffersRepository
     /// <param name="offerDetails">The offer details.</param>
     public void Remove(Offer offerDetails)
     {
-        var existingOffers = this.context.Offers.Where(s => s.Id == offerDetails.Id).FirstOrDefault();
+        var existingOffers = this.dbContext.Offers.FirstOrDefault(s => s.Id == offerDetails.Id);
         if (existingOffers != null)
         {
-            this.context.Offers.Remove(existingOffers);
-            this.context.SaveChanges();
+            this.dbContext.Offers.Remove(existingOffers);
+            this.dbContext.SaveChanges();
         }
     }
 
@@ -150,7 +151,7 @@ public class OffersRepository : IOffersRepository
         {
             if (disposing)
             {
-                this.context.Dispose();
+                this.dbContext.Dispose();
             }
         }
 

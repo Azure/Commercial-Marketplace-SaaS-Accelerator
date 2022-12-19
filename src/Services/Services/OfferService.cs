@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
 using Marketplace.SaaS.Accelerator.Services.Models;
@@ -15,6 +16,12 @@ public class OfferService
     /// The offer repository.
     /// </summary>
     private readonly IOffersRepository offerRepository;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OfferService"/> class.
+    /// </summary>
+    /// <param name="saasKitContext">DbContext for EF</param>
+    public OfferService(SaasKitContext saasKitContext) : this(new OffersRepository(saasKitContext)) {}
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OfferService"/> class.
@@ -51,8 +58,6 @@ public class OfferService
 
         return offersList;
     }
-
-
 
     /// <summary>
     /// Gets the offer on identifier.

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using Marketplace.SaaS.Accelerator.AdminSite.Models.Offer;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Models;
@@ -10,6 +11,7 @@ using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
@@ -25,8 +27,6 @@ public class OffersController : BaseController
 
     private readonly IValueTypesRepository valueTypesRepository;
 
-    private readonly IApplicationConfigRepository applicationConfigRepository;
-
     private readonly IOfferAttributesRepository offersAttributeRepository;
 
     private readonly ILogger<OffersController> logger;
@@ -36,24 +36,21 @@ public class OffersController : BaseController
     /// <summary>
     /// Initializes a new instance of the <see cref="OffersController"/> class.
     /// </summary>
-    /// <param name="offersRepository">The offers repository.</param>
-    /// <param name="applicationConfigRepository">The application configuration repository.</param>
     /// <param name="usersRepository">The users repository.</param>
     /// <param name="valueTypesRepository">The value types repository.</param>
     /// <param name="offersAttributeRepository">The offers attribute repository.</param>
+    /// <param name="saasKitContext">Context for DB connectivity</param>
     /// <param name="logger">The logger.</param>
     public OffersController(
-        IOffersRepository offersRepository, 
-        IApplicationConfigRepository applicationConfigRepository, 
         IUsersRepository usersRepository, 
         IValueTypesRepository valueTypesRepository, 
-        IOfferAttributesRepository offersAttributeRepository, 
+        IOfferAttributesRepository offersAttributeRepository,
+        SaasKitContext saasKitContext,
         ILogger<OffersController> logger)
     {
-        this.applicationConfigRepository = applicationConfigRepository;
         this.usersRepository = usersRepository;
         this.valueTypesRepository = valueTypesRepository;
-        this.offersService = new OfferService(offersRepository);
+        this.offersService = new OfferService(saasKitContext);
         this.offersAttributeRepository = offersAttributeRepository;
         this.logger = logger;
     }
