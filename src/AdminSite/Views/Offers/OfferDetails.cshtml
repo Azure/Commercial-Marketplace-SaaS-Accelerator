@@ -49,7 +49,7 @@
                                         <tr id="tr_OfferAttributes_@i">
                                             <td>
                                                 <input id="OfferAttributes_Id_@i" type="hidden" value="@i" class="iHidden" name="OfferAttributes[@i].Id"/>
-                                                <input id="OfferAttributes_AttributeID_@i" type="hidden" class="iHidden" name="OfferAttributes[@i].AttributeID" value="@Model.OfferAttributes[i].AttributeID"/>
+                                                <input id="OfferAttributes_AttributeId_@i" type="hidden" class="iHidden" name="OfferAttributes[@i].AttributeId" value="@Model.OfferAttributes[i].AttributeId"/>
                                                 <input type="text" style="width: 70px;" id="OfferAttributes_ParameterId_@i" name="OfferAttributes[@i].ParameterId" value="@Model.OfferAttributes[i].ParameterId"/>
                                             </td>
                                             <td><input type="text" style="width: 70px;" id="OfferAttributes_DisplayName_@i" name="OfferAttributes[@i].DisplayName" value="@Model.OfferAttributes[i].DisplayName"/></td>
@@ -90,7 +90,7 @@
                                 <tr id='tr_OfferAttributes_itemIndex'>
                                     <td>
                                         <input id='OfferAttributes_Id_itemIndex' type='hidden' value='itemIndex' class='iHidden' name='OfferAttributes[itemIndex].Id'/>
-                                        <input id="OfferAttributes_AttributeID_itemIndex" type="hidden" class="iHidden" name='OfferAttributes[itemIndex].AttributeID'/>
+                                        <input id="OfferAttributes_AttributeID_itemIndex" type="hidden" class="iHidden" name='OfferAttributes[itemIndex].AttributeId'/>
                                         <input type='text' style='width: 70px;' id='OfferAttributes_ParameterId_itemIndex' name='OfferAttributes[itemIndex].ParameterId'/>
                                     </td>
                                     <td><input type='text' style='width: 70px;' id='OfferAttributes_DisplayName_itemIndex' name='OfferAttributes[itemIndex].DisplayName'/></td>
@@ -173,7 +173,7 @@
 
     function removeRow(id) {
         var controlToBeRemoved = "#tr_OfferAttributes_" + id;
-        var attributeId = "#OfferAttributes_AttributeID_" + id;
+        var attributeId = "#OfferAttributes_AttributeId_" + id;
         if ($(attributeId).val() > 0)
             $("#OfferAttributes_IsDelete_" + id).val(true);
         else

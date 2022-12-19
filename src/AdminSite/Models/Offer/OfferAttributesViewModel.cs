@@ -13,7 +13,7 @@ public class OfferAttributesViewModel
     /// <value>
     /// The attribute identifier.
     /// </value>
-    public int AttributeID { get; set; }
+    public int AttributeId { get; set; }
 
     /// <summary>
     /// Gets or sets the parameter identifier.
