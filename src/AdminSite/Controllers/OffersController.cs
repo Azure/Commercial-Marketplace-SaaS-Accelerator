@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Models;
@@ -26,8 +27,6 @@ public class OffersController : BaseController
 
     private readonly IApplicationConfigRepository applicationConfigRepository;
 
-    private readonly IOffersRepository offersRepository;
-
     private readonly IOfferAttributesRepository offersAttributeRepository;
 
     private readonly ILogger<OffersController> logger;
@@ -37,19 +36,17 @@ public class OffersController : BaseController
     /// <summary>
     /// Initializes a new instance of the <see cref="OffersController"/> class.
     /// </summary>
-    /// <param name="offersRepository">The offers repository.</param>
     /// <param name="applicationConfigRepository">The application configuration repository.</param>
     /// <param name="usersRepository">The users repository.</param>
     /// <param name="valueTypesRepository">The value types repository.</param>
     /// <param name="offersAttributeRepository">The offers attribute repository.</param>
     /// <param name="logger">The logger.</param>
-    public OffersController(IOffersRepository offersRepository, IApplicationConfigRepository applicationConfigRepository, IUsersRepository usersRepository, IValueTypesRepository valueTypesRepository, IOfferAttributesRepository offersAttributeRepository, ILogger<OffersController> logger)
+    public OffersController(SaasKitContext saasKitContext, IApplicationConfigRepository applicationConfigRepository, IUsersRepository usersRepository, IValueTypesRepository valueTypesRepository, IOfferAttributesRepository offersAttributeRepository, ILogger<OffersController> logger)
     {
-        this.offersRepository = offersRepository;
         this.applicationConfigRepository = applicationConfigRepository;
         this.usersRepository = usersRepository;
         this.valueTypesRepository = valueTypesRepository;
-        this.offersService = new OfferServices(this.offersRepository);
+        this.offersService = new OfferServices(saasKitContext);
         this.offersAttributeRepository = offersAttributeRepository;
         this.logger = logger;
     }
@@ -63,13 +60,11 @@ public class OffersController : BaseController
         this.logger.LogInformation("Offers Controller / Index");
         try
         {
-            List<OffersModel> getAllOffersData = new List<OffersModel>();
             this.TempData["ShowWelcomeScreen"] = "True";
-            var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-
-            getAllOffersData = this.offersService.GetOffers();
-
-            return this.View(getAllOffersData);
+            
+            var offersModels = this.offersService.GetOffers();
+            
+            return this.View(offersModels);
         }
         catch (Exception ex)
         {
@@ -90,15 +85,15 @@ public class OffersController : BaseController
         this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", offerGuId);
         try
         {
-            OffersViewModel offersData = new OffersViewModel();
             this.TempData["ShowWelcomeScreen"] = "True";
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-            offersData = this.offersService.GetOfferOnId(offerGuId);
+            
+            var offersViewModel = this.offersService.GetOfferOnId(offerGuId);
 
             var offerAttributes = this.offersAttributeRepository.GetInputAttributesByOfferId(offerGuId);
             var valueTypes = this.valueTypesRepository.GetAll().ToList();
             this.ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
-            offersData.OfferAttributes = new List<OfferAttributesModel>();
+            offersViewModel.OfferAttributes = new List<OfferAttributesModel>();
             if (offerAttributes != null)
             {
                 foreach (var offerAttribute in offerAttributes)
@@ -121,13 +116,13 @@ public class OffersController : BaseController
                         IsDelete = offerAttribute.IsDelete ?? false,
                         CreateDate = DateTime.Now,
                         UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
-                        OfferId = offersData.OfferGuid,
+                        OfferId = offersViewModel.OfferGuid,
                     };
-                    offersData.OfferAttributes.Add(existingOfferAttribute);
+                    offersViewModel.OfferAttributes.Add(existingOfferAttribute);
                 }
             }
 
-            return this.PartialView(offersData);
+            return this.PartialView(offersViewModel);
         }
         catch (Exception ex)
         {

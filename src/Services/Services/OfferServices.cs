@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Services;
 using Marketplace.SaaS.Accelerator.Services.Models;
 
 namespace Marketplace.SaaS.Accelerator.Services.Services;
@@ -13,10 +15,17 @@ public class OfferServices
     /// <summary>
     /// The offer repository.
     /// </summary>
-    private IOffersRepository offerRepository;
+    private readonly IOffersRepository offerRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OfferServices"/> class.
+    /// </summary>
+    /// <param name="saasKitContext"></param>
+    public OfferServices(SaasKitContext saasKitContext) : this(new OffersRepository(saasKitContext)) { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OfferServices"/> class.
+    /// This constructor is for testing purposes only and should not be used for production.
     /// </summary>
     /// <param name="offerRepo">The offer repo.</param>
     public OfferServices(IOffersRepository offerRepo)
@@ -34,7 +43,7 @@ public class OfferServices
         var allOfferData = this.offerRepository.GetAll();
         foreach (var item in allOfferData)
         {
-            OffersModel offers = new OffersModel();
+            var offers = new OffersModel();
             offers.Id = item.Id;
             offers.OfferID = item.OfferId;
             offers.OfferName = item.OfferName;
