@@ -1,4 +1,4 @@
-﻿@model List<Marketplace.SaaS.Accelerator.Services.Models.OffersModel>
+﻿@model List<Marketplace.SaaS.Accelerator.AdminSite.Models.Offers.OfferListItemViewModel>
 @{
     ViewData["Title"] = "Index";
 }
@@ -11,7 +11,7 @@
                 <span class="cm-section-heading">Offers</span>
             </div>
             <div id="myModal">
-                @if (Model != null && Model.Count() > 0)
+                @if (Model != null && Model.Any())
                 {
                     <div class="table-responsive mt20">
                         <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
@@ -27,13 +27,13 @@
                                 {
                                     <tr>
                                         <td class="text-left">
-                                            @item.OfferID
+                                            @item.OfferId
                                         </td>
                                         <td class="text-left cm-ellipsis">
                                             <div class="nav-item dropdown">
                                                 <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                 <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                    <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewOfferdetailsById('@item.OfferGuId')">Edit</a>
+                                                    <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewOfferdetailsById('@item.OfferGuid')">Edit</a>
                                                 </div>
                                             </div>
                                         </td>
@@ -61,11 +61,11 @@
     </div>
 </div>
 <script>
-    function ViewOfferdetailsById(offerGuId) {
+    function ViewOfferdetailsById(offerGuid) {
         $.ajax({
             type: "Get",
             url: "Offers/OfferDetails",
-            data: { offerGuId: offerGuId },
+            data: { offerGuid: offerGuid },
             contentType: "application/json; charset=utf-8",
             datatype: "json",
             success: function (data) {

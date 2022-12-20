@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Marketplace.SaaS.Accelerator.AdminSite.Models.Offers;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
@@ -36,6 +37,7 @@ public class OffersController : BaseController
     /// <summary>
     /// Initializes a new instance of the <see cref="OffersController"/> class.
     /// </summary>
+    /// <param name="saasKitContext">The SaaSKitContext needed to construct services</param>
     /// <param name="applicationConfigRepository">The application configuration repository.</param>
     /// <param name="usersRepository">The users repository.</param>
     /// <param name="valueTypesRepository">The value types repository.</param>
@@ -62,9 +64,22 @@ public class OffersController : BaseController
         {
             this.TempData["ShowWelcomeScreen"] = "True";
             
-            List<OffersModel> offersModels = this.offersService.GetOffers();
+            var offersServiceModels = this.offersService.GetOffers();
+
+            var viewModels = new List<OfferListItemViewModel>();
+
+            foreach (var offersServiceModel in offersServiceModels)
+            {
+                var listItem = new OfferListItemViewModel()
+                {
+                    OfferId = offersServiceModel.OfferID,
+                    OfferGuid = offersServiceModel.OfferGuId
+                };
+
+                viewModels.Add(listItem);
+            }
             
-            return this.View(offersModels);
+            return this.View(viewModels);
         }
         catch (Exception ex)
         {
@@ -76,26 +91,26 @@ public class OffersController : BaseController
     /// <summary>
     /// Indexes this instance.
     /// </summary>
-    /// <param name="offerGuId">The offer gu identifier.</param>
+    /// <param name="offerGuid">The offer gu identifier.</param>
     /// <returns>
     /// return All subscription.
     /// </returns>
-    public IActionResult OfferDetails(Guid offerGuId)
+    public IActionResult OfferDetails(Guid offerGuid)
     {
-        this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", offerGuId);
+        this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuid {0}", offerGuid);
         try
         {
             this.TempData["ShowWelcomeScreen"] = "True";
             
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
             
-            var offersViewModel = this.offersService.GetOfferOnId(offerGuId);
+            var offersViewModel = this.offersService.GetOfferOnId(offerGuid);
                 offersViewModel.OfferAttributes = new List<OfferAttributesModel>();
 
             var valueTypes = this.valueTypesRepository.GetAll().ToList();
             ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
 
-            var offerAttributesList = this.offersAttributeRepository.GetInputAttributesByOfferId(offerGuId);
+            var offerAttributesList = this.offersAttributeRepository.GetInputAttributesByOfferId(offerGuid);
             if (offerAttributesList != null)
             {
                 foreach (var offerAttribute in offerAttributesList)
@@ -125,7 +140,7 @@ public class OffersController : BaseController
     [HttpPost]
     public IActionResult OfferDetails(OffersViewModel offersData)
     {
-        this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", JsonSerializer.Serialize(offersData));
+        this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuid {0}", JsonSerializer.Serialize(offersData));
         try
         {
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
