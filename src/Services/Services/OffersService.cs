@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
@@ -39,21 +40,18 @@ public class OfferServices
     /// <returns> Offers Model.</returns>
     public List<OffersModel> GetOffers()
     {
-        List<OffersModel> offersList = new List<OffersModel>();
-        var allOfferData = this.offerRepository.GetAll();
-        foreach (var item in allOfferData)
-        {
-            var offers = new OffersModel();
-            offers.Id = item.Id;
-            offers.OfferID = item.OfferId;
-            offers.OfferName = item.OfferName;
-            offers.CreateDate = item.CreateDate;
-            offers.UserID = item.UserId;
-            offers.OfferGuId = item.OfferGuid;
-            offersList.Add(offers);
-        }
+        var offers = this.offerRepository.GetAll();
 
-        return offersList;
+        return offers.Select(item => new OffersModel()
+            {
+                Id = item.Id,
+                OfferID = item.OfferId,
+                OfferName = item.OfferName,
+                CreateDate = item.CreateDate,
+                UserID = item.UserId,
+                OfferGuId = item.OfferGuid
+            })
+            .ToList();
     }
 
     /// <summary>
@@ -64,13 +62,14 @@ public class OfferServices
     public OffersViewModel GetOfferOnId(Guid offerGuId)
     {
         var offer = this.offerRepository.GetOfferById(offerGuId);
-        OffersViewModel offerModel = new OffersViewModel()
+        
+        var offersViewModel = new OffersViewModel()
         {
             Id = offer.Id,
             OfferID = offer.OfferId,
             OfferName = offer.OfferName,
             OfferGuid = offer.OfferGuid,
         };
-        return offerModel;
+        return offersViewModel;
     }
 }

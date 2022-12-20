@@ -15,7 +15,7 @@ namespace Marketplace.SaaS.Accelerator.Services.Test;
 [TestClass]
 public class OfferServicesTest
 {
-    private OfferServices offerServices;
+    private OffersService offersService;
     private int testOfferModelCount = 0;
 
     [TestInitialize]
@@ -30,13 +30,13 @@ public class OfferServicesTest
             .Setup(x => x.GetAll())
             .Returns(CreateTestOfferEntities());
 
-        offerServices = new OfferServices(mockOfferRepo.Object);
+        offersService = new OffersService(mockOfferRepo.Object);
     }
 
     [TestMethod]
     public void CanGetAllOffers()
     {
-        var offerEntites = offerServices.GetOffers();
+        var offerEntites = offersService.GetOffers();
 
         Assert.IsNotNull(offerEntites);
         Assert.AreEqual(3, offerEntites.Count);
@@ -45,7 +45,7 @@ public class OfferServicesTest
     [TestMethod]
     public void CanGetAnOfferById()
     {
-        var offerEntity = offerServices.GetOfferOnId(Guid.NewGuid());
+        var offerEntity = offersService.GetOfferOnId(Guid.NewGuid());
         
         Assert.IsNotNull(offerEntity);
     }

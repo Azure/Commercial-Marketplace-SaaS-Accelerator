@@ -189,7 +189,7 @@ public class OffersController : BaseController
         }
     }
 
-    private OfferAttributesModel MapOfferAttributesModel(OfferAttributes offerAttribute, Users currentUserDetail, OffersViewModel offersViewModel)
+    private static OfferAttributesModel MapOfferAttributesModel(OfferAttributes offerAttribute, Users currentUserDetail, OffersViewModel offersViewModel)
     {
         return new OfferAttributesModel()
         {
