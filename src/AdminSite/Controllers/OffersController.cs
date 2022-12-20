@@ -31,7 +31,7 @@ public class OffersController : BaseController
 
     private readonly ILogger<OffersController> logger;
 
-    private OfferServices offersService;
+    private readonly OfferServices offersService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OffersController"/> class.
@@ -62,7 +62,7 @@ public class OffersController : BaseController
         {
             this.TempData["ShowWelcomeScreen"] = "True";
             
-            var offersModels = this.offersService.GetOffers();
+            List<OffersModel> offersModels = this.offersService.GetOffers();
             
             return this.View(offersModels);
         }
@@ -86,39 +86,23 @@ public class OffersController : BaseController
         try
         {
             this.TempData["ShowWelcomeScreen"] = "True";
+            
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
             
             var offersViewModel = this.offersService.GetOfferOnId(offerGuId);
+                offersViewModel.OfferAttributes = new List<OfferAttributesModel>();
 
-            var offerAttributes = this.offersAttributeRepository.GetInputAttributesByOfferId(offerGuId);
             var valueTypes = this.valueTypesRepository.GetAll().ToList();
-            this.ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
-            offersViewModel.OfferAttributes = new List<OfferAttributesModel>();
-            if (offerAttributes != null)
+            ViewBag.ValueTypes = new SelectList(valueTypes, "ValueTypeId", "ValueType");
+
+            var offerAttributesList = this.offersAttributeRepository.GetInputAttributesByOfferId(offerGuId);
+            if (offerAttributesList != null)
             {
-                foreach (var offerAttribute in offerAttributes)
+                foreach (var offerAttribute in offerAttributesList)
                 {
-                    var existingOfferAttribute = new OfferAttributesModel()
-                    {
-                        AttributeID = offerAttribute.Id,
-                        ParameterId = offerAttribute.ParameterId,
-                        DisplayName = offerAttribute.DisplayName,
-                        Description = offerAttribute.Description,
-                        ValueTypeId = offerAttribute.ValueTypeId,
-                        FromList = offerAttribute.FromList,
-                        ValuesList = offerAttribute.ValuesList,
-                        Max = offerAttribute.Max,
-                        Min = offerAttribute.Min,
-                        Type = offerAttribute.Type,
-                        DisplaySequence = offerAttribute.DisplaySequence,
-                        Isactive = offerAttribute.Isactive,
-                        IsRequired = offerAttribute.IsRequired ?? false,
-                        IsDelete = offerAttribute.IsDelete ?? false,
-                        CreateDate = DateTime.Now,
-                        UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
-                        OfferId = offersViewModel.OfferGuid,
-                    };
-                    offersViewModel.OfferAttributes.Add(existingOfferAttribute);
+                    var offerAttributes = MapOfferAttributesModel(offerAttribute, currentUserDetail, offersViewModel);
+
+                    offersViewModel.OfferAttributes.Add(offerAttributes);
                 }
             }
 
@@ -189,4 +173,29 @@ public class OffersController : BaseController
             return this.View("Error", ex);
         }
     }
+
+    private OfferAttributesModel MapOfferAttributesModel(OfferAttributes offerAttribute, Users currentUserDetail, OffersViewModel offersViewModel)
+    {
+        return new OfferAttributesModel()
+        {
+            AttributeID = offerAttribute.Id,
+            ParameterId = offerAttribute.ParameterId,
+            DisplayName = offerAttribute.DisplayName,
+            Description = offerAttribute.Description,
+            ValueTypeId = offerAttribute.ValueTypeId,
+            FromList = offerAttribute.FromList,
+            ValuesList = offerAttribute.ValuesList,
+            Max = offerAttribute.Max,
+            Min = offerAttribute.Min,
+            Type = offerAttribute.Type,
+            DisplaySequence = offerAttribute.DisplaySequence,
+            Isactive = offerAttribute.Isactive,
+            IsRequired = offerAttribute.IsRequired ?? false,
+            IsDelete = offerAttribute.IsDelete ?? false,
+            CreateDate = DateTime.Now,
+            UserId = currentUserDetail?.UserId ?? 0,
+            OfferId = offersViewModel.OfferGuid,
+        };
+    }
+
 }
