@@ -117,6 +117,10 @@ public class Startup
             .AddSingleton<KnownUsersModel>(knownUsers);
 
         services
+            .AddScoped<ApplicationConfigService>()
+        ;
+
+        services
             .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
 

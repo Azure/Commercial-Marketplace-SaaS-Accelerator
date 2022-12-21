@@ -23,21 +23,21 @@ public class ApplicationConfigController : BaseController
 {
     private readonly ILogger<ApplicationConfigController> logger;
 
-    private ApplicationConfigService appConfigService;
-
-    private readonly IApplicationConfigRepository appConfigRepository;
+    private readonly ApplicationConfigService appConfigService;
 
     /// <summary>
     /// Move to a new controller?
     /// </summary>
     private readonly IEmailTemplateRepository emailTemplateRepository;
 
-    public ApplicationConfigController(IApplicationConfigRepository applicationConfigRepository, ILogger<ApplicationConfigController> logger, IEmailTemplateRepository emailTemplateRepository)
+    public ApplicationConfigController(
+        ApplicationConfigService appConfigService, 
+        ILogger<ApplicationConfigController> logger, 
+        IEmailTemplateRepository emailTemplateRepository)
     {
-        this.appConfigRepository = applicationConfigRepository;
+        this.appConfigService = appConfigService;
         this.emailTemplateRepository = emailTemplateRepository;
         this.logger = logger;
-        appConfigService = new ApplicationConfigService(this.appConfigRepository);
     }
 
     /// <summary>
