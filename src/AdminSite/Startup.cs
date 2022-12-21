@@ -139,6 +139,8 @@ public class Startup
         services.Configure<CookieTempDataProviderOptions>(options => {
             options.Cookie.IsEssential = true;
         });
+
+        services.AddScoped<OffersService>();
     }
 
     /// <summary>

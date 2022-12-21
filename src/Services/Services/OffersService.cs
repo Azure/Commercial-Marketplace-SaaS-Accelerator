@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
@@ -19,12 +20,6 @@ public class OffersService
     private readonly IOffersRepository offerRepository;
 
     private readonly IOfferAttributesRepository offerAttributesRepository;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="OffersService"/> class.
-    /// </summary>
-    /// <param name="saasKitContext"></param>
-    public OffersService(SaasKitContext saasKitContext) : this(new OffersRepository(saasKitContext), new OfferAttributesRepository(saasKitContext)) { }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OffersService"/> class.
@@ -63,7 +58,7 @@ public class OffersService
     /// </summary>
     /// <param name="offerGuId">The offer gu identifier.</param>
     /// <returns> Offers View Model.</returns>
-    public OfferModel GetOfferOnId(Guid offerGuId)
+    public OfferModel GetOfferById(Guid offerGuId)
     {
         var offer = this.offerRepository.GetOfferById(offerGuId);
         
@@ -74,6 +69,7 @@ public class OffersService
             OfferName = offer.OfferName,
             OfferGuid = offer.OfferGuid,
         };
+
         return offersViewModel;
     }
 }

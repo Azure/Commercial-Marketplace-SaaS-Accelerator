@@ -26,29 +26,36 @@ public class OffersController : BaseController
 
     private readonly IValueTypesRepository valueTypesRepository;
 
-    private readonly IApplicationConfigRepository applicationConfigRepository;
-
     private readonly IOfferAttributesRepository offersAttributeRepository;
 
     private readonly ILogger<OffersController> logger;
 
     private readonly OffersService offersService;
+    
+    private readonly IApplicationConfigRepository applicationConfigRepository;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OffersController"/> class.
     /// </summary>
-    /// <param name="saasKitContext">The SaaSKitContext needed to construct services</param>
+    /// <param name="offersService">Concrete OffersService</param>
     /// <param name="applicationConfigRepository">The application configuration repository.</param>
     /// <param name="usersRepository">The users repository.</param>
     /// <param name="valueTypesRepository">The value types repository.</param>
     /// <param name="offersAttributeRepository">The offers attribute repository.</param>
     /// <param name="logger">The logger.</param>
-    public OffersController(SaasKitContext saasKitContext, IApplicationConfigRepository applicationConfigRepository, IUsersRepository usersRepository, IValueTypesRepository valueTypesRepository, IOfferAttributesRepository offersAttributeRepository, ILogger<OffersController> logger)
+    public OffersController(
+        OffersService offersService,
+        IApplicationConfigRepository applicationConfigRepository, 
+        IUsersRepository usersRepository, 
+        IValueTypesRepository valueTypesRepository, 
+        IOfferAttributesRepository offersAttributeRepository, 
+        ILogger<OffersController> logger)
     {
         this.applicationConfigRepository = applicationConfigRepository;
         this.usersRepository = usersRepository;
         this.valueTypesRepository = valueTypesRepository;
-        this.offersService = new OffersService(saasKitContext);
+        this.offersService = offersService;
+        this.applicationConfigRepository = applicationConfigRepository;
         this.offersAttributeRepository = offersAttributeRepository;
         this.logger = logger;
     }
@@ -105,7 +112,7 @@ public class OffersController : BaseController
             
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
             
-            var offersViewModel = this.offersService.GetOfferOnId(offerGuid);
+            var offersViewModel = this.offersService.GetOfferById(offerGuid);
                 offersViewModel.OfferAttributes = new List<OfferAttributesModel>();
 
             var valueTypes = this.valueTypesRepository.GetAll().ToList();
