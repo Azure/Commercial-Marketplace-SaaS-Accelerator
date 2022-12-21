@@ -104,7 +104,7 @@ public class ApplicationConfigController : BaseController
         }
 
         this.ModelState.Clear();
-        return this.RedirectToAction(nameof(this.EmailTemplateDetails), new { status = emailTemplate.Status });
+        return new OkResult();
     }
 
 
@@ -143,7 +143,7 @@ public class ApplicationConfigController : BaseController
         }
 
         this.ModelState.Clear();
-        return this.RedirectToAction(nameof(this.ApplicationConfigDetails), new { Id = appConfig.Id });
+        return new OkResult();
     }
 
 
