@@ -32,7 +32,7 @@ public class OffersController : BaseController
 
     private readonly ILogger<OffersController> logger;
 
-    private readonly OfferServices offersService;
+    private readonly OffersService offersService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OffersController"/> class.
@@ -48,7 +48,7 @@ public class OffersController : BaseController
         this.applicationConfigRepository = applicationConfigRepository;
         this.usersRepository = usersRepository;
         this.valueTypesRepository = valueTypesRepository;
-        this.offersService = new OfferServices(saasKitContext);
+        this.offersService = new OffersService(saasKitContext);
         this.offersAttributeRepository = offersAttributeRepository;
         this.logger = logger;
     }
@@ -98,6 +98,7 @@ public class OffersController : BaseController
     public IActionResult OfferDetails(Guid offerGuid)
     {
         this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuid {0}", offerGuid);
+
         try
         {
             this.TempData["ShowWelcomeScreen"] = "True";
@@ -138,7 +139,7 @@ public class OffersController : BaseController
     /// return All subscription.
     /// </returns>
     [HttpPost]
-    public IActionResult OfferDetails(OffersViewModel offersData)
+    public IActionResult OfferDetails(OfferModel offersData)
     {
         this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuid {0}", JsonSerializer.Serialize(offersData));
         try
@@ -189,7 +190,7 @@ public class OffersController : BaseController
         }
     }
 
-    private static OfferAttributesModel MapOfferAttributesModel(OfferAttributes offerAttribute, Users currentUserDetail, OffersViewModel offersViewModel)
+    private static OfferAttributesModel MapOfferAttributesModel(OfferAttributes offerAttribute, Users currentUserDetail, OfferModel offerModel)
     {
         return new OfferAttributesModel()
         {
@@ -209,7 +210,7 @@ public class OffersController : BaseController
             IsDelete = offerAttribute.IsDelete ?? false,
             CreateDate = DateTime.Now,
             UserId = currentUserDetail?.UserId ?? 0,
-            OfferId = offersViewModel.OfferGuid,
+            OfferId = offerModel.OfferGuid,
         };
     }
 

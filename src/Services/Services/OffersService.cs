@@ -11,33 +11,37 @@ namespace Marketplace.SaaS.Accelerator.Services.Services;
 /// <summary>
 /// Service to enable operations over offers.
 /// </summary>
-public class OfferServices
+public class OffersService
 {
     /// <summary>
     /// The offer repository.
     /// </summary>
     private readonly IOffersRepository offerRepository;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="OfferServices"/> class.
-    /// </summary>
-    /// <param name="saasKitContext"></param>
-    public OfferServices(SaasKitContext saasKitContext) : this(new OffersRepository(saasKitContext)) { }
+    private readonly IOfferAttributesRepository offerAttributesRepository;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="OfferServices"/> class.
+    /// Initializes a new instance of the <see cref="OffersService"/> class.
+    /// </summary>
+    /// <param name="saasKitContext"></param>
+    public OffersService(SaasKitContext saasKitContext) : this(new OffersRepository(saasKitContext), new OfferAttributesRepository(saasKitContext)) { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="OffersService"/> class.
     /// This constructor is for testing purposes only and should not be used for production.
     /// </summary>
     /// <param name="offerRepo">The offer repo.</param>
-    public OfferServices(IOffersRepository offerRepo)
+    /// <param name="offerAttributesRepository"></param>
+    public OffersService(IOffersRepository offerRepo, IOfferAttributesRepository offerAttributesRepository)
     {
         this.offerRepository = offerRepo;
+        this.offerAttributesRepository = offerAttributesRepository;
     }
 
     /// <summary>
     /// Gets the offers.
     /// </summary>
-    /// <returns> Offers Model.</returns>
+    /// <returns> OffersModel.</returns>
     public List<OffersModel> GetOffers()
     {
         var offers = this.offerRepository.GetAll();
@@ -59,11 +63,11 @@ public class OfferServices
     /// </summary>
     /// <param name="offerGuId">The offer gu identifier.</param>
     /// <returns> Offers View Model.</returns>
-    public OffersViewModel GetOfferOnId(Guid offerGuId)
+    public OfferModel GetOfferOnId(Guid offerGuId)
     {
         var offer = this.offerRepository.GetOfferById(offerGuId);
         
-        var offersViewModel = new OffersViewModel()
+        var offersViewModel = new OfferModel()
         {
             Id = offer.Id,
             OfferID = offer.OfferId,
