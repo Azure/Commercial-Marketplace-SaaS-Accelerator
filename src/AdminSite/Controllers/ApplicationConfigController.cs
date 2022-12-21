@@ -47,10 +47,7 @@ public class ApplicationConfigController : BaseController
     [ServiceFilter(typeof(ExceptionHandlerAttribute))]
     public IActionResult Index()
     {
-        this.logger.LogInformation("Application Config Controller / Index (from controller)");
-
-        IEnumerable<ApplicationConfiguration> getAllAppConfigData = new List<ApplicationConfiguration>();
-        getAllAppConfigData = this.appConfigService.GetAllApplicationConfiguration();
+        var getAllAppConfigData = this.appConfigService.GetAllApplicationConfiguration();
         return this.View(getAllAppConfigData);
     }
 
@@ -61,10 +58,7 @@ public class ApplicationConfigController : BaseController
     [ServiceFilter(typeof(ExceptionHandlerAttribute))]
     public IActionResult EmailTemplates()
     {
-        this.logger.LogInformation("Application Config Controller / EmailTemplates");
-
-        IEnumerable<EmailTemplate> getEmailTemplateData = new List<EmailTemplate>();
-        getEmailTemplateData = this.emailTemplateRepository.GetAll();
+        var getEmailTemplateData = this.emailTemplateRepository.GetAll();
         return this.View(getEmailTemplateData);
     }
 
@@ -79,10 +73,7 @@ public class ApplicationConfigController : BaseController
     /// </returns>
     public IActionResult EmailTemplateDetails(string status)
     {
-        this.logger.LogInformation("ApplicationConfig Controller / EmailTemplateDetails:  Status {0}", status);
-
-        EmailTemplate emailTemplate = new EmailTemplate();
-        emailTemplate = this.emailTemplateRepository.GetTemplateForStatus(status);
+        var emailTemplate = this.emailTemplateRepository.GetTemplateForStatus(status);
         return this.PartialView(emailTemplate);
     }
 
@@ -96,13 +87,7 @@ public class ApplicationConfigController : BaseController
     [HttpPost]
     public IActionResult EmailTemplateDetails(EmailTemplate emailTemplate)
     {
-        this.logger.LogInformation("ApplicationConfig Controller / EmailTemplateDetails:  EmailTemplate {0}", JsonSerializer.Serialize(emailTemplate));
-
-        if (emailTemplate != null)
-        {
-            this.emailTemplateRepository.SaveEmailTemplateByStatus(emailTemplate);
-        }
-
+        this.emailTemplateRepository.SaveEmailTemplateByStatus(emailTemplate);
         this.ModelState.Clear();
         return new OkResult();
     }
@@ -118,10 +103,7 @@ public class ApplicationConfigController : BaseController
     /// </returns>
     public IActionResult ApplicationConfigDetails(int Id)
     {
-        this.logger.LogInformation("ApplicationConfig Controller / AppConfigDetails:  Id {0}", Id);
-
-        ApplicationConfiguration applicationConfiguration = new ApplicationConfiguration();
-        applicationConfiguration = this.appConfigService.GetById(Id);
+        var applicationConfiguration = this.appConfigService.GetById(Id);
         return this.PartialView(applicationConfiguration);
     }
 
@@ -136,11 +118,7 @@ public class ApplicationConfigController : BaseController
     [HttpPost]
     public IActionResult ApplicationConfigDetails(ApplicationConfiguration appConfig)
     {
-        this.logger.LogInformation("ApplicationConfig Controller / ApplicationConfigDetails:  AppConfig {0}", JsonSerializer.Serialize(appConfig));
-        if (appConfig != null)
-        {
-            this.appConfigService.SaveAppConfig(appConfig);
-        }
+        this.appConfigService.SaveAppConfig(appConfig);
 
         this.ModelState.Clear();
         return new OkResult();
@@ -156,66 +134,64 @@ public class ApplicationConfigController : BaseController
     [ServiceFilter(typeof(ExceptionHandlerAttribute))]
     public IActionResult PostUpload(List<IFormFile> files)
     {
-        this.logger.LogInformation("Application Config Controller / PostUpload ");
-        if (files == null || files.Count == 0)
+        if (!(files?.Any() == true))
         {
             TempData["Upload"] = "No files to upload";
             return RedirectToAction("Index");
         }
-        else
+        if (files.Count > 2)
         {
-            if (files.Count > 2)
+            TempData["Upload"] = "No more than two files can be uploaded";
+            return RedirectToAction("Index");
+        }
+
+        foreach (var file in files)
+        {
+            int maxLength = 1024 * 1024 * 5; //5 MB
+
+            if (file.Length > maxLength)
             {
-                TempData["Upload"] = "No more than two files can be uploaded";
+                TempData["Upload"] = "File is too large, max size of file for upload is 5 MB";
                 return RedirectToAction("Index");
             }
-            foreach (var file in files)
+            if (file.Length == 0)
             {
-                int maxLength = 1024 * 1024 * 5; //5 MB
-
-                if (file.Length > maxLength)
-                {
-                    TempData["Upload"] = "File is too large, max size of file for upload is 5 MB";
-                    return RedirectToAction("Index");
-                }
-                if (file.Length == 0)
-                {
-                    TempData["Upload"] = "File is empty";
-                    return RedirectToAction("Index");
-                }
-
-                var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-                if (fileExtension != ".png" && fileExtension != ".ico")
-                {
-                    TempData["Upload"] = "Only .png or .ico files can be uploaded";
-                    return RedirectToAction("Index");
-                }
-
-                var appConfigNames = this.appConfigService.GetAllApplicationConfiguration().Select(a => a.Name);
-
-                if (!appConfigNames.Contains("LogoFile") || !appConfigNames.Contains("FaviconFile"))
-                {
-                    TempData["Upload"] = "LogoFile or FaviconFile application config settings are missing in the database";
-                    return RedirectToAction("Index");
-                }
-
-                if (this.appConfigService.UploadFileToDatabase(file, fileExtension) == false)
-                {
-                    TempData["Upload"] = "File Upload failed!";
-                    return RedirectToAction("Index");
-                }
+                TempData["Upload"] = "File is empty";
+                return RedirectToAction("Index");
             }
 
-            if (files.Count == 1)
+            var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (fileExtension != ".png" && fileExtension != ".ico")
             {
-                TempData["Upload"] = files.FirstOrDefault().FileName + "  uploaded successfully";
+                TempData["Upload"] = "Only .png or .ico files can be uploaded";
+                return RedirectToAction("Index");
             }
-            else
+
+            var appConfigNames = this.appConfigService.GetAllApplicationConfiguration().Select(a => a.Name);
+
+            if (!appConfigNames.Contains("LogoFile") || !appConfigNames.Contains("FaviconFile"))
             {
-                TempData["Upload"] = files[0].FileName + " and " + files[1].FileName + " uploaded successfully";
+                TempData["Upload"] = "LogoFile or FaviconFile application config settings are missing in the database";
+                return RedirectToAction("Index");
+            }
+
+            if (this.appConfigService.UploadFileToDatabase(file, fileExtension) == false)
+            {
+                TempData["Upload"] = "File Upload failed!";
+                return RedirectToAction("Index");
             }
         }
+
+        if (files.Count == 1)
+        {
+            TempData["Upload"] = files.FirstOrDefault().FileName + "  uploaded successfully";
+        }
+        else
+        {
+            TempData["Upload"] = files[0].FileName + " and " + files[1].FileName + " uploaded successfully";
+        }
+
         return RedirectToAction("Index");
     }
 
