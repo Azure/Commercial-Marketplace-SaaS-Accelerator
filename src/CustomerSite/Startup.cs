@@ -52,12 +52,6 @@ public class Startup
     /// <param name="services">The services<see cref="IServiceCollection"/>.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-        var loggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder
-                .AddConsole();
-        });
-
         services.Configure<CookiePolicyOptions>(options =>
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -101,7 +95,10 @@ public class Startup
                 options.TokenValidationParameters.ValidateIssuer = false;
             });
         services
-            .AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
+            .AddTransient<IClaimsTransformation, CustomClaimsTransformation>()
+            .AddScoped<ExceptionHandlerAttribute>()
+            .AddScoped<RequestLoggerActionFilter>()
+        ;
 
         services
             .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()))

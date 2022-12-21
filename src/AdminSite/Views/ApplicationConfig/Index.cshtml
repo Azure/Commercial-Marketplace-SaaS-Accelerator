@@ -106,10 +106,13 @@
                 datatype: "json",
                 success: function (data) {
                     $('#myModal').html(data);
-                    //$('#myModal').modal();
                 },
                 error: function () {
-                    alert("Content load failed.");
+                    swal({
+                        title: "Error",
+                        text: "An error has occured, while loading details.",
+                        icon: "error"
+                    });
                 }
             });
         }

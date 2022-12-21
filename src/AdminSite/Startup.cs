@@ -57,12 +57,6 @@ public class Startup
     /// <param name="services">The services.</param>
     public void ConfigureServices(IServiceCollection services)
     {
-        var loggerFactory = LoggerFactory.Create(builder =>
-        {
-            builder
-                .AddConsole();
-        });
-
         services.Configure<CookiePolicyOptions>(options =>
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -112,13 +106,19 @@ public class Startup
             .AddCookie();
 
         services
-            .AddTransient<IClaimsTransformation, CustomClaimsTransformation>();
-
+            .AddTransient<IClaimsTransformation, CustomClaimsTransformation>()
+            .AddScoped<ExceptionHandlerAttribute>()
+            .AddScoped<RequestLoggerActionFilter>()
+        ;
         services
             .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()))
             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()))
             .AddSingleton<SaaSApiClientConfiguration>(config)
             .AddSingleton<KnownUsersModel>(knownUsers);
+
+        services
+            .AddScoped<ApplicationConfigService>()
+        ;
 
         services
             .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
@@ -127,7 +127,8 @@ public class Startup
         InitializeRepositoryServices(services);
 
         services.AddDistributedMemoryCache();
-        services.AddSession(options => {
+        services.AddSession(options =>
+        {
             options.IdleTimeout = TimeSpan.FromMinutes(5);
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
@@ -136,7 +137,8 @@ public class Startup
         services.AddMvc(option => option.EnableEndpointRouting = false);
         services.AddControllersWithViews();
 
-        services.Configure<CookieTempDataProviderOptions>(options => {
+        services.Configure<CookieTempDataProviderOptions>(options =>
+        {
             options.Cookie.IsEssential = true;
         });
     }
