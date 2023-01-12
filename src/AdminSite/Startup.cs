@@ -141,6 +141,8 @@ public class Startup
         {
             options.Cookie.IsEssential = true;
         });
+
+        services.AddScoped<OffersService>();
     }
 
     /// <summary>

@@ -6,7 +6,7 @@ namespace Marketplace.SaaS.Accelerator.Services.Models;
 /// <summary>
 /// Offers View Model.
 /// </summary>
-public class OffersViewModel
+public class OfferModel
 {
     /// <summary>
     /// Gets or sets the identifier.
