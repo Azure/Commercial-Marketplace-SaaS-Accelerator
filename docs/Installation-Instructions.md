@@ -18,7 +18,7 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
  -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING" `
  -PublisherAdminUsers "user@email.com" `
- -Location "East US" `
+ -Location "East US" 
  ```
 
 The script above will perform these actions:
@@ -38,6 +38,7 @@ The script above will perform these actions:
  -ADMTApplicationID "xxxx-xxx-xxx-xxx-xxxx" `
  -LogoURLpng "https://company_com/company_logo.png" `
  -LogoURLico "https://company_com/company_logo.ico" `
+ -MeteredSchedulerSupport
  -Quiet
  ```
 
