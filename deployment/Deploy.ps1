@@ -277,9 +277,12 @@ $Connection="Data Source=tcp:"+$ServerUri+",1433;Initial Catalog=AMPSaaSDB;User 
 
 
 Write-host "   🔵 Resource Group"
+Write-host "      ➡️ Check Resource Group if exists"
+if(-Not (az group show -n $ResourceGroupForDeployment 2>null))
+{
 Write-host "      ➡️ Create Resource Group"
 az group create --location $Location --name $ResourceGroupForDeployment --output $azCliOutput
-
+}
 Write-host "   🔵 SQL Server"
 Write-host "      ➡️ Check if Sql Server Exists"
 if(-Not (az sql server show --name $SQLServerName  --resource-group $ResourceGroupForDeployment 2>null))
