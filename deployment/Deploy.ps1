@@ -297,6 +297,8 @@ else
 	az sql server update --name $SQLServerName  --resource-group $ResourceGroupForDeployment --admin-password $SQLAdminLoginPassword
 	$SQLAdminLogin=az sql server show --name $SQLServerName  --resource-group $ResourceGroupForDeployment --query administratorLogin
 	$SQLAdminLogin=$SQLAdminLogin-replace '\"',''
+	$Connection="Data Source=tcp:"+$ServerUri+",1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
+
 }
 
 
