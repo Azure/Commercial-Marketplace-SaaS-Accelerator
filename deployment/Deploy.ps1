@@ -287,6 +287,11 @@ if(-Not (az sql server show --name $SQLServerName  --resource-group $ResourceGro
  Write-host "      ➡️ Create Sql Server"	
  az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword --output $azCliOutput
 }
+else
+{
+	Write-host "      ➡️ Rest User Password"	
+	az sql server update --name $SQLServerName  --resource-group $ResourceGroupForDeployment --admin-password $SQLAdminLoginPassword
+}
 
 Write-host "      ➡️ Add SQL Server Firewall rules"
 az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowAzureIP --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0" --output $azCliOutput
@@ -325,7 +330,7 @@ if(-Not (az appservice plan show -g $ResourceGroupForDeployment -n $WebAppNameSe
 
 Write-host "   🔵 Admin Portal WebApp"
 Write-host "      ➡️ Check if Web App exists"
-if(-Not (az webapp show -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin 2>null))
+if(-Not (az webapp show -g $ResourceGroupForDeployment -n $WebAppNameAdmin 2>null))
 {
   Write-host "      ➡️ Create Web App"
   az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:6 --output $azCliOutput
@@ -341,7 +346,7 @@ az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameA
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true  --output $azCliOutput
 
 Write-host "   🔵 Customer Portal WebApp"
-if(-Not (az webapp show -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal 2>null))
+if(-Not (az webapp show -g $ResourceGroupForDeployment -n $WebAppNamePortal 2>null))
 {
   Write-host "      ➡️ Create Web App"
   az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:6 --output $azCliOutput
