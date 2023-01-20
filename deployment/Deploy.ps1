@@ -51,7 +51,6 @@ if ($SQLAdminLogin -eq "") {
 }
 if ($SQLAdminLoginPassword -eq "") {
     $SQLAdminLoginPassword = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((New-Guid))))+"="
-	Write-Host "$SQLAdminLoginPassword"
 }
 if ($SQLDatabaseName -eq "") {
     $SQLDatabaseName = "AMPSaaSDB"
@@ -327,8 +326,6 @@ if(-Not (az keyvault show --name $KeyVault --resource-group $ResourceGroupForDep
 }
 
 Write-host "      ➡️ Add Secrets"
-Write-host "      ➡️ $ADApplicationSecret"
-Write-host "      ➡️ $Connection"
 az keyvault secret set --vault-name $KeyVault  --name ADApplicationSecret --value $ADApplicationSecret --output $azCliOutput
 az keyvault secret set --vault-name $KeyVault  --name DefaultConnection --value $Connection --output $azCliOutput
 
