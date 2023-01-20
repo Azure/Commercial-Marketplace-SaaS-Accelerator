@@ -296,7 +296,10 @@ else
 	Write-host "      ➡️ Rest User Password"	
 	az sql server update --name $SQLServerName  --resource-group $ResourceGroupForDeployment --admin-password $SQLAdminLoginPassword
 	$SQLAdminLogin=az sql server show --name $SQLServerName  --resource-group $ResourceGroupForDeployment --query administratorLogin
+	$SQLAdminLogin=$SQLAdminLogin-replace '\"',''
 }
+
+
 
 Write-host "      ➡️ Add SQL Server Firewall rules"
 az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowAzureIP --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0" --output $azCliOutput
