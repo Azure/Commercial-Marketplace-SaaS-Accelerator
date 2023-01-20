@@ -295,6 +295,7 @@ else
 {
 	Write-host "      ➡️ Rest User Password"	
 	az sql server update --name $SQLServerName  --resource-group $ResourceGroupForDeployment --admin-password $SQLAdminLoginPassword
+	$SQLAdminLogin=az sql server show --name $SQLServerName  --resource-group $ResourceGroupForDeployment --query administratorLogin
 }
 
 Write-host "      ➡️ Add SQL Server Firewall rules"
