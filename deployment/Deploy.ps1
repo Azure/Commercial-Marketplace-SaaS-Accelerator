@@ -24,10 +24,12 @@ Param(
    [string][Parameter()]$SQLServerName, # Name of the database server (without database.windows.net)
    [string][Parameter()]$SQLAdminLogin, # SQL Admin login
    [string][Parameter()]$SQLAdminLoginPassword, # SQL Admin password  
+   [string][Parameter()]$KeyVaultName, # KeyVault Name
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
    [switch][Parameter()]$MeteredSchedulerSupport, # set to true to enable Metered Support
    [switch][Parameter()]$Quiet #if set, only show error / warning output from script commands
+
 )
 
 # Make sure to install Az Module before running this script
@@ -262,8 +264,11 @@ Write-host "☁ Deploy Azure Resources"
 $WebAppNameService=$WebAppNamePrefix+"-asp"
 $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
+if(!($KeyVaultName))
+{
 $KeyVault=$WebAppNamePrefix+"-kv"
 $KeyVault=$KeyVault -replace '_',''
+}
 #keep the space at the end of the string - bug in az cli running on windows powershell truncates last char https://github.com/Azure/azure-cli/issues/10066
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=ADApplicationSecret) "
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=DefaultConnection) "
@@ -276,8 +281,13 @@ Write-host "      ➡️ Create Resource Group"
 az group create --location $Location --name $ResourceGroupForDeployment --output $azCliOutput
 
 Write-host "   🔵 SQL Server"
-Write-host "      ➡️ Create Sql Server"
-az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword --output $azCliOutput
+Write-host "      ➡️ Check if Sql Server Exists"
+if(-Not (az sql server show --name sass-msalem20231sql --resource-group $ResourceGroupForDeployment 2>null))
+{
+ Write-host "      ➡️ Create Sql Server"	
+ az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword --output $azCliOutput
+}
+
 Write-host "      ➡️ Add SQL Server Firewall rules"
 az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowAzureIP --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0" --output $azCliOutput
 if ($env:ACC_CLOUD -eq $null){
@@ -285,23 +295,42 @@ if ($env:ACC_CLOUD -eq $null){
 	$publicIp = (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
     az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowIP --start-ip-address "$publicIp" --end-ip-address "$publicIp" --output $azCliOutput
 }
-Write-host "      ➡️ Create SQL DB"
-az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name $SQLDatabaseName  --edition Standard  --capacity 10 --zone-redundant false --output $azCliOutput
+
+Write-host "      ➡️ Check if SQL DB exists"
+if(-Not (az sql db show --server $SQLServerName --name $SQLDatabaseName --resource-group $ResourceGroupForDeployment 2>null))
+{
+	Write-host "      ➡️ Create SQL DB"	
+  az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name $SQLDatabaseName  --edition Standard  --capacity 10 --zone-redundant false --output $azCliOutput
+}
 
 Write-host "   🔵 KeyVault"
-Write-host "      ➡️ Create KeyVault"
-az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment --output $azCliOutput
+Write-host "      ➡️ Check KeyVault if exists"
+if(-Not (az keyvault show --name $KeyVault --resource-group $ResourceGroupForDeployment 2>null))
+{
+	Write-host "      ➡️ Create KeyVault"
+    az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment --output $azCliOutput
+}
+
 Write-host "      ➡️ Add Secrets"
 az keyvault secret set --vault-name $KeyVault  --name ADApplicationSecret --value $ADApplicationSecret --output $azCliOutput
 az keyvault secret set --vault-name $KeyVault  --name DefaultConnection --value $Connection --output $azCliOutput
 
 Write-host "   🔵 App Service Plan"
-Write-host "      ➡️ Create App Service Plan"
-az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1 --output $azCliOutput
+Write-host "      ➡️ Check App Service Plan if exists"
+if(-Not (az appservice plan show -g $ResourceGroupForDeployment -n $WebAppNameService 2>null))
+{
+  Write-host "      ➡️ Create App Service Plan"
+  az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1 --output $azCliOutput
+}
 
 Write-host "   🔵 Admin Portal WebApp"
-Write-host "      ➡️ Create Web App"
-az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:6 --output $azCliOutput
+Write-host "      ➡️ Check if Web App exists"
+if(-Not (aaz webapp show -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin 2>null))
+{
+  Write-host "      ➡️ Create Web App"
+  az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:6 --output $azCliOutput
+}
+
 Write-host "      ➡️ Assign Identity"
 $WebAppNameAdminId = az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] --query principalId -o tsv
 Write-host "      ➡️ Setup access to KeyVault"
@@ -312,8 +341,12 @@ az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameA
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true  --output $azCliOutput
 
 Write-host "   🔵 Customer Portal WebApp"
-Write-host "      ➡️ Create Web App"
-az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:6 --output $azCliOutput
+if(-Not (aaz webapp show -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal 2>null))
+{
+  Write-host "      ➡️ Create Web App"
+  az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:6 --output $azCliOutput
+}
+
 Write-host "      ➡️ Assign Identity"
 $WebAppNamePortalId= az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] --query principalId -o tsv 
 Write-host "      ➡️ Setup access to KeyVault"
