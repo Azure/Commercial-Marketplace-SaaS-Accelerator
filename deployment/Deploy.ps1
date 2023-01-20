@@ -282,7 +282,7 @@ az group create --location $Location --name $ResourceGroupForDeployment --output
 
 Write-host "   🔵 SQL Server"
 Write-host "      ➡️ Check if Sql Server Exists"
-if(-Not (az sql server show --name sass-msalem20231sql --resource-group $ResourceGroupForDeployment 2>null))
+if(-Not (az sql server show --name $SQLServerName  --resource-group $ResourceGroupForDeployment 2>null))
 {
  Write-host "      ➡️ Create Sql Server"	
  az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword --output $azCliOutput
@@ -325,7 +325,7 @@ if(-Not (az appservice plan show -g $ResourceGroupForDeployment -n $WebAppNameSe
 
 Write-host "   🔵 Admin Portal WebApp"
 Write-host "      ➡️ Check if Web App exists"
-if(-Not (aaz webapp show -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin 2>null))
+if(-Not (az webapp show -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin 2>null))
 {
   Write-host "      ➡️ Create Web App"
   az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:6 --output $azCliOutput
@@ -341,7 +341,7 @@ az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameA
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true  --output $azCliOutput
 
 Write-host "   🔵 Customer Portal WebApp"
-if(-Not (aaz webapp show -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal 2>null))
+if(-Not (az webapp show -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal 2>null))
 {
   Write-host "      ➡️ Create Web App"
   az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:6 --output $azCliOutput
