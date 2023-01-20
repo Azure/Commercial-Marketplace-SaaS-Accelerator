@@ -110,6 +110,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac |
 | ResourceGroupForDeployment | Name of the resource group to deploy the resources |
 | Location | Location of the resource group |
+| KeyVaultName | A unique name of the Key Vault. Default: `WebAppNamePrefix`-kv |
 | AzureSubscriptionID | Subscription where the resources be deployed |
 | PathToARMTemplate | Local Path to the ARM Template |
 

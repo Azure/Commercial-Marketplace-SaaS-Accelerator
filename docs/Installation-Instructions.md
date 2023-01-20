@@ -18,7 +18,7 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
  -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING" `
  -PublisherAdminUsers "user@email.com" `
- -Location "East US" `
+ -Location "East US" 
  ```
 
 The script above will perform these actions:
@@ -52,7 +52,7 @@ git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Upgrade.ps1 `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
- -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING"" `
+ -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING"
  ```
 
 ## Parameters
@@ -73,6 +73,7 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 | SQLAdminLoginPassword | SQL Admin password. Default: secure random password. |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
+| KeyVaultName | A unique name of the Key Vault. Default: `WebAppNamePrefix`-kv |
 | MeteredSchedulerSupport | Enable the metered scheduler. This is deployed by default. Use **true** to enable the feature. More information [here](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/main/docs/Metered-Scheduler-Manager-Instruction.md).
 | Quiet | Disable verbose output when running the script
 
