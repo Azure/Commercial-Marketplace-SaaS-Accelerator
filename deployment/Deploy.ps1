@@ -269,6 +269,10 @@ if(!($KeyVaultName))
 $KeyVault=$WebAppNamePrefix+"-kv"
 $KeyVault=$KeyVault -replace '_',''
 }
+else
+{
+  $KeyVault=$KeyVaultName
+}
 #keep the space at the end of the string - bug in az cli running on windows powershell truncates last char https://github.com/Azure/azure-cli/issues/10066
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=ADApplicationSecret) "
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=DefaultConnection) "
