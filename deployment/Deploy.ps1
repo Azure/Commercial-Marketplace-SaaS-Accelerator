@@ -23,7 +23,7 @@ Param(
    [string][Parameter()]$SQLDatabaseName, # Name of the database (Defaults to AMPSaaSDB)
    [string][Parameter()]$SQLServerName, # Name of the database server (without database.windows.net)
    [string][Parameter()]$SQLAdminLogin, # SQL Admin login
-   [string][Parameter()]$SQLAdminLoginPassword, # SQL Admin password  
+   [string][Parameter()][ValidatePattern('^[^\s$@]{1,128}$')]$SQLAdminLoginPassword, # SQL Admin password  
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
    [switch][Parameter()]$MeteredSchedulerSupport, # set to true to enable Metered Support
