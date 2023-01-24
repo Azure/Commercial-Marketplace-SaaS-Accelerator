@@ -41,6 +41,8 @@ This project accelerates the SaaS offer onboarding experience for those building
 
 **[Installation instructions are here](./docs/Installation-Instructions.md)**, as well as documents detailing architecture and scaled installation considerations are also available. Following these instructions will typically have the SaaS Accelerator installed in 20 minutes or less.
 
+**[Advanced Installation instructions are here](./docs/Advanced-Instructions.md)** a detail instrucations to address different deployment senario like HOW-TO run it locally or deploy it from Vistual Studio.
+
 **Video instructions:** Additionally, there is a quick video on [how to install the SaaS Accelerator with the installer script](https://www.youtube.com/watch?v=BVZTj6fssQ8) available through [Mastering the Marketplace ](https://microsoft.github.io/Mastering-the-Marketplace).
 
 ### Additional technical documents
