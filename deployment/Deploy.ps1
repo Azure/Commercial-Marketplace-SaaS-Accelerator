@@ -26,6 +26,8 @@ Param(
    [string][Parameter()]$SQLAdminLoginPassword, # SQL Admin password  
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
+   [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
+   [string][Parameter()]$KeyVault, # Name of KeyVault
    [switch][Parameter()]$MeteredSchedulerSupport, # set to true to enable Metered Support
    [switch][Parameter()]$Quiet #if set, only show error / warning output from script commands
 )
@@ -74,6 +76,14 @@ if($WebAppNamePrefix.Length -gt 21) {
     Exit
 }
 
+if ($string -contains "find") { 
+	# Do something
+  }
+
+if($KeyVault -contains "_") {
+    Throw "🛑 KeyVault name can not contain hyphens"
+    Exit
+}
 #endregion 
 
 Write-Host "Starting SaaS Accelerator Deployment..."
@@ -262,8 +272,12 @@ Write-host "☁ Deploy Azure Resources"
 $WebAppNameService=$WebAppNamePrefix+"-asp"
 $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
-$KeyVault=$WebAppNamePrefix+"-kv"
-$KeyVault=$KeyVault -replace '_',''
+if(! ($KeyVault))
+{
+	$KeyVault=$WebAppNamePrefix+"-kv"
+	$KeyVault=$KeyVault -replace '_',''
+}
+
 #keep the space at the end of the string - bug in az cli running on windows powershell truncates last char https://github.com/Azure/azure-cli/issues/10066
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=ADApplicationSecret) "
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=DefaultConnection) "
