@@ -26,7 +26,6 @@ Param(
    [string][Parameter()]$SQLAdminLoginPassword, # SQL Admin password  
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
-   [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
    [string][Parameter()]$KeyVault, # Name of KeyVault
    [switch][Parameter()]$MeteredSchedulerSupport, # set to true to enable Metered Support
    [switch][Parameter()]$Quiet #if set, only show error / warning output from script commands
