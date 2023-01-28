@@ -1,14 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using OpenQA.Selenium.Support.UI;
-using System.Numerics;
 
 namespace Marketplace.SaaS.Accelerator.UI.Test;
 
@@ -33,7 +27,10 @@ public class AdminApplicationShould
 
     public AdminApplicationShould()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.test.json").Build();
+        IConfigurationRoot config = new ConfigurationBuilder()
+                                        .AddJsonFile("appsettings.test.json")
+                                        .AddEnvironmentVariables()
+                                        .Build();
         this.configuration = config.GetSection("AppSetting").Get<TestConfiguration>();
     }
 
@@ -62,6 +59,9 @@ public class AdminApplicationShould
 
         var options = new ChromeOptions();
         options.AddArguments("--incognito");
+        options.AddArguments("--headless");
+        options.AddArguments("--window-size=1920,1080");
+        options.AddArguments("--start-maximized");
         driver = new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), options);
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
     }
@@ -136,12 +136,12 @@ public class AdminApplicationShould
         Assert.AreEqual(SwalInProgress, Constants.SwalInprogress, "Fetch InProgress working");
 
         //Check Complete
-        var w_wait = new WebDriverWait(driver, TimeSpan.FromSeconds(120)).Until(driver => driver.FindElement(By.ClassName("swal-button-container")));
+        var swalOkButton = new WebDriverWait(driver, TimeSpan.FromSeconds(120)).Until(driver => driver.FindElement(By.ClassName("swal-button-container")));
         var SwalComplete = driver.FindElement(By.ClassName("swal-title")).GetAttribute("innerHTML");
         Assert.AreEqual(SwalComplete, Constants.SwalComplete, "Fetch Complete working");
 
-        //Refresh Page
-        w_wait.Click();
+        //Refresh Subscriptions Page
+        swalOkButton.Click();
         driver.Navigate().Refresh();
 
         //Check if rows populated
@@ -158,7 +158,6 @@ public class AdminApplicationShould
     {
         //Arrange
         driver.Navigate().GoToUrl(adminAppURL);
-        
         //Act
         driver.FindElement(By.Id("i0116")).Clear();
         driver.FindElement(By.Id("i0116")).SendKeys(loginUserName);
@@ -173,7 +172,9 @@ public class AdminApplicationShould
 
     void doLogOut()
     {
-        driver.FindElement(By.XPath("//a[@href ='/Account/SignOut']")).Click();
+        //driver.FindElement(By.XPath("//a[@href ='/Account/SignOut']")).Click();
+        var logoutbtn = new WebDriverWait(driver, TimeSpan.FromSeconds(120)).Until(driver => driver.FindElement(By.XPath("//a[@href ='/Account/SignOut']")));
+        logoutbtn.Click();
     }
 
     void gotoSubscriptionsPageFromTile()

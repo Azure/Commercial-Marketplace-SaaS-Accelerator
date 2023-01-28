@@ -1,12 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using OpenQA.Selenium.Support.UI;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Marketplace.SaaS.Accelerator.UI.Test;
 
@@ -34,7 +30,10 @@ public class CustomerApplicationShould
 
     public CustomerApplicationShould()
     {
-        IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.test.json").Build();
+        IConfigurationRoot config = new ConfigurationBuilder()
+                                    .AddJsonFile("appsettings.test.json")
+                                    .AddEnvironmentVariables()
+                                    .Build();
         this.configuration = config.GetSection("AppSetting").Get<TestConfiguration>();
     }
 
@@ -64,6 +63,9 @@ public class CustomerApplicationShould
 
         var options = new ChromeOptions();
         options.AddArguments("--incognito");
+        options.AddArguments("--headless");
+        options.AddArguments("--window-size=1920,1080");
+        options.AddArguments("--start-maximized"); 
         driver = new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), options);
         driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
     }
@@ -80,7 +82,9 @@ public class CustomerApplicationShould
     {
         //Arrange/Act
         driver.Navigate().GoToUrl(customerAppURL);
-        driver.FindElement(By.XPath("//a[@href ='/Account/SignIn']")).Click();
+        //driver.FindElement(By.XPath("//a[@href ='/Account/SignIn']")).Click();
+        var signInLink = new WebDriverWait(driver, TimeSpan.FromSeconds(120)).Until(driver => driver.FindElement(By.XPath("//a[@href ='/Account/SignIn']")));
+        signInLink.Click();
         doLogIn();
         
         String homePageTitle = driver.FindElement(By.XPath("//*[@id='divIndex']/div/div/div[1]/h1[1]")).GetAttribute("innerHTML");
