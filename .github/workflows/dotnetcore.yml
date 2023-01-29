@@ -12,8 +12,8 @@ env:
   PUBLISHER_PROJECT: './src/AdminSite/AdminSite.csproj'
   SERVICES_TEST_PROJECT: './src/Services.Test/Services.Test.csproj'
   UI_TEST_PROJECT: './src/UI.Test/UI.Test.csproj'
-  CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.CustomerSite/publish'
-  PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/publish'
+  CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.CustomerSite/Publish/Customer'
+  PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/Publish/Admin'
   DOTNET_CORE_VERSION: '6.0.x'
   
   
