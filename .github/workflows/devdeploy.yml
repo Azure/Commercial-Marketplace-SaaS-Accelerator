@@ -30,7 +30,7 @@ jobs:
     steps:
 
     # Checkout the repo
-    - uses: actions/checkout@main
+    - uses: actions/checkout@v3
 
     # Setup .NET Core SDK
     - name: Setup .NET Core
@@ -60,7 +60,7 @@ jobs:
     steps:
 
     # Checkout the repo
-    - uses: actions/checkout@main
+    - uses: actions/checkout@v3
 
     # Setup .NET Core SDK
     - name: Setup .NET Core
