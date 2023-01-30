@@ -12,7 +12,7 @@
 #     UI_TEST_ADMIN_APP_USERNAME - Add the Username to login to Admin/Customer to perform UI tests
 #     UI_TEST_ADMIN_APP_PASSWORD - Add the Password to login to Admin/Customer to perform UI tests
 
-name: "Deploy WEB Apps to dev"
+name: "Build Deploy and Test"
 
 on:
   push:
