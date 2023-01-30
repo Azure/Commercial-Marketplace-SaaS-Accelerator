@@ -4,8 +4,9 @@
 name: Build, Deploy and Test on PR
 
 on:
-  pull_request:
-    branches: [ "main" ]
+  push:
+    branches:
+      - main
     
 env:  
   CUSTOMER_PROJECT: './src/CustomerSite/CustomerSite.csproj'
