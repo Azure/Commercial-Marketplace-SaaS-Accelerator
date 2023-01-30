@@ -13,6 +13,8 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches: [ "main" ]
 
 env:  
   CUSTOMER_PROJECT: './src/CustomerSite/CustomerSite.csproj'
