@@ -96,4 +96,4 @@ jobs:
     
     # Run Admin APP UI tests
     - name: Admin App UI Tests
-      run: dotnet test --filter TestCategory="AdminApp"
+      run: dotnet test ${{ env.UI_TEST_PROJECT }} --filter TestCategory="AdminApp"
