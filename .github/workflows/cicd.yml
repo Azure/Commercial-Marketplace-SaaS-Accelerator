@@ -101,4 +101,4 @@ jobs:
     
     # Run Admin APP UI tests
     - name: Admin App UI Tests
-      run: dotnet test ${{ env.UI_TEST_PROJECT }} --filter TestCategory="AdminApp"
+      run: AppSetting__adminAppURL=${{ env.UI_TEST_ADMIN_APP_URL }} AppSetting__customerAppURL=${{ env.UI_TEST_CUSTOMER_APP_URL }} AppSetting__loginUserName=${{ env.UI_TEST_APP_USERNAME }} AppSetting__password=${{ env.UI_TEST_APP_PASSWORD }} AppSetting__landingPageToken=${{ env.UI_TEST_LANDINGPAGE_TOKEN }} dotnet test ${{ env.UI_TEST_PROJECT }} --filter TestCategory="AdminApp" -v n
