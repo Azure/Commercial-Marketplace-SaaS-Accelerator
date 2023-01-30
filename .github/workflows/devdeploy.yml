@@ -62,7 +62,7 @@ jobs:
   
     # Run Customer APP UI tests
     - name: Customer App UI Tests
-      run: dotnet test --filter TestCategory="CustomerApp"
+      run: dotnet test ${{ env.UI_TEST_PROJECT }} --filter TestCategory="CustomerApp"
       
   deploytopublisher:
     name: Deploy publisher app to dev
