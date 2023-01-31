@@ -110,8 +110,11 @@ public class Startup
             .AddScoped<ExceptionHandlerAttribute>()
             .AddScoped<RequestLoggerActionFilter>()
         ;
+
+        var fulfillmentBaseApi = new Uri(config.FulFillmentAPIBaseURL ?? "https://marketplaceapi.microsoft.com/api");
+
         services
-            .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()))
+            .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(fulfillmentBaseApi, creds), config, new FulfillmentApiClientLogger()))
             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()))
             .AddSingleton<SaaSApiClientConfiguration>(config)
             .AddSingleton<KnownUsersModel>(knownUsers);
