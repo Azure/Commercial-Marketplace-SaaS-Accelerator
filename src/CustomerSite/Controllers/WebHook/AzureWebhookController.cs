@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
 using Microsoft.AspNetCore.Mvc;
@@ -86,7 +87,7 @@ public class AzureWebhookController : ControllerBase
     /// Posts the specified request.
     /// </summary>
     /// <param name="request">The request.</param>
-    public async Task Post(WebhookPayload request)
+    public async Task<IActionResult> Post(WebhookPayload request)
     {
         try
         {
@@ -97,15 +98,23 @@ public class AzureWebhookController : ControllerBase
                 var json = JsonSerializer.Serialize(request);
                 await this.applicationLogService.AddApplicationLog("Webhook Serialize Object " + json).ConfigureAwait(false);
                 await this.webhookProcessor.ProcessWebhookNotificationAsync(request, configuration).ConfigureAwait(false);
+                return Ok();
             }
+            throw new MarketplaceException("Request payload is null");
+        }
+        catch (MarketplaceException ex)
+        {
+            await this.applicationLogService.AddApplicationLog(
+                    $"An error occurred while attempting to process a webhook notification: [{ex.Message}].")
+                .ConfigureAwait(false);
+            return BadRequest();
         }
         catch (Exception ex)
         {
             await this.applicationLogService.AddApplicationLog(
                     $"An error occurred while attempting to process a webhook notification: [{ex.Message}].")
                 .ConfigureAwait(false);
-
-            throw;
+            return StatusCode(500);
         }
     }
 }

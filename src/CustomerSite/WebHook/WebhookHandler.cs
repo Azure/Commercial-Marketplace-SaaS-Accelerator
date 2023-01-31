@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.StatusHandlers;
@@ -109,7 +110,20 @@ public class WebHookHandler : IWebhookHandler
     /// <param name="applicationConfigRepository">The application configuration repository.</param>
     /// <param name="emailTemplateRepository">The email template repository.</param>
     /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
-    public WebHookHandler(IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionsLogRepository, ISubscriptionsRepository subscriptionsRepository, IPlansRepository planRepository, IOfferAttributesRepository offersAttributeRepository, IOffersRepository offersRepository, IFulfillmentApiService fulfillApiService, IUsersRepository usersRepository, ILoggerFactory loggerFactory, IEmailService emailService, IEventsRepository eventsRepository, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository)
+    public WebHookHandler(IApplicationLogRepository applicationLogRepository, 
+                          ISubscriptionLogRepository subscriptionsLogRepository, 
+                          ISubscriptionsRepository subscriptionsRepository, 
+                          IPlansRepository planRepository, 
+                          IOfferAttributesRepository offersAttributeRepository, 
+                          IOffersRepository offersRepository, 
+                          IFulfillmentApiService fulfillApiService, 
+                          IUsersRepository usersRepository, 
+                          ILoggerFactory loggerFactory, 
+                          IEmailService emailService, 
+                          IEventsRepository eventsRepository, 
+                          IApplicationConfigRepository applicationConfigRepository, 
+                          IEmailTemplateRepository emailTemplateRepository, 
+                          IPlanEventsMappingRepository planEventsMappingRepository)
     {
         this.applicationLogRepository = applicationLogRepository;
         this.subscriptionsRepository = subscriptionsRepository;
@@ -158,32 +172,21 @@ public class WebHookHandler : IWebhookHandler
             CreateBy = null,
             CreateDate = DateTime.Now,
         };
-
-        //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
+        
         //_acceptSubscriptionUpdates should be true and subscription should be in db to accept subscription updates
         var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
-        if (_acceptSubscriptionUpdates && oldValue != null)
+        if (!_acceptSubscriptionUpdates || oldValue == null)
         {
-            this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
-            await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
-            auditLog.NewValue = payload.PlanId;
-        }
-        else
-        {
-            var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
-            if (patchOperation != null && patchOperation.Status != 200)
-            {
-                await this.applicationLogService.AddApplicationLog($"Plan Change operation PATCH failed with statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
-                //partner trying to fail update operation from customer but PATCH on operation didnt successed, hence throwing an error
-                throw new Exception(patchOperation.ReasonPhrase);
-            }
-
-            await this.applicationLogService.AddApplicationLog("Plan Change Request Rejected Successfully.").ConfigureAwait(false);
+            await this.applicationLogService.AddApplicationLog($"Plan Change Request Rejected Successfully.").ConfigureAwait(false);
             auditLog.NewValue = oldValue?.PlanId;
+            this.subscriptionsLogRepository.Save(auditLog);
+            throw new MarketplaceException("Plan Change Request reject due to Config settings or Subscription not in database");
         }
-
+        
+        this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
+        await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
+        auditLog.NewValue = payload.PlanId;
         this.subscriptionsLogRepository.Save(auditLog);
-            
         await Task.CompletedTask;
     }
 
@@ -207,31 +210,20 @@ public class WebHookHandler : IWebhookHandler
             CreateDate = DateTime.Now,
         };
 
-        //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
         //_acceptSubscriptionUpdates should be true and subscription should be in db to accept subscription updates
         var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
-        if (_acceptSubscriptionUpdates && oldValue != null)
+        if (!_acceptSubscriptionUpdates || oldValue == null)
         {
-            this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
-            await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
-            auditLog.NewValue = payload.Quantity.ToString();
-        }
-        else
-        {
-            var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
-            if (patchOperation != null && patchOperation.Status != 200)
-            {
-                await this.applicationLogService.AddApplicationLog($"Quantity Change operation PATCH failed with status statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
-                //partner trying to fail update operation from customer but PATCH on operation didnt succeced, hence throwing an error
-                throw new Exception(patchOperation.ReasonPhrase);
-            }
-
             await this.applicationLogService.AddApplicationLog("Quantity Change Request Rejected Successfully.").ConfigureAwait(false);
             auditLog.NewValue = oldValue?.Quantity.ToString();
+            this.subscriptionsLogRepository.Save(auditLog);
+            throw new MarketplaceException("Quantity Change Request reject due to Config settings or Subscription not in database");
         }
 
-        this.subscriptionsLogRepository.Save(auditLog); 
-
+        this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
+        await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
+        auditLog.NewValue = payload.Quantity.ToString();
+        this.subscriptionsLogRepository.Save(auditLog);
         await Task.CompletedTask;
     }
 
