@@ -75,9 +75,6 @@ if($WebAppNamePrefix.Length -gt 21) {
     Exit
 }
 
-if ($string -contains "find") { 
-	# Do something
-  }
 
 if($KeyVault -contains "_") {
     Throw "🛑 KeyVault name can not contain hyphens"
