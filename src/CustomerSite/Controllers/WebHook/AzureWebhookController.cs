@@ -4,6 +4,7 @@
 
 using System;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
@@ -70,7 +71,12 @@ public class AzureWebhookController : ControllerBase
     /// <param name="planRepository">The plan repository.</param>
     /// <param name="subscriptionsRepository">The subscriptions repository.</param>
     /// <param name="configuration">The SaaSApiClientConfiguration from ENV</param>
-    public AzureWebhookController(IApplicationLogRepository applicationLogRepository, IWebhookProcessor webhookProcessor, ISubscriptionLogRepository subscriptionsLogRepository, IPlansRepository planRepository, ISubscriptionsRepository subscriptionsRepository, SaaSApiClientConfiguration configuration)
+    public AzureWebhookController(IApplicationLogRepository applicationLogRepository, 
+                                  IWebhookProcessor webhookProcessor, 
+                                  ISubscriptionLogRepository subscriptionsLogRepository, 
+                                  IPlansRepository planRepository, 
+                                  ISubscriptionsRepository subscriptionsRepository, 
+                                  SaaSApiClientConfiguration configuration)
     {
         this.applicationLogRepository = applicationLogRepository;
         this.subscriptionsRepository = subscriptionsRepository;
@@ -88,24 +94,38 @@ public class AzureWebhookController : ControllerBase
     /// <param name="request">The request.</param>
     public async Task Post(WebhookPayload request)
     {
+        var exceptionThrown = false;
         try
         {
-            await this.applicationLogService.AddApplicationLog("The azure Webhook Triggered.").ConfigureAwait(false);
+            await this.applicationLogService.AddApplicationLog("Step 1: Webhook received. ").ConfigureAwait(false);
 
             if (request != null)
             {
                 var json = JsonSerializer.Serialize(request);
-                await this.applicationLogService.AddApplicationLog("Webhook Serialize Object " + json).ConfigureAwait(false);
-                await this.webhookProcessor.ProcessWebhookNotificationAsync(request, configuration).ConfigureAwait(false);
+                await this.applicationLogService.AddApplicationLog("Step 2: Webhook serialized payload: " + json).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
         {
+            exceptionThrown = true;
             await this.applicationLogService.AddApplicationLog(
                     $"An error occurred while attempting to process a webhook notification: [{ex.Message}].")
                 .ConfigureAwait(false);
 
             throw;
+        }
+        finally
+        {
+            if (!exceptionThrown)
+            {
+                //Process the webhook after the 200 response is sent to Marketplace
+                Response.OnCompleted(async () =>
+                 {
+                     Thread.Sleep(TimeSpan.FromSeconds(1));
+                     await this.applicationLogService.AddApplicationLog("Step 3: Processing webhook.").ConfigureAwait(false);
+                     await this.webhookProcessor.ProcessWebhookNotificationAsync(request, configuration).ConfigureAwait(false);
+                 });
+            }
         }
     }
 }

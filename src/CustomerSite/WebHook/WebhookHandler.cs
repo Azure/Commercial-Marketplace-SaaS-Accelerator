@@ -109,7 +109,20 @@ public class WebHookHandler : IWebhookHandler
     /// <param name="applicationConfigRepository">The application configuration repository.</param>
     /// <param name="emailTemplateRepository">The email template repository.</param>
     /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
-    public WebHookHandler(IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionsLogRepository, ISubscriptionsRepository subscriptionsRepository, IPlansRepository planRepository, IOfferAttributesRepository offersAttributeRepository, IOffersRepository offersRepository, IFulfillmentApiService fulfillApiService, IUsersRepository usersRepository, ILoggerFactory loggerFactory, IEmailService emailService, IEventsRepository eventsRepository, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository)
+    public WebHookHandler(IApplicationLogRepository applicationLogRepository, 
+                          ISubscriptionLogRepository subscriptionsLogRepository, 
+                          ISubscriptionsRepository subscriptionsRepository, 
+                          IPlansRepository planRepository, 
+                          IOfferAttributesRepository offersAttributeRepository, 
+                          IOffersRepository offersRepository, 
+                          IFulfillmentApiService fulfillApiService, 
+                          IUsersRepository usersRepository, 
+                          ILoggerFactory loggerFactory, 
+                          IEmailService emailService, 
+                          IEventsRepository eventsRepository, 
+                          IApplicationConfigRepository applicationConfigRepository, 
+                          IEmailTemplateRepository emailTemplateRepository, 
+                          IPlanEventsMappingRepository planEventsMappingRepository)
     {
         this.applicationLogRepository = applicationLogRepository;
         this.subscriptionsRepository = subscriptionsRepository;
@@ -159,31 +172,43 @@ public class WebHookHandler : IWebhookHandler
             CreateDate = DateTime.Now,
         };
 
-        //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
-        //_acceptSubscriptionUpdates should be true and subscription should be in db to accept subscription updates
+        //Get the Config value to Accept or Reject Plan Change
         var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
+
+        //If True, proceed with makng the changes in the DB
         if (_acceptSubscriptionUpdates && oldValue != null)
         {
             this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
-            await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
+            await this.applicationLogService.AddApplicationLog("Step 4: Plan change Accepted. Updating DB.").ConfigureAwait(false);
             auditLog.NewValue = payload.PlanId;
         }
+        //If False, Try to reject the by calling the PATCH failure on the operation
         else
         {
-            var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
-            if (patchOperation != null && patchOperation.Status != 200)
+            //PATCH Failure
+            var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, 
+                                                                                         payload.OperationId,
+                                                                                                          Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
+            
+            //If the PATCH Failure operation is successful, then only update audit with old value
+            if (patchOperation != null && patchOperation.Status == 200)
             {
-                await this.applicationLogService.AddApplicationLog($"Plan Change operation PATCH failed with statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
-                //partner trying to fail update operation from customer but PATCH on operation didnt successed, hence throwing an error
-                throw new Exception(patchOperation.ReasonPhrase);
+                await this.applicationLogService.AddApplicationLog("Step 4: Plan Change Request Rejected Successfully").ConfigureAwait(false);
+                auditLog.NewValue = oldValue?.PlanId;
             }
-
-            await this.applicationLogService.AddApplicationLog("Plan Change Request Rejected Successfully.").ConfigureAwait(false);
-            auditLog.NewValue = oldValue?.PlanId;
+            //If the PATCH Failure operation is not successful, that means this couldnt stop the Plan Change.
+            //So change the DB to the PlanId which is sent in the payload
+            else
+            {
+                await this.applicationLogService.AddApplicationLog($"Step 4: Plan Change operation PATCH failed with statuscode {patchOperation?.Status} {patchOperation?.ReasonPhrase}.").ConfigureAwait(false);
+                //partner trying to fail update operation from customer but PATCH on operation didnt successed, hence throwing an error
+                this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
+                await this.applicationLogService.AddApplicationLog("Step 5: Plan change accepted as PATCH Failed. Updating DB").ConfigureAwait(false);
+                auditLog.NewValue = payload.PlanId;
+            }
         }
 
         this.subscriptionsLogRepository.Save(auditLog);
-            
         await Task.CompletedTask;
     }
 
@@ -207,31 +232,43 @@ public class WebHookHandler : IWebhookHandler
             CreateDate = DateTime.Now,
         };
 
-        //gets the user setting from appconfig, if key doesnt exist, add to control the behavior.
-        //_acceptSubscriptionUpdates should be true and subscription should be in db to accept subscription updates
+        //Get the Config value to Accept or Reject Quantity Change
         var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
+
+        //If True, proceed with makng the changes in the DB
         if (_acceptSubscriptionUpdates && oldValue != null)
         {
             this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
-            await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
+            await this.applicationLogService.AddApplicationLog("Step 4: Quantity change Accepted. Updating DB.").ConfigureAwait(false);
             auditLog.NewValue = payload.Quantity.ToString();
         }
+        //If False, Try to reject the by calling the PATCH failure on the operation
         else
         {
-            var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
-            if (patchOperation != null && patchOperation.Status != 200)
-            {
-                await this.applicationLogService.AddApplicationLog($"Quantity Change operation PATCH failed with status statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
-                //partner trying to fail update operation from customer but PATCH on operation didnt succeced, hence throwing an error
-                throw new Exception(patchOperation.ReasonPhrase);
-            }
+            //PATCH Failure
+            var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, 
+                                                                                         payload.OperationId,
+                                                                                            Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
 
-            await this.applicationLogService.AddApplicationLog("Quantity Change Request Rejected Successfully.").ConfigureAwait(false);
-            auditLog.NewValue = oldValue?.Quantity.ToString();
+            //If the PATCH Failure operation is successful, then only update audit with old value
+            if (patchOperation != null && patchOperation.Status == 200)
+            {
+                await this.applicationLogService.AddApplicationLog("Step 4: Quantity Change Request Rejected Successfully").ConfigureAwait(false);
+                auditLog.NewValue = oldValue?.Quantity.ToString();
+            }
+            //If the PATCH Failure operation is not successful, that means this couldnt stop the Quantity Change.
+            //So change the DB to the Quantity which is sent in the payload
+            else
+            {
+                await this.applicationLogService.AddApplicationLog($"Step 4: Quantity Change operation PATCH failed with statuscode {patchOperation?.Status} {patchOperation?.ReasonPhrase}.").ConfigureAwait(false);
+                //partner trying to fail update operation from customer but PATCH on operation didnt successed, hence throwing an error
+                this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
+                await this.applicationLogService.AddApplicationLog("Step 5: Quantity change accepted as PATCH Failed. Updating DB").ConfigureAwait(false);
+                auditLog.NewValue = payload.Quantity.ToString();
+            }
         }
 
         this.subscriptionsLogRepository.Save(auditLog); 
-
         await Task.CompletedTask;
     }
 
@@ -306,7 +343,7 @@ public class WebHookHandler : IWebhookHandler
     {
         var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
         this.subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Suspend.ToString(), false);
-        await this.applicationLogService.AddApplicationLog("Offer Successfully Suspended.").ConfigureAwait(false);
+        await this.applicationLogService.AddApplicationLog("Step 4: Subscription Suspended.").ConfigureAwait(false);
 
         if (oldValue != null)
         {
@@ -334,7 +371,7 @@ public class WebHookHandler : IWebhookHandler
     {
         var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
         this.subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Unsubscribed.ToString(), false);
-        await this.applicationLogService.AddApplicationLog("Offer Successfully UnSubscribed.").ConfigureAwait(false);
+        await this.applicationLogService.AddApplicationLog("Step 4: Subscription UnSubscribed.").ConfigureAwait(false);
 
         if (oldValue != null)
         {
@@ -362,7 +399,7 @@ public class WebHookHandler : IWebhookHandler
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public async Task UnknownActionAsync(WebhookPayload payload)
     {
-        await this.applicationLogService.AddApplicationLog("Offer Received an unknown action: " + payload.Action).ConfigureAwait(false);
+        await this.applicationLogService.AddApplicationLog("Step 4: Webhook Received an unknown action: " + payload.Action).ConfigureAwait(false);
 
         await Task.CompletedTask;
     }
