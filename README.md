@@ -2,22 +2,21 @@
 
 ![.NET Core](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/workflows/.NET%20Core/badge.svg)
 
-  - [Introduction](#introduction)
-  - [Intended Use](#intended-use)
-  - [Installation](#installation)
-  - [Commercial Marketplace Documentation](#commercial-marketplace-documentation)
-  - [Monitoring](#monitoring)
-  - [Terminology](#terminology)
-  - [SaaS Accelerator Overview](#saas-accelerator-overview)
-  - [Projects](#projects)
-  - [Production Environment Reference Architecture](#production-environment-reference-architecture)
-  - [Technology and Versions](#technology-and-versions)
-  - [Security](#security)
-  - [Prerequisites](#prerequisites)
-  - [Releases](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/releases)
-  - [Contributing](#contributing)
-  - [Developers](#developers)
-  - [License](#license)
+<!-- no toc -->
+- [Introduction](#introduction)
+- [Intended Use](#intended-use)
+- [Installation](#installation)
+- [Commercial Marketplace Documentation](#commercial-marketplace-documentation)
+- [SaaS Accelerator Overview](#saas-accelerator-overview)
+- [Projects](#projects)
+- [Technology and Versions](#technology-and-versions)
+- [Security](#security)
+- [Prerequisites](#prerequisites)
+- [Contributing](#contributing)
+- [Developers](#developers)
+- [License](#license)
+
+Please [leave us your ideas and feedback](https://forms.office.com/r/M4dXD5EqhL) on the SaaS Accelerator in this brief, anonymous survey.
 
 ## Introduction
 
@@ -31,7 +30,7 @@ The project is implemented in .NET and uses the commercial marketplace billing s
 
 ## Intended Use
 
-This code is a reference implementation of required components of a commercial marketplace SaaS offer and complements the existing commercial marketplace documentation. 
+This code is a reference implementation of required components of a commercial marketplace SaaS offer and complements the existing commercial marketplace documentation.
 
 This project accelerates the SaaS offer onboarding experience for those building SaaS solutions for the Microsoft commercial marketplace. Whether installed and used as-is or customized for your particular requirements, this reference implementation provides all main components required by a commercial marketplace SaaS offer.
 
