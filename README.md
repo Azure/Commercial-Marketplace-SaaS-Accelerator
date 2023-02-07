@@ -53,7 +53,9 @@ This project accelerates the SaaS offer onboarding experience for those building
 4. [Advanced installation checklist](./docs/Enterprise-Reference-Architecture-Checklist.md)
 
 ### Monitoring
+
 The following documents provide HOW-TOs setup Azure Monitoring and Alerting for the resources deployed by the SaaS Accelerator:
+
 - [Web App Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
 - [SQL Server Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
 - [App Registration Credentials Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
