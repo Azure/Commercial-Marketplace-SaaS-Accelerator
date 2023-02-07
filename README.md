@@ -22,9 +22,9 @@ Please [leave us your ideas and feedback](https://forms.office.com/r/M4dXD5EqhL)
 
 This project is a community-supported reference implementation for integrating Software-as-a-Service (SaaS) solutions with Microsoft commercial marketplace SaaS offers. The SaaS Accelerator may be installed as-is or may be customized to support your requirements. The project provides the following capabilities.
 
-1.	A configurable landing page for SaaS customers
-2.	A webhook that listens for subscription changes
-3.	A private portal for the publisher to monitor customer subscriptions
+1. A configurable landing page for SaaS customers
+2. A webhook that listens for subscription changes
+3. A private portal for the publisher to monitor customer subscriptions
 
 The project is implemented in .NET and uses the commercial marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis). The SaaS Accelerator models how a typical SaaS platform interacts with the marketplace APIs to provision subscriptions for customers, enable logging, and manage commercial marketplace subscriptions.
 
@@ -42,7 +42,7 @@ This project accelerates the SaaS offer onboarding experience for those building
 
 **[Advanced Installation instructions are here](./docs/Advanced-Instructions.md)** a detail instrucations to address different deployment senario like HOW-TO run it locally or deploy it from Vistual Studio.
 
-**Video instructions:** Additionally, there is a quick video on [how to install the SaaS Accelerator with the installer script](https://www.youtube.com/watch?v=BVZTj6fssQ8) available through [Mastering the Marketplace ](https://microsoft.github.io/Mastering-the-Marketplace).
+**Video instructions:** Additionally, there is a quick video on the installation process. [Installing the SaaS Accelerator with the Azure portal cloud shell](https://go.microsoft.com/fwlink/?linkid=2196326) available through [Mastering the Marketplace](https://microsoft.github.io/Mastering-the-Marketplace).
 
 ### Additional technical documents
 
