@@ -16,7 +16,7 @@
 - [Developers](#developers)
 - [License](#license)
 
-Please [leave us your ideas and feedback](https://forms.office.com/r/M4dXD5EqhL) on the SaaS Accelerator in this brief, anonymous survey.
+📝 Please [leave us your ideas and feedback](https://forms.office.com/r/M4dXD5EqhL) on the SaaS Accelerator in this brief, anonymous survey.
 
 ## Introduction
 
