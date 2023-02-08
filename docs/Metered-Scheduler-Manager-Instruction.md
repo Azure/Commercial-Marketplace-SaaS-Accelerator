@@ -7,23 +7,8 @@ Metered Scheduler Manager is a feature where Publisher can schedule **FIX Quanti
 1. Yearly
 1. OneTime
 ## Enable and Disable Metered Scheduler Manager Feature During Installation
-By default, this feature is disabled and deployed as part of the installion. Publisher can enable this feature during the installion process by passing an optional parameter **MeteredSchedulerSupportEnabled** with **true** value as part of the installion script. 
+By default, this feature is disabled during the installation. Publisher can enable this feature during the installion process by passing an optional parameter **MeteredSchedulerSupport**. Please refer to the installation steps [here](./Installation-Instructions.md)
 
-
-``` powershell
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.1.1 --depth 1; `
-cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
-Connect-AzureAD -Confirm; `
-.\Deploy.ps1 `
- -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
- -SQLServerName "marketplace-SOME-UNIQUE-STRING" `
- -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
- -PublisherAdminUsers "user@email.com" `
- -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -Location "East US" `
- -MeteredSchedulerSupportEnabled true
- ```
 
 ## Enable and Disable Metered Scheduler Manager Feature Post Installation
 Publisher can active the **Metered Scheduler** feature by updating Admin portal web configuration and set **SaaSApiConfiguration__SupportmeteredBilling** to **true**
