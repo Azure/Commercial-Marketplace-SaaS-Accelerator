@@ -46,7 +46,7 @@ public enum SubscriptionStatusEnumExtension
     UnsubscribeFailed,
 
     /// <summary>
-    /// The Suspend 
+    /// The Suspended 
     /// </summary>
-    Suspend,
+    Suspended,
 }
