@@ -55,6 +55,11 @@ if ($SQLDatabaseName -eq "") {
     $SQLDatabaseName = "AMPSaaSDB"
 }
 
+if($KeyVault -eq "")
+{
+   $KeyVault=$WebAppNamePrefix+"-kv"
+}
+
 $SaaSApiConfiguration_CodeHash= git log --format='%H' -1
 $azCliOutput = if($Quiet){'none'} else {'json'}
 
