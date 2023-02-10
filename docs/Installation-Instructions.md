@@ -17,7 +17,7 @@
 
 You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal Cloud Shell.
 
-> Note: use the Azure Cloud Shell's PowerShell shell, not the default bash shell.
+> Note: use the [Azure Cloud Shell](https://shell.azure.com)'s PowerShell shell, not the default bash shell. You can select the shell via the drop-down in the top left corner.
 
 Copy the following section to an editor and update it to match your company preference.
 
