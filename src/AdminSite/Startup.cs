@@ -111,7 +111,10 @@ public class Startup
             .AddScoped<RequestLoggerActionFilter>()
         ;
 
-        var fulfillmentBaseApi = new Uri(config.FulFillmentAPIBaseURL ?? "https://marketplaceapi.microsoft.com/api");
+        if (!Uri.TryCreate(config.FulFillmentAPIBaseURL, UriKind.Absolute, out var fulfillmentBaseApi))
+        {
+            fulfillmentBaseApi = new Uri("https://marketplaceapi.microsoft.com/api");
+        }
 
         services
             .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(fulfillmentBaseApi, creds), config, new FulfillmentApiClientLogger()))
