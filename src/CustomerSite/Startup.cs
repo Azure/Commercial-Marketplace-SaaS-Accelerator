@@ -24,6 +24,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Marketplace.SaaS;
+using System;
 
 namespace Marketplace.SaaS.Accelerator.CustomerSite;
 
@@ -100,8 +101,13 @@ public class Startup
             .AddScoped<RequestLoggerActionFilter>()
         ;
 
+        if (!Uri.TryCreate(config.FulFillmentAPIBaseURL, UriKind.Absolute, out var fulfillmentBaseApi)) 
+        {
+            fulfillmentBaseApi = new Uri("https://marketplaceapi.microsoft.com/api");
+        }
+
         services
-            .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(creds), config, new FulfillmentApiClientLogger()))
+            .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(fulfillmentBaseApi, creds), config, new FulfillmentApiClientLogger()))
             .AddSingleton<SaaSApiClientConfiguration>(config);
 
         services
