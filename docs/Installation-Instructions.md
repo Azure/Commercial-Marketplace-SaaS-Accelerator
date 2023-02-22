@@ -71,7 +71,7 @@ git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Upgrade.ps1 `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
- -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING"" `
+ -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING" `
  ```
 
 ## Install script parameter descriptions

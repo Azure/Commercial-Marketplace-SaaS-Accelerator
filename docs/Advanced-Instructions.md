@@ -1,7 +1,7 @@
  # Installation instructions
 
   - [Overview](#overview)
-  - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository-create-an-azure-sql-database-single-database-and-prepare)
+  - [Deploy web applications and SQL Azure database using Powershell](#deploy-web-applications-and-sql-azure-database-using-powershell)
   - [Change configuration](#change-configuration)
   - [Create Web Apps on Azure and deploy the code](#create-web-apps-on-azure-and-deploy-the-code)
     + [Running the solution locally](#running-the-solution-locally)
@@ -14,13 +14,13 @@
 
 This document describes how to implement the required components to enable the SaaS Accelerator for the SaaS Fulfillment API (v2), Marketplace Metering Service API, and additional components that demonstrate how to build a customer provisioning interface, logging, and administration of the customer's subscriptions.
 
-Learn more about what's included and how to-use the SaaS Accelerator [here.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/master/README.md)
+Learn more about what's included and how to use the SaaS Accelerator [here](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/master/README.md).
 
-Please note: this SaaS Accelerator is community-supported. If you need help or have questions using this SaaS Accelerator, please create a GitHub issue. Do not contact the marketplace publisher support alias directly regarding use of this SaaS Accelerator. Thank you.
+Please note: the SaaS Accelerator is community-supported. If you need help or have questions about using the SaaS Accelerator, please create a GitHub issue. Do not contact the marketplace publisher support alias directly regarding use of the SaaS Accelerator. Thank you.
 
 > **Note**
 >  - The template uses the **Web App Name Prefix** to create two web applications. For example, if the value provided for this field is **contoso**, the deployment creates the customer portal - https://contoso-portal.azurewebsites.net and the publisher portal - https://contoso-admin.azurewebsites.net.
-> - **_Important_** For the login to the portals to work, it is important that you configure the **Redirect URIs** in the AD application to use these web applications. Here are the redirect Uris that should be in place:
+> - **_Important_** For the login to the portals to work, it is important that you configure the **Redirect URIs** in the AD application to use these web applications. Here are the redirect URIs that should be in place:
 
 > - https://contoso-portal.azurewebsites.net    
 > - https://contoso-portal.azurewebsites.net/
@@ -55,7 +55,7 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
    - [Windows Store](https://www.microsoft.com/store/productId/9MZ1SNWT0N5D)
    - [GitHub](https://github.com/PowerShell/PowerShell/releases)
    2. Start a Windows PowerShell window as administrator and run the following commands to install Azure modules:
-> Note: Make sure that you are using the latest Powershell to avoid issues in Compress-Archive in 5.1 that got resolved in latest version.
+> Note: Make sure that you are using the latest Powershell version to avoid issues in Compress-Archive in 5.1 that got resolved in the latest version.
 ```powershell
 Install-Module -Name Az -AllowClobber
 ```
@@ -172,7 +172,7 @@ There are many ways to create Web App resources on [App Service](https://docs.mi
 - [Using Visual Studio](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-dotnet#publish-your-web-app), this example demonstrates how to create a new web app on the Azure App Service, and deploy the code to it. 
 - [Continuous deployment](https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment)
 
-You can use any of the methods above to create the web apps and deploy the code, but for the rest of this document, let's assume the use of [Visual Studio method](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-dotnet#publish-your-web-app) to deploy the following two apps. Give appropriate names to indicate the applications' roles, for example, **\<yourname\>provisioning**, and **\<yourname\>publisher**. Please remember that these names will be the dns prefix for the host names of your applications and will eventually be available as yournameprovisioning.azurewebsites.net and yournamepublisher.azurewebsites.net.
+You can use any of the methods above to create the web apps and deploy the code, but for the rest of this document, let's assume the use of [Visual Studio method](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-dotnet#publish-your-web-app) to deploy the following two apps. Give appropriate names to indicate the applications' roles, for example, **\<yourname\>provisioning**, and **\<yourname\>publisher**. Please remember that these names will be the DNS prefix for the host names of your applications and will eventually be available as yournameprovisioning.azurewebsites.net and yournamepublisher.azurewebsites.net.
 1. **Customer provisioning sample web application**, create and deploy the provisioning sample web application project in folder [src/CustomerSite](../src/CustomerSite)
 1. **Publisher sample web application**, create and deploy the provisioning sample web application project in folder [src/CustomerSite](../src/AdminSite)
 
@@ -188,7 +188,7 @@ Press **F5** in Visual Studio 2019 to run the application locally.
 
 **_Important_**, Add the redirect uri on the Azure AD app registration after deploying the publisher solution following the steps [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-configure-app-access-web-apis#add-redirect-uris-to-your-application). The value should be https://\<yourappname\>.azurewebsites.net/Home/Index
 
-**_Important_**, the actual flow of subscribing to an offer on the Azure marketplace and managing the relevant lifetime events of the subscription, such as activation, cancellation and upgrade is only possible for the provisioning solution deployed to a location accessible on the internet.
+**_Important_**, the actual flow of subscribing to an offer on the Azure marketplace and managing the relevant lifetime events of the subscription, such as activation, cancellation, and upgrade is only possible for the provisioning solution deployed to a location accessible on the internet.
 
 ## Landing page and webhook settings for the SaaS offer on Partner Center
 
