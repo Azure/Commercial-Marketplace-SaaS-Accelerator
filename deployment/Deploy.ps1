@@ -81,7 +81,7 @@ if($WebAppNamePrefix.Length -gt 21) {
 }
 
 
-if($KeyVault -match "^[a-z0-9-]+$") {
+if(!($KeyVault -match "^[a-z0-9-]+$")) {
     Throw "🛑 KeyVault name only allows alphanumeric and hyphens."
     Exit
 }
