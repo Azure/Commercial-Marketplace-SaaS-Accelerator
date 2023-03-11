@@ -169,7 +169,7 @@ public class MeteredPlanSchedulerManagementService
         {
             var MeteringUsageRequest = JsonSerializer.Deserialize<MeteringUsageRequest>(auditLog.RequestJson);
 
-            if ((MeteringUsageRequest.Dimension == scheduledItemView.Dimension)&&(auditLog.RunBy.Contains(schedulerName)))
+            if ((MeteringUsageRequest.Dimension == scheduledItemView.Dimension)&&(auditLog.RunBy == $"Scheduler - {schedulerName}"))
             {
                 if ((lastRunTime == null)|| (lastRunTime < auditLog.CreatedDate))
                 {
