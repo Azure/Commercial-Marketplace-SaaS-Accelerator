@@ -19,13 +19,14 @@ Param(
    [string][Parameter()]$AzureSubscriptionID, # Subscription where the resources be deployed
    [string][Parameter()]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
    [string][Parameter()]$ADApplicationSecret, # Secret key of the AD Application
-   [string][Parameter()]$ADMTApplicationID, # The value should match the value provided for Multi-Tenant Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter()]$ADMTApplicationID, # Multi-Tenant Active Directory Application ID
    [string][Parameter()]$SQLDatabaseName, # Name of the database (Defaults to AMPSaaSDB)
    [string][Parameter()]$SQLServerName, # Name of the database server (without database.windows.net)
    [string][Parameter()]$SQLAdminLogin, # SQL Admin login
    [string][Parameter()][ValidatePattern('^[^\s$@]{1,128}$')]$SQLAdminLoginPassword, # SQL Admin password  
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
+   [string][Parameter()]$KeyVault, # Name of KeyVault
    [switch][Parameter()]$MeteredSchedulerSupport, # set to true to enable Metered Support
    [switch][Parameter()]$Quiet #if set, only show error / warning output from script commands
 )
@@ -54,6 +55,11 @@ if ($SQLDatabaseName -eq "") {
     $SQLDatabaseName = "AMPSaaSDB"
 }
 
+if($KeyVault -eq "")
+{
+   $KeyVault=$WebAppNamePrefix+"-kv"
+}
+
 $SaaSApiConfiguration_CodeHash= git log --format='%H' -1
 $azCliOutput = if($Quiet){'none'} else {'json'}
 
@@ -74,6 +80,11 @@ if($WebAppNamePrefix.Length -gt 21) {
     Exit
 }
 
+
+if(!($KeyVault -match "^[a-z0-9-]+$")) {
+    Throw "🛑 KeyVault name only allows alphanumeric and hyphens."
+    Exit
+}
 #endregion 
 
 Write-Host "Starting SaaS Accelerator Deployment..."
@@ -262,8 +273,7 @@ Write-host "☁ Deploy Azure Resources"
 $WebAppNameService=$WebAppNamePrefix+"-asp"
 $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
-$KeyVault=$WebAppNamePrefix+"-kv"
-$KeyVault=$KeyVault -replace '_',''
+
 #keep the space at the end of the string - bug in az cli running on windows powershell truncates last char https://github.com/Azure/azure-cli/issues/10066
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=ADApplicationSecret) "
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=DefaultConnection) "

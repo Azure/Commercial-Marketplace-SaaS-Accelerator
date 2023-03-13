@@ -1,9 +1,7 @@
  # Installation instructions
 
   - [Overview](#overview)
-  - [Deploy web applications and SQL Azure database using an ARM template](#deploy-web-applications-and-sql-azure-database-using-an-arm-template)
   - [Deploy web applications and SQL Azure database using Powershell](#deploy-web-applications-and-sql-azure-database-using-powershell)
-  - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository-create-an-azure-sql-database-single-database-and-prepare)
   - [Change configuration](#change-configuration)
   - [Create Web Apps on Azure and deploy the code](#create-web-apps-on-azure-and-deploy-the-code)
     + [Running the solution locally](#running-the-solution-locally)
@@ -16,29 +14,13 @@
 
 This document describes how to implement the required components to enable the SaaS Accelerator for the SaaS Fulfillment API (v2), Marketplace Metering Service API, and additional components that demonstrate how to build a customer provisioning interface, logging, and administration of the customer's subscriptions.
 
-Learn more about what's included and how to-use the SaaS Accelerator [here.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/master/README.md)
+Learn more about what's included and how to use the SaaS Accelerator [here](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/master/README.md).
 
-Please note: this SaaS Accelerator is community-supported. If you need help or have questions using this SaaS Accelerator, please create a GitHub issue. Do not contact the marketplace publisher support alias directly regarding use of this SaaS Accelerator. Thank you.
+Please note: the SaaS Accelerator is community-supported. If you need help or have questions about using the SaaS Accelerator, please create a GitHub issue. Do not contact the marketplace publisher support alias directly regarding use of the SaaS Accelerator. Thank you.
 
-## Deploy web applications and SQL Azure database using an ARM template
-
-- Log on to [Azure](https://portal.azure.com)
-- Search for **Custom Template** and select the option - **Deploy a custom template**
-![Custom template](./images/search-custom-template.png)
-- Click the link **Build your own template in the editor**
-![Build your own template](./images/build-your-own-template.png)
-- Copy the content from the ARM template - [deploy.json](../deployment/Templates/deploy.json) and paste the text in the text area after clearing the existing content
-- Click **Save**
-- The template is validated and you are navigated to a page that presents a form for you to fill in the parameters used to deploy the resources
-![Deployment parameters](./images/custom-deployment-input-parameters.png)
-
-> Note: 
-> - You can leave the **Path to Web Application Packages** as is to use the build packages from this repository
-> - Make sure that you download the bacpac file from [here](../deployment/Database/AMPSaaSDB.bacpac) and upload it to an Azure blob storage. Use the URL to the file in the storage as the link to Github is not currently supported.
-- Click **Purchase** to initiate the deployment of resources
 > **Note**
 >  - The template uses the **Web App Name Prefix** to create two web applications. For example, if the value provided for this field is **contoso**, the deployment creates the customer portal - https://contoso-portal.azurewebsites.net and the publisher portal - https://contoso-admin.azurewebsites.net.
-> - **_Important_** For the login to the portals to work, it is important that you configure the **Redirect URIs** in the AD application to use these web applications. Here are the redirect Uris that should be in place:
+> - **_Important_** For the login to the portals to work, it is important that you configure the **Redirect URIs** in the AD application to use these web applications. Here are the redirect URIs that should be in place:
 
 > - https://contoso-portal.azurewebsites.net    
 > - https://contoso-portal.azurewebsites.net/
@@ -54,24 +36,17 @@ Please note: this SaaS Accelerator is community-supported. If you need help or h
 ### Using Azure Cloud Shell
    
    1. Copy the following section to an editor and update it to match your company preference. Replace SOME-UNIQUE-STRING with your Team name or some other random string.
-```
-wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
-chmod +x dotnet-install.sh; `
-./dotnet-install.sh; `
-$ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b main --depth 1; `
-cd ./Commercial-Marketplace-SaaS-Accelerator/deployment/Templates; `
-Connect-AzureAD -Confirm; `
+``` powershell
+dotnet tool install --global dotnet-ef; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.1.2 --depth 1; `
+cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
- -WebAppNamePrefix "marketplacesaasgithub-SOME-UNIQUE-STRING" `
- -SQLServerName "marketplacesaasgithub-SOME-UNIQUE-STRING" `
- -SQLAdminLogin "adminlogin" `
- -SQLAdminLoginPassword "a_very_PASSWORD_2_SymB0L@s" `
+ -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
+ -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING" `
  -PublisherAdminUsers "user@email.com" `
- -ResourceGroupForDeployment "MarketplaceSaasGitHub" `
- -Location "East US" `
- -PathToARMTemplate ".\deploy.json" `
-```
+ -Location "East US" 
+ ```
+
   2. Paste the updated command in an Azure Cloud Shell PowerShell window.
 
 ### Local deployment
@@ -80,12 +55,12 @@ Connect-AzureAD -Confirm; `
    - [Windows Store](https://www.microsoft.com/store/productId/9MZ1SNWT0N5D)
    - [GitHub](https://github.com/PowerShell/PowerShell/releases)
    2. Start a Windows PowerShell window as administrator and run the following commands to install Azure modules:
-> Note: Make sure that you are using the latest Powershell to avoid issues in Compress-Archive in 5.1 that got resolved in latest version.
+> Note: Make sure that you are using the latest Powershell version to avoid issues in Compress-Archive in 5.1 that got resolved in the latest version.
 ```powershell
 Install-Module -Name Az -AllowClobber
 ```
    3. Clone the repository
-   4. Navigate to the folder **.\deployment\Templates**
+   4. Navigate to the folder **.\deployment**
    5. Set the priorities running
 ```powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
@@ -98,20 +73,22 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 | Parameter | Description |
 |-----------| -------------|
-| WebAppNamePrefix | A unique prefix used for creating web applications. Example: contoso |
-| TenantID | The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center |
-| ADApplicationID | The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center |
-| ADApplicationSecret | Secret key of the AD Application |
-| SQLServerName | A unique name of the database server (without database.windows.net) |
-| SQLAdminLogin | SQL Admin login |
-| SQLAdminLoginPassword | SQL Admin password |
-| PublisherAdminUsers | Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
-| PathToWebApplicationPackages | The base URI where artifacts required by the template are located. Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/ |
-| BacpacUrl | The url to the SaaS DB bacpac Ex: https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac |
-| ResourceGroupForDeployment | Name of the resource group to deploy the resources |
-| Location | Location of the resource group |
-| AzureSubscriptionID | Subscription where the resources be deployed |
-| PathToARMTemplate | Local Path to the ARM Template |
+| WebAppNamePrefix | _[required]_ A unique prefix used for creating web applications. Example: `contoso` |
+| ResourceGroupForDeployment | Name of the resource group to deploy the resources. Default: `WebAppNamePrefix` value |
+| Location | _[required]_ Location of the resource group |
+| PublisherAdminUsers | _[required]_ Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
+| TenantID | The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center. If value not provided, you will be asked to select the tenant during deployment |
+| AzureSubscriptionID | Id of subscription where the resources will be deployed. Subscription must be part of the Tenant Provided. If value not provided, you will be asked to select the subscription during deployment. |
+| ADApplicationID | The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center. If value not provided, a new application will be created. |
+| ADApplicationSecret | Valid secret for the ADApplication. Required if ADApplicationID is provided. If `ADApplicationID` is not provided, a secret will be generated. |
+| ADMTApplicationID | A valid App Id for an Azure AD Application configured for SSO login. If value not provided, a new application will be created. |
+| SQLServerName | A unique name of the database server (without database.windows.net). Default: `WebAppNamePrefix`-sql |
+| SQLAdminLogin | SQL Admin login. Default: 'saasdbadminxxx' where xxx is a random number. |
+| SQLAdminLoginPassword | SQL Admin password. Default: secure random password. |
+| LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
+| LogoURLico | The url of the company logo image in .ico format |
+| MeteredSchedulerSupport | Enable the metered scheduler. This is deployed by default. Use **true** to enable the feature. More information [here](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/main/docs/Metered-Scheduler-Manager-Instruction.md).
+| Quiet | Disable verbose output when running the script
 
 
 > **Example** 
@@ -122,27 +99,12 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
     -ADApplicationID "single-tenant clientId" `
     -ADApplicationSecret "single-tenant secret" `
     -ADMTApplicationID "multi-tenant clientId" `
-    -SQLServerName "contososqlsrv_change_me" `
-    -SQLAdminLogin "adminlogin" `
-    -SQLAdminLoginPassword "a_very_PASSWORD_2_$ymB0L$" `
     -PublisherAdminUsers "user@contoso.com" `              
-    -BacpacUrl "https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/master/deployment/Database/AMPSaaSDB.bacpac" `
     -AzureSubscriptionID "subscriptionId" `
     -ResourceGroupForDeployment "resourcegroup" `
     -Location "East US" `
-    -PathToARMTemplate ".\deploy.json" `
+
 ```
-## Clone the repository, create an Azure SQL Database single database and prepare
- Create a single database following the instructions on the SQL Database service [quickstart] (https://docs.microsoft.com/en-us/azure/sql-database/sql-database-single-database-get-started?tabs=azure-portal) document.
-
- - Run the script **AMP-DB-2.1.sql** to initialize the database using your favorite SQL management tool, such as [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15), or [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver15). The scripts are in [deployment/database](../deployment/Database) folder.
-
- - Add the email for the Azure Active Directory user you are planning to log in to the solution to **KnownUsers** table on the database, with value "1" for the RoleId column. For example, if the user is expected to login with **user@contoso.com** run the following script in your favorite management tool.
-
-    ``` sql
-      INSERT INTO KnownUsers (UserEmail, RoleId) VALUES ('user@contoso.com', 1)
-    ```
-
 ## Change configuration
 
 Open the files **appsettings.json** under the project **CustomerSite** and **AdminSite** update the values as follows:
@@ -210,7 +172,7 @@ There are many ways to create Web App resources on [App Service](https://docs.mi
 - [Using Visual Studio](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-dotnet#publish-your-web-app), this example demonstrates how to create a new web app on the Azure App Service, and deploy the code to it. 
 - [Continuous deployment](https://docs.microsoft.com/en-us/azure/app-service/deploy-continuous-deployment)
 
-You can use any of the methods above to create the web apps and deploy the code, but for the rest of this document, let's assume the use of [Visual Studio method](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-dotnet#publish-your-web-app) to deploy the following two apps. Give appropriate names to indicate the applications' roles, for example, **\<yourname\>provisioning**, and **\<yourname\>publisher**. Please remember that these names will be the dns prefix for the host names of your applications and will eventually be available as yournameprovisioning.azurewebsites.net and yournamepublisher.azurewebsites.net.
+You can use any of the methods above to create the web apps and deploy the code, but for the rest of this document, let's assume the use of [Visual Studio method](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-get-started-dotnet#publish-your-web-app) to deploy the following two apps. Give appropriate names to indicate the applications' roles, for example, **\<yourname\>provisioning**, and **\<yourname\>publisher**. Please remember that these names will be the DNS prefix for the host names of your applications and will eventually be available as yournameprovisioning.azurewebsites.net and yournamepublisher.azurewebsites.net.
 1. **Customer provisioning sample web application**, create and deploy the provisioning sample web application project in folder [src/CustomerSite](../src/CustomerSite)
 1. **Publisher sample web application**, create and deploy the provisioning sample web application project in folder [src/CustomerSite](../src/AdminSite)
 
@@ -226,7 +188,7 @@ Press **F5** in Visual Studio 2019 to run the application locally.
 
 **_Important_**, Add the redirect uri on the Azure AD app registration after deploying the publisher solution following the steps [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-configure-app-access-web-apis#add-redirect-uris-to-your-application). The value should be https://\<yourappname\>.azurewebsites.net/Home/Index
 
-**_Important_**, the actual flow of subscribing to an offer on the Azure marketplace and managing the relevant lifetime events of the subscription, such as activation, cancellation and upgrade is only possible for the provisioning solution deployed to a location accessible on the internet.
+**_Important_**, the actual flow of subscribing to an offer on the Azure marketplace and managing the relevant lifetime events of the subscription, such as activation, cancellation, and upgrade is only possible for the provisioning solution deployed to a location accessible on the internet.
 
 ## Landing page and webhook settings for the SaaS offer on Partner Center
 

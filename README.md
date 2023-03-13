@@ -2,36 +2,39 @@
 
 ![.NET Core](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/workflows/.NET%20Core/badge.svg)
 
-  - [Introduction](#introduction)
-  - [Intended Use](#intended-use)
-  - [Installation](#installation)
-  - [Commercial Marketplace Documentation](#commercial-marketplace-documentation)
-  - [Monitoring](#monitoring)
-  - [Terminology](#terminology)
-  - [SaaS Accelerator Overview](#saas-accelerator-overview)
-  - [Projects](#projects)
-  - [Production Environment Reference Architecture](#production-environment-reference-architecture)
-  - [Technology and Versions](#technology-and-versions)
-  - [Security](#security)
-  - [Prerequisites](#prerequisites)
-  - [Releases](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/releases)
-  - [Contributing](#contributing)
-  - [Developers](#developers)
-  - [License](#license)
+<!-- no toc -->
+- [Introduction](#introduction)
+- [Intended Use](#intended-use)
+- [Installation](#installation)
+- [Commercial Marketplace Documentation](#commercial-marketplace-documentation)
+- [SaaS Accelerator Overview](#saas-accelerator-overview)
+- [Projects](#projects)
+- [Technology and Versions](#technology-and-versions)
+- [Security](#security)
+- [Prerequisites](#prerequisites)
+- [Contributing](#contributing)
+- [Developers](#developers)
+- [License](#license)
+
+---
+
+> 📝 Please [leave us your ideas and feedback](https://forms.office.com/r/M4dXD5EqhL) on the SaaS Accelerator in this brief, anonymous survey.
+
+---
 
 ## Introduction
 
 This project is a community-supported reference implementation for integrating Software-as-a-Service (SaaS) solutions with Microsoft commercial marketplace SaaS offers. The SaaS Accelerator may be installed as-is or may be customized to support your requirements. The project provides the following capabilities.
 
-1.	A configurable landing page for SaaS customers
-2.	A webhook that listens for subscription changes
-3.	A private portal for the publisher to monitor customer subscriptions
+1. A configurable landing page for SaaS customers
+2. A webhook that listens for subscription changes
+3. A private portal for the publisher to monitor customer subscriptions
 
-The project is implemented in .NET and uses the commercial marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API.](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis). The SaaS Accelerator models how a typical SaaS platform interacts with the marketplace APIs to provision subscriptions for customers, enable logging, and manage commercial marketplace subscriptions.
+The project is implemented in .NET and uses the commercial marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis). The SaaS Accelerator models how a typical SaaS platform interacts with the marketplace APIs to provision subscriptions for customers, enable logging, and manage commercial marketplace subscriptions.
 
 ## Intended Use
 
-This code is a reference implementation of required components of a commercial marketplace SaaS offer and complements the existing commercial marketplace documentation. 
+This code is a reference implementation of required components of a commercial marketplace SaaS offer and complements the existing commercial marketplace documentation.
 
 This project accelerates the SaaS offer onboarding experience for those building SaaS solutions for the Microsoft commercial marketplace. Whether installed and used as-is or customized for your particular requirements, this reference implementation provides all main components required by a commercial marketplace SaaS offer.
 
@@ -41,7 +44,9 @@ This project accelerates the SaaS offer onboarding experience for those building
 
 **[Installation instructions are here](./docs/Installation-Instructions.md)**, as well as documents detailing architecture and scaled installation considerations are also available. Following these instructions will typically have the SaaS Accelerator installed in 20 minutes or less.
 
-**Video instructions:** Additionally, there is a quick video on [how to install the SaaS Accelerator with the installer script](https://www.youtube.com/watch?v=BVZTj6fssQ8) available through [Mastering the Marketplace ](https://microsoft.github.io/Mastering-the-Marketplace).
+**[Advanced Installation instructions are here](./docs/Advanced-Instructions.md)**. These are detailed instructions to address different deployment scenarios such as how-to run it locally or deploy it from Visual Studio.
+
+**Video instructions:** Additionally, there is a quick video on the installation process. [Installing the SaaS Accelerator with the Azure portal cloud shell](https://go.microsoft.com/fwlink/?linkid=2196326) available through [Mastering the Marketplace](https://microsoft.github.io/Mastering-the-Marketplace).
 
 ### Additional technical documents
 
@@ -52,21 +57,23 @@ This project accelerates the SaaS offer onboarding experience for those building
 4. [Advanced installation checklist](./docs/Enterprise-Reference-Architecture-Checklist.md)
 
 ### Monitoring
-The following documents provide HOW-TOs setup Azure Monitoring and Alerting for the resources deployed by the SaaS Accelerator:
-- [Web App Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
-- [SQL Server Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
-- [App Registration Credentials Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md).
+
+The following documents provide how-tos for setting up Azure Monitoring and Alerting for the resources deployed by the SaaS Accelerator:
+
+- [Web App Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md)
+- [SQL Server Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md)
+- [App Registration Credentials Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md)
 
 ## Commercial Marketplace Documentation
 
 Before using this project, please review the commercial marketplace documentation resources below to understand the important concepts, account setup, and offer configuration requirements for publishing SaaS SaaS application offers.
 
-- [Mastering the Marketplace - SaaS Offers.](https://aka.ms/MasteringTheMarketplace/saas-accelerator) Zero-to-Hero Training on Azure Marketplace SaaS offers using the Accelerator.
-- [Commercial marketplace documentation.](https://docs.microsoft.com/azure/marketplace/) Getting started and top articles
-- [SaaS applications in the commercial marketplace.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-new-saas-offer) Overview of the SaaS SaaS application business policies, plus step-by step offer creation and configuration requirements.
-- [SaaS fulfillment API (v2).](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) API details for SaaS SaaS application subscription creation and management.
-- [Marketplace metering service API.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/marketplace-metering-service-apis) API details for the Marketplace Metering Service which, when used in conjunction with the SaaS Fulfillment API, enables event-based billing.
-- [SaaS fulfillment API FAQ.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq) Frequently-asked questions about the SaaS Fulfillment APIs.
+- [Mastering the Marketplace - SaaS Offers](https://aka.ms/MasteringTheMarketplace/saas-accelerator). Zero-to-Hero Training on Azure Marketplace SaaS offers using the Accelerator.
+- [Commercial marketplace documentation](https://docs.microsoft.com/azure/marketplace/). Getting started and top articles
+- [SaaS applications in the commercial marketplace](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-new-saas-offer). Overview of the SaaS application business policies, plus step-by step offer creation and configuration requirements.
+- [SaaS fulfillment API (v2)](https://docs.microsoft.com/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2). API details for SaaS application subscription creation and management.
+- [Marketplace metering service API](https://docs.microsoft.com/azure/marketplace/partner-center-portal/marketplace-metering-service-apis). API details for the Marketplace Metering Service which, when used in conjunction with the SaaS Fulfillment API, enables event-based billing.
+- [SaaS fulfillment API FAQ](https://docs.microsoft.com/azure/marketplace/partner-center-portal/saas-fulfillment-apis-faq). Frequently asked questions about the SaaS Fulfillment APIs.
 
 ## SaaS Accelerator Overview
 
@@ -104,8 +111,8 @@ The accelerator code has been scanned for vulnerabilities and use secure configu
 
 Ensure the following prerequisites are met before getting started:
 
-- You must have an active Azure subscription for development and testing purposes. Create an Azure subscription [here.](https://azure.microsoft.com/free/)
-- You must have a Partner Center account enabled for use with the commercial marketplace. Create an account [here.](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-account)
+- You must have an active Azure subscription for development and testing purposes. Create an Azure subscription [here](https://azure.microsoft.com/free/).
+- You must have a Partner Center account enabled for use with the commercial marketplace. Create an account [here](https://docs.microsoft.com/azure/marketplace/partner-center-portal/create-account).
 - We recommend using an Integrated Development Environment (IDE):  [Visual Studio Code](https://code.visualstudio.com/),  [Visual Studio 2019 / 2022](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16#), etc...
 - The SaaS Accelerator has been implemented using [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 - For data persistence we are using [Azure SQL Database](https://azure.microsoft.com/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/ef/). However, feel free to use any data repository you are comfortable with.  

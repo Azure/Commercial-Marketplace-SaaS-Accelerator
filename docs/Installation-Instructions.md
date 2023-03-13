@@ -1,34 +1,52 @@
-## Install the Azure Marketplace SaaS Accelerator using Azure Cloud Shell
+# Install the Azure Marketplace SaaS Accelerator using Azure Cloud Shell
 
-You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal ([video tutorial](https://youtu.be/BVZTj6fssQ8)).
+<!-- no toc -->
+- [Video walkthrough of installation](#video-walkthrough-of-installation)
+- [Basic installation script](#basic-installation-script)
+  - [Optional install script parameters](#optional-install-script-parameters)
+- [Update to a newer version of the SaaS Accelerator](#update-to-a-newer-version-of-the-saas-accelerator)
+- [Install script parameter descriptions](#install-script-parameter-descriptions)
+- [Setting up a development environment](#setting-up-a-development-environment)
+- [Alternative deployments](#alternative-deployments)
 
-> Note: use the Azure Cloud Shell's PowerShell shell, not the default bash shell.
+## Video walkthrough of installation
 
-Copy the following section to an editor and update it to match your company preference. 
-   - Replace `SOME-UNIQUE-STRING` with your Team name or some other meaningful name for your depth. (Ensure that the final name does not exceed 24 characters)
-   - Replace `user@email.com` with a valid email from your org that will use the portal for the first time. Once deployed, this account will be able to login to the administration panel and give access to more users.
-   - [optional] Replace `MarketplaceSaasGitHub` under `ResourceGroupForDeployment` with a value that matches your comany's naming conventions for resource groups
-   - [optional] Replace `East US` with a region closest to you.
+⏯️ See this video for a complete walkthrough: [Installing the SaaS Accelerator with the Azure portal cloud shell](https://go.microsoft.com/fwlink/?linkid=2196326).
+
+## Basic installation script
+
+You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal Cloud Shell.
+
+> Note: use the [Azure Cloud Shell](https://shell.azure.com)'s PowerShell shell, not the default bash shell. You can select the shell via the drop-down in the top left corner.
+
+Copy the following section to an editor and update it to match your company preference.
+
+- Replace `SOME-UNIQUE-STRING` with your Team name or some other meaningful name for your depth. (Ensure that the final name does not exceed 24 characters)
+- Replace `user@email.com` with a valid email from your org that will use the portal for the first time. Once deployed, this account will be able to login to the administration panel and give access to more users.
+- Replace `SOME-RG-NAME` with a value that matches your company's naming conventions for resource groups
+- [Optional] Replace `East US` with a region closest to you.
 
 ``` powershell
 dotnet tool install --global dotnet-ef; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.1.2 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
- -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
- -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING" `
+ -WebAppNamePrefix "SOME-UNIQUE-STRING" `
+ -ResourceGroupForDeployment "SOME-RG-NAME" `
  -PublisherAdminUsers "user@email.com" `
- -Location "East US" `
+ -Location "East US" 
  ```
 
-The script above will perform these actions:
-   - Create required App Registration for SaaS Marketplace API authentication
-   - Create required Aoo Registration for SSO on your Landing Page
-   - Deploy required infrastructure in Azure for hosting the landing page, webhook and admin portal
-   - Deploy the code and database on the infrastructure.
+The script above will perform the following actions.
 
+- Create required App Registration for SaaS Marketplace API authentication
+- Create required Aoo Registration for SSO on your Landing Page
+- Deploy required infrastructure in Azure for hosting the landing page, webhook and admin portal
+- Deploy the code and database on the infrastructure.
 
- The following are optional parameters that you can include in the deployment  (see parameter description below for details)
+### Optional install script parameters
+
+ The following are optional parameters that you can include in the deployment  (see parameter description below for details).
  
  ``` powershell
  -TenantID "xxxx-xxx-xxx-xxx-xxxx" `
@@ -38,6 +56,7 @@ The script above will perform these actions:
  -ADMTApplicationID "xxxx-xxx-xxx-xxx-xxxx" `
  -LogoURLpng "https://company_com/company_logo.png" `
  -LogoURLico "https://company_com/company_logo.ico" `
+ -MeteredSchedulerSupport
  -Quiet
  ```
 
@@ -52,10 +71,10 @@ git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Upgrade.ps1 `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
- -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING"" `
+ -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING" `
  ```
 
-## Parameters
+## Install script parameter descriptions
 
 | Parameter | Description |
 |-----------| -------------|
@@ -76,5 +95,13 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 | MeteredSchedulerSupport | Enable the metered scheduler. This is deployed by default. Use **true** to enable the feature. More information [here](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/main/docs/Metered-Scheduler-Manager-Instruction.md).
 | Quiet | Disable verbose output when running the script
 
-## Alternative Deployments
+## Setting up a development environment
+
+You may be interested in customizing the look and feel or the sites or behavior of the code. There is a video module showing how to set up a development environment for the SaaS Accelerator.
+
+The video is rather lengthy, so use the chapter links in the video description to skip to the exact section you want to see.
+
+⏯️ [Setting up a development environment for the SaaS Accelerator](https://go.microsoft.com/fwlink/?linkid=2224222)
+
+## Alternative deployments
 There are other ways to deploy the SaaS Accelerator environment (e.g. development, maual deployment, etc).  Additional instruction can be found [here](Advanced-Instructions.md).
