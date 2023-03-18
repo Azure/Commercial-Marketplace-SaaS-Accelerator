@@ -100,7 +100,7 @@ public class AzureWebhookController : ControllerBase
                 await this.webhookProcessor.ProcessWebhookNotificationAsync(request, configuration).ConfigureAwait(false);
                 return Ok();
             }
-            throw new MarketplaceException("Request payload is null");
+            throw new MarketplaceException("Request payload is null.");
         }
         catch (MarketplaceException ex)
         {

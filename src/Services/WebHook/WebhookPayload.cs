@@ -100,4 +100,13 @@ public class WebhookPayload
     /// </value>
     [JsonPropertyName("timeStamp")]
     public DateTimeOffset TimeStamp { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Subscription information.
+    /// </summary>
+    /// <value>
+    /// The Subscription object.
+    /// </value>
+    [JsonPropertyName("subscription")]
+    public SubscriptionWebhookResult Subscription { get; set; }
 }

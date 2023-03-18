@@ -172,17 +172,18 @@ public class WebHookHandler : IWebhookHandler
             CreateBy = null,
             CreateDate = DateTime.Now,
         };
-        
-        //_acceptSubscriptionUpdates should be true and subscription should be in db to accept subscription updates
+
+        // we reject if the config value is set to false and the old plan is not the same as the new plan.
+        // if the old plan is the same as new plan then its a REVERT webhook scenario where we have to accept the change.
+        // we also reject if the subscription is not in the DB
         var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
-        if (!_acceptSubscriptionUpdates || oldValue == null)
+        if ((!_acceptSubscriptionUpdates && payload.PlanId != payload.Subscription.PlanId) || oldValue == null)
         {
-            await this.applicationLogService.AddApplicationLog($"Plan Change Request Rejected Successfully.").ConfigureAwait(false);
             auditLog.NewValue = oldValue?.PlanId;
             this.subscriptionsLogRepository.Save(auditLog);
-            throw new MarketplaceException("Plan Change Request reject due to Config settings or Subscription not in database");
+            throw new MarketplaceException("Plan Change rejected due to Config settings or Subscription not in database");
         }
-        
+
         this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
         await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
         auditLog.NewValue = payload.PlanId;
@@ -210,11 +211,12 @@ public class WebHookHandler : IWebhookHandler
             CreateDate = DateTime.Now,
         };
 
-        //_acceptSubscriptionUpdates should be true and subscription should be in db to accept subscription updates
+        // we reject if the config value is set to false and the old quantity is not the same as the new quantity.
+        // if the old quantity is the same as new quantity then its a REVERT webhook scenario where we have to accept the change.
+        // we also reject if the subscription is not in the DB
         var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
-        if (!_acceptSubscriptionUpdates || oldValue == null)
+        if ((!_acceptSubscriptionUpdates && payload.Quantity != payload.Subscription.Quantity) || oldValue == null)
         {
-            await this.applicationLogService.AddApplicationLog("Quantity Change Request Rejected Successfully.").ConfigureAwait(false);
             auditLog.NewValue = oldValue?.Quantity.ToString();
             this.subscriptionsLogRepository.Save(auditLog);
             throw new MarketplaceException("Quantity Change Request reject due to Config settings or Subscription not in database");
