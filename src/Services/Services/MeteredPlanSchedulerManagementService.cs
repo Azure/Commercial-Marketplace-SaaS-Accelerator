@@ -80,7 +80,7 @@ public class MeteredPlanSchedulerManagementService
 
         foreach (var item in schedulerList)
         {
-            item.LastRunTime = this.GetSchedulerLastRunTime(item.Id);
+            item.LastRunTime = this.GetSchedulerLastRunTime(item.Id,item.SchedulerName);
         }
 
         return schedulerList;
@@ -159,7 +159,7 @@ public class MeteredPlanSchedulerManagementService
     }
 
 
-    public DateTime? GetSchedulerLastRunTime(int id)
+    public DateTime? GetSchedulerLastRunTime(int id,string schedulerName)
     {
         DateTime? lastRunTime = null;
         var scheduledItem = this.schedulerRepository.Get(id);
@@ -169,7 +169,7 @@ public class MeteredPlanSchedulerManagementService
         {
             var MeteringUsageRequest = JsonSerializer.Deserialize<MeteringUsageRequest>(auditLog.RequestJson);
 
-            if (MeteringUsageRequest.Dimension == scheduledItemView.Dimension)
+            if ((MeteringUsageRequest.Dimension == scheduledItemView.Dimension)&&(auditLog.RunBy == $"Scheduler - {schedulerName}"))
             {
                 if ((lastRunTime == null)|| (lastRunTime < auditLog.CreatedDate))
                 {
