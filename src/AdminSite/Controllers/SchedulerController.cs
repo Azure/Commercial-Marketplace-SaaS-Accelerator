@@ -46,6 +46,11 @@ public class SchedulerController : BaseController
     private readonly IUsersRepository usersRepository;
 
     /// <summary>
+    /// the aplication config repository
+    /// </summary>
+    private IApplicationConfigRepository applicationConfigRepository;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="PlansController" /> class.
     /// </summary>
     /// <param name="subscriptionRepository">The subscription repository.</param>
@@ -63,13 +68,13 @@ public class SchedulerController : BaseController
         ISchedulerManagerViewRepository schedulerViewRepository, 
         IUsersRepository usersRepository, 
         ILogger<SchedulerController> logger, 
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository)
 
     {
         this.usersRepository= usersRepository;
         this.logger = logger;
         this.meteredRepository = meteredRepository;
-        this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository);
+        this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository,applicationConfigRepository);
         this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
     }
 
@@ -107,11 +112,11 @@ public class SchedulerController : BaseController
             this.TempData["ShowWelcomeScreen"] = "True";
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
             var allActiveMeteredSubscriptions = this.subscriptionService.GetActiveSubscriptionsWithMeteredPlan();
-            List<SchedulerFrequencyModel> getAllFrequency = this.schedulerService.GetAllFrequency();
+            List<SchedulerFrequencyModel> getAllEnabledFrequency = this.schedulerService.GetAllEnabledFrequency();
 
             // Create Frequency Dropdown list
             List<SelectListItem> SchedulerFrequencyList = new List<SelectListItem>();
-            foreach (var item in getAllFrequency)
+            foreach (var item in getAllEnabledFrequency)
             {
                 SchedulerFrequencyList.Add(new SelectListItem()
                 {

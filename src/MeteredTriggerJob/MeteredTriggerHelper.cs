@@ -34,7 +34,7 @@ public class Executor
         this.schedulerRepository = schedulerRepository;
         this.schedulerViewRepository = schedulerViewRepository;
         this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
-        this.schedulerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, this.schedulerRepository, this.schedulerViewRepository, this.subscriptionUsageLogsRepository);
+        this.schedulerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, this.schedulerRepository, this.schedulerViewRepository, this.subscriptionUsageLogsRepository, this.applicationConfigRepository);
         this.billingApiService = billingApiService;
         this.applicationConfigRepository = applicationConfigRepository;
 
@@ -46,7 +46,7 @@ public class Executor
         schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, 
             schedulerRepository, 
             schedulerViewRepository, 
-            subscriptionUsageLogsRepository);
+            subscriptionUsageLogsRepository,applicationConfigRepository);
             
 
         //Get all Scheduled Data
