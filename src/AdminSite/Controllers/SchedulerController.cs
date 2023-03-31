@@ -46,11 +46,6 @@ public class SchedulerController : BaseController
     private readonly IUsersRepository usersRepository;
 
     /// <summary>
-    /// the aplication config repository
-    /// </summary>
-    private IApplicationConfigRepository applicationConfigRepository;
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="PlansController" /> class.
     /// </summary>
     /// <param name="subscriptionRepository">The subscription repository.</param>
