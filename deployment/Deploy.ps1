@@ -285,7 +285,7 @@ Remove-Item -Path script.sql
 
 Write-host "✅ If the intallation completed without error complete the folllowing checklist:"
 if ($ISADMTApplicationIDProvided) {  #If provided then show the user where to add the landing page in AAD, otherwise script did this already for the user.
-	Write-host "   🔵 Add The following URLs to the multi-tenant AAD App Registration in Azure Portal:"
+	Write-host "   🔵 Add The following URLs as Web Redirect URIs to the multi-tenant AAD App Registration in Azure Portal:"
 	Write-host "      ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net"
 	Write-host "      ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net/"
 	Write-host "      ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index"
@@ -295,6 +295,8 @@ if ($ISADMTApplicationIDProvided) {  #If provided then show the user where to ad
 	Write-host "      ➡️ https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index"
 	Write-host "      ➡️ https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
 	Write-host "   🔵 Verify ID Tokens checkbox has been checked-out ?"
+	Write-host "   🔵 Add The following URL as Front-channel logout URL to the multi-tenant AAD App Registration in Azure Portal:"
+    Write-host "   🔵 ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net/logout"
 }
 
 Write-host "   🔵 Add The following URL in PartnerCenter SaaS Technical Configuration"
