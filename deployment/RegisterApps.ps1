@@ -5,13 +5,32 @@
 # Powershell script to create App registrations in AAD to allow access to  and SSO
 #
 
-#.\RegisterApps.ps1 `
-# -WebAppNamePrefix "amp_saas_accelerator_<unique>" `
+<#
+.SYNOPSIS
+Creates App Registrations:
+- One for authenticating calls to the Marketplace API with the specified prefix and additional configuration options.
+- Second Multi-Tenant App Registration for Landing Page User Login.
+
+.PARAMETER WebAppNamePrefix
+The prefix used for creating web applications. This parameter is mandatory.
+
+.PARAMETER TenantID
+ID of a tenant in which the WebApp registration needs to be created.
+
+.PARAMETER LogoURLpng
+URI to a PNG file with logo for uploading to the WebAppReg.
+
+.EXAMPLE
+.\RegisterApps.ps1 -WebAppNamePrefix "amp_saas_accelerator_<unique>" -TenantID 04a1fb8a-922c-4808-8b05-6aad85609349
+
+This example creates 2 web app registrations with the prefix "MyWebApp" in Teant with ID: 04a1fb8a-922c-4808-8b05-6aad85609349.
+#>
 
 Param(  
    [string][Parameter(Mandatory)]$WebAppNamePrefix, # Prefix used for creating web applications
-   [string][Parameter()]$TenantID # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
-)
+   [string][Parameter()]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter()]$LogoURLpng
+   )
 
 # Make sure to install Az Module before running this script
 # Install-Module Az
@@ -32,7 +51,7 @@ Write-Host "Starting SaaS Accelerator Deployment..."
 
 #region Select Tenant / Subscription for deployment
 
-$currentContext = az account show | ConvertFrom-Json
+$currentContext = az account tenant list | ConvertFrom-Json
 if ($LASTEXITCODE) { throw "Last command returned $LASTEXITCODE exit code, terminating ..." }
 $currentTenant = $currentContext.tenantId
 
@@ -47,88 +66,5 @@ else {
 
 #endregion
 
-#region Create AAD App Registrations
-
-#Create App Registration for authenticating calls to the Marketplace API
-Write-Host "🔑 Creating Fulfilment API App Registration"
-try {   
-    $ADApplicationDisplayName = "$WebAppNamePrefix-FulfillmentAppReg"
-    $ADApplication = az ad app create --only-show-errors --display-name $ADApplicationDisplayName | ConvertFrom-Json
-    if ($LASTEXITCODE) { throw "Last command returned $LASTEXITCODE exit code, terminating ..." }
-    $ADObjectID = $ADApplication.id
-    $ADApplicationID = $ADApplication.appId
-    sleep 5 #this is to give time to AAD to register
-    $ADApplicationSecret = az ad app credential reset --id $ADObjectID --append --display-name 'SaaSAPI' --years 2 --query password --only-show-errors --output tsv
-            
-    Write-Host "   🔵 FulfilmentAPI App Registration created."
-    Write-Host "      ➡️ Application Display Name:" $ADApplicationDisplayName
-    Write-Host "      ➡️ Application ID:" $ADApplicationID
-    Write-Host "      ➡️ App Secret:" $ADApplicationSecret
-}
-catch [System.Net.WebException],[System.IO.IOException] {
-    Write-Host "🚨🚨   $PSItem.Exception"
-    break;
-}
-
-#Create Multi-Tenant App Registration for Landing Page User Login
-Write-Host "🔑 Creating Landing Page SSO App Registration"
-try {
-    $ADMTApplicationDisplayName = "$WebAppNamePrefix-LandingpageAppReg"
-    $appCreateRequestBodyJson = @"
-{
-	"displayName" : "$ADMTApplicationDisplayName",
-	"api": 
-	{
-		"requestedAccessTokenVersion" : 2
-	},
-	"signInAudience" : "AzureADandPersonalMicrosoftAccount",
-	"web":
-	{ 
-		"redirectUris": 
-		[
-			"https://$WebAppNamePrefix-portal.azurewebsites.net",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
-		],
-		"logoutUrl": "https://$WebAppNamePrefix-portal.azurewebsites.net/logout",
-		"implicitGrantSettings": 
-			{ "enableIdTokenIssuance" : true }
-	},
-	"requiredResourceAccess":
-	[{
-		"resourceAppId": "00000003-0000-0000-c000-000000000000",
-		"resourceAccess":
-			[{ 
-				"id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
-				"type": "Scope" 
-			}]
-	}]
-}
-"@	
-    if ($PsVersionTable.Platform -ne 'Unix') {
-        #On Windows, we need to escape quotes and remove new lines before sending the payload to az rest. 
-        # See: https://github.com/Azure/azure-cli/blob/dev/doc/quoting-issues-with-powershell.md#double-quotes--are-lost
-        $appCreateRequestBodyJson = $appCreateRequestBodyJson.replace('"','\"').replace("`r`n","")
-    }
-
-    $landingpageLoginAppReg = $(az rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $appCreateRequestBodyJson  ) | ConvertFrom-Json
-    if ($LASTEXITCODE) { throw "Last command returned $LASTEXITCODE exit code, terminating ..." }
-    
-    $ADMTApplicationID = $landingpageLoginAppReg.appId
-
-    Write-Host "   🔵 Landing Page SSO App Registration created."
-    Write-Host "      ➡️ Application Display Name:" $ADMTApplicationDisplayName
-    Write-Host "      ➡️ Application Id: $ADMTApplicationID"
-
-}
-catch [System.Net.WebException],[System.IO.IOException] {
-    Write-Host "🚨🚨   $PSItem.Exception"
-    break;
-}
-
-#endregion
+Import-Module (Join-Path $PSScriptRoot "./azure-deploy/RegisterAppsFunctions.ps1")
+$result = Set-WebAppRegistrations -WebAppNamePrefix $WebAppNamePrefix -LogoURLpng $LogoURLpng
