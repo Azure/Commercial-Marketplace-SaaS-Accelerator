@@ -94,6 +94,7 @@ Write-Host "Starting SaaS Accelerator Deployment..."
 #region Select Tenant / Subscription for deployment
 
 $currentContext = az account show | ConvertFrom-Json
+if ($LASTEXITCODE) { throw "Last command returned $LASTEXITCODE exit code, terminating ..." }
 $currentTenant = $currentContext.tenantId
 $currentSubscription = $currentContext.id
 
@@ -117,6 +118,7 @@ else {
 
 #Set the AZ Cli context
 az account set -s $AzureSubscriptionID
+if ($LASTEXITCODE) { throw "Last command returned $LASTEXITCODE exit code, terminating ..." }
 Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
 
 #endregion
@@ -286,6 +288,7 @@ $Connection="Data Source=tcp:"+$ServerUri+",1433;Initial Catalog=AMPSaaSDB;User 
 Write-host "   🔵 Resource Group"
 Write-host "      ➡️ Create Resource Group"
 az group create --location $Location --name $ResourceGroupForDeployment --output $azCliOutput
+if ($LASTEXITCODE) { throw "Last command returned $LASTEXITCODE exit code, terminating ..." }
 
 Write-host "   🔵 SQL Server"
 Write-host "      ➡️ Create Sql Server"
