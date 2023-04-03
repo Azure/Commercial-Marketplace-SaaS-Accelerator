@@ -34,6 +34,7 @@ Param(
 # Make sure to install Az Module before running this script
 # Install-Module Az
 # Install-Module -Name AzureAD
+# Install-Module SqlServer
 
 $ErrorActionPreference = "Stop"
 $startTime = Get-Date
@@ -156,7 +157,7 @@ if (!($ADApplicationID)) {
         $ADApplicationID = $ADApplication.appId
         sleep 5 #this is to give time to AAD to register
         $ADApplicationSecret = az ad app credential reset --id $ADObjectID --append --display-name 'SaaSAPI' --years 2 --query password --only-show-errors --output tsv
-				
+
         Write-Host "   🔵 FulfilmentAPI App Registration created."
 		Write-Host "      ➡️ Application ID:" $ADApplicationID  
         Write-Host "      ➡️ App Secret:" $ADApplicationSecret
