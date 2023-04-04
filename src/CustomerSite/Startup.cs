@@ -110,8 +110,19 @@ public class Startup
             .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(fulfillmentBaseApi, creds), config, new FulfillmentApiClientLogger()))
             .AddSingleton<SaaSApiClientConfiguration>(config);
 
-        services
-            .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+
+        var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            services
+                .AddDbContext<SaasKitContext>(options => options.UseInMemoryDatabase("SaaSAccelerator"));
+        }
+        else
+        {
+            services
+                .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString(connectionString)));
+        }
 
         InitializeRepositoryServices(services);
 
