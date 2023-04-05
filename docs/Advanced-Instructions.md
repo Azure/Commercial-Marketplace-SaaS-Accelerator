@@ -49,6 +49,33 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 
   2. Paste the updated command in an Azure Cloud Shell PowerShell window.
 
+### Register Web Apps in AAD
+
+In case you want to register applications in an AAD tenant that is different from the one in which you are creating the Web Applications, call:
+
+``` powershell
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.1.2 --depth 1; `
+cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
+.\RegisterApps.ps1 `
+ -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
+ -TenantID "tenandId"
+```
+
+The script outputs generated Applications IDs and secrets that you can pass to the Deploy.ps1 script:
+
+``` powershell
+dotnet tool install --global dotnet-ef; `
+.\Deploy.ps1 `
+ -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
+ -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING" `
+ -PublisherAdminUsers "user@email.com" `
+ -Location "East US" 
+ -TenantID "tenandId" `
+ -ADApplicationID "single-tenant clientId" `
+ -ADApplicationSecret "single-tenant secret" `
+ -ADMTApplicationID "multi-tenant clientId" `
+```
+
 ### Local deployment
 
    1. Install Powershell 7.0.2
