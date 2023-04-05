@@ -2,38 +2,31 @@
 # Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 #
-# Powershell module with Set-WebAppRegistrations function to create App registrations in AAD to allow access to SaaS Fulfillment API and SSO
+# Powershell module with functions to create App registrations in AAD to allow access to SaaS Fulfillment API and SSO
 #
 
 <#
 .SYNOPSIS
-Creates App Registrations:
-- One for authenticating calls to the Marketplace API with the specified prefix and additional configuration options.
-- Second Multi-Tenant App Registration for Landing Page User Login.
+Creates App Registration for calls to the SaaS Fulfillment API.
 
 .PARAMETER WebAppNamePrefix
 The prefix used for creating web applications. This parameter is mandatory.
-
-.PARAMETER LogoURLpng
-URI to a PNG file with logo for uploading to the WebAppReg.
 
 .OUTPUTS
 Returns an object with these fields:
 - ADApplicationID: The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center.
 - ADApplicationSecret: Secret key of the AD Application.
-- ADMTApplicationID: Multi-Tenant Active Directory Application ID.
 
 .EXAMPLE
 Import-Module RegisterAppsFunctions.ps1
-Set-WebAppRegistrations -WebAppNamePrefix "MyWebApp"
+Set-FulfillmentWebAppRegistration -WebAppNamePrefix "MyWebApp"
 
-This example creates 2 web app registrations with the prefix "MyWebApp". One for Landing page and second one with id_token for SSO.
+This example creates a web app registration with the "MyWebApp-" prefix.
 
 #>
-function Set-WebAppRegistrations() {
-    Param(  
-        [string][Parameter(Mandatory)]$WebAppNamePrefix,
-        [string][Parameter()]$LogoURLpng
+function Set-FulfillmentWebAppRegistration() {
+    Param(
+        [string][Parameter(Mandatory)]$WebAppNamePrefix
     )
 
     Write-Host "🔑 Creating Fulfillment API App Registration"
@@ -53,46 +46,78 @@ function Set-WebAppRegistrations() {
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         Write-Host "🚨🚨   $PSItem.Exception"
-        break;
+        throw;
     }
 
+    return [PSCustomObject]@{
+        ADApplicationID = $ADApplicationID
+        ADApplicationSecret = $ADApplicationSecret
+    }
+}
+
+<#
+.SYNOPSIS
+Creates Multi-Tenant App Registration allowing SSO.
+
+.PARAMETER WebAppNamePrefix
+The prefix used for creating web applications. This parameter is mandatory.
+
+.PARAMETER LogoURLpng
+URI to a PNG file with logo for uploading to the WebAppReg.
+
+.OUTPUTS
+Returns an object with one field:
+- ADMTApplicationID: Multi-Tenant Active Directory Application ID.
+
+.EXAMPLE
+Import-Module RegisterAppsFunctions.ps1
+Set-SsoWebAppRegistration -WebAppNamePrefix "MyWebApp" -LogoURLpng "https://cdn2.steamgriddb.com/file/sgdb-cdn/logo/3e49d4ec10aad7c623659c37e011665a.png"
+
+This example creates a web app registration with the "MyWebApp-" prefix and uploads the Application Branding logo.
+
+#>
+function Set-SsoWebAppRegistration() {
+    Param(  
+        [string][Parameter(Mandatory)]$WebAppNamePrefix,
+        [string][Parameter()]$LogoURLpng
+    )
     Write-Host "🔑 Creating Landing Page SSO App Registration"
     try {
         $ADMTApplicationDisplayName = "$WebAppNamePrefix-LandingpageAppReg"
         $appCreateRequestBodyJson = @"
 {
-	"displayName" : "$ADMTApplicationDisplayName",
-	"api": 
-	{
-		"requestedAccessTokenVersion" : 2
-	},
-	"signInAudience" : "AzureADandPersonalMicrosoftAccount",
-	"web":
-	{ 
-		"redirectUris": 
-		[
-			"https://$WebAppNamePrefix-portal.azurewebsites.net",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
-		],
-		"logoutUrl": "https://$WebAppNamePrefix-portal.azurewebsites.net/logout",
-		"implicitGrantSettings": 
-			{ "enableIdTokenIssuance" : true }
-	},
-	"requiredResourceAccess":
-	[{
-		"resourceAppId": "00000003-0000-0000-c000-000000000000",
-		"resourceAccess":
-			[{ 
-				"id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
-				"type": "Scope" 
-			}]
-	}]
+    "displayName" : "$ADMTApplicationDisplayName",
+    "api": 
+    {
+        "requestedAccessTokenVersion" : 2
+    },
+    "signInAudience" : "AzureADandPersonalMicrosoftAccount",
+    "web":
+    { 
+        "redirectUris": 
+        [
+            "https://$WebAppNamePrefix-portal.azurewebsites.net",
+            "https://$WebAppNamePrefix-portal.azurewebsites.net/",
+            "https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index",
+            "https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net/",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
+        ],
+        "logoutUrl": "https://$WebAppNamePrefix-portal.azurewebsites.net/logout",
+        "implicitGrantSettings": 
+            { "enableIdTokenIssuance" : true }
+    },
+    "requiredResourceAccess":
+    [{
+        "resourceAppId": "00000003-0000-0000-c000-000000000000",
+        "resourceAccess":
+            [{ 
+                "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+                "type": "Scope" 
+            }]
+    }]
 }
 "@	
         if ($PsVersionTable.Platform -ne 'Unix') {
@@ -105,7 +130,7 @@ function Set-WebAppRegistrations() {
         if ($LASTEXITCODE) { throw "Creating $ADMTApplicationDisplayName App Registration returned $LASTEXITCODE exit code, terminating ..." }
 
         $ADMTApplicationID = $landingpageLoginAppReg.appId
-		$ADMTObjectID = $landingpageLoginAppReg.id
+        $ADMTObjectID = $landingpageLoginAppReg.id
 
         Write-Host "   🔵 Landing Page SSO App Registration created."
         Write-Host "      ➡️ Application Display Name:" $ADMTApplicationDisplayName
@@ -132,12 +157,10 @@ function Set-WebAppRegistrations() {
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         Write-Host "🚨🚨   $PSItem.Exception"
-        break;
+        throw;
     }
 
     return [PSCustomObject]@{
-        ADApplicationID = $ADApplicationID
-        ADApplicationSecret = $ADApplicationSecret
         ADMTApplicationID = $ADMTApplicationID
     }
 }

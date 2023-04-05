@@ -104,22 +104,41 @@ if(!($TenantID)) {
     if (!($TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }    
 }
 else {
-    Write-Host "🔑 Tenant provided: $TenantID"
+    Write-Host "🔑 Tenant provided for Web App Registrations: $TenantID"
 }
 
 #Get Azure Subscription if not set as argument
 if(!($AzureSubscriptionID)) {    
-    Get-AzSubscription -TenantId $TenantID | Format-Table
+    Get-AzSubscription | Format-Table
     if (!($AzureSubscriptionID = Read-Host "⌨  Type your SubscriptionID or press Enter to accept your current one [$currentSubscription]")) { $AzureSubscriptionID = $currentSubscription }
 }
 else {
-    Write-Host "🔑 Azure Subscription provided: $AzureSubscriptionID"
+    Write-Host "🔑 Azure Subscription provided for creating resources: $AzureSubscriptionID"
 }
 
-#Set the AZ Cli context
-az account set -s $AzureSubscriptionID
-if ($LASTEXITCODE) { throw "Last command returned $LASTEXITCODE exit code, terminating ..." }
-Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
+#endregion
+
+#region Create AAD App Registrations
+
+if (!($ADApplicationID) -or !($ADMTApplicationID)) {
+
+    #Record the current ADApps to reduce deployment instructions at the end
+    $ISADMTApplicationIDProvided = $ADMTApplicationID
+
+    Import-Module (Join-Path $PSScriptRoot "./azure-deploy/RegisterAppsFunctions.ps1") -Force
+
+    if (!($ADApplicationID)) {
+        $result = Set-FulfillmentWebAppRegistration -WebAppNamePrefix $WebAppNamePrefix
+        $ADApplicationID = $result.ADApplicationID
+        $ADApplicationSecret = $result.ADApplicationSecret
+    }
+    if (!($ADMTApplicationID)) {
+        $result = Set-SsoWebAppRegistration -WebAppNamePrefix $WebAppNamePrefix `
+            -LogoURLpng $LogoURLpng
+        $ADMTApplicationID = $result.ADMTApplicationID
+    }
+
+}
 
 #endregion
 
@@ -145,113 +164,6 @@ if($LogoURLico) {
 
 #endregion
  
-#region Create AAD App Registrations
-
-#Record the current ADApps to reduce deployment instructions at the end
-$ISADMTApplicationIDProvided = $ADMTApplicationID
-
-#Create App Registration for authenticating calls to the Marketplace API
-if (!($ADApplicationID)) {   
-    Write-Host "🔑 Creating Fulfilment API App Registration"
-    try {   
-        $ADApplication = az ad app create --only-show-errors --display-name "$WebAppNamePrefix-FulfillmentAppReg" | ConvertFrom-Json
-		$ADObjectID = $ADApplication.id
-        $ADApplicationID = $ADApplication.appId
-        sleep 5 #this is to give time to AAD to register
-        $ADApplicationSecret = az ad app credential reset --id $ADObjectID --append --display-name 'SaaSAPI' --years 2 --query password --only-show-errors --output tsv
-
-        Write-Host "   🔵 FulfilmentAPI App Registration created."
-		Write-Host "      ➡️ Application ID:" $ADApplicationID  
-        Write-Host "      ➡️ App Secret:" $ADApplicationSecret
-    }
-    catch [System.Net.WebException],[System.IO.IOException] {
-        Write-Host "🚨🚨   $PSItem.Exception"
-        break;
-    }
-}
-
-#Create Multi-Tenant App Registration for Landing Page User Login
-if (!($ADMTApplicationID)) {  
-    Write-Host "🔑 Creating Landing Page SSO App Registration"
-    try {
-	
-		$appCreateRequestBodyJson = @"
-{
-	"displayName" : "$WebAppNamePrefix-LandingpageAppReg",
-	"api": 
-	{
-		"requestedAccessTokenVersion" : 2
-	},
-	"signInAudience" : "AzureADandPersonalMicrosoftAccount",
-	"web":
-	{ 
-		"redirectUris": 
-		[
-			"https://$WebAppNamePrefix-portal.azurewebsites.net",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
-		],
-		"logoutUrl": "https://$WebAppNamePrefix-portal.azurewebsites.net/logout",
-		"implicitGrantSettings": 
-			{ "enableIdTokenIssuance" : true }
-	},
-	"requiredResourceAccess":
-	[{
-		"resourceAppId": "00000003-0000-0000-c000-000000000000",
-		"resourceAccess":
-			[{ 
-				"id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
-				"type": "Scope" 
-			}]
-	}]
-}
-"@	
-		if ($PsVersionTable.Platform -ne 'Unix') {
-			#On Windows, we need to escape quotes and remove new lines before sending the payload to az rest. 
-			# See: https://github.com/Azure/azure-cli/blob/dev/doc/quoting-issues-with-powershell.md#double-quotes--are-lost
-			$appCreateRequestBodyJson = $appCreateRequestBodyJson.replace('"','\"').replace("`r`n","")
-		}
-
-		$landingpageLoginAppReg = $(az rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $appCreateRequestBodyJson  ) | ConvertFrom-Json
-	
-		$ADMTApplicationID = $landingpageLoginAppReg.appId
-		$ADMTObjectID = $landingpageLoginAppReg.id
-	
-        Write-Host "   🔵 Landing Page SSO App Registration created."
-		Write-Host "      ➡️ Application Id: $ADMTApplicationID"
-	
-		# Download Publisher's AppRegistration logo
-        if($LogoURLpng) { 
-			Write-Host "   🔵 Logo image provided. Setting the Application branding logo"
-			Write-Host "      ➡️ Setting the Application branding logo"
-			$token=(az account get-access-token --resource "https://graph.microsoft.com" --query accessToken --output tsv)
-			$logoWeb = Invoke-WebRequest $LogoURLpng
-			$logoContentType = $logoWeb.Headers["Content-Type"]
-			$logoContent = $logoWeb.Content
-			
-			$uploaded = Invoke-WebRequest `
-			  -Uri "https://graph.microsoft.com/v1.0/applications/$ADMTObjectID/logo" `
-			  -Method "PUT" `
-			  -Header @{"Authorization"="Bearer $token";"Content-Type"="$logoContentType";} `
-			  -Body $logoContent
-		    
-			Write-Host "      ➡️ Application branding logo set."
-        }
-
-    }
-    catch [System.Net.WebException],[System.IO.IOException] {
-        Write-Host "🚨🚨   $PSItem.Exception"
-        break;
-    }
-}
-
-#endregion
-
 #region Prepare Code Packages
 Write-host "📜 Prepare publish files for the application"
 if (!(Test-Path '../Publish')) {		
@@ -272,6 +184,12 @@ if (!(Test-Path '../Publish')) {
 
 #region Deploy Azure Resources Infrastructure
 Write-host "☁ Deploy Azure Resources"
+
+#Set the AZ Cli context
+Write-Host "  Set Subscription for creating resources"
+az account set -s $AzureSubscriptionID
+if ($LASTEXITCODE) { throw "Last command returned $LASTEXITCODE exit code, terminating ..." }
+Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
 
 #Set-up resource name variables
 $WebAppNameService=$WebAppNamePrefix+"-asp"

@@ -61,10 +61,11 @@ if(!($TenantID)) {
     if (!($TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }    
 }
 else {
-    Write-Host "🔑 Tenant provided: $TenantID"
+    Write-Host "🔑 Tenant provided for Web App Registrations: $TenantID"
 }
 
 #endregion
-
-Import-Module (Join-Path $PSScriptRoot "./azure-deploy/RegisterAppsFunctions.ps1")
-$result = Set-WebAppRegistrations -WebAppNamePrefix $WebAppNamePrefix -LogoURLpng $LogoURLpng
+Import-Module (Join-Path $PSScriptRoot "./azure-deploy/RegisterAppsFunctions.ps1") -Force
+$result = Set-FulfillmentWebAppRegistration -WebAppNamePrefix $WebAppNamePrefix
+$result = Set-SsoWebAppRegistration -WebAppNamePrefix $WebAppNamePrefix `
+    -LogoURLpng $LogoURLpng
