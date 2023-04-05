@@ -78,10 +78,10 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | Location | _[required]_ Location of the resource group |
 | PublisherAdminUsers | _[required]_ Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal |
 | TenantID | The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center. If value not provided, you will be asked to select the tenant during deployment |
-| AzureSubscriptionID | Id of subscription where the resources will be deployed. Subscription must be part of the Tenant Provided. If value not provided, you will be asked to select the subscription during deployment. |
-| ADApplicationID | The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center. If value not provided, a new application will be created. |
+| AzureSubscriptionID | Id of subscription where the resources will be deployed. If value not provided, you will be asked to select the subscription during deployment. |
+| ADApplicationID | The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center. If value not provided, a new application will be created in the selected AAD Tenant. |
 | ADApplicationSecret | Valid secret for the ADApplication. Required if ADApplicationID is provided. If `ADApplicationID` is not provided, a secret will be generated. |
-| ADMTApplicationID | A valid App Id for an Azure AD Application configured for SSO login. If value not provided, a new application will be created. |
+| ADMTApplicationID | A valid App Id for an Azure AD Application configured for SSO login. If value not provided, a new application will be created in the selected AAD Tenant. |
 | SQLServerName | A unique name of the database server (without database.windows.net). Default: `WebAppNamePrefix`-sql |
 | SQLAdminLogin | SQL Admin login. Default: 'saasdbadminxxx' where xxx is a random number. |
 | SQLAdminLoginPassword | SQL Admin password. Default: secure random password. |
