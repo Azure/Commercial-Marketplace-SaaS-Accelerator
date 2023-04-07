@@ -39,7 +39,7 @@ public class SchedulerController : BaseController
     /// the subscription service
     /// </summary>
     private SubscriptionService subscriptionService;
-       
+
     /// <summary>
     /// the user repository
     /// </summary>
@@ -55,22 +55,22 @@ public class SchedulerController : BaseController
     /// <param name="offerAttributeRepository">The offer attribute repository.</param>
     /// <param name="offerRepository">The offer repository.</param>
     /// <param name="logger">The logger.</param>
-    public SchedulerController(ISubscriptionsRepository subscriptionRepository, 
+    public SchedulerController(ISubscriptionsRepository subscriptionRepository,
         IMeteredDimensionsRepository meteredRepository,
-        ISchedulerFrequencyRepository frequencyRepository, 
+        ISchedulerFrequencyRepository frequencyRepository,
         IPlansRepository plansRepository,
         IMeteredPlanSchedulerManagementRepository schedulerRepository,
-        ISchedulerManagerViewRepository schedulerViewRepository, 
-        IUsersRepository usersRepository, 
-        ILogger<SchedulerController> logger, 
+        ISchedulerManagerViewRepository schedulerViewRepository,
+        IUsersRepository usersRepository,
+        ILogger<SchedulerController> logger,
         ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
 
     {
-        this.usersRepository= usersRepository;
+        this.usersRepository = usersRepository;
         this.logger = logger;
         this.meteredRepository = meteredRepository;
-        this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository);
-        this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
+        this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository, subscriptionUsageLogsRepository);
+        this.subscriptionService = new SubscriptionService(subscriptionRepository, plansRepository);
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public class SchedulerController : BaseController
         try
         {
             SchedulerUsageViewModel schedulerUsageViewModel = new SchedulerUsageViewModel();
-                
+
             this.TempData["ShowWelcomeScreen"] = "True";
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
             var allActiveMeteredSubscriptions = this.subscriptionService.GetActiveSubscriptionsWithMeteredPlan();
@@ -115,8 +115,8 @@ public class SchedulerController : BaseController
             {
                 SchedulerFrequencyList.Add(new SelectListItem()
                 {
-                    Text=item.Frequency,
-                    Value=item.Id.ToString(),
+                    Text = item.Frequency,
+                    Value = item.Id.ToString(),
                 });
             }
 
@@ -138,25 +138,24 @@ public class SchedulerController : BaseController
             schedulerUsageViewModel.SubscriptionList = new SelectList(SubscriptionList, "Value", "Text");
             schedulerUsageViewModel.SchedulerFrequencyList = new SelectList(SchedulerFrequencyList, "Value", "Text");
 
-                
-            schedulerUsageViewModel.SelectedSubscription = subscriptionId;
-            schedulerUsageViewModel.Quantity = (Int32)Math.Round(Convert.ToDecimal(quantity),0);
 
-            if(!String.IsNullOrEmpty(dimId))
+            schedulerUsageViewModel.SelectedSubscription = subscriptionId;
+            schedulerUsageViewModel.Quantity = (Int32)Math.Round(Convert.ToDecimal(quantity), 0);
+
+            if (!String.IsNullOrEmpty(dimId))
             {
-                var dimensions = this.meteredRepository.Get().Where(d => d.Dimension==dimId).FirstOrDefault();
-                if(dimensions!=null)
+                var dimensions = this.meteredRepository.Get().Where(d => d.Dimension == dimId).FirstOrDefault();
+                if (dimensions != null)
                 {
                     DimensionsList.Add(new SelectListItem()
                     {
                         Text = dimId,
                         Value = dimensions.Id.ToString(),
-                        Selected= true
+                        Selected = true
                     });
                     schedulerUsageViewModel.DimensionsList = new SelectList(DimensionsList, "Value", "Text");
                     schedulerUsageViewModel.SelectedDimension = dimensions.Id.ToString();
                 }
-
             }
             else
             {
@@ -182,7 +181,7 @@ public class SchedulerController : BaseController
                         }
                     }
                 }
-                        
+
             }
             return this.View(schedulerUsageViewModel);
         }
@@ -192,11 +191,6 @@ public class SchedulerController : BaseController
             return this.View("Error", ex);
         }
     }
-
-    //public List<SelectListItem> GetSubscriptionDataHelper(int id)
-    //{
-
-    //}
 
     public IActionResult GetSubscriptionData(int id)
     {
@@ -219,7 +213,7 @@ public class SchedulerController : BaseController
                 }
 
                 return Json(selectedList);
-  
+
             }
             return this.PartialView("Error", "Can not find any metered dimension related to selected plan");
 
@@ -245,7 +239,7 @@ public class SchedulerController : BaseController
             this.schedulerService.SaveSchedulerDetail(schedulerManagement);
             return this.RedirectToAction(nameof(this.Index));
 
-        }                        
+        }
         catch (Exception ex)
         {
             this.logger.LogError(ex, ex.Message);
@@ -281,13 +275,13 @@ public class SchedulerController : BaseController
         try
         {
             var SchedulerItem = this.schedulerService.GetSchedulerManagerById(int.Parse(id));
-            var detail=this.schedulerService.GetSchedulerItemRunHistory(int.Parse(id));
+            var detail = this.schedulerService.GetSchedulerItemRunHistory(int.Parse(id));
             SchedulerUsageViewModel schedulerUsageViewModel = new SchedulerUsageViewModel();
             schedulerUsageViewModel.SelectedSubscription = SchedulerItem.AMPSubscriptionId.ToString();
             schedulerUsageViewModel.SelectedDimension = SchedulerItem.Dimension;
             schedulerUsageViewModel.SelectedSchedulerFrequency = SchedulerItem.Frequency;
             schedulerUsageViewModel.Quantity = Convert.ToInt32(SchedulerItem.Quantity);
-            schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate; 
+            schedulerUsageViewModel.FirstRunDate = SchedulerItem.StartDate;
             if (SchedulerItem.NextRunTime.HasValue)
             {
                 schedulerUsageViewModel.NextRunDate = SchedulerItem.NextRunTime.Value;
@@ -298,7 +292,7 @@ public class SchedulerController : BaseController
             return this.View(schedulerUsageViewModel);
 
 
-                
+
         }
         catch (Exception ex)
         {
