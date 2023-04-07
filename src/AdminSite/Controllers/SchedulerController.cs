@@ -158,8 +158,32 @@ public class SchedulerController : BaseController
                 }
 
             }
+            else
+            {
+                if (subscriptionId != null)
+                {
+                    var allSubscriptionDetails = this.subscriptionService.GetActiveSubscriptionsWithMeteredPlan();
+                    var selectSubscription = allSubscriptionDetails.Where(s => s.Id == int.Parse(subscriptionId)).FirstOrDefault();
+                    if (selectSubscription != null)
+                    {
+                        // Create Dimension Dropdown list
+                        List<MeteredDimensions> getAllDimensions = this.meteredRepository.GetDimensionsByPlanId(selectSubscription.AmpplanId);
+                        if (getAllDimensions != null)
+                        {
 
-
+                            foreach (var item in getAllDimensions)
+                            {
+                                DimensionsList.Add(new SelectListItem()
+                                {
+                                    Text = item.Dimension,
+                                    Value = item.Id.ToString(),
+                                });
+                            }
+                        }
+                    }
+                }
+                        
+            }
             return this.View(schedulerUsageViewModel);
         }
         catch (Exception ex)
@@ -168,6 +192,11 @@ public class SchedulerController : BaseController
             return this.View("Error", ex);
         }
     }
+
+    //public List<SelectListItem> GetSubscriptionDataHelper(int id)
+    //{
+
+    //}
 
     public IActionResult GetSubscriptionData(int id)
     {
