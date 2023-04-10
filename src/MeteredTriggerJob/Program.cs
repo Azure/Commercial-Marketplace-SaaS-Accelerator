@@ -27,7 +27,6 @@ class Program
 
         IConfiguration configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables()
-            .AddJsonFile("C:\\github\\Commercial-Marketplace-SaaS-Accelerator\\src\\MeteredTriggerJob\\appsettings.json")
             .Build();
 
         var config = new SaaSApiClientConfiguration()
