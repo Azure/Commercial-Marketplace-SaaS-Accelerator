@@ -121,7 +121,7 @@ Ensure the following prerequisites are met before getting started:
 
 Currently, the following issues are known:
 
-- Version 6.1.2 - Failing Change Plan and Change Quantity will not work due to the race condition of patching and returning 200 in the same call. This will be fixed in the next release.
+- Version 6.1.2 - Failing Change Plan and Change Quantity will not work due to the race condition of patching and returning 200 in the same call. This will be fixed in the next release. [Upgrade to 7.0.0 to fix]
 
 ## Contributing
 
