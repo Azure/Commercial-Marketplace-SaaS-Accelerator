@@ -281,10 +281,10 @@ public class MeteredPlanSchedulerManagementService
     {
         var emailContent = new EmailContentModel();
         
-        if (meteredAuditItem.StatusCode== "Accepted")
+        if ((meteredAuditItem.StatusCode== "Accepted")|| (meteredAuditItem.StatusCode == "Missing"))
         {
             //Success
-            emailContent = this.emailHelper.PrepareMeteredEmailContent(schedulerTask.SchedulerName, schedulerTask.SubscriptionName, "Accepted", meteredAuditItem.ResponseJson);
+            emailContent = this.emailHelper.PrepareMeteredEmailContent(schedulerTask.SchedulerName, schedulerTask.SubscriptionName, meteredAuditItem.StatusCode, meteredAuditItem.ResponseJson);
         }
         else
         {

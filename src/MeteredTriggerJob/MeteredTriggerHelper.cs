@@ -15,13 +15,9 @@ namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob;
 public class Executor
 {
     /// <summary>
-    ///  Metered Plan Scheduler Management Service
-    /// </summary>
-    private MeteredPlanSchedulerManagementService schedulerService;
-    /// <summary>
     /// Frequency Repository Interface
     /// </summary>
-    private ISchedulerFrequencyRepository frequencyRepository;
+    private readonly ISchedulerFrequencyRepository frequencyRepository;
     /// <summary>
     /// Scheduler Repository Interface
     /// </summary>
@@ -29,7 +25,7 @@ public class Executor
     /// <summary>
     /// Scheduler View Repository Interface
     /// </summary>
-    private ISchedulerManagerViewRepository schedulerViewRepository;
+    private readonly ISchedulerManagerViewRepository schedulerViewRepository;
     /// <summary>
     /// Subscription Usage Logs Repository Interface
     /// </summary>
@@ -45,11 +41,15 @@ public class Executor
     /// <summary>
     /// Email Template Repository Interface
     /// </summary>
-    private IEmailTemplateRepository emailTemplateRepository;
+    private readonly IEmailTemplateRepository emailTemplateRepository;
     /// <summary>
     /// Email Service Interface
     /// </summary>
     private IEmailService emailService;
+    /// <summary>
+    ///  Metered Plan Scheduler Management Service
+    /// </summary>
+    private MeteredPlanSchedulerManagementService schedulerService;
 
     /// <summary>
     /// Initiate dependency components
@@ -95,12 +95,6 @@ public class Executor
     /// </summary>
     public void Execute()
     {
-/*        schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, 
-            schedulerRepository, 
-            schedulerViewRepository, 
-            subscriptionUsageLogsRepository);
- **/          
-
         //Get all Scheduled Data
         List<SchedulerManagerViewModel> getAllSchedulerManagerViewData = schedulerService.GetAllSchedulerManagerList();
 
@@ -138,7 +132,19 @@ public class Executor
                     //Past scheduler items
                     if (timeDifferentInHours > 0)
                     {
-                        Console.WriteLine($"Item Id: {scheduledItem.Id} will not run as {_nextRunTime} has passed. Please check audit logs if its has run previously.");
+                        var msg = $"Item Id: {scheduledItem.Id} will not run as {_nextRunTime} has passed. Please check audit logs if its has run previously.";
+                        Console.WriteLine(msg);
+                        _ = bool.TryParse(applicationConfigRepository.GetValueByName("EnablesMissingSchedulerEmail"), out bool enablesMissingSchedulerEmail);
+                        if (enablesMissingSchedulerEmail)
+                        {
+                            var newMeteredAuditLog = new MeteredAuditLogs()
+                            {
+                                StatusCode="Missing",
+                                ResponseJson=msg
+                            };
+                            schedulerService.SendSchedulerEmail(scheduledItem, newMeteredAuditLog);
+                        }
+
                         continue;
                     }
                     else if (timeDifferentInHours < 0)
