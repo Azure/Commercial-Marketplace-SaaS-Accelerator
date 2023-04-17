@@ -18,6 +18,7 @@ Publisher can disable the feature by feature by updating Admin portal web config
 
 ## IMPORTANT: Enable Scheduler Frequencies
 Publisher must enable scheduler Frequencies before start scheduling tasks. From **App Config**, publisher can enable or disable available frequencies per business needs. Without enable the frequencies, Publisher will not able to add tasks also the scheduler engine will skip any disabled frequencies.
+
 ![home](./images/scheduler-appconfig.png)
 
 ![home](./images/scheduler-appconfig-options.png)
