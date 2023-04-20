@@ -161,8 +161,7 @@ public class SchedulerController : BaseController
             {
                 if (subscriptionId != null)
                 {
-                    var allSubscriptionDetails = this.subscriptionService.GetActiveSubscriptionsWithMeteredPlan();
-                    var selectSubscription = allSubscriptionDetails.Where(s => s.Id == int.Parse(subscriptionId)).FirstOrDefault();
+                    var selectSubscription = allActiveMeteredSubscriptions.Where(s => s.Id == int.Parse(subscriptionId)).FirstOrDefault();
                     if (selectSubscription != null)
                     {
                         // Create Dimension Dropdown list
