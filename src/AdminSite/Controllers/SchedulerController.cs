@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Models;
@@ -63,7 +64,9 @@ public class SchedulerController : BaseController
         ISchedulerManagerViewRepository schedulerViewRepository, 
         IUsersRepository usersRepository, 
         ILogger<SchedulerController> logger, 
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
+        DataAccessProperties dataAccessProperties)
+        : base(dataAccessProperties)
 
     {
         this.usersRepository= usersRepository;

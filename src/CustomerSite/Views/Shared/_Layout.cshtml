@@ -27,10 +27,16 @@
 
         <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
             <div class="navbar-nav mr-auto">
-
+                @if (ViewBag.InMemory)
+                {
+                    <span class="alert-warning px-2">
+                        Using in-memory database, changes will not be persisted if the application is restarted
+                    </span>
+                }
             </div>
 
             <div class="form-inline my-2 my-lg-0">
+
                 @if (this.User.Identity.IsAuthenticated)
                 {
                     <span class="cm-username text-white">@User.Identity.Name&nbsp;</span>

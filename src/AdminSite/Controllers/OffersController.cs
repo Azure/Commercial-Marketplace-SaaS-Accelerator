@@ -49,7 +49,9 @@ public class OffersController : BaseController
         IUsersRepository usersRepository, 
         IValueTypesRepository valueTypesRepository, 
         IOfferAttributesRepository offersAttributeRepository, 
-        ILogger<OffersController> logger)
+        ILogger<OffersController> logger,
+        DataAccessProperties dataAccessProperties)
+        : base(dataAccessProperties)
     {
         this.applicationConfigRepository = applicationConfigRepository;
         this.usersRepository = usersRepository;

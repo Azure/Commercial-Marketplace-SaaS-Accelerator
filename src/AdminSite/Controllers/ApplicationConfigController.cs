@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Services;
@@ -33,7 +34,9 @@ public class ApplicationConfigController : BaseController
     public ApplicationConfigController(
         ApplicationConfigService appConfigService, 
         ILogger<ApplicationConfigController> logger, 
-        IEmailTemplateRepository emailTemplateRepository)
+        IEmailTemplateRepository emailTemplateRepository,
+        DataAccessProperties dataAccessProperties)
+        : base(dataAccessProperties)
     {
         this.appConfigService = appConfigService;
         this.emailTemplateRepository = emailTemplateRepository;

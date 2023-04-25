@@ -128,7 +128,12 @@ public class Startup
 
         var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
-        if (string.IsNullOrWhiteSpace(connectionString))
+        var dataAccessProperties = new DataAccessProperties
+        {
+            InMemoryDatabase = string.IsNullOrWhiteSpace(connectionString)
+        };
+
+        if (dataAccessProperties.InMemoryDatabase)
         {
             services
                 .AddDbContext<SaasKitContext>(options => options.UseInMemoryDatabase("SaaSAccelerator"));
@@ -138,6 +143,8 @@ public class Startup
             services
                 .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString(connectionString)));
         }
+
+        services.AddSingleton(dataAccessProperties);
 
         InitializeRepositoryServices(services);
 

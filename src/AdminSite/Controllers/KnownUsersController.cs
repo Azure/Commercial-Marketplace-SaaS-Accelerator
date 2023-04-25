@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
@@ -23,7 +24,11 @@ public class KnownUsersController : BaseController
     /// <param name = "knownUsersRepository" > The known users repository.</param>
     /// <param name="logger">The logger.</param>
 
-    public KnownUsersController(IKnownUsersRepository knownUsersRepository, ILogger<OffersController> logger)
+    public KnownUsersController(
+        IKnownUsersRepository knownUsersRepository, 
+        ILogger<OffersController> logger,
+        DataAccessProperties dataAccessProperties)
+        : base(dataAccessProperties)
     {
         this.knownUsersRepository = knownUsersRepository;
         this.logger = logger;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Services;
@@ -17,7 +18,8 @@ public class ApplicationLogController : BaseController
 
     private readonly IApplicationLogRepository appLogRepository;
 
-    public ApplicationLogController(IApplicationLogRepository applicationLogRepository, ILogger<ApplicationLogController> logger)
+    public ApplicationLogController(IApplicationLogRepository applicationLogRepository, ILogger<ApplicationLogController> logger, DataAccessProperties dataAccessProperties)
+        : base(dataAccessProperties)
     {
         this.appLogRepository = applicationLogRepository;
         this.logger = logger;

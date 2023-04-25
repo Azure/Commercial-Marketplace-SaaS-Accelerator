@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
@@ -50,7 +51,8 @@ public class PlansController : BaseController
     /// <param name="offerAttributeRepository">The offer attribute repository.</param>
     /// <param name="offerRepository">The offer repository.</param>
     /// <param name="logger">The logger.</param>
-    public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<PlansController> logger)
+    public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<PlansController> logger, DataAccessProperties dataAccessProperties)
+        : base(dataAccessProperties)
     {
         this.subscriptionRepository = subscriptionRepository;
         this.usersRepository = usersRepository;
