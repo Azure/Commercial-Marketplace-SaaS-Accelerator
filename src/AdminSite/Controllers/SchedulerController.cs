@@ -64,7 +64,9 @@ public class SchedulerController : BaseController
         ISchedulerManagerViewRepository schedulerViewRepository,
         IUsersRepository usersRepository,
         ILogger<SchedulerController> logger,
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
+        DataAccessProperties dataAccessProperties)
+        : base(dataAccessProperties)
 
     {
         this.usersRepository = usersRepository;
