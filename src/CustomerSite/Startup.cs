@@ -125,7 +125,7 @@ public class Startup
         else
         {
             services
-                .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString(connectionString)));
+                .AddDbContext<SaasKitContext>(options => options.UseSqlServer(connectionString));
         }
 
         services.AddSingleton(dataAccessProperties);
