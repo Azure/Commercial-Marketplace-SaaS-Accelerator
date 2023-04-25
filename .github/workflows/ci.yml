@@ -1,0 +1,44 @@
+# This workflow will run build and unit test on every PR raised.
+
+name: "Build and Run Unit Test on PR"
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+env:  
+  CUSTOMER_PROJECT: './src/CustomerSite/CustomerSite.csproj'
+  PUBLISHER_PROJECT: './src/AdminSite/AdminSite.csproj'
+  SERVICES_TEST_PROJECT: './src/Services.Test/Services.Test.csproj'
+  DOTNET_CORE_VERSION: '6.0.x'
+  
+jobs:
+  BuildApps:
+    name: Build Apps
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    # Checkout the repo
+    - uses: actions/checkout@main
+
+    # Setup .NET Core SDK
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_CORE_VERSION }} 
+
+    # Run dotnet build and publish
+    - name: Build app
+      run: |
+        dotnet build ${{ env.CUSTOMER_PROJECT }} --configuration Release
+
+    # Run dotnet build and publish
+    - name: Build app
+      run: |
+        dotnet build ${{ env.PUBLISHER_PROJECT }} --configuration Release
+        
+    # Run unit tests
+    - name: Unit Test
+      run: dotnet test ${{ env.SERVICES_TEST_PROJECT }}
+    
