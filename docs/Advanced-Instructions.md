@@ -38,7 +38,7 @@ Please note: the SaaS Accelerator is community-supported. If you need help or ha
    1. Copy the following section to an editor and update it to match your company preference. Replace SOME-UNIQUE-STRING with your Team name or some other random string.
 ``` powershell
 dotnet tool install --global dotnet-ef; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 6.1.2 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.0.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
