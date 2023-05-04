@@ -16,7 +16,12 @@ Publisher can active the **Metered Scheduler** feature by updating Admin portal 
 
 Publisher can disable the feature by feature by updating Admin portal web configuration and set **SaaSApiConfiguration__SupportmeteredBilling** to **false**
 
+## IMPORTANT: Enable Scheduler Frequencies
+Publisher must enable scheduler Frequencies before start scheduling tasks. From **App Config**, publisher can enable or disable available frequencies per business needs. Without enable the frequencies, Publisher will not able to add tasks also the scheduler engine will skip any disabled frequencies.
 
+![home](./images/scheduler-appconfig.png)
+
+![home](./images/scheduler-appconfig-options.png)
 
 ## Access Metered Scheduler Manager Dashboard
  Publisher can access **Scheduler Manager Dashboard** from **Home page** or side bar menu.
@@ -26,6 +31,10 @@ To access dashboad from **Home page**, Publisher will click on **Scheduler Tile*
 
 ![dashboard](./images/scheduler-dashboard.png)
 ## Add New Metered Scheduler Manager Task
+
+> **Important**
+> Publisher must enable frequencies from Application Configuration page before adding new task.
+
 Publisher can add new scheduled task from by clicking **Add New Scheduled Metered Trigger** from **Dashboard page**
 
 ![add-task-1](./images/scheduler-add1.png)

@@ -92,6 +92,12 @@
                     <tr>
                         <th>Frequency</th>
                        <th>@Html.DropDownListFor(s => s.SelectedSchedulerFrequency, Model.SchedulerFrequencyList, "-- Select Frequency --", new { @class = "form-control", required = "required" })</th>
+                        @if (Model.SchedulerFrequencyList.Count() == 0 )
+                        {
+                            <th>
+                                <span style="color:red">Please enable frequencies from the App Config, to allow the system to generate frequecies list. You can enable frequecies from <a href="/applicationconfig">here</a></span>
+                            </th>
+                        }
                     </tr>
                     <tr>
                         <th>First Run Date &nbsp;&nbsp; </th>
