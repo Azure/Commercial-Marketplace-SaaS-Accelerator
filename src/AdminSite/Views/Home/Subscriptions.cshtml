@@ -25,7 +25,7 @@
                     <div class="filter-box">
                         <span>Filter: </span>
                         <input type="text" size="50" id="filterTextBox" placeholder="Enter any text to filter subscriptions" onkeyup="filterSubscriptions()">
-                        <input type="checkbox" class="statusCheckbox" id="SubscribedOnly" onchange="filterSubscriptions()"/> Hide Unsubscribed
+                        <input type="checkbox" class="statusCheckbox" aria-label="Hide unsubscribed" id="SubscribedOnly" onchange="filterSubscriptions()" /> Hide Unsubscribed
                     </div>
                     <div class="table-responsive mt20">
                         @if (Model.Subscriptions.Count() > 0)

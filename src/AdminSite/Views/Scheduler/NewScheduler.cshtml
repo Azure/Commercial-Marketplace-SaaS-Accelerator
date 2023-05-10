@@ -74,7 +74,7 @@
 
                     <tr>
                         <th>Scheduler Name&nbsp;&nbsp;</th>
-                        <th>@Html.TextBoxFor(s => s.SchedulerName, "",  new { @class = "form-control", required = "required" , pattern = @"^[a-zA-Z0-9-_]+$" })</th>
+                        <th>@Html.TextBoxFor(s => s.SchedulerName, "",  new { @class = "form-control", required = "required" , pattern = @"^[a-zA-Z0-9-_]+$", aria_label="Scheduler name" })</th>
                     </tr>
                     <tr>
                         <th>Subscription</th>
@@ -86,7 +86,7 @@
                     </tr>
                     <tr>
                         <th>Quantity</th>
-                        <th><input asp-for="Quantity" type="number" class="form-control"  step="1" min="1" value="@Model.Quantity" required="true"></th>
+                        <th><input asp-for="Quantity" type="number" class="form-control" step="1" min="1" value="@Model.Quantity" required="true" aria-label="Quantity"></th>
                     </tr>
 
                     <tr>
@@ -102,7 +102,7 @@
                     <tr>
                         <th>First Run Date &nbsp;&nbsp; </th>
                         <th>  
-                            <input asp-for="FirstRunDate" id="FirstRunDate" type="datetime-local" class="form-control"  required="true" size="24">
+                            <input asp-for="FirstRunDate" id="FirstRunDate" type="datetime-local" class="form-control" required="true" size="24" aria-label="First run date">
                         </th>
                          <th>Time will be rounded to nearest Hour</th>
                     </tr>
