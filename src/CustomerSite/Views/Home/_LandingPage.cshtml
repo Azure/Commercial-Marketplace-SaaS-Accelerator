@@ -122,12 +122,12 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
+                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i), aria_label=string.Format("{0} Value", @Model.SubscriptionParameters[i].DisplayName) })
 
                                             }
                                             else
                                             {
-                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " w200", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
+                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " w200", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i), aria_label=string.Format("{0} Value", @Model.SubscriptionParameters[i].DisplayName) })
 
                                             }
 
@@ -140,11 +140,11 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype, aria_label=string.Format("{0} Value", @Model.SubscriptionParameters[i].DisplayName) })
                                             }
                                             else
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype, aria_label=string.Format("{0} Value", @Model.SubscriptionParameters[i].DisplayName) })
                                             }
 
                                         </dd>
@@ -155,11 +155,11 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype, aria_label=string.Format("{0} Value", @Model.SubscriptionParameters[i].DisplayName) })
                                             }
                                             else
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype, aria_label=string.Format("{0} Value", @Model.SubscriptionParameters[i].DisplayName) })
                                             }
 
                                         </dd>

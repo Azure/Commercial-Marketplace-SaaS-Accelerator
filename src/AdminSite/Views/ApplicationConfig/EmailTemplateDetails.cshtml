@@ -22,34 +22,34 @@
             <tbody>
                 <tr>
                     <td class="text-left">IsActive</td>
-                    <td class="text-left">@Html.CheckBoxFor(model => model.IsActive, new { htmlAttributes = new { type ="checkbox", @class = "float-left", name="IsActive" } })</td>
+                    <td class="text-left">@Html.CheckBoxFor(model => model.IsActive, new { htmlAttributes = new { type ="checkbox", @class = "float-left", name="IsActive" }, aria_label="Is active" })</td>
                 </tr>
                 <tr>
                     <td class="text-left">Subject</td>
-                    <td class="text-left">@Html.EditorFor(model => model.Subject, new { htmlAttributes = new {  @class = "form-control", name="Subject" } })</td>
+                    <td class="text-left">@Html.EditorFor(model => model.Subject, new { htmlAttributes = new {  @class = "form-control", name="Subject", aria_label="Subject" } })</td>
                 </tr>
                 <tr>
                     <td class="text-left">Description</td>
-                    <td class="text-left">@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", name="Description" } })</td>
+                    <td class="text-left">@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", name="Description", aria_label="Description" } })</td>
                 </tr>
                 <tr>
                     <td class="text-left">TemplateBody</td>
                     <td class="text-left">
-                        @Html.TextAreaFor(model => model.TemplateBody, new { @class = "form-control" })
+                        @Html.TextAreaFor(model => model.TemplateBody, new { @class = "form-control", aria_label="Template Body" })
                         <span class="font-italic hint-text text-left">Due to the content size, it is recommended to copy the content to an external editor, modify the Template body, paste it back into here and save.</span>
                     </td>
                 </tr>
                 <tr>
                     <td class="text-left">ToRecipients</td>
-                    <td class="text-left">@Html.EditorFor(model => model.ToRecipients, new { htmlAttributes = new { @class = "form-control", name="ToRecipients" } })</td>
+                    <td class="text-left">@Html.EditorFor(model => model.ToRecipients, new { htmlAttributes = new { @class = "form-control", name="ToRecipients", aria_label="To Recipients" } })</td>
                 </tr>
                 <tr>
                     <td class="text-left">Bcc</td>
-                    <td class="text-left">@Html.EditorFor(model => model.Bcc, new { htmlAttributes = new { @class = "form-control", name="Bcc" } })</td>
+                    <td class="text-left">@Html.EditorFor(model => model.Bcc, new { htmlAttributes = new { @class = "form-control", name="Bcc", aria_label="Bcc" } })</td>
                 </tr>
                 <tr>
                     <td class="text-left">Cc</td>
-                    <td class="text-left">@Html.EditorFor(model => model.Cc, new { htmlAttributes = new { @class = "form-control", name="Cc" } })</td>
+                    <td class="text-left">@Html.EditorFor(model => model.Cc, new { htmlAttributes = new { @class = "form-control", name="Cc", aria_label="Cc" } })</td>
                 </tr>
             </tbody>
         </table>
