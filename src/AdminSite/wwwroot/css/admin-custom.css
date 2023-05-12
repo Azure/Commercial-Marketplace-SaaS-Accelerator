@@ -78,15 +78,12 @@
 
 .cm-section-heading {
     font-family: Segoe UI,Segoe UI Web,Segoe UI Symbol,Helvetica Neue,BBAlpha Sans,S60 Sans,Arial,sans-serif;
-    /*font-family: 'Segoe UI', 'sans-serif' !important;*/
     font-size: 30px;
     font-weight: 600;
-    /*background-color: #fff;*/
-    /*border-bottom: 4px solid #2180a6;*/
-    /*text-transform: uppercase;*/
     margin-bottom: 20px;
     line-height: 40px;
     color: black;
+    display: inline;
 }
 
 .p10 {
@@ -127,6 +124,10 @@
 
 .mt0 {
     margin-top: 0px !important;
+}
+
+.fw500 {
+    font-weight: 500;
 }
 
 .filter-box {

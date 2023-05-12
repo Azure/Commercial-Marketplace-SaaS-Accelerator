@@ -124,7 +124,7 @@ public class AdminApplicationShould
         gotoSubscriptionsPageFromTile();
 
         //Act
-        driver.FindElement(By.XPath("//span[@class='cm-section-heading']/following-sibling::a")).Click();
+        driver.FindElement(By.XPath("//h1[@class='cm-section-heading']/following-sibling::a")).Click();
 
         //Click OK for Javascript confirm on Fetch Click
         IAlert alert = driver.SwitchTo().Alert();
