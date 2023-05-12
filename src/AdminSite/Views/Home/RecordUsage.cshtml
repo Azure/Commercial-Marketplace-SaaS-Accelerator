@@ -29,13 +29,13 @@
                                     @Html.LabelFor(s => s.Quantity, new { @class = "font-weight-bold" })
                                 </div>
                                 <div class="col-md-2">
-                                    @Html.TextBoxFor(s => s.Quantity, null, new { @class = "form-control", @placeholder = "Quantity", required = "required" })
+                                    @Html.TextBoxFor(s => s.Quantity, null, new { @class = "form-control", @placeholder = "Quantity", required = "required", aria_required="true" })
                                 </div>
                                 <div class="col-md-1 pt-1">
                                     @Html.LabelFor(s => s.DimensionsList, "Dimension", new { @class = "font-weight-bold" })
                                 </div>
                                 <div class="col-md-3">
-                                    @Html.DropDownListFor(s => s.SelectedDimension, Model.DimensionsList, "-- Select Dimension --", new { @class = "form-control", required = "required" })
+                                        @Html.DropDownListFor(s => s.SelectedDimension, Model.DimensionsList, "-- Select Dimension --", new { @class = "form-control", required = "required", aria_required="true" })
                                 </div>
                                 <div class="col-md-2">
                                     <button type="submit" class="cm-button-default mt0">Record Usage</button>
