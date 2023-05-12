@@ -123,6 +123,8 @@ Currently, the following issues are known:
 
 - Version 6.1.2 - Failing Change Plan and Change Quantity will not work due to the race condition of patching and returning 200 in the same call. This will be fixed in the next release. [Upgrade to 7.0.0 to fix]
 
+- Importannt Security updates in Version 7.1.0. Please upgrade to >= 7.1.0
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
