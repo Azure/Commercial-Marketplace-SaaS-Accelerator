@@ -404,6 +404,13 @@ public class HomeController : BaseController
         {
             if (this.User.Identity.IsAuthenticated)
             {
+                // Validate subscription from same customer
+                var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                if(subscriptionDetail == null)
+                {
+                    return this.RedirectToAction(nameof(this.Index));
+                }
+
                 List<SubscriptionAuditLogs> subscriptionAudit = new List<SubscriptionAuditLogs>();
                 subscriptionAudit = this.subscriptionLogRepository.GetSubscriptionBySubscriptionId(subscriptionId).ToList();
                 return this.PartialView(subscriptionAudit);
