@@ -22,6 +22,16 @@
 
 ---
 
+## Known Issues
+
+Currently, the following issues are known:
+
+- Critical Security fixes in Version 7.2.0.
+
+- Important Security fixes in Version 7.1.0.
+
+- Version 6.1.2 - Failing Change Plan and Change Quantity will not work due to the race condition of patching and returning 200 in the same call. This will be fixed in the next release. [Upgrade to 7.0.0 to fix]
+
 ## Introduction
 
 This project is a community-supported reference implementation for integrating Software-as-a-Service (SaaS) solutions with Microsoft commercial marketplace SaaS offers. The SaaS Accelerator may be installed as-is or may be customized to support your requirements. The project provides the following capabilities.
@@ -116,14 +126,6 @@ Ensure the following prerequisites are met before getting started:
 - We recommend using an Integrated Development Environment (IDE):  [Visual Studio Code](https://code.visualstudio.com/),  [Visual Studio 2019 / 2022](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&rel=16#), etc...
 - The SaaS Accelerator has been implemented using [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 - For data persistence we are using [Azure SQL Database](https://azure.microsoft.com/services/sql-database/) and [Entity Framework](https://docs.microsoft.com/ef/). However, feel free to use any data repository you are comfortable with.  
-
-## Known Issues
-
-Currently, the following issues are known:
-
-- Version 6.1.2 - Failing Change Plan and Change Quantity will not work due to the race condition of patching and returning 200 in the same call. This will be fixed in the next release. [Upgrade to 7.0.0 to fix]
-
-- Importannt Security updates in Version 7.1.0. Please upgrade to >= 7.1.0
 
 ## Contributing
 
