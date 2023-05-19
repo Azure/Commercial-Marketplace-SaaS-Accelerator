@@ -369,31 +369,13 @@ a.cm-dropdown-option {
     color: red;
 }
 
-@media screen and (prefers-color-scheme: light) {
+@media (forced-colors: active) {
     .swal-button-container {
-        border: 1px solid;
-    }
-
-    .swal-modal {
-        border: 1px solid;
-    }
-
-    .swal-icon--warning__body, .swal-icon--warning__dot {
         border: 1px solid !important;
     }
 
-    .swal-icon--success__line--long, .swal-icon--success__line--tip {
-        border: 1px solid !important;
-    }
-}
-
-@media screen and (prefers-color-scheme: dark) {
-    .swal-button-container {
-        border: 1px solid;
-    }
-
     .swal-modal {
-        border: 1px solid;
+        border: 1px solid !important;
     }
 
     .swal-icon--warning__body, .swal-icon--warning__dot {
