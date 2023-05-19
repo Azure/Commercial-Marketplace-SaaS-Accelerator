@@ -1,7 +1,5 @@
 # Microsoft Commercial Marketplace - Community Code for SaaS Applications
 
-![.NET Core](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/workflows/.NET%20Core/badge.svg)
-
 <!-- no toc -->
 - [Introduction](#introduction)
 - [Intended Use](#intended-use)
@@ -22,15 +20,11 @@
 
 ---
 
-## Known Issues
+## Stay current with the latest updates!
 
-Currently, the following issues are known:
+The SaaS Accelerator project team releases regularly releases new versions. Please see the [release notes page](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/releases) for updates. We recommend keeping up to date with latest releases to stay current on security patches, bug fixes, and new features.
 
-- Critical Security fixes in Version 7.2.0.
-
-- Important Security fixes in Version 7.1.0.
-
-- Version 6.1.2 - Failing Change Plan and Change Quantity will not work due to the race condition of patching and returning 200 in the same call. This will be fixed in the next release. [Upgrade to 7.0.0 to fix]
+To update your SaaS Accelerator installation, use the **Update script** [documented here](./docs/Installation-Instructions.md#update-to-a-newer-version-of-the-saas-accelerator).
 
 ## Introduction
 
