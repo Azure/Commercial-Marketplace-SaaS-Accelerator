@@ -99,7 +99,7 @@ public class Executor
         schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, 
             schedulerRepository, 
             schedulerViewRepository, 
-            subscriptionUsageLogsRepository);
+            subscriptionUsageLogsRepository,applicationConfigRepository);
             
 
         //Get all Scheduled Data

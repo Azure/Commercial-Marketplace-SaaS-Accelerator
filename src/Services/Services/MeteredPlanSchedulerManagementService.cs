@@ -42,6 +42,11 @@ public class MeteredPlanSchedulerManagementService
     /// </summary>
     private EmailHelper emailHelper;
 
+    /// <summary>
+    /// Application Config Repository
+    /// </summary>
+    private IApplicationConfigRepository applicationConfigRepository;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MeteredPlanSchedulerManagementService"/> class.
@@ -70,13 +75,14 @@ public class MeteredPlanSchedulerManagementService
     public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository schedulerFrequencyRepository,
         IMeteredPlanSchedulerManagementRepository meteredPlanSchedulerManagementRepository,
         ISchedulerManagerViewRepository schedulerManagerViewRepository,
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
+        IApplicationConfigRepository applicationConfigRepository)
     {
         this.frequencyRepository = schedulerFrequencyRepository;
         this.schedulerRepository = meteredPlanSchedulerManagementRepository;
         this.schedulerViewRepository = schedulerManagerViewRepository;
         this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
-
+        this.applicationConfigRepository = applicationConfigRepository;
         this.applicationConfigRepository = applicationConfigRepository;
     }
 
