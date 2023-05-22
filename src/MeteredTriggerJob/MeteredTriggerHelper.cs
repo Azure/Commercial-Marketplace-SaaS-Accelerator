@@ -75,6 +75,7 @@ public class Executor
         this.schedulerRepository = schedulerRepository;
         this.schedulerViewRepository = schedulerViewRepository;
         this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
+        this.billingApiService = billingApiService;
         this.applicationConfigRepository = applicationConfigRepository;
         this.emailTemplateRepository = emailTemplateRepository;
         this.emailService = emailService;
@@ -95,6 +96,12 @@ public class Executor
     /// </summary>
     public void Execute()
     {
+        schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, 
+            schedulerRepository, 
+            schedulerViewRepository, 
+            subscriptionUsageLogsRepository);
+            
+
         //Get all Scheduled Data
         List<SchedulerManagerViewModel> getAllSchedulerManagerViewData = schedulerService.GetAllSchedulerManagerList();
 

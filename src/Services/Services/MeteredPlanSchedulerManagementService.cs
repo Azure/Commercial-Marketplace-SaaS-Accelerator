@@ -77,6 +77,7 @@ public class MeteredPlanSchedulerManagementService
         this.schedulerViewRepository = schedulerManagerViewRepository;
         this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
 
+        this.applicationConfigRepository = applicationConfigRepository;
     }
 
     /// <summary>
@@ -93,6 +94,30 @@ public class MeteredPlanSchedulerManagementService
             frequency.Id = item.Id;
             frequency.Frequency = item.Frequency;
             frequencyList.Add(frequency);
+        }
+        return frequencyList;
+    }
+    /// <summary>
+    /// Gets Enabled Schedule Frequency.
+    /// </summary>
+    /// <returns>List of Enabled Frequency.</returns>
+    public List<SchedulerFrequencyModel> GetAllEnabledFrequency()
+    {
+        List<SchedulerFrequencyModel> frequencyList = new List<SchedulerFrequencyModel>();
+        var allFrequencyData = this.frequencyRepository.GetAll().ToList();
+        var allAppConfigData = this.applicationConfigRepository.GetAll().ToList();
+
+        foreach (var item in allFrequencyData)
+        {
+            SchedulerFrequencyModel frequency = new SchedulerFrequencyModel();
+            var isEnabled = bool.TryParse(allAppConfigData.Where(s => s.Name == ($"Enable{item.Frequency}MeterSchedules")).FirstOrDefault().Value, out bool isFrequencyEnabled);
+
+            if (isEnabled && isFrequencyEnabled)
+            {
+                frequency.Id = item.Id;
+                frequency.Frequency = item.Frequency;
+                frequencyList.Add(frequency);
+            }
         }
         return frequencyList;
     }
