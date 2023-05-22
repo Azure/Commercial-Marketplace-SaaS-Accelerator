@@ -9,22 +9,13 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "RunBy",
-                table: "MeteredAuditLogs",
-                type: "varchar(255)",
-                unicode: false,
-                maxLength: 255,
-                nullable: true);
 
             migrationBuilder.BaselineV7_SeedData();
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "RunBy",
-                table: "MeteredAuditLogs");
+
         }
     }
 }
