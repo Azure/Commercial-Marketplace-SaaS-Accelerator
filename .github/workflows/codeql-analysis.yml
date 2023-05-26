@@ -75,7 +75,7 @@ jobs:
     #  uses: github/codeql-action/autobuild@v2
     - name: Build your code
       run: |
-        cd ./Commercial-Marketplace-SaaS-Accelerator/src
+        cd ./src
         dotnet restore
         dotnet build
 
