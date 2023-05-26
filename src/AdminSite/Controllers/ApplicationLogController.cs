@@ -4,11 +4,13 @@ using System.Linq;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 
+[ServiceFilter(typeof(KnownUserAttribute))]
 public class ApplicationLogController : BaseController
 {
     private readonly ILogger<ApplicationLogController> logger;
