@@ -26,7 +26,7 @@ env:
   UI_TEST_PROJECT: './src/UI.Test/UI.Test.csproj'
   CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.CustomerSite/publish'
   PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/publish'
-  DOTNET_CORE_VERSION: '6.0.x'
+  DOTNET_CORE_VERSION: '7.0.x'
   
 jobs:
   deploytocustomer:
