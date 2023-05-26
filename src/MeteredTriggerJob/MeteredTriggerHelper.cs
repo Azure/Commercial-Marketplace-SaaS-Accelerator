@@ -290,14 +290,14 @@ public class Executor
         DateTime? nextRun, 
         int timeDifferenceInHours)
     {
-        Console.WriteLine($"Item Id: {item.Id} \n\r" +
-                          $"Expected NextRun : {nextRun} \n\r" +
-                          $"SubId : {item.AMPSubscriptionId} \n\r" +
-                          $"Plan : {item.PlanId} \n\r" +
-                          $"Dim : {item.Dimension} \n\r" +
-                          $"Start Date : {item.StartDate} \n\r" +
-                          $"NextRun : {item.NextRunTime}\n\r" +
-                          $"TimeDifferenceInHours : {timeDifferenceInHours}\n\r");
+        Console.WriteLine($"Item Id: {item.Id} " + Environment.NewLine+
+                          $"Expected NextRun : {nextRun} "+Environment.NewLine+
+                          $"SubId : {item.AMPSubscriptionId} "+Environment.NewLine+
+                          $"Plan : {item.PlanId} " + Environment.NewLine +
+                          $"Dim : {item.Dimension} " + Environment.NewLine +
+                          $"Start Date : {item.StartDate} " + Environment.NewLine +
+                          $"NextRun : {item.NextRunTime}" + Environment.NewLine +
+                          $"TimeDifferenceInHours : {timeDifferenceInHours}" + Environment.NewLine );
     }
     /// <summary>
     /// Get Next Run Time

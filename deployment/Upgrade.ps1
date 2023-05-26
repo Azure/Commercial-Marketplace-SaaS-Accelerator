@@ -75,7 +75,7 @@ BEGIN
 
     IF (SELECT TOP 1 VersionNumber FROM DatabaseVersionHistory ORDER BY CreateBy DESC) = '6.10'
 	    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])  
-	        VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1'), (N'20221118211554_Baseline_v6', N'6.0.1'), (N'20230521211554_Baseline_v7', N'6.0.1');
+	        VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1'), (N'20221118211554_Baseline_v6', N'6.0.1');
 END;
 GO"
 
