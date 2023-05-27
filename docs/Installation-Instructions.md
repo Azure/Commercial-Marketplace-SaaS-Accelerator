@@ -27,6 +27,10 @@ Copy the following section to an editor and update it to match your company pref
 - [Optional] Replace `East US` with a region closest to you.
 
 ``` powershell
+wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
+chmod +x dotnet-install.sh; `
+./dotnet-install.sh; `
+$ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
 dotnet tool install --global dotnet-ef; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.2.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
