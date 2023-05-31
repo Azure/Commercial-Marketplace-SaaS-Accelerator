@@ -146,6 +146,7 @@ public class OffersController : BaseController
     /// return All subscription.
     /// </returns>
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult OfferDetails(OfferModel offersData)
     {
         this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuid {0}", JsonSerializer.Serialize(offersData));
