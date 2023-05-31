@@ -217,9 +217,16 @@
                 }
             });
     }
+
+    var t = $("input[name='__RequestVerificationToken']").val();
+
     function fetchAllSubscriptions() {
         $.ajax({
             type: "Post",
+            headers:
+            {
+                "RequestVerificationToken": t
+            },
             url: "FetchAllSubscriptions",
             contentType: "application/json; charset=utf-8",
             datatype: "json",
