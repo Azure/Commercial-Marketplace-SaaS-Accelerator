@@ -14,6 +14,7 @@
             </div>
             <div id="myModal">
                 <form id="formKnownUsers">
+                    @Html.AntiForgeryToken()
                     @if (Model != null && Model.Count() > 0)
                     {
                         <div class="table-responsive mt20">

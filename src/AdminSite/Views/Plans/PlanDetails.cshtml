@@ -25,6 +25,8 @@
             </dl>
         </div>
         <form method="post" id="frmPlanEvents" asp-action="PlanDetails" asp-controller="Plans">
+            @Html.AntiForgeryToken()
+
             <div>
                 @Html.HiddenFor(model => model.OfferID)
                 @Html.HiddenFor(model => model.PlanGUID)

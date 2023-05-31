@@ -21,6 +21,8 @@
                             <span class="cm-section-heading">Manage Subscription Usage</span>
                         </div>
                         <form asp-action="ManageSubscriptionUsage" method="post">
+                                @Html.AntiForgeryToken()
+
                             <div class="row p10">
                                 <div class="col-md-1 pt-1">
                                     @Html.HiddenFor(s => s.SubscriptionDetail.Id)

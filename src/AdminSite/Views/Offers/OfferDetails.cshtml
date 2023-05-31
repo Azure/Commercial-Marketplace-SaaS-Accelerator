@@ -10,6 +10,8 @@
 
                 <div class="text-center ">
                     <form method="post" id="frmOfferattributes" asp-action="OfferDetails" asp-controller="Offers">
+                        @Html.AntiForgeryToken()
+
                         <div class="container mrtop maxwidth" style="float: left; margin-left: -20px;">
 
                             <div class="card card-header mb0 pb0 maxwidth">

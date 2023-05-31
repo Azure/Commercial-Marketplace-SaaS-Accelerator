@@ -8,6 +8,8 @@
         </dl>
     </div>
     <form method="post" id="frmAppConfigDetails" asp-action="ApplicationConfigDetails" asp-controller="ApplicationConfig">
+        @Html.AntiForgeryToken()
+
         <div>
             @Html.HiddenFor(model => model.Id)
         </div>

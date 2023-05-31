@@ -61,6 +61,8 @@
 
 
         <form method="post" id="frmSchedulerEvents" asp-action="AddNewScheduledTrigger" asp-controller="Scheduler" >
+            @Html.AntiForgeryToken()
+
             <div style="align-content:center">
                 <table>
                     <tr>

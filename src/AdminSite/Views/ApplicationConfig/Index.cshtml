@@ -72,8 +72,9 @@
                 <p style="font-size:10px;">*restart the application after uploading file(s) and refresh (ctrl F5) to see the new logo/favicon</p>
                 <div class="row">
                     <section>
-                        <form method="post" enctype="multipart/form-data"
-                              asp-controller="FileUpload" asp-action="Index">
+                        <form method="post" enctype="multipart/form-data" asp-controller="FileUpload" asp-action="Index">
+                            @Html.AntiForgeryToken()
+
                             <div class="form-group">
                                 <div class="col-md-10">
                                     <input type="file" name="files" accept=".ico, .png" multiple />

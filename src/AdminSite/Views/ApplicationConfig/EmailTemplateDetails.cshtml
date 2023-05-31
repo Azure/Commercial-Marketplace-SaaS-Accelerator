@@ -6,6 +6,8 @@
         </dl>
     </div>
     <form method="post" id="frmEmailTemplateDetails" asp-action="EmailTemplateDetails" asp-controller="ApplicationConfig">
+        @Html.AntiForgeryToken()
+
         <div>
             @Html.HiddenFor(model => model.Status)
         </div>
