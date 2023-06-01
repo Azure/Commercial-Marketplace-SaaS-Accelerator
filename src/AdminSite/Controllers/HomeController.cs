@@ -571,6 +571,7 @@ public class HomeController : BaseController
     /// <param name="subscriptionData">The subscription data.</param>
     /// <returns> The <see cref="IActionResult" />.</returns>
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult ManageSubscriptionUsage(SubscriptionUsageViewModel subscriptionData)
     {
         this.logger.LogInformation("Home Controller / ManageSubscriptionUsage  subscriptionData: {0}", JsonSerializer.Serialize(subscriptionData));
@@ -685,6 +686,7 @@ public class HomeController : BaseController
     /// <param name="subscriptionDetail">The subscription detail.</param>
     /// <returns> IActionResult.</returns>
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangeSubscriptionPlan(SubscriptionResult subscriptionDetail)
     {
         this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
@@ -757,6 +759,7 @@ public class HomeController : BaseController
     /// <param name="subscriptionDetail">The subscription detail.</param>
     /// <returns>Changes subscription quantity.</returns>
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
     {
         this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
@@ -832,6 +835,7 @@ public class HomeController : BaseController
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult FetchAllSubscriptions()
     {
         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);

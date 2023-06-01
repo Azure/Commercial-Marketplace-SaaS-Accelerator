@@ -120,6 +120,7 @@ public class PlansController : BaseController
     /// return All subscription.
     /// </returns>
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult PlanDetails(PlansModel plans)
     {
         this.logger.LogInformation("Plans Controller / PlanDetails:  plans {0}", JsonSerializer.Serialize(plans));

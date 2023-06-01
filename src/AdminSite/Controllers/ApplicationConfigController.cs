@@ -85,6 +85,7 @@ public class ApplicationConfigController : BaseController
     /// return the modified EmailTemplate.
     /// </returns>
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult EmailTemplateDetails(EmailTemplate emailTemplate)
     {
         this.emailTemplateRepository.SaveEmailTemplateByStatus(emailTemplate);
@@ -116,6 +117,7 @@ public class ApplicationConfigController : BaseController
     /// return the changed app config item.
     /// </returns>
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult ApplicationConfigDetails(ApplicationConfiguration appConfig)
     {
         this.appConfigService.SaveAppConfig(appConfig);
@@ -132,6 +134,7 @@ public class ApplicationConfigController : BaseController
     /// <returns>RedirectToAction.</returns>
     [HttpPost("FileUpload")]
     [ServiceFilter(typeof(ExceptionHandlerAttribute))]
+    [ValidateAntiForgeryToken]
     public IActionResult PostUpload(List<IFormFile> files)
     {
         if (!(files?.Any() == true))
