@@ -81,10 +81,11 @@ if($WebAppNamePrefix.Length -gt 21) {
 }
 
 
-if(!($KeyVault -match "^[a-z0-9-]+$")) {
-    Throw "🛑 KeyVault name only allows alphanumeric and hyphens."
+if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
+    Throw "🛑 KeyVault name only allows alphanumeric and hyphens, but cannot start with a number or special character."
     Exit
 }
+
 #endregion 
 
 Write-Host "Starting SaaS Accelerator Deployment..."
