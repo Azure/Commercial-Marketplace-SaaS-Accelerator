@@ -16,17 +16,26 @@
               });
               $("#SelectedDimension").html(subItems);
 
-              
             });
         });
 
         $("#btnSubmit").click(function () {
-                var dateElement=document.getElementById("FirstRunDate");
-                var date=new Date(dateElement.value);
-                var d=date.toISOString();
-                dateElement.value=d.slice(0,-5);
-         });
-        
+            var dateElement = document.getElementById("FirstRunDate");
+            var date = new Date(dateElement.value);
+
+            var year = date.getFullYear();
+            var month = (1 + date.getMonth()).toString().padStart(2, '0');
+            var day = date.getDate().toString().padStart(2, '0');
+            var hours = date.getHours().toString().padStart(2, '0');
+            var minutes = date.getMinutes().toString().padStart(2, '0');
+
+            var formattedDate = year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+            dateElement.value = formattedDate;
+
+            var offset = new Date().getTimezoneOffset() / -60;
+            document.getElementById("TimezoneOffset").value = offset;
+
+        });
 
         $(document).ready(function() {
               var d = new Date();
@@ -123,6 +132,9 @@
 
                 </table>
             </div>
+
+            <input type="hidden" id="TimezoneOffset" name="TimezoneOffset" />
+
         </form>
     </div>
       
