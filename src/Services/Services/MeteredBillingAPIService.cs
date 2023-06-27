@@ -75,7 +75,7 @@ public class MeteredBillingApiService : BaseApiService, IMeteredBillingApiServic
                 Dimension = updateResult.Dimension,
                 MessageTime = updateResult.MessageTime.Value.UtcDateTime,
                 PlanId = updateResult.PlanId,
-                Quantity = (long)updateResult.Quantity,
+                Quantity = (double)updateResult.Quantity,
                 ResourceId = updateResult.ResourceId.Value,
                 Status = updateResult.Status.ToString(),
                 UsagePostedDate = updateResult.EffectiveStartTime.Value.UtcDateTime,
