@@ -59,7 +59,7 @@ public class SchedulerUsageViewModel
     /// <value>
     /// The quantity.
     /// </value>
-    public int Quantity { get; set; }
+    public double Quantity { get; set; }
 
     /// <summary>
     /// Get or set First Run Time

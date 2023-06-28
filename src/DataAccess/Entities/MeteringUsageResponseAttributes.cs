@@ -24,7 +24,7 @@ public partial class MeteringUsageResponseAttributes
     public Guid ResourceId { get; set; }
 
     [JsonPropertyName("quantity")]
-    public long Quantity { get; set; }
+    public double Quantity { get; set; }
 
     [JsonPropertyName("dimension")]
     public string Dimension { get; set; }

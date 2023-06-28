@@ -64,7 +64,7 @@ public class MeteringUsageResult : SaaSApiResult
     /// The quantity.
     /// </value>
     [JsonPropertyName("quantity")]
-    public long Quantity { get; set; }
+    public double Quantity { get; set; }
 
     /// <summary>
     /// Gets or sets the dimension.
