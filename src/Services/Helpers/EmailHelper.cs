@@ -121,4 +121,64 @@ public class EmailHelper
 
         return emailContent;
     }
+
+    /// <summary>
+    /// Prepares the content of the scheduler email.
+    /// </summary>
+    /// <param name="subscriptionName">The subscription Name.</param>
+    /// <param name="schedulerTaskName">scheduler Task Name.</param>
+    /// <param name="responseJson">response Json.</param>
+    /// <param name="subscriptionStatus">The subscription status.</param>
+    /// <returns>
+    /// Email Content Model.
+    /// </returns>
+    /// <exception cref="Exception">Error while sending an email, please check the configuration.
+    /// or
+    /// Error while sending an email, please check the configuration.</exception>
+    public EmailContentModel PrepareMeteredEmailContent(string schedulerTaskName, String subscriptionName, string subscriptionStatus, string responseJson)
+    {
+        bool copyToCustomer = false;
+        bool isActive = false;
+        string ccReceipents = string.Empty;
+        string bccReceipents = string.Empty;
+
+        EmailContentModel emailContent = new EmailContentModel();
+        var emailTemplateData = this.emailTemplateRepository.GetTemplateForStatus(subscriptionStatus);
+        var subject = emailTemplateData.Subject;
+        string body = emailTemplateData.TemplateBody;
+
+        string fromMail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
+        string password = this.applicationConfigRepository.GetValueByName("SMTPPassword");
+        string username = this.applicationConfigRepository.GetValueByName("SMTPUserName");
+        bool smtpSsl = bool.Parse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
+        int port = int.Parse(this.applicationConfigRepository.GetValueByName("SMTPPort"));
+        string smtpHost = this.applicationConfigRepository.GetValueByName("SMTPHost");
+        string toReceipents = this.applicationConfigRepository.GetValueByName("SchedulerEmailTo");
+    
+        if (string.IsNullOrEmpty(toReceipents))
+        {
+            throw new Exception(" Error while sending an email, please check the configuration. ");
+        }
+
+        body=body.Replace("${SubscriptionName}", subscriptionName).Replace("${SchedulerTaskName}", schedulerTaskName).Replace("${ResponseJson}", responseJson);
+
+        emailContent.BCCEmails = bccReceipents;
+        emailContent.CCEmails = ccReceipents;
+        emailContent.ToEmails = toReceipents;
+        emailContent.Body = body;
+        emailContent.Subject = subject;
+        emailContent.CopyToCustomer = copyToCustomer;
+        emailContent.IsActive = isActive;
+        emailContent.FromEmail = fromMail;
+        emailContent.Password = password;
+        emailContent.SSL = smtpSsl;
+        emailContent.UserName = username;
+        emailContent.Port = port;
+        emailContent.SMTPHost = smtpHost;
+
+        return emailContent;
+    }
+
+
+
 }

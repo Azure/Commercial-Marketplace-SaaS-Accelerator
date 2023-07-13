@@ -6,6 +6,7 @@ using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Exceptions;
+using Marketplace.SaaS.Accelerator.Services.Helpers;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 
@@ -13,34 +14,86 @@ namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob;
 
 public class Executor
 {
-
-    private MeteredPlanSchedulerManagementService schedulerService;
-    private ISchedulerFrequencyRepository frequencyRepository;
+    /// <summary>
+    /// Frequency Repository Interface
+    /// </summary>
+    private readonly ISchedulerFrequencyRepository frequencyRepository;
+    /// <summary>
+    /// Scheduler Repository Interface
+    /// </summary>
     private IMeteredPlanSchedulerManagementRepository schedulerRepository;
-    private ISchedulerManagerViewRepository schedulerViewRepository;
+    /// <summary>
+    /// Scheduler View Repository Interface
+    /// </summary>
+    private readonly ISchedulerManagerViewRepository schedulerViewRepository;
+    /// <summary>
+    /// Subscription Usage Logs Repository Interface
+    /// </summary>
     private ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository;
+    /// <summary>
+    /// Metered Billing Api Service Interface
+    /// </summary>
     private readonly IMeteredBillingApiService billingApiService;
+    /// <summary>
+    /// Application Config Repository Interface
+    /// </summary>
     private readonly IApplicationConfigRepository applicationConfigRepository;
+    /// <summary>
+    /// Email Template Repository Interface
+    /// </summary>
+    private readonly IEmailTemplateRepository emailTemplateRepository;
+    /// <summary>
+    /// Email Service Interface
+    /// </summary>
+    private IEmailService emailService;
+    /// <summary>
+    ///  Metered Plan Scheduler Management Service
+    /// </summary>
+    private MeteredPlanSchedulerManagementService schedulerService;
 
-
+    /// <summary>
+    /// Initiate dependency components
+    /// </summary>
+    /// <param name="frequencyRepository"></param>
+    /// <param name="schedulerRepository"></param>
+    /// <param name="schedulerViewRepository"></param>
+    /// <param name="subscriptionUsageLogsRepository"></param>
+    /// <param name="billingApiService"></param>
+    /// <param name="applicationConfigRepository"></param>
+    /// <param name="emailService"></param>
+    /// <param name="emailTemplateRepository"></param>
     public Executor(ISchedulerFrequencyRepository frequencyRepository,
         IMeteredPlanSchedulerManagementRepository schedulerRepository,
         ISchedulerManagerViewRepository schedulerViewRepository, 
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, 
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
         IMeteredBillingApiService billingApiService,
-        IApplicationConfigRepository applicationConfigRepository)
+        IApplicationConfigRepository applicationConfigRepository,
+        IEmailService emailService,
+        IEmailTemplateRepository emailTemplateRepository)
     {
         this.frequencyRepository = frequencyRepository;
         this.schedulerRepository = schedulerRepository;
         this.schedulerViewRepository = schedulerViewRepository;
         this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
-        this.schedulerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, this.schedulerRepository, this.schedulerViewRepository, this.subscriptionUsageLogsRepository, this.applicationConfigRepository);
         this.billingApiService = billingApiService;
         this.applicationConfigRepository = applicationConfigRepository;
+        this.emailTemplateRepository = emailTemplateRepository;
+        this.emailService = emailService;
+        schedulerService = new MeteredPlanSchedulerManagementService(this.frequencyRepository, 
+                               this.schedulerRepository, 
+                               this.schedulerViewRepository, 
+                               this.subscriptionUsageLogsRepository,
+                               this.applicationConfigRepository,
+                               this.emailTemplateRepository,
+                               this.emailService);
 
 
+        this.billingApiService = billingApiService;
     }
 
+    /// <summary>
+    /// Execute the scheduler engine
+    /// </summary>
     public void Execute()
     {
         schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, 
@@ -86,7 +139,19 @@ public class Executor
                     //Past scheduler items
                     if (timeDifferentInHours > 0)
                     {
-                        Console.WriteLine($"Item Id: {scheduledItem.Id} will not run as {_nextRunTime} has passed. Please check audit logs if its has run previously.");
+                        var msg = $"Item Id: {scheduledItem.Id} will not run as {_nextRunTime} has passed. Please check audit logs if its has run previously.";
+                        Console.WriteLine(msg);
+                        _ = bool.TryParse(applicationConfigRepository.GetValueByName("EnablesMissingSchedulerEmail"), out bool enablesMissingSchedulerEmail);
+                        if (enablesMissingSchedulerEmail)
+                        {
+                            var newMeteredAuditLog = new MeteredAuditLogs()
+                            {
+                                StatusCode="Missing",
+                                ResponseJson=msg
+                            };
+                            schedulerService.SendSchedulerEmail(scheduledItem, newMeteredAuditLog);
+                        }
+
                         continue;
                     }
                     else if (timeDifferentInHours < 0)
@@ -96,16 +161,13 @@ public class Executor
                     }
                     else if (timeDifferentInHours == 0)
                     {
-                        TriggerSchedulerItem(scheduledItem,
-                            frequency,
-                            billingApiService,
-                            schedulerService,
-                            subscriptionUsageLogsRepository);
+                        TriggerSchedulerItem(scheduledItem);
                     }
                     else
                     {
                         Console.WriteLine($"Item Id: {scheduledItem.Id} will not run as it doesn't match any time difference logic. {_nextRunTime} UTC.");
                     }
+
                 }
             }
             else
@@ -114,12 +176,11 @@ public class Executor
             }
         }
     }
-
-    public static void TriggerSchedulerItem(SchedulerManagerViewModel item, 
-        SchedulerFrequencyEnum frequency, 
-        IMeteredBillingApiService billingApiService,
-        MeteredPlanSchedulerManagementService schedulerService,
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
+    /// <summary>
+    /// Trigger scheduler task
+    /// </summary>
+    /// <param name="item">scheduler task</param>
+    private void TriggerSchedulerItem(SchedulerManagerViewModel item)
     {
         try
         {
@@ -150,12 +211,7 @@ public class Executor
                 Console.WriteLine($" Item Id: {item.Id} Error during EmitUsageEventAsync {responseJson}");
             }
 
-            UpdateSchedulerItem(item,
-                requestJson,
-                responseJson,
-                meteringUsageResult.Status,
-                schedulerService,
-                subscriptionUsageLogsRepository);
+            UpdateSchedulerItem(item,requestJson, responseJson,meteringUsageResult.Status);
         }
         catch (Exception ex)
         {
@@ -163,12 +219,14 @@ public class Executor
         }
 
     }
-    public static void UpdateSchedulerItem(SchedulerManagerViewModel item, 
-        string requestJson, 
-        string responseJson, 
-        string status, 
-        MeteredPlanSchedulerManagementService schedulerService,
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository)
+    /// <summary>
+    /// Update Scheduler Item
+    /// </summary>
+    /// <param name="item">scheduler task</param>
+    /// <param name="requestJson">usage post payload</param>
+    /// <param name="responseJson">API respond</param>
+    /// <param name="status">status code</param>
+    private void UpdateSchedulerItem(SchedulerManagerViewModel item,string requestJson,string responseJson,string status)
     {
         try
         {
@@ -207,6 +265,14 @@ public class Executor
                 Console.WriteLine($"Item Id: {item.Id} failed with status {status}. NextRunTime will not be updated.");
             }
             Console.WriteLine($"Item Id: {item.Id} Complete Triggering Meter event.");
+
+            // Check if Sending Email is Enabled
+            _= bool.TryParse(applicationConfigRepository.GetValueByName("EnablesSuccessfulSchedulerEmail"), out bool enablesSuccessfulSchedulerEmail);
+            _ = bool.TryParse(applicationConfigRepository.GetValueByName("EnablesFailureSchedulerEmail"), out bool enablesFailureSchedulerEmail);
+            if(enablesFailureSchedulerEmail || enablesSuccessfulSchedulerEmail)
+            {
+                schedulerService.SendSchedulerEmail(item, newMeteredAuditLog);
+            }
         }
         catch (Exception ex)
         {
@@ -214,20 +280,32 @@ public class Executor
         }
     }
 
-    public static void PrintScheduler(SchedulerManagerViewModel item, 
+    /// <summary>
+    /// Print Scheduler item
+    /// </summary>
+    /// <param name="item">scheduler item</param>
+    /// <param name="nextRun">next run time</param>
+    /// <param name="timeDifferenceInHours">difference time</param>
+    private void PrintScheduler(SchedulerManagerViewModel item, 
         DateTime? nextRun, 
         int timeDifferenceInHours)
     {
-        Console.WriteLine($"Item Id: {item.Id} " +
-                          $"Expected NextRun : {nextRun} " +
-                          $"SubId : {item.AMPSubscriptionId} " +
-                          $"Plan : {item.PlanId} " +
-                          $"Dim : {item.Dimension} " +
-                          $"Start Date : {item.StartDate} " +
-                          $"NextRun : {item.NextRunTime}" +
-                          $"TimeDifferenceInHours : {timeDifferenceInHours}");
+        Console.WriteLine($"Item Id: {item.Id} " + Environment.NewLine+
+                          $"Expected NextRun : {nextRun} "+Environment.NewLine+
+                          $"SubId : {item.AMPSubscriptionId} "+Environment.NewLine+
+                          $"Plan : {item.PlanId} " + Environment.NewLine +
+                          $"Dim : {item.Dimension} " + Environment.NewLine +
+                          $"Start Date : {item.StartDate} " + Environment.NewLine +
+                          $"NextRun : {item.NextRunTime}" + Environment.NewLine +
+                          $"TimeDifferenceInHours : {timeDifferenceInHours}" + Environment.NewLine );
     }
-    public static DateTime? GetNextRunTime(DateTime? startDate, SchedulerFrequencyEnum frequency)
+    /// <summary>
+    /// Get Next Run Time
+    /// </summary>
+    /// <param name="startDate">Start task Date</param>
+    /// <param name="frequency">Task frequency</param>
+    /// <returns></returns>
+    private DateTime? GetNextRunTime(DateTime? startDate, SchedulerFrequencyEnum frequency)
     {
         switch (frequency)
         {
@@ -241,4 +319,5 @@ public class Executor
             { return null; }
         }
     }
+
 }

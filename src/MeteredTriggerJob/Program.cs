@@ -16,6 +16,10 @@ namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob;
 
 class Program
 {
+    /// <summary>
+    /// Entery point to the scheduler engine
+    /// </summary>
+    /// <param name="args"></param>
     static void Main (string[] args)
     {
 
@@ -44,6 +48,8 @@ class Program
             .AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>()
             .AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>()
             .AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>()
+            .AddScoped<IEmailService, SMTPEmailService>()
+            .AddScoped<IEmailTemplateRepository, EmailTemplateRepository>()
             .AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>()
             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()))
             .AddSingleton<Executor, Executor>()
