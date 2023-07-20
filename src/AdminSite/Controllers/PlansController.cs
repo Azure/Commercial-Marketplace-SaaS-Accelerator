@@ -36,7 +36,7 @@ public class PlansController : BaseController
 
     private readonly IOfferAttributesRepository offerAttributeRepository;
 
-    private readonly ILogger<PlansController> logger;
+    private readonly SaaSClientLogger<PlansController> logger;
 
     private PlanService plansService;
 
@@ -50,7 +50,7 @@ public class PlansController : BaseController
     /// <param name="offerAttributeRepository">The offer attribute repository.</param>
     /// <param name="offerRepository">The offer repository.</param>
     /// <param name="logger">The logger.</param>
-    public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<PlansController> logger)
+    public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, SaaSClientLogger<PlansController> logger)
     {
         this.subscriptionRepository = subscriptionRepository;
         this.usersRepository = usersRepository;
@@ -82,7 +82,7 @@ public class PlansController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -96,7 +96,7 @@ public class PlansController : BaseController
     /// </returns>
     public IActionResult PlanDetails(Guid planGuId)
     {
-        this.logger.LogInformation("Plans Controller / PlanDetails:  planGuId {0}", planGuId);
+        this.logger.LogInformation($"Plans Controller / PlanDetails:  planGuId {planGuId}");
         try
         {
             PlansModel plans = new PlansModel();
@@ -107,7 +107,7 @@ public class PlansController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -123,7 +123,7 @@ public class PlansController : BaseController
     [ValidateAntiForgeryToken]
     public IActionResult PlanDetails(PlansModel plans)
     {
-        this.logger.LogInformation("Plans Controller / PlanDetails:  plans {0}", JsonSerializer.Serialize(plans));
+        this.logger.LogInformation("Plans Controller / PlanDetails:  plans {JsonSerializer.Serialize(plans)}");
         try
         {
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -154,7 +154,7 @@ public class PlansController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.PartialView("Error", ex);
         }
     }

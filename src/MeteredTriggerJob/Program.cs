@@ -45,7 +45,7 @@ class Program
             .AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>()
             .AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>()
             .AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>()
-            .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new MeteringApiClientLogger()))
+            .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new SaaSClientLogger<MeteredBillingApiService>()))
             .AddSingleton<Executor, Executor>()
             .BuildServiceProvider();
 

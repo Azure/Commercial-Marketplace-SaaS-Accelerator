@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 using System;
+using System.Web;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Microsoft.Extensions.Logging;
 using ILogger = Marketplace.SaaS.Accelerator.Services.Contracts.ILogger;
@@ -12,17 +13,17 @@ namespace Marketplace.SaaS.Accelerator.Services.Utilities;
 /// Logger.
 /// </summary>
 /// <seealso cref="Microsoft.Marketplace.SaaS.SDK.Services.ILogger" />
-public class MeteringApiClientLogger : ILogger
+public class SaaSClientLogger<T> : ILogger
 {
     /// <summary>
     /// The logger.
     /// </summary>
-    private readonly ILogger<MeteredBillingApiService> logger;
+    private readonly ILogger<T> logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="MeteringApiClientLogger"/> class.
+    /// Initializes a new instance of the <see cref="SaaSClientLogger"/> class.
     /// </summary>
-    public MeteringApiClientLogger()
+    public SaaSClientLogger()
     {
         var loggerFactory = LoggerFactory.Create(builder =>
         {
@@ -30,7 +31,7 @@ public class MeteringApiClientLogger : ILogger
                 .AddConsole();
         });
 
-        this.logger = loggerFactory.CreateLogger<MeteredBillingApiService>();
+        this.logger = loggerFactory.CreateLogger<T>();
     }
 
     /// <summary>
@@ -107,5 +108,16 @@ public class MeteringApiClientLogger : ILogger
     public void Warn(string message, Exception ex)
     {
         this.logger.LogWarning(ex, message);
+    }
+
+    public void LogInformation(string message)
+    {
+        string log = HttpUtility.HtmlEncode(message);
+        this.LogInformation(log);
+    }
+
+    public void LogError(string message)
+    {
+        this.LogError(message);
     }
 }

@@ -15,7 +15,7 @@ namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 public class KnownUsersController : BaseController
 {
     private readonly IKnownUsersRepository knownUsersRepository;
-    private readonly ILogger<OffersController> logger;
+    private readonly SaaSClientLogger<OffersController> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KnownUsersController" /> class.
@@ -23,7 +23,7 @@ public class KnownUsersController : BaseController
     /// <param name = "knownUsersRepository" > The known users repository.</param>
     /// <param name="logger">The logger.</param>
 
-    public KnownUsersController(IKnownUsersRepository knownUsersRepository, ILogger<OffersController> logger)
+    public KnownUsersController(IKnownUsersRepository knownUsersRepository, SaaSClientLogger<OffersController> logger)
     {
         this.knownUsersRepository = knownUsersRepository;
         this.logger = logger;
@@ -43,7 +43,7 @@ public class KnownUsersController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -63,7 +63,7 @@ public class KnownUsersController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return Json(string.Empty);
         }
     }

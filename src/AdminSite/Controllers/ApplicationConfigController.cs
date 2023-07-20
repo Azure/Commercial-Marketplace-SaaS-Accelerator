@@ -21,8 +21,7 @@ namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 [ServiceFilter(typeof(RequestLoggerActionFilter))]
 public class ApplicationConfigController : BaseController
 {
-    private readonly ILogger<ApplicationConfigController> logger;
-
+    private readonly SaaSClientLogger<ApplicationConfigController> logger;
     private readonly ApplicationConfigService appConfigService;
 
     /// <summary>
@@ -31,8 +30,8 @@ public class ApplicationConfigController : BaseController
     private readonly IEmailTemplateRepository emailTemplateRepository;
 
     public ApplicationConfigController(
-        ApplicationConfigService appConfigService, 
-        ILogger<ApplicationConfigController> logger, 
+        ApplicationConfigService appConfigService,
+        SaaSClientLogger<ApplicationConfigController> logger, 
         IEmailTemplateRepository emailTemplateRepository)
     {
         this.appConfigService = appConfigService;

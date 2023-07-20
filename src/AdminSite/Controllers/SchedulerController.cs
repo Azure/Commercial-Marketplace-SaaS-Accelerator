@@ -29,7 +29,7 @@ public class SchedulerController : BaseController
     /// <summary>
     /// logger controller
     /// </summary>
-    private readonly ILogger<SchedulerController> logger;
+    private readonly SaaSClientLogger<SchedulerController> logger;
 
     /// <summary>
     /// the shceduler service
@@ -62,8 +62,8 @@ public class SchedulerController : BaseController
         IPlansRepository plansRepository,
         IMeteredPlanSchedulerManagementRepository schedulerRepository,
         ISchedulerManagerViewRepository schedulerViewRepository, 
-        IUsersRepository usersRepository, 
-        ILogger<SchedulerController> logger, 
+        IUsersRepository usersRepository,
+        SaaSClientLogger<SchedulerController> logger, 
         ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository)
 
     {
@@ -94,7 +94,7 @@ public class SchedulerController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -188,7 +188,7 @@ public class SchedulerController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -243,7 +243,7 @@ public class SchedulerController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -257,7 +257,7 @@ public class SchedulerController : BaseController
 
     public IActionResult DeleteSchedulerItem(string id)
     {
-        this.logger.LogInformation("Scheduler Controller / Remove Schedule Item Details:  Id {0}", HttpUtility.HtmlEncode(id));
+        this.logger.LogInformation($"Scheduler Controller / Remove Schedule Item Details:  Id {id}");
         try
         {
             this.schedulerService.DeleteSchedulerDetailById(int.Parse(id));
@@ -265,14 +265,14 @@ public class SchedulerController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.PartialView("Error", ex);
         }
     }
 
     public IActionResult SchedulerLogDetail(string id)
     {
-        this.logger.LogInformation("Scheduler Controller / Get Schedule Item Details:  Id {0}", HttpUtility.HtmlEncode(id));
+        this.logger.LogInformation($"Scheduler Controller / Get Schedule Item Details:  Id {id}");
         try
         {
             var SchedulerItem = this.schedulerService.GetSchedulerManagerById(int.Parse(id));
@@ -297,7 +297,7 @@ public class SchedulerController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.PartialView("Error", ex);
         }
     }
