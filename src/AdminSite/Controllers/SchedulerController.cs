@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Models;
@@ -256,7 +257,7 @@ public class SchedulerController : BaseController
 
     public IActionResult DeleteSchedulerItem(string id)
     {
-        this.logger.LogInformation("Scheduler Controller / Remove Schedule Item Details:  Id {0}", JsonSerializer.Serialize(id));
+        this.logger.LogInformation("Scheduler Controller / Remove Schedule Item Details:  Id {0}", HttpUtility.HtmlEncode(id));
         try
         {
             this.schedulerService.DeleteSchedulerDetailById(int.Parse(id));
@@ -271,7 +272,7 @@ public class SchedulerController : BaseController
 
     public IActionResult SchedulerLogDetail(string id)
     {
-        this.logger.LogInformation("Scheduler Controller / Get Schedule Item Details:  Id {0}", JsonSerializer.Serialize(id));
+        this.logger.LogInformation("Scheduler Controller / Get Schedule Item Details:  Id {0}", HttpUtility.HtmlEncode(id));
         try
         {
             var SchedulerItem = this.schedulerService.GetSchedulerManagerById(int.Parse(id));
