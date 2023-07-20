@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
@@ -285,7 +286,7 @@ public class HomeController : BaseController
     /// </returns>
     public IActionResult SubscriptionLogDetail(Guid subscriptionId)
     {
-        this.logger.LogInformation("Home Controller / SubscriptionLogDetail : subscriptionId: {0}", JsonSerializer.Serialize(subscriptionId));
+        this.logger.LogInformation("Home Controller / SubscriptionLogDetail : subscriptionId: {0}", HttpUtility.HtmlEncode(subscriptionId));
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -314,7 +315,7 @@ public class HomeController : BaseController
     /// <returns> The <see cref="IActionResult" />.</returns>
     public async Task<IActionResult> SubscriptionDetails(Guid subscriptionId, string planId)
     {
-        this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId:{1}", subscriptionId, planId);
+        this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId:{1}", HttpUtility.HtmlEncode(subscriptionId), HttpUtility.HtmlEncode(planId));
         SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
         if (this.User.Identity.IsAuthenticated)
@@ -322,7 +323,7 @@ public class HomeController : BaseController
             var userId = this.userService.AddUser(this.GetCurrentUserDetail());
             var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
             this.subscriptionService = new SubscriptionService(this.subscriptionRepo, this.planRepository, userId);
-            this.logger.LogInformation("User authenticate successfully & GetSubscriptionByIdAsync  SubscriptionID :{0}", JsonSerializer.Serialize(subscriptionId));
+            this.logger.LogInformation("User authenticate successfully & GetSubscriptionByIdAsync  SubscriptionID :{0}", HttpUtility.HtmlEncode(subscriptionId));
             this.TempData["ShowWelcomeScreen"] = false;
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
             var serializedParent = JsonSerializer.Serialize(oldValue);
@@ -352,7 +353,7 @@ public class HomeController : BaseController
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult DeActivateSubscription(Guid subscriptionId, string planId, string operation)
     {
-        this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId:{1} :: operation:{2}", subscriptionId, planId, operation);
+        this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId:{1} :: operation:{2}", HttpUtility.HtmlEncode(subscriptionId), HttpUtility.HtmlEncode(planId), HttpUtility.HtmlEncode(operation));
         try
         {
             SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
@@ -362,7 +363,7 @@ public class HomeController : BaseController
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                 this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
-                this.logger.LogInformation("GetSubscriptionByIdAsync SubscriptionID :{0} :: planID:{1}:: operation:{2}", subscriptionId, planId, operation);
+                this.logger.LogInformation("GetSubscriptionByIdAsync SubscriptionID :{0} :: planID:{1}:: operation:{2}", HttpUtility.HtmlEncode(subscriptionId), HttpUtility.HtmlEncode(planId), HttpUtility.HtmlEncode(operation));
 
                 this.TempData["ShowWelcomeScreen"] = false;
                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
@@ -393,7 +394,8 @@ public class HomeController : BaseController
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation, int numberofProviders)
     {
-        this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2} :: NumberofProviders : {3}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation), JsonSerializer.Serialize(numberofProviders));
+        this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2} :: NumberofProviders : {3}",
+             HttpUtility.HtmlEncode(subscriptionId), HttpUtility.HtmlEncode(planId), HttpUtility.HtmlEncode(operation), HttpUtility.HtmlEncode(numberofProviders));
         try
         {
             var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -545,7 +547,7 @@ public class HomeController : BaseController
     /// </returns>
     public IActionResult SubscriptionQuantityDetail(Guid subscriptionId)
     {
-        this.logger.LogInformation("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
+        this.logger.LogInformation("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", HttpUtility.HtmlEncode(subscriptionId));
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -636,7 +638,7 @@ public class HomeController : BaseController
     /// </returns>
     public IActionResult ViewSubscriptionDetail(Guid subscriptionId)
     {
-        this.logger.LogInformation("Home Controller / SubscriptionDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
+        this.logger.LogInformation("Home Controller / SubscriptionDetail subscriptionId:{0}", HttpUtility.HtmlEncode(subscriptionId));
         try
         {
             if (this.User.Identity.IsAuthenticated)
