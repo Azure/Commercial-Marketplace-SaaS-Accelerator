@@ -22,7 +22,7 @@ public class ApplicationLogController : BaseController
     public ApplicationLogController(IApplicationLogRepository applicationLogRepository, SaaSClientLogger<ApplicationLogController> logger)
     {
         this.appLogRepository = applicationLogRepository;
-        this.logger = logger;
+        this.logger = new SaaSClientLogger<ApplicationLogController>();
         appLogService = new ApplicationLogService(this.appLogRepository);
     }
     public IActionResult Index()

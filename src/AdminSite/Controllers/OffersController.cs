@@ -48,8 +48,7 @@ public class OffersController : BaseController
         IApplicationConfigRepository applicationConfigRepository, 
         IUsersRepository usersRepository, 
         IValueTypesRepository valueTypesRepository, 
-        IOfferAttributesRepository offersAttributeRepository,
-        SaaSClientLogger<OffersController> logger)
+        IOfferAttributesRepository offersAttributeRepository, SaaSClientLogger<OffersController> logger)
     {
         this.applicationConfigRepository = applicationConfigRepository;
         this.usersRepository = usersRepository;

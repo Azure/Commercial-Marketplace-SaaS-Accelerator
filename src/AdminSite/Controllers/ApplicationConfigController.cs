@@ -31,8 +31,7 @@ public class ApplicationConfigController : BaseController
 
     public ApplicationConfigController(
         ApplicationConfigService appConfigService,
-        SaaSClientLogger<ApplicationConfigController> logger, 
-        IEmailTemplateRepository emailTemplateRepository)
+        IEmailTemplateRepository emailTemplateRepository, SaaSClientLogger<ApplicationConfigController> logger)
     {
         this.appConfigService = appConfigService;
         this.emailTemplateRepository = emailTemplateRepository;

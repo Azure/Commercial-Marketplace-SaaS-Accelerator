@@ -18,7 +18,7 @@ public class SaaSClientLogger<T> : ILogger
     /// <summary>
     /// The logger.
     /// </summary>
-    private readonly ILogger<T> logger;
+    private  ILogger<T> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SaaSClientLogger"/> class.
@@ -33,7 +33,6 @@ public class SaaSClientLogger<T> : ILogger
 
         this.logger = loggerFactory.CreateLogger<T>();
     }
-
     /// <summary>
     /// Log the message at Debug severity.
     /// </summary>
@@ -113,11 +112,17 @@ public class SaaSClientLogger<T> : ILogger
     public void LogInformation(string message)
     {
         string log = HttpUtility.HtmlEncode(message);
-        this.LogInformation(log);
+        this.logger.LogInformation(log);
     }
 
     public void LogError(string message)
     {
-        this.LogError(message);
+        this.logger.LogError(message);
+    }
+
+    public void ProcessInformation(string message)
+    {
+        string log = HttpUtility.HtmlEncode(message);
+        this.logger.LogInformation(log);
     }
 }

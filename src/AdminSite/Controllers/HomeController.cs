@@ -34,7 +34,7 @@ public class HomeController : BaseController
     /// <summary>
     /// The logger.
     /// </summary>
-    private readonly SaaSClientLogger<HomeController> logger;
+    private readonly SaaSClientLogger<HomeController> tracker;
 
     /// <summary>
     /// The subscription repository.
@@ -132,7 +132,7 @@ public class HomeController : BaseController
     /// <param name="offersRepository">The offers repository.</param>
     /// <param name="offersAttributeRepository">The offers attribute repository.</param>
     public HomeController(
-        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService, SaaSClientLogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, SaaSApiClientConfiguration saaSApiClientConfiguration, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository)
+        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService,  ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, SaaSApiClientConfiguration saaSApiClientConfiguration, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository, SaaSClientLogger<HomeController> logger)
     {
         this.billingApiService = billingApiService;
         this.subscriptionRepo = subscriptionRepo;
@@ -140,7 +140,7 @@ public class HomeController : BaseController
         this.planRepository = planRepository;
         this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
         this.dimensionsRepository = dimensionsRepository;
-        this.logger = logger;
+        this.tracker = logger;
         this.applicationConfigRepository = applicationConfigRepository;
         this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);
         this.userRepository = userRepository;
@@ -205,7 +205,7 @@ public class HomeController : BaseController
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult Index()
     {
-        this.logger.LogInformation("Home Controller / Index ");
+        this.tracker.LogInformation("Home Controller / Index ");
         try
         {
             this.applicationConfigService.SaveFileToDisk("LogoFile", "contoso-sales.png");
@@ -222,7 +222,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -233,7 +233,7 @@ public class HomeController : BaseController
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult Subscriptions()
     {
-        this.logger.LogInformation("Home Controller / Subscriptions ");
+        this.tracker.ProcessInformation("Home Controller / Subscriptions ");
         try
         {
             SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
@@ -272,7 +272,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -286,7 +286,7 @@ public class HomeController : BaseController
     /// </returns>
     public IActionResult SubscriptionLogDetail(Guid subscriptionId)
     {
-        this.logger.LogInformation($"Home Controller / SubscriptionLogDetail : subscriptionId: {subscriptionId}");
+        this.tracker.LogInformation($"Home Controller / SubscriptionLogDetail : subscriptionId: {subscriptionId}");
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -302,7 +302,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -315,7 +315,7 @@ public class HomeController : BaseController
     /// <returns> The <see cref="IActionResult" />.</returns>
     public async Task<IActionResult> SubscriptionDetails(Guid subscriptionId, string planId)
     {
-        this.logger.LogInformation($"Home Controller / ActivateSubscription subscriptionId:{subscriptionId} :: planId:{planId}");
+        this.tracker.LogInformation($"Home Controller / ActivateSubscription subscriptionId:{subscriptionId} :: planId:{planId}");
         SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
         if (this.User.Identity.IsAuthenticated)
@@ -323,12 +323,12 @@ public class HomeController : BaseController
             var userId = this.userService.AddUser(this.GetCurrentUserDetail());
             var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
             this.subscriptionService = new SubscriptionService(this.subscriptionRepo, this.planRepository, userId);
-            this.logger.LogInformation($"User authenticate successfully & GetSubscriptionByIdAsync  SubscriptionID :{subscriptionId}");
+            this.tracker.LogInformation($"User authenticate successfully & GetSubscriptionByIdAsync  SubscriptionID :{subscriptionId}");
             this.TempData["ShowWelcomeScreen"] = false;
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
             var serializedParent = JsonSerializer.Serialize(oldValue);
             subscriptionDetail = JsonSerializer.Deserialize<SubscriptionResultExtension>(serializedParent);
-            this.logger.LogInformation($"serializedParent :{serializedParent}");
+            this.tracker.LogInformation($"serializedParent :{serializedParent}");
             subscriptionDetail.ShowWelcomeScreen = false;
             subscriptionDetail.SubscriptionStatus = oldValue.SubscriptionStatus;
             subscriptionDetail.CustomerEmailAddress = oldValue.CustomerEmailAddress;
@@ -353,7 +353,7 @@ public class HomeController : BaseController
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult DeActivateSubscription(Guid subscriptionId, string planId, string operation)
     {
-        this.logger.LogInformation($"Home Controller / ActivateSubscription subscriptionId::{subscriptionId} :: planID:{planId}:: operation:{operation}");
+        this.tracker.LogInformation($"Home Controller / ActivateSubscription subscriptionId::{subscriptionId} :: planID:{planId}:: operation:{operation}");
         try
         {
             SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
@@ -363,7 +363,7 @@ public class HomeController : BaseController
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                 this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
-                this.logger.LogInformation($"GetSubscriptionByIdAsync SubscriptionID :{subscriptionId} :: planID:{planId}:: operation:{operation}");
+                this.tracker.LogInformation($"GetSubscriptionByIdAsync SubscriptionID :{subscriptionId} :: planID:{planId}:: operation:{operation}");
 
                 this.TempData["ShowWelcomeScreen"] = false;
                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
@@ -379,7 +379,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Error while deactivating subscription :{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Error while deactivating subscription :{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -394,7 +394,7 @@ public class HomeController : BaseController
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation, int numberofProviders)
     {
-        this.logger.LogInformation($"Home Controller / SubscriptionOperation subscriptionId:{subscriptionId} :: planId : {planId} :: operation:{operation} :: NumberofProviders : {numberofProviders}");
+        this.tracker.LogInformation($"Home Controller / SubscriptionOperation subscriptionId:{subscriptionId} :: planId : {planId} :: operation:{operation} :: NumberofProviders : {numberofProviders}");
         try
         {
             var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -444,7 +444,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error");
         }
     }
@@ -477,7 +477,7 @@ public class HomeController : BaseController
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult RecordUsage(int subscriptionId)
     {
-        this.logger.LogInformation("Home Controller / RecordUsage ");
+        this.tracker.LogInformation("Home Controller / RecordUsage ");
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -498,7 +498,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -509,7 +509,7 @@ public class HomeController : BaseController
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult RecordUsageNow(int subscriptionId, string dimId, string quantity)
     {
-        this.logger.LogInformation("Home Controller / RecordUsage ");
+        this.tracker.LogInformation("Home Controller / RecordUsage ");
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -533,7 +533,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -546,7 +546,7 @@ public class HomeController : BaseController
     /// </returns>
     public IActionResult SubscriptionQuantityDetail(Guid subscriptionId)
     {
-        this.logger.LogInformation($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}");
+        this.tracker.LogInformation($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}");
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -561,7 +561,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -575,7 +575,7 @@ public class HomeController : BaseController
     [ValidateAntiForgeryToken]
     public IActionResult ManageSubscriptionUsage(SubscriptionUsageViewModel subscriptionData)
     {
-        this.logger.LogInformation($"Home Controller / ManageSubscriptionUsage  subscriptionData: {JsonSerializer.Serialize(subscriptionData)}");
+        this.tracker.LogInformation($"Home Controller / ManageSubscriptionUsage  subscriptionData: {JsonSerializer.Serialize(subscriptionData)}");
         try
         {
             if (subscriptionData != null && subscriptionData.SubscriptionDetail != null)
@@ -594,16 +594,16 @@ public class HomeController : BaseController
                 var responseJson = string.Empty;
                 try
                 {
-                    this.logger.LogInformation("EmitUsageEventAsync");
+                    this.tracker.LogInformation("EmitUsageEventAsync");
                     meteringUsageResult = this.billingApiService.EmitUsageEventAsync(subscriptionUsageRequest).ConfigureAwait(false).GetAwaiter().GetResult();
                     responseJson = JsonSerializer.Serialize(meteringUsageResult);
-                    this.logger.LogInformation(responseJson);
+                    this.tracker.LogInformation(responseJson);
                 }
                 catch (MarketplaceException mex)
                 {
                     responseJson = JsonSerializer.Serialize(mex.MeteredBillingErrorDetail);
                     meteringUsageResult.Status = mex.ErrorCode;
-                    this.logger.LogInformation(responseJson);
+                    this.tracker.LogInformation(responseJson);
                 }
 
                 var newMeteredAuditLog = new MeteredAuditLogs()
@@ -622,7 +622,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}");
         }
 
         return this.RedirectToAction(nameof(this.RecordUsage), new { subscriptionId = subscriptionData.SubscriptionDetail.Id });
@@ -637,7 +637,7 @@ public class HomeController : BaseController
     /// </returns>
     public IActionResult ViewSubscriptionDetail(Guid subscriptionId)
     {
-        this.logger.LogInformation($"Home Controller / SubscriptionDetail subscriptionId:{subscriptionId}");
+        this.tracker.LogInformation($"Home Controller / SubscriptionDetail subscriptionId:{subscriptionId}");
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -654,7 +654,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -690,7 +690,7 @@ public class HomeController : BaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangeSubscriptionPlan(SubscriptionResult subscriptionDetail)
     {
-        this.logger.LogInformation($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{JsonSerializer.Serialize(subscriptionDetail)}");
+        this.tracker.LogInformation($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{JsonSerializer.Serialize(subscriptionDetail)}");
         try
         {
             if (subscriptionDetail.Id != default && !string.IsNullOrEmpty(subscriptionDetail.PlanId))
@@ -712,7 +712,7 @@ public class HomeController : BaseController
                             var changePlanOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                             changePlanOperationStatus = changePlanOperationResult.Status;
 
-                            this.logger.LogInformation($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changePlanOperationStatus}.");
+                            this.tracker.LogInformation($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changePlanOperationStatus}.");
                             await this.applicationLogService.AddApplicationLog($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changePlanOperationStatus}.").ConfigureAwait(false);
 
                             //wait and check every 5secs
@@ -727,12 +727,12 @@ public class HomeController : BaseController
 
                         if (changePlanOperationStatus == OperationStatusEnum.Succeeded)
                         {
-                            this.logger.LogInformation($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
+                            this.tracker.LogInformation($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
                             await this.applicationLogService.AddApplicationLog($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
                         }
                         else
                         {
-                            this.logger.LogInformation($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status {changePlanOperationStatus}.");
+                            this.tracker.LogInformation($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status {changePlanOperationStatus}.");
                             await this.applicationLogService.AddApplicationLog($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status {changePlanOperationStatus}.").ConfigureAwait(false);
 
                             throw new MarketplaceException($"Plan change operation failed with operation status {changePlanOperationStatus}. Check if the updates are allowed in the App config \"AcceptSubscriptionUpdates\" key or db application log for more information.");
@@ -749,7 +749,7 @@ public class HomeController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
+            this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -763,7 +763,7 @@ public class HomeController : BaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
     {
-        this.logger.LogInformation($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{JsonSerializer.Serialize(subscriptionDetail)}");
+        this.tracker.LogInformation($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{JsonSerializer.Serialize(subscriptionDetail)}");
         if (this.User.Identity.IsAuthenticated)
         {
             try
@@ -787,7 +787,7 @@ public class HomeController : BaseController
                                 var changeQuantityOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                                 changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
-                                this.logger.LogInformation($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changeQuantityOperationStatus}.");
+                                this.tracker.LogInformation($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changeQuantityOperationStatus}.");
                                 await this.applicationLogService.AddApplicationLog($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changeQuantityOperationStatus}.").ConfigureAwait(false);
 
                                 //wait and check every 5secs
@@ -802,12 +802,12 @@ public class HomeController : BaseController
 
                             if (changeQuantityOperationStatus == OperationStatusEnum.Succeeded)
                             {
-                                this.logger.LogInformation($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
+                                this.tracker.LogInformation($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
                                 await this.applicationLogService.AddApplicationLog($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
                             }
                             else
                             {
-                                this.logger.LogInformation($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changeQuantityOperationStatus}.");
+                                this.tracker.LogInformation($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changeQuantityOperationStatus}.");
                                 await this.applicationLogService.AddApplicationLog($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changeQuantityOperationStatus}.").ConfigureAwait(false);
 
                                 throw new MarketplaceException($"Quantity Change operation failed with operation status {changeQuantityOperationStatus}. Check if the updates are allowed in the App config \"AcceptSubscriptionUpdates\" key or db application log for more information.");
@@ -817,7 +817,7 @@ public class HomeController : BaseController
                     catch (MarketplaceException fex)
                     {
                         this.TempData["ErrorMsg"] = fex.Message;
-                        this.logger.LogError($"Message:{fex.Message} :: {fex.InnerException}   ");
+                        this.tracker.LogError($"Message:{fex.Message} :: {fex.InnerException}   ");
                     }
                 }
 
@@ -825,7 +825,7 @@ public class HomeController : BaseController
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}"); 
+                this.tracker.LogError($"Message:{ex.Message} :: {ex.InnerException}"); 
                 return this.View("Error", ex);
             }
         }
@@ -940,7 +940,7 @@ public class HomeController : BaseController
         catch (Exception ex)
         {
             var errorMessage = $"Message: {ex.Message} ({ex.InnerException})";
-            this.logger.LogError(errorMessage);
+            this.tracker.LogError(errorMessage);
             applicationLogService.AddApplicationLog(errorMessage).GetAwaiter().GetResult();
 
             return BadRequest();
@@ -948,6 +948,7 @@ public class HomeController : BaseController
 
         return Ok();
     }
+
 
 
 }

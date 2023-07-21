@@ -63,7 +63,7 @@ public class SchedulerController : BaseController
         IMeteredPlanSchedulerManagementRepository schedulerRepository,
         ISchedulerManagerViewRepository schedulerViewRepository, 
         IUsersRepository usersRepository,
-        SaaSClientLogger<SchedulerController> logger, 
+        SaaSClientLogger<SchedulerController> logger,
         ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository)
 
     {

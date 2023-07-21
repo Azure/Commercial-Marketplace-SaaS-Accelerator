@@ -164,5 +164,6 @@ public class Startup
         services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
         services.AddScoped<IEventsRepository, EventsRepository>();
         services.AddScoped<IEmailService, SMTPEmailService>();
+        services.AddScoped<SaaSClientLogger<HomeController>>();
     }
 }

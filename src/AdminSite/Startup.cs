@@ -3,6 +3,7 @@
 
 using System;
 using Azure.Identity;
+using Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
@@ -121,6 +122,9 @@ public class Startup
             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new SaaSClientLogger<MeteredBillingApiService>()))
             .AddSingleton<SaaSApiClientConfiguration>(config)
             .AddSingleton<KnownUsersModel>(knownUsers);
+            
+
+
 
         services
             .AddScoped<ApplicationConfigService>()
@@ -207,7 +211,12 @@ public class Startup
         services.AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>();
         services.AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>();
         services.AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>();
-      
-
+        services.AddScoped<SaaSClientLogger<HomeController>>();
+        services.AddScoped<SaaSClientLogger<PlansController>>();
+        services.AddScoped<SaaSClientLogger<OffersController>>();
+        services.AddScoped<SaaSClientLogger<KnownUsersController>>();
+        services.AddScoped<SaaSClientLogger<ApplicationLogController>>();
+        services.AddScoped<SaaSClientLogger<ApplicationConfigController>>();
+        services.AddScoped<SaaSClientLogger<SchedulerController>>();
     }
 }

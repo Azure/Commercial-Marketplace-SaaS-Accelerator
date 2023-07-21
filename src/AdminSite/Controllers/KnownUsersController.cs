@@ -15,7 +15,7 @@ namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 public class KnownUsersController : BaseController
 {
     private readonly IKnownUsersRepository knownUsersRepository;
-    private readonly SaaSClientLogger<OffersController> logger;
+    private readonly SaaSClientLogger<KnownUsersController> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="KnownUsersController" /> class.
@@ -23,7 +23,7 @@ public class KnownUsersController : BaseController
     /// <param name = "knownUsersRepository" > The known users repository.</param>
     /// <param name="logger">The logger.</param>
 
-    public KnownUsersController(IKnownUsersRepository knownUsersRepository, SaaSClientLogger<OffersController> logger)
+    public KnownUsersController(IKnownUsersRepository knownUsersRepository, SaaSClientLogger<KnownUsersController> logger)
     {
         this.knownUsersRepository = knownUsersRepository;
         this.logger = logger;
