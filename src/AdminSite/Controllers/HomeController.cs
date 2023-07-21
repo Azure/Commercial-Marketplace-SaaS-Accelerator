@@ -952,6 +952,6 @@ public class HomeController : BaseController
     private void ProcessInformation(string message)
     {
         string log = HttpUtility.HtmlEncode(message);
-        this.logger.LogInformation(log);
+        this.logger.Info(log);
     }
 }

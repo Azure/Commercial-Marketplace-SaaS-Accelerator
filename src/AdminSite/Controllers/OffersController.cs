@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Web;
 using Marketplace.SaaS.Accelerator.AdminSite.Models.Offers;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
@@ -65,7 +66,7 @@ public class OffersController : BaseController
     /// <returns>return All subscription.</returns>
     public IActionResult Index()
     {
-        this.logger.LogInformation("Offers Controller / Index");
+        ProcessInformation("Offers Controller / Index");
         try
         {
             this.TempData["ShowWelcomeScreen"] = "True";
@@ -103,7 +104,7 @@ public class OffersController : BaseController
     /// </returns>
     public IActionResult OfferDetails(Guid offerGuid)
     {
-        this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuid {offerGuid}");
+        ProcessInformation("Offers Controller / OfferDetails:  offerGuid {offerGuid}");
 
         try
         {
@@ -148,7 +149,7 @@ public class OffersController : BaseController
     [ValidateAntiForgeryToken]
     public IActionResult OfferDetails(OfferModel offersData)
     {
-        this.logger.LogInformation($"Offers Controller / OfferDetails:  offerGuid {JsonSerializer.Serialize(offersData)}");
+        ProcessInformation($"Offers Controller / OfferDetails:  offerGuid {JsonSerializer.Serialize(offersData)}");
         try
         {
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -219,6 +220,12 @@ public class OffersController : BaseController
             UserId = currentUserDetail?.UserId ?? 0,
             OfferId = offerModel.OfferGuid,
         };
+    }
+
+    private void ProcessInformation(string message)
+    {
+        string log = HttpUtility.HtmlEncode(message);
+        this.logger.Info(log);
     }
 
 }

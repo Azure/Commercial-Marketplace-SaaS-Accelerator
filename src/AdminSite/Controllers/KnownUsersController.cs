@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
@@ -35,7 +36,7 @@ public class KnownUsersController : BaseController
     /// <returns>All known users.</returns>
     public IActionResult Index()
     {
-        this.logger.LogInformation("KnownUsers Controller / Index");
+        ProcessInformation("KnownUsers Controller / Index");
         try
         {
             var getAllKnownUsers = this.knownUsersRepository.GetAllKnownUsers();
@@ -56,7 +57,7 @@ public class KnownUsersController : BaseController
     public JsonResult SaveKnownUsers([FromBody] IEnumerable<KnownUsers> knownUsers)
     {
 
-        this.logger.LogInformation("KnownUsers Controller / SaveKnownUsers");
+        ProcessInformation("KnownUsers Controller / SaveKnownUsers");
         try
         {
             return Json(this.knownUsersRepository.SaveAllKnownUsers(knownUsers));
@@ -66,5 +67,11 @@ public class KnownUsersController : BaseController
             this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return Json(string.Empty);
         }
+    }
+
+    private void ProcessInformation(string message)
+    {
+        string log = HttpUtility.HtmlEncode(message);
+        this.logger.Info(log);
     }
 }

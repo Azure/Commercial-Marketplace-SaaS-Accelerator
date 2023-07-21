@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Services;
@@ -196,4 +197,10 @@ public class ApplicationConfigController : BaseController
         return RedirectToAction("Index");
     }
 
+
+    private void ProcessInformation(string message)
+    {
+        string log = HttpUtility.HtmlEncode(message);
+        this.logger.Info(log);
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Services;
@@ -27,7 +28,7 @@ public class ApplicationLogController : BaseController
     }
     public IActionResult Index()
     {
-        this.logger.LogInformation("Application Log Controller / Index");
+        ProcessInformation("Application Log Controller / Index");
         try
         {
             IEnumerable<ApplicationLog> getAllAppLogData = new List<ApplicationLog>();
@@ -39,5 +40,11 @@ public class ApplicationLogController : BaseController
             this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
+    }
+
+    private void ProcessInformation(string message)
+    {
+        string log = HttpUtility.HtmlEncode(message);
+        this.logger.Info(log);
     }
 }

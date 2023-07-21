@@ -109,20 +109,10 @@ public class SaaSClientLogger<T> : ILogger
         this.logger.LogWarning(ex, message);
     }
 
-    public void LogInformation(string message)
-    {
-        string log = HttpUtility.HtmlEncode(message);
-        this.logger.LogInformation(log);
-    }
 
     public void LogError(string message)
     {
         this.logger.LogError(message);
     }
 
-    public void ProcessInformation(string message)
-    {
-        string log = HttpUtility.HtmlEncode(message);
-        this.logger.LogInformation(log);
-    }
 }

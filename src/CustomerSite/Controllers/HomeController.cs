@@ -192,7 +192,7 @@ public class HomeController : BaseController
     {
         try
         {
-            this.logger.LogInformation($"Landing page with token {token}");
+            ProcessInformation($"Landing page with token {token}");
             SubscriptionResult subscriptionDetail = new SubscriptionResult();
             SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
 
@@ -204,7 +204,7 @@ public class HomeController : BaseController
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                 this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
-                this.logger.LogInformation("User authenticated successfully");
+                ProcessInformation("User authenticated successfully");
                 if (!string.IsNullOrEmpty(token))
                 {
                     this.TempData["ShowWelcomeScreen"] = null;
@@ -296,7 +296,7 @@ public class HomeController : BaseController
     /// <returns> Subscription instance.</returns>
     public IActionResult Subscriptions()
     {
-        this.logger.LogInformation("Home Controller / Subscriptions ");
+        ProcessInformation("Home Controller / Subscriptions ");
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -343,7 +343,7 @@ public class HomeController : BaseController
     /// </returns>
     public IActionResult SubscriptionDetail(Guid subscriptionId)
     {
-        this.logger.LogInformation($"Home Controller / SubscriptionDetail subscriptionId:{subscriptionId}");
+        ProcessInformation($"Home Controller / SubscriptionDetail subscriptionId:{subscriptionId}");
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -374,7 +374,7 @@ public class HomeController : BaseController
     /// </returns>
     public IActionResult SubscriptionQuantityDetail(Guid subscriptionId)
     {
-        this.logger.LogInformation($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}");
+        ProcessInformation($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}");
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -401,7 +401,7 @@ public class HomeController : BaseController
     /// <returns> Subscription log detail.</returns>
     public IActionResult SubscriptionLogDetail(Guid subscriptionId)
     {
-        this.logger.LogInformation($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}");
+        ProcessInformation($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}");
         try
         {
             if (this.User.Identity.IsAuthenticated)
@@ -479,7 +479,7 @@ public class HomeController : BaseController
     /// <returns> Subscription Detials.</returns>
     public IActionResult SubscriptionDetails(Guid subscriptionId, string planId, string operation)
     {
-        this.logger.LogInformation($"Home Controller / ActivateSubscription subscriptionId:{subscriptionId} :: planId : {planId} :: operation:{operation}");
+        ProcessInformation($"Home Controller / ActivateSubscription subscriptionId:{subscriptionId} :: planId : {planId} :: operation:{operation}");
         try
         {
             SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
@@ -527,7 +527,7 @@ public class HomeController : BaseController
     [ValidateAntiForgeryToken]
     public IActionResult SubscriptionOperation(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation)
     {
-        this.logger.LogInformation($"Home Controller / SubscriptionOperation subscriptionId:{subscriptionId} :: planId : {planId} :: operation:{operation}");
+        ProcessInformation($"Home Controller / SubscriptionOperation subscriptionId:{subscriptionId} :: planId : {planId} :: operation:{operation}");
         if (this.User.Identity.IsAuthenticated)
         {
             try
@@ -538,16 +538,16 @@ public class HomeController : BaseController
                 if (subscriptionId != default)
                 {
                     SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
-                    this.logger.LogInformation("GetPartnerSubscription");
+                    ProcessInformation("GetPartnerSubscription");
                     var oldValue = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
                     Plans planDetail = this.planRepository.GetById(oldValue.PlanId);
-                    this.logger.LogInformation("GetUserIdFromEmailAddress");
+                    ProcessInformation("GetUserIdFromEmailAddress");
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     if (operation == "Activate")
                     {
                         try
                         {
-                            this.logger.LogInformation($"Save Subscription Parameters:  {JsonSerializer.Serialize(subscriptionResultExtension.SubscriptionParameters)}" );
+                            ProcessInformation($"Save Subscription Parameters:  {JsonSerializer.Serialize(subscriptionResultExtension.SubscriptionParameters)}" );
                             if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
                             {
                                 var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input");
@@ -560,7 +560,7 @@ public class HomeController : BaseController
 
                             if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
                             {
-                                this.logger.LogInformation($"UpdateStateOfSubscription PendingActivation: SubscriptionId: {subscriptionId} ");
+                                ProcessInformation($"UpdateStateOfSubscription PendingActivation: SubscriptionId: {subscriptionId} ");
                                 if (oldValue.SubscriptionStatus.ToString() != SubscriptionStatusEnumExtension.PendingActivation.ToString())
                                 {
                                     this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
@@ -588,7 +588,7 @@ public class HomeController : BaseController
                         }
                         catch (MarketplaceException fex)
                         {
-                            this.logger.LogInformation(fex.Message);
+                            ProcessInformation(fex.Message);
                         }
                     }
 
@@ -638,7 +638,7 @@ public class HomeController : BaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangeSubscriptionPlan(SubscriptionResult subscriptionDetail)
     {
-        this.logger.LogInformation($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{ JsonSerializer.Serialize(subscriptionDetail)}");
+        ProcessInformation($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{ JsonSerializer.Serialize(subscriptionDetail)}");
         if (this.User.Identity.IsAuthenticated)
         {
             try
@@ -662,7 +662,7 @@ public class HomeController : BaseController
                                 var changePlanOperationResult = await this.apiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                                 changePlanOperationStatus = changePlanOperationResult.Status;
 
-                                this.logger.LogInformation($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changePlanOperationStatus }.");
+                                ProcessInformation($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changePlanOperationStatus }.");
                                 await this.applicationLogService.AddApplicationLog($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changePlanOperationStatus }.").ConfigureAwait(false);
 
                                 //wait and check every 5secs
@@ -677,12 +677,12 @@ public class HomeController : BaseController
 
                             if (changePlanOperationStatus == OperationStatusEnum.Succeeded)
                             {
-                                this.logger.LogInformation($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
+                                ProcessInformation($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
                                 await this.applicationLogService.AddApplicationLog($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
                             }
                             else
                             {
-                                this.logger.LogInformation($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.");
+                                ProcessInformation($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.");
                                 await this.applicationLogService.AddApplicationLog($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.").ConfigureAwait(false);
 
                                 throw new MarketplaceException($"Plan change operation failed with operation status {changePlanOperationStatus}.");
@@ -716,7 +716,7 @@ public class HomeController : BaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
     {
-        this.logger.LogInformation($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{JsonSerializer.Serialize(subscriptionDetail)}");
+        ProcessInformation($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{JsonSerializer.Serialize(subscriptionDetail)}");
         if (this.User.Identity.IsAuthenticated)
         {
             try
@@ -739,7 +739,7 @@ public class HomeController : BaseController
                                 var changeQuantityOperationResult = await this.apiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                                 changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
-                                this.logger.LogInformation($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
+                                ProcessInformation($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
                                 await this.applicationLogService.AddApplicationLog($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.").ConfigureAwait(false);
 
                                 //wait and check every 5secs
@@ -754,12 +754,12 @@ public class HomeController : BaseController
 
                             if (changeQuantityOperationStatus == OperationStatusEnum.Succeeded)
                             {
-                                this.logger.LogInformation($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
+                                ProcessInformation($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.");
                                 await this.applicationLogService.AddApplicationLog($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
                             }
                             else
                             {
-                                this.logger.LogInformation($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
+                                ProcessInformation($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
                                 await this.applicationLogService.AddApplicationLog($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.").ConfigureAwait(false);
                                     
                                 throw new MarketplaceException($"Quantity Change operation failed with operation status {changeQuantityOperationStatus}.");
@@ -823,5 +823,10 @@ public class HomeController : BaseController
             return this.View("Error", ex);
         }
     }
-      
+
+    private void ProcessInformation(string message)
+    {
+        string log = HttpUtility.HtmlEncode(message);
+        this.logger.Info(log);
+    }
 }

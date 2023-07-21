@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
@@ -68,7 +69,7 @@ public class PlansController : BaseController
     /// <returns>return All subscription.</returns>
     public IActionResult Index()
     {
-        this.logger.LogInformation("Plans Controller / OfferDetails:  offerGuId");
+        ProcessInformation("Plans Controller / OfferDetails:  offerGuId");
         try
         {
             List<PlansModel> getAllPlansData = new List<PlansModel>();
@@ -96,7 +97,7 @@ public class PlansController : BaseController
     /// </returns>
     public IActionResult PlanDetails(Guid planGuId)
     {
-        this.logger.LogInformation($"Plans Controller / PlanDetails:  planGuId {planGuId}");
+        ProcessInformation($"Plans Controller / PlanDetails:  planGuId {planGuId}");
         try
         {
             PlansModel plans = new PlansModel();
@@ -123,7 +124,7 @@ public class PlansController : BaseController
     [ValidateAntiForgeryToken]
     public IActionResult PlanDetails(PlansModel plans)
     {
-        this.logger.LogInformation("Plans Controller / PlanDetails:  plans {JsonSerializer.Serialize(plans)}");
+        ProcessInformation("Plans Controller / PlanDetails:  plans {JsonSerializer.Serialize(plans)}");
         try
         {
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -157,5 +158,11 @@ public class PlansController : BaseController
             this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.PartialView("Error", ex);
         }
+    }
+
+    private void ProcessInformation(string message)
+    {
+        string log = HttpUtility.HtmlEncode(message);
+        this.logger.Info(log);
     }
 }
