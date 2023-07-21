@@ -81,4 +81,11 @@ public class SchedulerUsageViewModel
     /// 
     public List<MeteredAuditLogs> MeteredAuditLogs { get; set; }
 
+    /// <summary>
+    /// Gets or sets the user's timezone offset compared to UTC
+    /// </summary>
+    /// <value>
+    /// The user's timezone offset.
+    /// </value>
+    public int TimezoneOffset { get; set; }
 }
