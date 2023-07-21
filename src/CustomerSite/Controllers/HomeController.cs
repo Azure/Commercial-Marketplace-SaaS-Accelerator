@@ -649,7 +649,7 @@ public class HomeController : BaseController
                     {
                         //initiate change plan
                         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                        var secureCurrentUser = currentUserId.GetHashCode();
+                        var secureCurrentUser = currentUserId.ToString();
                         var jsonResult = await this.apiService.ChangePlanForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.PlanId).ConfigureAwait(false);
                         var changePlanOperationStatus = OperationStatusEnum.InProgress;
 
@@ -728,7 +728,7 @@ public class HomeController : BaseController
                     {
                         //initiate change quantity
                         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                        var secureCurrentUser = currentUserId.GetHashCode();
+                        var secureCurrentUser = currentUserId.ToString();
                         var jsonResult = await this.apiService.ChangeQuantityForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.Quantity).ConfigureAwait(false);
                         var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
                         if (jsonResult != null && jsonResult.OperationId != default)
@@ -830,5 +830,10 @@ public class HomeController : BaseController
     {
         string log = HttpUtility.HtmlEncode(message);
         this.logger.Info(log);
+    }
+    public static string Base64Encode(string text)
+    {
+        var textBytes = System.Text.Encoding.UTF8.GetBytes(text);
+        return System.Convert.ToBase64String(textBytes);
     }
 }
