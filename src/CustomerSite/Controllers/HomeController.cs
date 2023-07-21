@@ -826,7 +826,7 @@ public class HomeController : BaseController
 
     private void ProcessInformation(string message)
     {
-        string log = HttpUtility.HtmlEncode(message);
-        this.logger.Info(log);
+        string str = HttpUtility.HtmlEncode(message);
+        this.logger.Info(str);
     }
 }
