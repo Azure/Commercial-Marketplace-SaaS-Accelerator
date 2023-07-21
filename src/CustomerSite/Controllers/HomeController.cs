@@ -649,7 +649,7 @@ public class HomeController : BaseController
                     {
                         //initiate change plan
                         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                        var secureCurrentUser = currentUserId.ToString();
+                        var userId = currentUserId.ToString();
                         var jsonResult = await this.apiService.ChangePlanForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.PlanId).ConfigureAwait(false);
                         var changePlanOperationStatus = OperationStatusEnum.InProgress;
 
@@ -663,7 +663,7 @@ public class HomeController : BaseController
                                 var changePlanOperationResult = await this.apiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                                 changePlanOperationStatus = changePlanOperationResult.Status;
 
-                                ProcessInformation($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {secureCurrentUser} OperationId: {jsonResult.OperationId} Operationstatus: { changePlanOperationStatus }.");
+                                ProcessInformation($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {userId} OperationId: {jsonResult.OperationId} Operationstatus: { changePlanOperationStatus }.");
                                 await this.applicationLogService.AddApplicationLog($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changePlanOperationStatus }.").ConfigureAwait(false);
 
                                 //wait and check every 5secs
@@ -678,12 +678,12 @@ public class HomeController : BaseController
 
                             if (changePlanOperationStatus == OperationStatusEnum.Succeeded)
                             {
-                                ProcessInformation($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {secureCurrentUser} OperationId: {jsonResult.OperationId}.");
+                                ProcessInformation($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {userId} OperationId: {jsonResult.OperationId}.");
                                 await this.applicationLogService.AddApplicationLog($"Plan Change Success. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
                             }
                             else
                             {
-                                ProcessInformation($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {secureCurrentUser} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.");
+                                ProcessInformation($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan : {subscriptionDetail.PlanId} UserId: {userId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.");
                                 await this.applicationLogService.AddApplicationLog($"Plan Change Failed. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status { changePlanOperationStatus }.").ConfigureAwait(false);
 
                                 throw new MarketplaceException($"Plan change operation failed with operation status {changePlanOperationStatus}.");
@@ -728,7 +728,7 @@ public class HomeController : BaseController
                     {
                         //initiate change quantity
                         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                        var secureCurrentUser = currentUserId.ToString();
+                        var userId = currentUserId.ToString();
                         var jsonResult = await this.apiService.ChangeQuantityForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.Quantity).ConfigureAwait(false);
                         var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
                         if (jsonResult != null && jsonResult.OperationId != default)
@@ -741,7 +741,7 @@ public class HomeController : BaseController
                                 var changeQuantityOperationResult = await this.apiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                                 changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
-                                ProcessInformation($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {secureCurrentUser} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
+                                ProcessInformation($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {userId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
                                 await this.applicationLogService.AddApplicationLog($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.").ConfigureAwait(false);
 
                                 //wait and check every 5secs
@@ -756,12 +756,12 @@ public class HomeController : BaseController
 
                             if (changeQuantityOperationStatus == OperationStatusEnum.Succeeded)
                             {
-                                ProcessInformation($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {secureCurrentUser} OperationId: {jsonResult.OperationId}.");
+                                ProcessInformation($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {userId} OperationId: {jsonResult.OperationId}.");
                                 await this.applicationLogService.AddApplicationLog($"Quantity Change Success. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId}.").ConfigureAwait(false);
                             }
                             else
                             {
-                                ProcessInformation($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {secureCurrentUser} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
+                                ProcessInformation($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {userId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.");
                                 await this.applicationLogService.AddApplicationLog($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: { changeQuantityOperationStatus }.").ConfigureAwait(false);
                                     
                                 throw new MarketplaceException($"Quantity Change operation failed with operation status {changeQuantityOperationStatus}.");
