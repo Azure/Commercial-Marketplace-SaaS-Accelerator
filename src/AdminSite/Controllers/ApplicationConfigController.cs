@@ -198,9 +198,5 @@ public class ApplicationConfigController : BaseController
     }
 
 
-    private void ProcessInformation(string message)
-    {
-        string log = HttpUtility.HtmlEncode(message);
-        this.logger.Info(log);
-    }
+
 }

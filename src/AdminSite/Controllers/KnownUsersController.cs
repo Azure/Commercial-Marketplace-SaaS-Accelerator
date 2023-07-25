@@ -36,7 +36,7 @@ public class KnownUsersController : BaseController
     /// <returns>All known users.</returns>
     public IActionResult Index()
     {
-        ProcessInformation("KnownUsers Controller / Index");
+        logger.ProcessInformation("KnownUsers Controller / Index");
         try
         {
             var getAllKnownUsers = this.knownUsersRepository.GetAllKnownUsers();
@@ -57,7 +57,7 @@ public class KnownUsersController : BaseController
     public JsonResult SaveKnownUsers([FromBody] IEnumerable<KnownUsers> knownUsers)
     {
 
-        ProcessInformation("KnownUsers Controller / SaveKnownUsers");
+        logger.ProcessInformation("KnownUsers Controller / SaveKnownUsers");
         try
         {
             return Json(this.knownUsersRepository.SaveAllKnownUsers(knownUsers));

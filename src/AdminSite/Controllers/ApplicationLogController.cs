@@ -28,7 +28,7 @@ public class ApplicationLogController : BaseController
     }
     public IActionResult Index()
     {
-        ProcessInformation("Application Log Controller / Index");
+        logger.ProcessInformation("Application Log Controller / Index");
         try
         {
             IEnumerable<ApplicationLog> getAllAppLogData = new List<ApplicationLog>();

@@ -69,7 +69,7 @@ public class PlansController : BaseController
     /// <returns>return All subscription.</returns>
     public IActionResult Index()
     {
-        ProcessInformation("Plans Controller / OfferDetails:  offerGuId");
+        logger.ProcessInformation("Plans Controller / OfferDetails:  offerGuId");
         try
         {
             List<PlansModel> getAllPlansData = new List<PlansModel>();
@@ -97,7 +97,7 @@ public class PlansController : BaseController
     /// </returns>
     public IActionResult PlanDetails(Guid planGuId)
     {
-        ProcessInformation($"Plans Controller / PlanDetails:  planGuId {planGuId}");
+        logger.ProcessInformation($"Plans Controller / PlanDetails:  planGuId {planGuId}");
         try
         {
             PlansModel plans = new PlansModel();
@@ -124,7 +124,7 @@ public class PlansController : BaseController
     [ValidateAntiForgeryToken]
     public IActionResult PlanDetails(PlansModel plans)
     {
-        ProcessInformation("Plans Controller / PlanDetails:  plans {JsonSerializer.Serialize(plans)}");
+        logger.ProcessInformation("Plans Controller / PlanDetails:  plans {JsonSerializer.Serialize(plans)}");
         try
         {
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
