@@ -235,7 +235,7 @@ public class SchedulerController : BaseController
                 PlanId = Convert.ToInt32(selectedDimension.PlanId),
                 DimensionId = Convert.ToInt32(schedulerUsageViewModel.SelectedDimension),
                 Quantity = Convert.ToDouble(schedulerUsageViewModel.Quantity),
-                StartDate = schedulerUsageViewModel.FirstRunDate
+                StartDate = schedulerUsageViewModel.FirstRunDate.AddHours(schedulerUsageViewModel.TimezoneOffset)
             };
             this.schedulerService.SaveSchedulerDetail(schedulerManagement);
             return this.RedirectToAction(nameof(this.Index));

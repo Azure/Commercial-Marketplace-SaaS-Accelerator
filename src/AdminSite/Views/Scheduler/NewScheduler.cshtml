@@ -16,17 +16,14 @@
               });
               $("#SelectedDimension").html(subItems);
 
-              
+            
             });
         });
 
         $("#btnSubmit").click(function () {
-                var dateElement=document.getElementById("FirstRunDate");
-                var date=new Date(dateElement.value);
-                var d=date.toISOString();
-                dateElement.value=d.slice(0,-5);
-         });
-        
+            var offset = new Date().getTimezoneOffset() / 60;
+            document.getElementById("TimezoneOffset").value = offset;
+        });
 
         $(document).ready(function() {
               var d = new Date();
@@ -45,8 +42,7 @@
               $('#FirstRunDate').attr('value',output);
 
           });
-    }
-    );
+    });
 
 </script>
 
@@ -123,6 +119,9 @@
 
                 </table>
             </div>
+
+            <input type="hidden" id="TimezoneOffset" name="TimezoneOffset" />
+
         </form>
     </div>
       
