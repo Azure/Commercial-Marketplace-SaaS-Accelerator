@@ -55,7 +55,7 @@ public class WebNotificationService : IWebNotificationService
     /// </summary>
     /// <param name="SubscriptiondId">Subscription Id.</param>
     /// <param name="SubscriptionParameters">Subscription Parameters.</param>
-    public async Task SendNotificationAsync(Guid SubscriptiondId, List<SubscriptionParametersModel> SubscriptionParameters)
+    public async Task PushExternalWebNotificationAsync(Guid SubscriptiondId, List<SubscriptionParametersModel> SubscriptionParameters)
     {
         WebNotificationPayloadLandingPage webNotificationLandingpagePayload = new WebNotificationPayloadLandingPage()
         {
@@ -107,7 +107,7 @@ public class WebNotificationService : IWebNotificationService
     /// Prepare the webhook notification payload.
     /// </summary>
     /// <param name="WebhookPayload">Content of the Webhook Payload.</param>
-    public async Task SendNotificationAsync(WebhookPayload WebhookPayload)
+    public async Task PushExternalWebNotificationAsync(WebhookPayload WebhookPayload)
     {
         WebNotificationPayloadWebhook webNotificationWebhookPayload = new WebNotificationPayloadWebhook()
         {

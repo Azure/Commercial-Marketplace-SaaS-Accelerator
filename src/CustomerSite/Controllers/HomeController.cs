@@ -600,8 +600,7 @@ public class HomeController : BaseController
                                 this.pendingFulfillmentStatusHandlers.Process(subscriptionId);
                             }
                             
-                            await _webNotificationService.SendNotificationAsync(subscriptionId, 
-                                                                                subscriptionResultExtension.SubscriptionParameters);
+                            await _webNotificationService.PushExternalWebNotificationAsync(subscriptionId, subscriptionResultExtension.SubscriptionParameters);
                         }
                         catch (MarketplaceException fex)
                         {

@@ -17,11 +17,11 @@ public interface IWebNotificationService
     /// </summary>
     /// <param name="SubscriptiondId">Subscription Id.</param>
     /// <param name="SubscriptionParameters">Subscription Parameters.</param>
-    Task SendNotificationAsync(Guid SubscriptiondId, List<SubscriptionParametersModel> SubscriptionParameters);
+    Task PushExternalWebNotificationAsync(Guid SubscriptiondId, List<SubscriptionParametersModel> SubscriptionParameters);
 
     /// <summary>
     /// Prepare the webhook notification payload.
     /// </summary>
     /// <param name="WebhookPayload">Content of the Webhook Payload.</param>
-    Task SendNotificationAsync(WebhookPayload WebhookPayload);
+    Task PushExternalWebNotificationAsync(WebhookPayload WebhookPayload);
 }
