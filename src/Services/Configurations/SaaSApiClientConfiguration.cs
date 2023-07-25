@@ -105,6 +105,14 @@ public class SaaSApiClientConfiguration
     public bool SupportMeteredBilling { get; set; }
 
     /// <summary>
+    /// Gets or sets the custom web notification URL.
+    /// </summary>
+    /// <value>
+    /// Url.
+    /// </value>
+    public string WebNotificationUrl { get; set; }
+
+    /// <summary>
     /// Initializes or Gets the current run environment. Set to "development" or "production" is assumed.
     /// </summary>
     /// <value>

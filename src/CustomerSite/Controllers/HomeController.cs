@@ -86,6 +86,8 @@ public class HomeController : BaseController
 
     private readonly ILoggerFactory loggerFactory;
 
+    private readonly IWebNotificationService _webNotificationService;
+
     private SubscriptionService subscriptionService = null;
 
     private ApplicationLogService applicationLogService = null;
@@ -116,7 +118,22 @@ public class HomeController : BaseController
     /// <param name="cloudConfigs">The cloud configs.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="emailService">The email service.</param>
-    public HomeController(ILogger<HomeController> logger, IFulfillmentApiService apiService, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService)
+    public HomeController(ILogger<HomeController> logger, 
+                          IFulfillmentApiService apiService, 
+                          ISubscriptionsRepository subscriptionRepo, 
+                          IPlansRepository planRepository, 
+                          IUsersRepository userRepository, 
+                          IApplicationLogRepository applicationLogRepository, 
+                          ISubscriptionLogRepository subscriptionLogsRepo, 
+                          IApplicationConfigRepository applicationConfigRepository, 
+                          IEmailTemplateRepository emailTemplateRepository, 
+                          IOffersRepository offersRepository, 
+                          IPlanEventsMappingRepository planEventsMappingRepository, 
+                          IOfferAttributesRepository offerAttributesRepository, 
+                          IEventsRepository eventsRepository, 
+                          ILoggerFactory loggerFactory, 
+                          IEmailService emailService,
+                          IWebNotificationService webNotificationService)
     {
         this.apiService = apiService;
         this.subscriptionRepository = subscriptionRepo;
@@ -138,6 +155,7 @@ public class HomeController : BaseController
         this.eventsRepository = eventsRepository;
         this.emailService = emailService;
         this.loggerFactory = loggerFactory;
+        this._webNotificationService = webNotificationService;
 
         this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
             apiService,
@@ -523,7 +541,7 @@ public class HomeController : BaseController
     /// </returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult SubscriptionOperation(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation)
+    public async Task<IActionResult> SubscriptionOperationAsync(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation)
     {
         this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation));
         if (this.User.Identity.IsAuthenticated)
@@ -531,11 +549,9 @@ public class HomeController : BaseController
             try
             {
                 var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-                SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
 
                 if (subscriptionId != default)
                 {
-                    SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
                     this.logger.LogInformation("GetPartnerSubscription");
                     var oldValue = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
                     Plans planDetail = this.planRepository.GetById(oldValue.PlanId);
@@ -583,6 +599,9 @@ public class HomeController : BaseController
                             {
                                 this.pendingFulfillmentStatusHandlers.Process(subscriptionId);
                             }
+                            
+                            await _webNotificationService.SendNotificationAsync(subscriptionId, 
+                                                                                subscriptionResultExtension.SubscriptionParameters);
                         }
                         catch (MarketplaceException fex)
                         {
