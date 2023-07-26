@@ -1,24 +1,24 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
-using Marketplace.SaaS.Accelerator.Services.WebHook;
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Marketplace.SaaS.Accelerator.Services.Models;
 
 /// <summary>
-/// Web Notification Payload.
+/// WebNotificationCustomInfo.
 /// </summary>
-public abstract class WebNotificationPayloadBase
+public class WebNotificationCustomInfoLandingPage : WebNotificationCustomInfo
 {
     /// <summary>
-    /// Gets or sets the Web Notification Custom Info identifier.
+    /// Gets or sets the LandingPageCustomFields.
     /// </summary>
     /// <value>
-    /// The usage event identifier.
+    /// The LandingPageCustomFields.
     /// </value>
-    [JsonPropertyName("webNotificationCustomInfo")]
-    public WebNotificationCustomInfo WebNotificationCustomInfo { get; set; }
+    [JsonPropertyName("landingpageSubscriptionParams")]
+    public List<KeyValuePair<string, string>> LandingPageCustomFields { get; set; }
 
 }

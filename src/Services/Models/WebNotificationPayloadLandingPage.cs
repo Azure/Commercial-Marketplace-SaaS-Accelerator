@@ -10,13 +10,22 @@ namespace Marketplace.SaaS.Accelerator.Services.Models;
 /// <summary>
 /// Web Notification Payload.
 /// </summary>
-public class WebNotificationPayloadLandingPage : WebNotificationPayloadBase
+public class WebNotificationPayloadLandingPage
 {
     /// <summary>
-    /// Gets or sets the status.
+    /// Gets or sets the WebNotificationLandingPageCustomInfo.
     /// </summary>
     /// <value>
-    /// The status.
+    /// The WebNotificationCustomInfo.
+    /// </value>
+    [JsonPropertyName("webNotificationCustomInfo")]
+    public WebNotificationCustomInfoLandingPage WebNotificationLandingPageCustomInfo { get; set; }
+
+    /// <summary>
+    /// Gets or sets the PayloadFromMarketplace.
+    /// </summary>
+    /// <value>
+    /// The PayloadFromMarketplace.
     /// </value>
     [JsonPropertyName("payloadFromMarketplace")]
     public WebNotificationSubscription PayloadFromMarketplace { get; set; }

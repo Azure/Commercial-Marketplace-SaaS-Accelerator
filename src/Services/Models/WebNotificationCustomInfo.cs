@@ -13,7 +13,7 @@ namespace Marketplace.SaaS.Accelerator.Services.Models;
 public class WebNotificationCustomInfo
 {
     /// <summary>
-    /// Gets or sets the usage event identifier.
+    /// Gets or sets the ApplicationName identifier.
     /// </summary>
     /// <value>
     /// The Application Name.
@@ -22,21 +22,12 @@ public class WebNotificationCustomInfo
     public string ApplicationName { get; set; }
 
     /// <summary>
-    /// Gets or sets the eventtype.
+    /// Gets or sets the EventType.
     /// </summary>
     /// <value>
-    /// The status.
+    /// The EventType.
     /// </value>
     [JsonPropertyName("eventType")]
     public string EventType { get; set; }
-
-    /// <summary>
-    /// Gets or sets the eventtype.
-    /// </summary>
-    /// <value>
-    /// The status.
-    /// </value>
-    [JsonPropertyName("landingpageSubscriptionParams")]
-    public List<KeyValuePair<string, string>> LandingPageCustomFields { get; set; }
 
 }

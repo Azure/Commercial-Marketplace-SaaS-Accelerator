@@ -10,13 +10,23 @@ namespace Marketplace.SaaS.Accelerator.Services.Models;
 /// <summary>
 /// Web Notification Payload.
 /// </summary>
-public class WebNotificationPayloadWebhook : WebNotificationPayloadBase
+public class WebNotificationPayloadWebhook
 {
     /// <summary>
-    /// Gets or sets the Web Notification Custom Info identifier.
+    /// Gets or sets the WebNotificationWebhookCustomInfo.
     /// </summary>
     /// <value>
-    /// The usage event identifier.
+    /// The WebNotificationWebhookCustomInfo.
+    /// </value>
+    [JsonPropertyName("webNotificationCustomInfo")]
+    public WebNotificationCustomInfo WebNotificationWebhookCustomInfo { get; set; }
+
+
+    /// <summary>
+    /// Gets or sets the PayloadFromMarketplace.
+    /// </summary>
+    /// <value>
+    /// The PayloadFromMarketplace.
     /// </value>
     [JsonPropertyName("payloadfrommarketplace")]
     public WebhookPayload PayloadFromMarketplace { get; set; }

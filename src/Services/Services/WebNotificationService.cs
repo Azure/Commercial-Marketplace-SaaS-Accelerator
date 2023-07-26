@@ -31,11 +31,6 @@ public class WebNotificationService : IWebNotificationService
     private readonly IApplicationConfigRepository applicationConfigRepository;
 
     /// <summary>
-    /// Defines the  SaaSAPI client configuration.
-    /// </summary>
-    private SaaSApiClientConfiguration saaSApiClientConfiguration;
-
-    /// <summary>
     /// The application log repository.
     /// </summary>
     private readonly IApplicationLogRepository applicationLogRepository;
@@ -53,12 +48,10 @@ public class WebNotificationService : IWebNotificationService
     /// <param name="saaSApiClientConfiguration">saaSApiClientConfiguration.</param>
     public WebNotificationService(IFulfillmentApiService apiService,
                                   IApplicationConfigRepository applicationConfigRepository,
-                                  SaaSApiClientConfiguration saaSApiClientConfiguration,
                                   IApplicationLogRepository applicationLogRepository)
     {
         this.apiService = apiService;
         this.applicationConfigRepository = applicationConfigRepository;
-        this.saaSApiClientConfiguration = saaSApiClientConfiguration;
         this.applicationLogRepository = applicationLogRepository;
         this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
 
@@ -73,13 +66,13 @@ public class WebNotificationService : IWebNotificationService
     {
         WebNotificationPayloadLandingPage webNotificationLandingpagePayload = new WebNotificationPayloadLandingPage()
         {
-            WebNotificationCustomInfo = new WebNotificationCustomInfo()
+            WebNotificationLandingPageCustomInfo = new WebNotificationCustomInfoLandingPage()
             {
                 ApplicationName = this.applicationConfigRepository.GetValueByName("ApplicationName"),
                 EventType = "LandingPage",
                 LandingPageCustomFields = SubscriptionParameters?
                                             .Select(subparam => new KeyValuePair<string, string>(subparam.DisplayName, subparam.Value))?
-                                            .ToList()
+                                            .ToList() ?? new List<KeyValuePair<string, string>>()
             },
         };
         var getSubApiResult = await this.apiService.GetSubscriptionByIdAsync(SubscriptiondId).ConfigureAwait(false);
@@ -125,16 +118,16 @@ public class WebNotificationService : IWebNotificationService
     {
         WebNotificationPayloadWebhook webNotificationWebhookPayload = new WebNotificationPayloadWebhook()
         {
-            WebNotificationCustomInfo = new WebNotificationCustomInfo()
+            WebNotificationWebhookCustomInfo = new WebNotificationCustomInfo()
             {
                 ApplicationName = this.applicationConfigRepository.GetValueByName("ApplicationName"),
-                EventType = WebhookPayload.Action.ToString()
+                EventType = "Webhook"
             },
             PayloadFromMarketplace = WebhookPayload
         };
         string webhookPayloadJson = JsonSerializer.Serialize(webNotificationWebhookPayload, new JsonSerializerOptions() { WriteIndented = true });
 
-        await CallNotificationURL(webhookPayloadJson, $"Webhook-{WebhookPayload.Action}", WebhookPayload.SubscriptionId);
+        await CallNotificationURL(webhookPayloadJson, "Webhook", WebhookPayload.SubscriptionId);
     }
 
 
@@ -146,7 +139,9 @@ public class WebNotificationService : IWebNotificationService
     {
         try
         {
-            if (!String.IsNullOrWhiteSpace(saaSApiClientConfiguration.WebNotificationUrl))
+            var WebNotificationUrl = this.applicationConfigRepository.GetValueByName("WebNotificationUrl");
+
+            if (!String.IsNullOrWhiteSpace(WebNotificationUrl))
             {
                 using (var httpClient = new HttpClient())
                 {
@@ -154,7 +149,7 @@ public class WebNotificationService : IWebNotificationService
                     var content = new StringContent(payload, System.Text.Encoding.UTF8, "application/json");
 
                     // Send a POST request to the webhook URL
-                    var response = await httpClient.PostAsync(saaSApiClientConfiguration.WebNotificationUrl, content);
+                    var response = await httpClient.PostAsync(WebNotificationUrl, content);
 
                     // Check the response status code
                     if (response.IsSuccessStatusCode)
