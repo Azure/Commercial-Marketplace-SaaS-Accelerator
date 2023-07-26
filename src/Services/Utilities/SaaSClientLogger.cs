@@ -114,9 +114,5 @@ public class SaaSClientLogger<T> : ILogger
     {
         this.logger.LogError(message);
     }
-    public void ProcessInformation(string message)
-    {
-        string log = HttpUtility.HtmlEncode(message);
-        this.logger.LogInformation(log);
-    }
+
 }
