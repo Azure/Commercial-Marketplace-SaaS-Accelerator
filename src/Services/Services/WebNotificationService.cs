@@ -36,6 +36,16 @@ public class WebNotificationService : IWebNotificationService
     private SaaSApiClientConfiguration saaSApiClientConfiguration;
 
     /// <summary>
+    /// The application log repository.
+    /// </summary>
+    private readonly IApplicationLogRepository applicationLogRepository;
+
+    /// <summary>
+    /// The application log service.
+    /// </summary>
+    private readonly ApplicationLogService applicationLogService;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="WebNotificationService"/> class.
     /// </summary>
     /// <param name="apiService">apiService.</param>
@@ -43,11 +53,15 @@ public class WebNotificationService : IWebNotificationService
     /// <param name="saaSApiClientConfiguration">saaSApiClientConfiguration.</param>
     public WebNotificationService(IFulfillmentApiService apiService,
                                   IApplicationConfigRepository applicationConfigRepository,
-                                  SaaSApiClientConfiguration saaSApiClientConfiguration)
+                                  SaaSApiClientConfiguration saaSApiClientConfiguration,
+                                  IApplicationLogRepository applicationLogRepository)
     {
         this.apiService = apiService;
         this.applicationConfigRepository = applicationConfigRepository;
         this.saaSApiClientConfiguration = saaSApiClientConfiguration;
+        this.applicationLogRepository = applicationLogRepository;
+        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
+
     }
 
     /// <summary>
@@ -100,7 +114,7 @@ public class WebNotificationService : IWebNotificationService
         };
 
         string landingPagePayloadJson = JsonSerializer.Serialize(webNotificationLandingpagePayload, new JsonSerializerOptions() { WriteIndented = true });
-        await CallNotificationURL(landingPagePayloadJson);
+        await CallNotificationURL(landingPagePayloadJson, "LandingPage", webNotificationLandingpagePayload.PayloadFromMarketplace.Id);
     }
 
     /// <summary>
@@ -120,7 +134,7 @@ public class WebNotificationService : IWebNotificationService
         };
         string webhookPayloadJson = JsonSerializer.Serialize(webNotificationWebhookPayload, new JsonSerializerOptions() { WriteIndented = true });
 
-        await CallNotificationURL(webhookPayloadJson);
+        await CallNotificationURL(webhookPayloadJson, $"Webhook-{WebhookPayload.Action}", WebhookPayload.SubscriptionId);
     }
 
 
@@ -128,7 +142,7 @@ public class WebNotificationService : IWebNotificationService
     /// Sends out the notification.
     /// </summary>
     /// <param name="payload">Content of the notification.</param>
-    async Task CallNotificationURL(string payload)
+    async Task CallNotificationURL(string payload, string eventType, Guid subscriptionId)
     {
         try
         {
@@ -145,22 +159,22 @@ public class WebNotificationService : IWebNotificationService
                     // Check the response status code
                     if (response.IsSuccessStatusCode)
                     {
-                        Console.WriteLine("Notification sent successfully");
+                        await this.applicationLogService.AddApplicationLog($"Web notification successfully pushed from {eventType} for {subscriptionId}").ConfigureAwait(false);
                     }
                     else
                     {
-                        Console.WriteLine($"Failed to send notification. Status code: {response.StatusCode}");
+                        await this.applicationLogService.AddApplicationLog($"Failed to push web notification from {eventType} for {subscriptionId}. Status code: {response.StatusCode}").ConfigureAwait(false);
                     }
                 }
             }
             else
             {
-                Console.WriteLine($"No notification sent. Webhook notification URL is empty");
+                await this.applicationLogService.AddApplicationLog($"No notification pushed. Webhook notification URL is empty");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"An error occurred while sending the notification: {ex.Message}");
+            await this.applicationLogService.AddApplicationLog($"An error occurred while pushing the notification for {subscriptionId}: {ex.Message}");
         }
     }
 

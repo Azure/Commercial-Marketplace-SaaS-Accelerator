@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 
@@ -34,7 +35,7 @@ public class ApplicationLogService
         ApplicationLog newLog = new ApplicationLog()
         {
             ActionTime = DateTime.Now,
-            LogDetail = logMessage,
+            LogDetail = HttpUtility.HtmlEncode(logMessage),
         };
 
         await this.applicationLogRepository.AddLog(newLog);
