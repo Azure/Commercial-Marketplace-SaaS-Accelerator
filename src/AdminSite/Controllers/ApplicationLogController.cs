@@ -23,12 +23,12 @@ public class ApplicationLogController : BaseController
     public ApplicationLogController(IApplicationLogRepository applicationLogRepository, SaaSClientLogger<ApplicationLogController> logger)
     {
         this.appLogRepository = applicationLogRepository;
-        this.logger = new SaaSClientLogger<ApplicationLogController>();
+        this.logger = logger;
         appLogService = new ApplicationLogService(this.appLogRepository);
     }
     public IActionResult Index()
     {
-        ProcessInformation("Application Log Controller / Index");
+        this.logger.Info("Application Log Controller / Index");
         try
         {
             IEnumerable<ApplicationLog> getAllAppLogData = new List<ApplicationLog>();
@@ -42,9 +42,5 @@ public class ApplicationLogController : BaseController
         }
     }
 
-    private void ProcessInformation(string message)
-    {
-        string log = HttpUtility.HtmlEncode(message);
-        this.logger.Info(log);
-    }
+
 }

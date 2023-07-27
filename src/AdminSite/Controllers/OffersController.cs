@@ -66,7 +66,7 @@ public class OffersController : BaseController
     /// <returns>return All subscription.</returns>
     public IActionResult Index()
     {
-        ProcessInformation("Offers Controller / Index");
+        this.logger.Info("Offers Controller / Index");
         try
         {
             this.TempData["ShowWelcomeScreen"] = "True";
@@ -104,7 +104,7 @@ public class OffersController : BaseController
     /// </returns>
     public IActionResult OfferDetails(Guid offerGuid)
     {
-        ProcessInformation("Offers Controller / OfferDetails:  offerGuid {offerGuid}");
+        this.logger.Info("Offers Controller / OfferDetails:  offerGuid {offerGuid}");
 
         try
         {
@@ -149,7 +149,7 @@ public class OffersController : BaseController
     [ValidateAntiForgeryToken]
     public IActionResult OfferDetails(OfferModel offersData)
     {
-        ProcessInformation($"Offers Controller / OfferDetails:  offerGuid {JsonSerializer.Serialize(offersData)}");
+        this.logger.Info(HttpUtility.HtmlEncode($"Offers Controller / OfferDetails:  offerGuid {JsonSerializer.Serialize(offersData)}"));
         try
         {
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -222,10 +222,6 @@ public class OffersController : BaseController
         };
     }
 
-    private void ProcessInformation(string message)
-    {
-        string log = HttpUtility.HtmlEncode(message);
-        this.logger.Info(log);
-    }
+
 
 }

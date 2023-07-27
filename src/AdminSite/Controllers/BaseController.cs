@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Web;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Authentication;
@@ -16,6 +17,7 @@ public class BaseController : Controller
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseController" /> class.
     /// </summary>
+    /// 
     public BaseController()
     {
         this.CheckAuthentication();
@@ -79,4 +81,5 @@ public class BaseController : Controller
             return this.RedirectToAction("Index", "Home", new { });
         }
     }
+
 }

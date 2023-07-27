@@ -81,7 +81,7 @@ public class SchedulerController : BaseController
     /// <returns>return All subscription.</returns>
     public IActionResult Index()
     {
-        ProcessInformation("Scheduler Controller / Get all data");
+        this.logger.Info("Scheduler Controller / Get all data");
         try
         {
             List<SchedulerManagerViewModel> getAllSchedulerManagerViewData = new List<SchedulerManagerViewModel>();
@@ -101,7 +101,7 @@ public class SchedulerController : BaseController
 
     public IActionResult NewScheduler(string subscriptionId, string dimId, string quantity)
     {
-        ProcessInformation("New Scheduler Controller");
+        this.logger.Info("New Scheduler Controller");
         try
         {
             SchedulerUsageViewModel schedulerUsageViewModel = new SchedulerUsageViewModel();
@@ -257,7 +257,7 @@ public class SchedulerController : BaseController
 
     public IActionResult DeleteSchedulerItem(string id)
     {
-        ProcessInformation($"Scheduler Controller / Remove Schedule Item Details:  Id {id}");
+        this.logger.Info(HttpUtility.HtmlEncode($"Scheduler Controller / Remove Schedule Item Details:  Id {id}"));
         try
         {
             this.schedulerService.DeleteSchedulerDetailById(int.Parse(id));
@@ -272,7 +272,7 @@ public class SchedulerController : BaseController
 
     public IActionResult SchedulerLogDetail(string id)
     {
-        ProcessInformation($"Scheduler Controller / Get Schedule Item Details:  Id {id}");
+        this.logger.Info(HttpUtility.HtmlEncode($"Scheduler Controller / Get Schedule Item Details:  Id {id}"));
         try
         {
             var SchedulerItem = this.schedulerService.GetSchedulerManagerById(int.Parse(id));
@@ -302,10 +302,6 @@ public class SchedulerController : BaseController
         }
     }
 
-    private void ProcessInformation(string message)
-    {
-        string log = HttpUtility.HtmlEncode(message);
-        this.logger.Info(log);
-    }
+
 
 }

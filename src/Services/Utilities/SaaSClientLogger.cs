@@ -115,4 +115,5 @@ public class SaaSClientLogger<T> : ILogger
         this.logger.LogError(message);
     }
 
+
 }
