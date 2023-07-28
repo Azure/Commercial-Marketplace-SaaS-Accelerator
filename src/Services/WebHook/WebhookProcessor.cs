@@ -24,14 +24,22 @@ public class WebhookProcessor : IWebhookProcessor
     private IFulfillmentApiService apiClient;
 
     /// <summary>
+    /// Defines the webNotificationService.
+    /// </summary>
+    private readonly IWebNotificationService _webNotificationService;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="WebhookProcessor"/> class.
     /// </summary>
     /// <param name="apiClient">The API client.</param>
     /// <param name="webhookHandler">The webhook handler.</param>
-    public WebhookProcessor(IFulfillmentApiService apiClient, IWebhookHandler webhookHandler)
+    public WebhookProcessor(IFulfillmentApiService apiClient, 
+                            IWebhookHandler webhookHandler,
+                            IWebNotificationService webNotificationService)
     {
         this.apiClient = apiClient;
         this.webhookHandler = webhookHandler;
+        this._webNotificationService = webNotificationService;
     }
 
     /// <summary>
@@ -42,6 +50,8 @@ public class WebhookProcessor : IWebhookProcessor
     /// <returns> Notification.</returns>
     public async Task ProcessWebhookNotificationAsync(WebhookPayload payload, SaaSApiClientConfiguration config)
     {
+        await _webNotificationService.PushExternalWebNotificationAsync(payload);
+
         switch (payload.Action)
         {
             case WebhookAction.Unsubscribe:

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Services;
@@ -30,8 +31,8 @@ public class ApplicationLogController : BaseController
         this.logger.LogInformation("Application Log Controller / Index");
         try
         {
-            IEnumerable<ApplicationLog> getAllAppLogData = new List<ApplicationLog>();
-            getAllAppLogData = this.appLogService.GetAllLogs().OrderByDescending(d => d.ActionTime).ToList();
+            List<ApplicationLog> getAllAppLogData = this.appLogService.GetAllLogs().OrderByDescending(appLog => appLog.ActionTime).ToList();
+            getAllAppLogData.ForEach(s => s.LogDetail = Regex.Replace(s.LogDetail, "&quot;", "\""));
             return this.View(getAllAppLogData);
         }
         catch (Exception ex)
