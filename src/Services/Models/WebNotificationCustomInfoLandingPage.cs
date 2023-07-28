@@ -19,6 +19,6 @@ public class WebNotificationCustomInfoLandingPage : WebNotificationCustomInfo
     /// The LandingPageCustomFields.
     /// </value>
     [JsonPropertyName("landingpageSubscriptionParams")]
-    public List<KeyValuePair<string, string>> LandingPageCustomFields { get; set; }
+    public List<WebNotificationLandingPageParam> LandingPageCustomFields { get; set; }
 
 }

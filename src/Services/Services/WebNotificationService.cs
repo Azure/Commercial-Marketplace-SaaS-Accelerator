@@ -69,10 +69,10 @@ public class WebNotificationService : IWebNotificationService
             WebNotificationLandingPageCustomInfo = new WebNotificationCustomInfoLandingPage()
             {
                 ApplicationName = this.applicationConfigRepository.GetValueByName("ApplicationName"),
-                EventType = "LandingPage",
+                EventType = WebNotificationEventTypeEnum.LandingPage,
                 LandingPageCustomFields = SubscriptionParameters?
-                                            .Select(subparam => new KeyValuePair<string, string>(subparam.DisplayName, subparam.Value))?
-                                            .ToList() ?? new List<KeyValuePair<string, string>>()
+                                            .Select(subparam => new WebNotificationLandingPageParam(subparam.DisplayName, subparam.Value))?
+                                            .ToList() ?? new List<WebNotificationLandingPageParam>()
             },
         };
         var getSubApiResult = await this.apiService.GetSubscriptionByIdAsync(SubscriptiondId).ConfigureAwait(false);
@@ -121,7 +121,7 @@ public class WebNotificationService : IWebNotificationService
             WebNotificationWebhookCustomInfo = new WebNotificationCustomInfo()
             {
                 ApplicationName = this.applicationConfigRepository.GetValueByName("ApplicationName"),
-                EventType = "Webhook"
+                EventType = WebNotificationEventTypeEnum.Webhook
             },
             PayloadFromMarketplace = WebhookPayload
         };

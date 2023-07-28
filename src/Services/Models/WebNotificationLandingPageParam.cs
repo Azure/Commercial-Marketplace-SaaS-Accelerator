@@ -8,26 +8,32 @@ using System.Text.Json.Serialization;
 namespace Marketplace.SaaS.Accelerator.Services.Models;
 
 /// <summary>
-/// WebNotificationCustomInfo.
+/// WebNotificationLandingPageParam.
 /// </summary>
-public class WebNotificationCustomInfo
+public class WebNotificationLandingPageParam
 {
-    /// <summary>
-    /// Gets or sets the ApplicationName identifier.
-    /// </summary>
-    /// <value>
-    /// The Application Name.
-    /// </value>
-    [JsonPropertyName("applicationName")]
-    public string ApplicationName { get; set; }
+    public WebNotificationLandingPageParam(string key, string value)
+    {
+        this.Key = key;
+        Value = value;
+    }
 
     /// <summary>
-    /// Gets or sets the EventType.
+    /// Gets or sets the Key.
     /// </summary>
     /// <value>
     /// The EventType.
     /// </value>
-    [JsonPropertyName("eventType")]
-    public WebNotificationEventTypeEnum EventType { get; set; }
+    [JsonPropertyName("key")]
+    public string Key { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Value.
+    /// </summary>
+    /// <value>
+    /// The EventType.
+    /// </value>
+    [JsonPropertyName("value")]
+    public string Value { get; set; }
 
 }
