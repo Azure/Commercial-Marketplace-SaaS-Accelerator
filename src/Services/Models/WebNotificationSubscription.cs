@@ -1,15 +1,24 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
-using System.ComponentModel;
 using System;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.Json.Serialization;
+using System.Collections.Generic;
 
 namespace Marketplace.SaaS.Accelerator.Services.Models;
 
 public class WebNotificationSubscription
 {
+
+    /// <summary>
+    /// Gets or sets the LandingPageCustomFields.
+    /// </summary>
+    /// <value>
+    /// The LandingPageCustomFields.
+    /// </value>
+    [JsonPropertyName("landingpageSubscriptionParams")]
+    public List<WebNotificationLandingPageParam> LandingPageCustomFields { get; set; }
+
     /// <summary>
     /// Gets or sets the identifier.
     /// </summary>
@@ -100,4 +109,5 @@ public class WebNotificationSubscription
     /// </value>
     [JsonPropertyName("term")]
     public TermResult Term { get; set; }
+
 }

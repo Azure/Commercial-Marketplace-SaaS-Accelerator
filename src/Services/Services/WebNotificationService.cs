@@ -4,9 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Azure;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
-using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
@@ -64,50 +62,52 @@ public class WebNotificationService : IWebNotificationService
     /// <param name="SubscriptionParameters">Subscription Parameters.</param>
     public async Task PushExternalWebNotificationAsync(Guid SubscriptiondId, List<SubscriptionParametersModel> SubscriptionParameters)
     {
-        WebNotificationPayloadLandingPage webNotificationLandingpagePayload = new WebNotificationPayloadLandingPage()
+        var getSubApiResult = await this.apiService.GetSubscriptionByIdAsync(SubscriptiondId).ConfigureAwait(false);
+
+        WebNotificationPayload webNotificationLandingpagePayload = new WebNotificationPayload()
         {
-            WebNotificationLandingPageCustomInfo = new WebNotificationCustomInfoLandingPage()
+            ApplicationName = this.applicationConfigRepository.GetValueByName("ApplicationName"),
+            EventType = WebNotificationEventTypeEnum.LandingPage,
+            PayloadFromLandingpage = new WebNotificationSubscription()
             {
-                ApplicationName = this.applicationConfigRepository.GetValueByName("ApplicationName"),
-                EventType = WebNotificationEventTypeEnum.LandingPage,
+                
                 LandingPageCustomFields = SubscriptionParameters?
                                             .Select(subparam => new WebNotificationLandingPageParam(subparam.DisplayName, subparam.Value))?
-                                            .ToList() ?? new List<WebNotificationLandingPageParam>()
+                                            .ToList() ?? new List<WebNotificationLandingPageParam>(),
+                Id = getSubApiResult.Id,
+                PublisherId = getSubApiResult.PublisherId,
+                OfferId = getSubApiResult.OfferId,
+                Name = getSubApiResult.Name,
+                SaasSubscriptionStatus = getSubApiResult.SaasSubscriptionStatus,
+                PlanId = getSubApiResult.PlanId,
+                Quantity = getSubApiResult.Quantity,
+                Purchaser = new PurchaserResult
+                {
+                    EmailId = getSubApiResult.Purchaser.EmailId,
+                    TenantId = getSubApiResult.Purchaser.TenantId,
+                    ObjectId = getSubApiResult.Purchaser.ObjectId,
+                },
+                Beneficiary = new BeneficiaryResult
+                {
+                    EmailId = getSubApiResult.Beneficiary.EmailId,
+                    TenantId = getSubApiResult.Beneficiary.TenantId,
+                    Puid = getSubApiResult.Beneficiary.Puid,
+                    ObjectId = getSubApiResult.Beneficiary.ObjectId,
+                },
+                Term = new TermResult
+                {
+                    EndDate = getSubApiResult.Term.EndDate,
+                    StartDate = getSubApiResult.Term.StartDate,
+                    TermUnit = getSubApiResult.Term.TermUnit,
+                },
             },
-        };
-        var getSubApiResult = await this.apiService.GetSubscriptionByIdAsync(SubscriptiondId).ConfigureAwait(false);
-        webNotificationLandingpagePayload.PayloadFromMarketplace = new WebNotificationSubscription
-        {
-            Id = getSubApiResult.Id,
-            PublisherId = getSubApiResult.PublisherId,
-            OfferId = getSubApiResult.OfferId,
-            Name = getSubApiResult.Name,
-            SaasSubscriptionStatus = getSubApiResult.SaasSubscriptionStatus,
-            PlanId = getSubApiResult.PlanId,
-            Quantity = getSubApiResult.Quantity,
-            Purchaser = new PurchaserResult
-            {
-                EmailId = getSubApiResult.Purchaser.EmailId,
-                TenantId = getSubApiResult.Purchaser.TenantId,
-                ObjectId = getSubApiResult.Purchaser.ObjectId,
-            },
-            Beneficiary = new BeneficiaryResult
-            {
-                EmailId = getSubApiResult.Beneficiary.EmailId,
-                TenantId = getSubApiResult.Beneficiary.TenantId,
-                Puid = getSubApiResult.Beneficiary.Puid,
-                ObjectId = getSubApiResult.Beneficiary.ObjectId,
-            },
-            Term = new TermResult
-            {
-                EndDate = getSubApiResult.Term.EndDate,
-                StartDate = getSubApiResult.Term.StartDate,
-                TermUnit = getSubApiResult.Term.TermUnit,
-            },
+            PayloadFromWebhook = null
         };
 
-        string landingPagePayloadJson = JsonSerializer.Serialize(webNotificationLandingpagePayload, new JsonSerializerOptions() { WriteIndented = true });
-        await CallNotificationURL(landingPagePayloadJson, "LandingPage", webNotificationLandingpagePayload.PayloadFromMarketplace.Id);
+        JsonSerializerOptions options = new JsonSerializerOptions();
+        options.WriteIndented = true;
+        string landingPagePayloadJson = JsonSerializer.Serialize(webNotificationLandingpagePayload, options);
+        await CallNotificationURL(landingPagePayloadJson, "LandingPage", webNotificationLandingpagePayload.PayloadFromLandingpage.Id);
     }
 
     /// <summary>
@@ -116,16 +116,16 @@ public class WebNotificationService : IWebNotificationService
     /// <param name="WebhookPayload">Content of the Webhook Payload.</param>
     public async Task PushExternalWebNotificationAsync(WebhookPayload WebhookPayload)
     {
-        WebNotificationPayloadWebhook webNotificationWebhookPayload = new WebNotificationPayloadWebhook()
+        WebNotificationPayload webNotificationWebhookPayload = new WebNotificationPayload()
         {
-            WebNotificationWebhookCustomInfo = new WebNotificationCustomInfo()
-            {
-                ApplicationName = this.applicationConfigRepository.GetValueByName("ApplicationName"),
-                EventType = WebNotificationEventTypeEnum.Webhook
-            },
-            PayloadFromMarketplace = WebhookPayload
+            ApplicationName = this.applicationConfigRepository.GetValueByName("ApplicationName"),
+            EventType = WebNotificationEventTypeEnum.Webhook,
+            PayloadFromWebhook = WebhookPayload,
         };
-        string webhookPayloadJson = JsonSerializer.Serialize(webNotificationWebhookPayload, new JsonSerializerOptions() { WriteIndented = true });
+
+        JsonSerializerOptions options = new JsonSerializerOptions();
+        options.WriteIndented = true; 
+        string webhookPayloadJson = JsonSerializer.Serialize(webNotificationWebhookPayload, options);
 
         await CallNotificationURL(webhookPayloadJson, "Webhook", WebhookPayload.SubscriptionId);
     }
