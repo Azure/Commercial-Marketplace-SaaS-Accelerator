@@ -14,13 +14,13 @@ namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 [ServiceFilter(typeof(KnownUserAttribute))]
 public class ApplicationLogController : BaseController
 {
-    private readonly ILogger<ApplicationLogController> logger;
+    private readonly SaaSClientLogger<ApplicationLogController> logger;
 
     private ApplicationLogService appLogService;
 
     private readonly IApplicationLogRepository appLogRepository;
 
-    public ApplicationLogController(IApplicationLogRepository applicationLogRepository, ILogger<ApplicationLogController> logger)
+    public ApplicationLogController(IApplicationLogRepository applicationLogRepository, SaaSClientLogger<ApplicationLogController> logger)
     {
         this.appLogRepository = applicationLogRepository;
         this.logger = logger;
@@ -28,7 +28,7 @@ public class ApplicationLogController : BaseController
     }
     public IActionResult Index()
     {
-        this.logger.LogInformation("Application Log Controller / Index");
+        this.logger.Info("Application Log Controller / Index");
         try
         {
             List<ApplicationLog> getAllAppLogData = this.appLogService.GetAllLogs().OrderByDescending(appLog => appLog.ActionTime).ToList();
@@ -37,8 +37,10 @@ public class ApplicationLogController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
+
+
 }

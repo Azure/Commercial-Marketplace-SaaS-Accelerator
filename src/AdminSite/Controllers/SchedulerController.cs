@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Models;
@@ -28,7 +29,7 @@ public class SchedulerController : BaseController
     /// <summary>
     /// logger controller
     /// </summary>
-    private readonly ILogger<SchedulerController> logger;
+    private readonly SaaSClientLogger<SchedulerController> logger;
 
     /// <summary>
     /// the shceduler service
@@ -61,8 +62,8 @@ public class SchedulerController : BaseController
         IPlansRepository plansRepository,
         IMeteredPlanSchedulerManagementRepository schedulerRepository,
         ISchedulerManagerViewRepository schedulerViewRepository, 
-        IUsersRepository usersRepository, 
-        ILogger<SchedulerController> logger, 
+        IUsersRepository usersRepository,
+        SaaSClientLogger<SchedulerController> logger,
         ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository)
 
     {
@@ -80,7 +81,7 @@ public class SchedulerController : BaseController
     /// <returns>return All subscription.</returns>
     public IActionResult Index()
     {
-        this.logger.LogInformation("Scheduler Controller / Get all data");
+        this.logger.Info("Scheduler Controller / Get all data");
         try
         {
             List<SchedulerManagerViewModel> getAllSchedulerManagerViewData = new List<SchedulerManagerViewModel>();
@@ -93,14 +94,14 @@ public class SchedulerController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
 
     public IActionResult NewScheduler(string subscriptionId, string dimId, string quantity)
     {
-        this.logger.LogInformation("New Scheduler Controller");
+        this.logger.Info("New Scheduler Controller");
         try
         {
             SchedulerUsageViewModel schedulerUsageViewModel = new SchedulerUsageViewModel();
@@ -187,7 +188,7 @@ public class SchedulerController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -242,7 +243,7 @@ public class SchedulerController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -256,7 +257,7 @@ public class SchedulerController : BaseController
 
     public IActionResult DeleteSchedulerItem(string id)
     {
-        this.logger.LogInformation("Scheduler Controller / Remove Schedule Item Details:  Id {0}", JsonSerializer.Serialize(id));
+        this.logger.Info(HttpUtility.HtmlEncode($"Scheduler Controller / Remove Schedule Item Details:  Id {id}"));
         try
         {
             this.schedulerService.DeleteSchedulerDetailById(int.Parse(id));
@@ -264,14 +265,14 @@ public class SchedulerController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.PartialView("Error", ex);
         }
     }
 
     public IActionResult SchedulerLogDetail(string id)
     {
-        this.logger.LogInformation("Scheduler Controller / Get Schedule Item Details:  Id {0}", JsonSerializer.Serialize(id));
+        this.logger.Info(HttpUtility.HtmlEncode($"Scheduler Controller / Get Schedule Item Details:  Id {id}"));
         try
         {
             var SchedulerItem = this.schedulerService.GetSchedulerManagerById(int.Parse(id));
@@ -296,10 +297,11 @@ public class SchedulerController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.PartialView("Error", ex);
         }
     }
+
 
 
 }

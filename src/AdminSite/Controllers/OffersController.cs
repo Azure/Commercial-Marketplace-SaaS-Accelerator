@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Web;
 using Marketplace.SaaS.Accelerator.AdminSite.Models.Offers;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
@@ -28,7 +29,7 @@ public class OffersController : BaseController
 
     private readonly IOfferAttributesRepository offersAttributeRepository;
 
-    private readonly ILogger<OffersController> logger;
+    private readonly SaaSClientLogger<OffersController> logger;
 
     private readonly OffersService offersService;
     
@@ -48,8 +49,7 @@ public class OffersController : BaseController
         IApplicationConfigRepository applicationConfigRepository, 
         IUsersRepository usersRepository, 
         IValueTypesRepository valueTypesRepository, 
-        IOfferAttributesRepository offersAttributeRepository, 
-        ILogger<OffersController> logger)
+        IOfferAttributesRepository offersAttributeRepository, SaaSClientLogger<OffersController> logger)
     {
         this.applicationConfigRepository = applicationConfigRepository;
         this.usersRepository = usersRepository;
@@ -66,7 +66,7 @@ public class OffersController : BaseController
     /// <returns>return All subscription.</returns>
     public IActionResult Index()
     {
-        this.logger.LogInformation("Offers Controller / Index");
+        this.logger.Info("Offers Controller / Index");
         try
         {
             this.TempData["ShowWelcomeScreen"] = "True";
@@ -90,7 +90,7 @@ public class OffersController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -104,7 +104,7 @@ public class OffersController : BaseController
     /// </returns>
     public IActionResult OfferDetails(Guid offerGuid)
     {
-        this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuid {0}", offerGuid);
+        this.logger.Info("Offers Controller / OfferDetails:  offerGuid {offerGuid}");
 
         try
         {
@@ -133,7 +133,7 @@ public class OffersController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -149,7 +149,7 @@ public class OffersController : BaseController
     [ValidateAntiForgeryToken]
     public IActionResult OfferDetails(OfferModel offersData)
     {
-        this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuid {0}", JsonSerializer.Serialize(offersData));
+        this.logger.Info(HttpUtility.HtmlEncode($"Offers Controller / OfferDetails:  offerGuid {JsonSerializer.Serialize(offersData)}"));
         try
         {
             var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -193,7 +193,7 @@ public class OffersController : BaseController
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
             return this.View("Error", ex);
         }
     }
@@ -221,5 +221,7 @@ public class OffersController : BaseController
             OfferId = offerModel.OfferGuid,
         };
     }
+
+
 
 }

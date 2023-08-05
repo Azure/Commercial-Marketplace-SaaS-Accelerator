@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Services;
@@ -21,8 +22,7 @@ namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 [ServiceFilter(typeof(RequestLoggerActionFilter))]
 public class ApplicationConfigController : BaseController
 {
-    private readonly ILogger<ApplicationConfigController> logger;
-
+    private readonly SaaSClientLogger<ApplicationConfigController> logger;
     private readonly ApplicationConfigService appConfigService;
 
     /// <summary>
@@ -31,9 +31,8 @@ public class ApplicationConfigController : BaseController
     private readonly IEmailTemplateRepository emailTemplateRepository;
 
     public ApplicationConfigController(
-        ApplicationConfigService appConfigService, 
-        ILogger<ApplicationConfigController> logger, 
-        IEmailTemplateRepository emailTemplateRepository)
+        ApplicationConfigService appConfigService,
+        IEmailTemplateRepository emailTemplateRepository, SaaSClientLogger<ApplicationConfigController> logger)
     {
         this.appConfigService = appConfigService;
         this.emailTemplateRepository = emailTemplateRepository;
@@ -197,5 +196,7 @@ public class ApplicationConfigController : BaseController
 
         return RedirectToAction("Index");
     }
+
+
 
 }

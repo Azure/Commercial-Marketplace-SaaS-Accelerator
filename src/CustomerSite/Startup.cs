@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 using Azure.Identity;
+using Marketplace.SaaS.Accelerator.CustomerSite.Controllers;
 using Marketplace.SaaS.Accelerator.CustomerSite.WebHook;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
@@ -164,6 +165,7 @@ public class Startup
         services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
         services.AddScoped<IEventsRepository, EventsRepository>();
         services.AddScoped<IEmailService, SMTPEmailService>();
+        services.AddScoped<SaaSClientLogger<HomeController>>();
         services.AddScoped<IWebNotificationService, WebNotificationService>();
     }
 }
