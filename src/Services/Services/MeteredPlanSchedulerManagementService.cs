@@ -4,7 +4,11 @@ using System.Linq;
 using System.Text.Json;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.DataAccess.Services;
+using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Helpers;
 using Marketplace.SaaS.Accelerator.Services.Models;
+using Microsoft.Marketplace.SaaS.Models;
 
 namespace Marketplace.SaaS.Accelerator.Services.Services;
 
@@ -13,11 +17,36 @@ namespace Marketplace.SaaS.Accelerator.Services.Services;
 /// </summary>
 public class MeteredPlanSchedulerManagementService
 {
+    /// <summary>
+    /// Scheduler Frequency Repository Interface
+    /// </summary>
     private ISchedulerFrequencyRepository frequencyRepository;
+    /// <summary>
+    /// Metered Plan Scheduler Management Repository Interface
+    /// </summary>
     private IMeteredPlanSchedulerManagementRepository schedulerRepository;
+    /// <summary>
+    /// Scheduler Manager View Repository Interface
+    /// </summary>
     private ISchedulerManagerViewRepository schedulerViewRepository;
+    /// <summary>
+    /// Subscription UsageLogs Repository Interface
+    /// </summary>
     private ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository;
+    /// <summary>
+    /// Email Service Interface
+    /// </summary>
+    private IEmailService emailService;
+    /// <summary>
+    /// Email Helper utility
+    /// </summary>
+    private EmailHelper emailHelper;
+
+    /// <summary>
+    /// Application Config Repository
+    /// </summary>
     private IApplicationConfigRepository applicationConfigRepository;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MeteredPlanSchedulerManagementService"/> class.
@@ -26,12 +55,34 @@ public class MeteredPlanSchedulerManagementService
     /// <param name="schedulerFrequencyRepository">The Frequency attributes repository.</param>
     /// <param name="schedulerManagerViewRepository">The Scheduler Manager View attributes repository.</param>
 
-    public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository schedulerFrequencyRepository, IMeteredPlanSchedulerManagementRepository meteredPlanSchedulerManagementRepository, ISchedulerManagerViewRepository schedulerManagerViewRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository)
+    public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository schedulerFrequencyRepository, 
+            IMeteredPlanSchedulerManagementRepository meteredPlanSchedulerManagementRepository,
+            ISchedulerManagerViewRepository schedulerManagerViewRepository, 
+            ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
+            IApplicationConfigRepository applicationConfigRepository,
+            IEmailTemplateRepository emailTemplateRepository,
+            IEmailService emailService)
     {
         this.frequencyRepository = schedulerFrequencyRepository;
         this.schedulerRepository = meteredPlanSchedulerManagementRepository;
         this.schedulerViewRepository = schedulerManagerViewRepository;
         this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
+        this.emailService = emailService;
+        this.emailHelper = new EmailHelper(applicationConfigRepository, null, emailTemplateRepository, null, null);
+
+    }
+
+    public MeteredPlanSchedulerManagementService(ISchedulerFrequencyRepository schedulerFrequencyRepository,
+        IMeteredPlanSchedulerManagementRepository meteredPlanSchedulerManagementRepository,
+        ISchedulerManagerViewRepository schedulerManagerViewRepository,
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
+        IApplicationConfigRepository applicationConfigRepository)
+    {
+        this.frequencyRepository = schedulerFrequencyRepository;
+        this.schedulerRepository = meteredPlanSchedulerManagementRepository;
+        this.schedulerViewRepository = schedulerManagerViewRepository;
+        this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
+        this.applicationConfigRepository = applicationConfigRepository;
         this.applicationConfigRepository = applicationConfigRepository;
     }
 
@@ -207,6 +258,26 @@ public class MeteredPlanSchedulerManagementService
 
     }
 
+    public bool CheckIfSchedulerRun(int id, string schedulerName)
+    {
+        DateTime? lastRunTime = null;
+        var scheduledItem = this.schedulerRepository.Get(id);
+        var meteredAudits = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(Convert.ToInt32(scheduledItem.SubscriptionId));
+        var scheduledItemView = this.schedulerViewRepository.GetById(id);
+        foreach (var auditLog in meteredAudits)
+        {
+            var MeteringUsageRequest = JsonSerializer.Deserialize<MeteringUsageRequest>(auditLog.RequestJson);
+
+            if ((MeteringUsageRequest.Dimension == scheduledItemView.Dimension) && (auditLog.RunBy == $"Scheduler - {schedulerName}"))
+            {
+                    return true;
+            }
+
+        }
+        return false;
+
+    }
+
     /// <summary>
     /// Saves the Metered Plan Scheduler Management Model attributes.
     /// </summary>
@@ -255,6 +326,28 @@ public class MeteredPlanSchedulerManagementService
             Id = id
         };
         this.schedulerRepository.Remove(meteredPlanScheduler);
+    }
+
+    public  void SendSchedulerEmail(SchedulerManagerViewModel schedulerTask,MeteredAuditLogs meteredAuditItem)
+    {
+        var emailContent = new EmailContentModel();
+        
+        if ((meteredAuditItem.StatusCode== "Accepted")|| (meteredAuditItem.StatusCode == "Missing"))
+        {
+            //Success
+            emailContent = this.emailHelper.PrepareMeteredEmailContent(schedulerTask.SchedulerName, schedulerTask.SubscriptionName, meteredAuditItem.StatusCode, meteredAuditItem.ResponseJson);
+        }
+        else
+        {
+            //Faliure
+            emailContent = this.emailHelper.PrepareMeteredEmailContent(schedulerTask.SchedulerName, schedulerTask.SubscriptionName, "Failure", meteredAuditItem.ResponseJson);
+        }
+
+        if (!string.IsNullOrWhiteSpace(emailContent.ToEmails))
+        {
+            this.emailService.SendEmail(emailContent);
+        }
+
     }
 
 }

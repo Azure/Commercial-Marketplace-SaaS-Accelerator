@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
@@ -16,6 +17,12 @@ public class ApplicationConfigRepository : IApplicationConfigRepository
     /// The context.
     /// </summary>
     private readonly SaasKitContext context;
+
+
+    /// <summary>
+    /// The disposed.
+    /// </summary>
+    private bool disposed = false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ApplicationConfigRepository"/> class.
@@ -35,7 +42,7 @@ public class ApplicationConfigRepository : IApplicationConfigRepository
     /// </returns>
     public string GetValueByName(string name)
     {
-        return this.context.ApplicationConfiguration.Where(s => s.Name == name).FirstOrDefault()?.Value;
+        return this.context.ApplicationConfiguration.Where(s => s.Name == name).FirstOrDefault()?.Value.ToString();
     }
 
     /// <summary>
@@ -86,4 +93,6 @@ public class ApplicationConfigRepository : IApplicationConfigRepository
         }
         return false;
     }
+
+ 
 }
