@@ -24,7 +24,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.Custom
                 GO");
         }
 
-        public static void BaselineV7_DeSeedData(this MigrationBuilder migrationBuilder)
+        public static void BaselineV8_DeSeedData(this MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@$"
                 Delete from [dbo].[ApplicationConfiguration] where [Name]= 'EnablesSuccessfulSchedulerEmail'

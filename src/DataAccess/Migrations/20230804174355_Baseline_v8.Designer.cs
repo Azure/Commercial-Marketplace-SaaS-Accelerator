@@ -13,7 +13,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 {
     [DbContext(typeof(SaasKitContext))]
     [Migration("20230804174355_Baseline_v8")]
-    partial class Baseline_v7
+    partial class Baseline_v8
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
