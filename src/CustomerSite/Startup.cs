@@ -166,5 +166,6 @@ public class Startup
         services.AddScoped<IEventsRepository, EventsRepository>();
         services.AddScoped<IEmailService, SMTPEmailService>();
         services.AddScoped<SaaSClientLogger<HomeController>>();
+        services.AddScoped<IWebNotificationService, WebNotificationService>();
     }
 }
