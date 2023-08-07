@@ -160,7 +160,7 @@ public class EmailHelper
             throw new Exception(" Error while sending an email, please check the configuration. ");
         }
 
-        body=body.Replace("${{SubscriptionName}}", subscriptionName).Replace("${{SchedulerTaskName}}", schedulerTaskName).Replace("${{ResponseJson}}", responseJson);
+        body=body.Replace("****SubscriptionName****", subscriptionName).Replace("****SchedulerTaskName****", schedulerTaskName).Replace("****ResponseJson****", responseJson);
 
         emailContent.BCCEmails = bccReceipents;
         emailContent.CCEmails = ccReceipents;
