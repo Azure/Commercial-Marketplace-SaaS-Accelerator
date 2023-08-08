@@ -101,4 +101,9 @@ public class ApplicationConfigService
             return false;
         }
     }
+
+    public string GetValueByName(string configName)
+    {
+        return this.appConfigRepository.GetValueByName(configName);
+    }
 }
