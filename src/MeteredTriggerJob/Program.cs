@@ -16,6 +16,10 @@ namespace Marketplace.SaaS.Accelerator.MeteredTriggerJob;
 
 class Program
 {
+    /// <summary>
+    /// Entery point to the scheduler engine
+    /// </summary>
+    /// <param name="args"></param>
     static void Main (string[] args)
     {
 
@@ -39,11 +43,14 @@ class Program
         var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
 
         var services = new ServiceCollection()
-            .AddDbContext<SaasKitContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")))
+            .AddDbContext<SaasKitContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient)
             .AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>()
             .AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>()
             .AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>()
             .AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>()
+            .AddScoped<IApplicationLogRepository, ApplicationLogRepository>()
+            .AddScoped<IEmailService, SMTPEmailService>()
+            .AddScoped<IEmailTemplateRepository, EmailTemplateRepository>()
             .AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>()
             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new SaaSClientLogger<MeteredBillingApiService>()))
             .AddSingleton<Executor, Executor>()
