@@ -293,7 +293,7 @@ Write-host "      ➡️ Add SQL Server Firewall rules"
 az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowAzureIP --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0" --output $azCliOutput
 if ($env:ACC_CLOUD -eq $null){
     Write-host "      ➡️ Running in local environment - Add current IP to firewall"
-	$publicIp = (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
+	$publicIp = & "curl" -4 https://ifconfig.co # (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
     az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowIP --start-ip-address "$publicIp" --end-ip-address "$publicIp" --output $azCliOutput
 }
 Write-host "      ➡️ Create SQL DB"
@@ -347,10 +347,13 @@ Write-host "      ➡️ Execute SQL schema/data script"
 Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -Username $SQLAdminLogin -Password $SQLAdminLoginPassword 
 
 Write-host "   🔵 Deploy Code to Admin Portal"
-az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --src-path "../Publish/AdminSite.zip" --type zip --output $azCliOutput
+#az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --src-path "../Publish/AdminSite.zip" --type zip --output $azCliOutput
+$AccessToken = (Get-AzAccessToken).Token
+& "curl" -X POST -H "Authorization: Bearer $AccessToken" -T "../Publish/AdminSite.zip" https://$WebAppNameAdmin.azurewebsites.net/api/publish?type=zip -v
 
 Write-host "   🔵 Deploy Code to Customer Portal"
-az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --src-path "../Publish/CustomerSite.zip" --type zip --output $azCliOutput
+#az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --src-path "../Publish/CustomerSite.zip" --type zip --output $azCliOutput
+& "curl" -X POST -H "Authorization: Bearer $AccessToken" -T "../Publish/CustomerSite.zip" https://$WebAppNamePortal.azurewebsites.net/api/publish?type=zip -v
 
 Write-host "   🔵 Clean up"
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
