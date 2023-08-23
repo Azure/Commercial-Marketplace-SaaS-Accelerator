@@ -349,11 +349,11 @@ Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLD
 Write-host "   🔵 Deploy Code to Admin Portal"
 #az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --src-path "../Publish/AdminSite.zip" --type zip --output $azCliOutput
 $AccessToken = (Get-AzAccessToken).Token
-& "curl" -X POST -H "Authorization: Bearer $AccessToken" -T "../Publish/AdminSite.zip" https://$WebAppNameAdmin.azurewebsites.net/api/publish?type=zip -v
+& "curl" -X POST -H "Authorization: Bearer $AccessToken" -T "../Publish/AdminSite.zip" https://$WebAppNameAdmin.scm.azurewebsites.net/api/publish?type=zip -v
 
 Write-host "   🔵 Deploy Code to Customer Portal"
 #az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --src-path "../Publish/CustomerSite.zip" --type zip --output $azCliOutput
-& "curl" -X POST -H "Authorization: Bearer $AccessToken" -T "../Publish/CustomerSite.zip" https://$WebAppNamePortal.azurewebsites.net/api/publish?type=zip -v
+& "curl" -X POST -H "Authorization: Bearer $AccessToken" -T "../Publish/CustomerSite.zip" https://$WebAppNamePortal.scm.azurewebsites.net/api/publish?type=zip -v
 
 Write-host "   🔵 Clean up"
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
