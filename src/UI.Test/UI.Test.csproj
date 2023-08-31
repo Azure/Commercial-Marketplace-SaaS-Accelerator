@@ -22,12 +22,12 @@
 	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
+	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
 	  <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
 	  <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
 	  <PackageReference Include="coverlet.collector" Version="6.0.0" />
-	  <PackageReference Include="Selenium.WebDriver" Version="4.10.0" />
-	  <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="114.0.5735.9000" />
+	  <PackageReference Include="Selenium.WebDriver" Version="4.11.0" />
+	  <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="116.0.5845.9600" />
   </ItemGroup>
 
 </Project>
