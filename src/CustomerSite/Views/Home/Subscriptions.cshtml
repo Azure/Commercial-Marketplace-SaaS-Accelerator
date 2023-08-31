@@ -29,6 +29,7 @@
                                         <th>Plan</th>
                                         <th>Quantity</th>
                                         <th>Status</th>
+                                        <th>Installation</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -54,6 +55,15 @@
                                                 }
                                             </td>
                                             <td class="text-left">@subscription.SubscriptionStatus</td>
+                                            <td class="text-left">
+                                                @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
+                                                {
+                                                    <button id="frmButton" type="button" onclick="window.open('https://aka.ms/mrmpoc')" class="btn btn-primary text-right">Install</button>
+                                                }else{
+                                                    <button id="frmButton" type="button" disabled="disabled" class="btn btn-primary text-right">Install</button>
+                                                }
+
+                                            </td>
                                             <td class="text-left  cm-ellipsis">
                                                 <div class="nav-item dropdown">
                                                     <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
