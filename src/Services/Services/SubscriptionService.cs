@@ -67,6 +67,10 @@ public class SubscriptionService
             UserId = customerUserId == 0 ? this.currentUserId : customerUserId,
             PurchaserEmail = subscriptionDetail.Purchaser.EmailId,
             PurchaserTenantId = subscriptionDetail.Purchaser.TenantId,
+            AmpOfferId = subscriptionDetail.OfferId,
+            Term = subscriptionDetail.Term.TermUnit.ToString(),
+            StartDate = subscriptionDetail.Term.StartDate.ToUniversalTime().DateTime,
+            EndDate = subscriptionDetail.Term.EndDate.ToUniversalTime().DateTime
         };
         return this.subscriptionRepository.Save(newSubscription);
     }
@@ -148,12 +152,19 @@ public class SubscriptionService
         {
             existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
         }
-            
+
         SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
         {
             Id = subscription.AmpsubscriptionId,
             SubscribeId = subscription.Id,
             PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId,
+            OfferId = subscription.AmpOfferId,
+            Term = new TermResult
+            {
+                StartDate = subscription.StartDate.GetValueOrDefault(),
+                EndDate = subscription.EndDate.GetValueOrDefault(),
+                TermUnit = (TermUnitEnum)Enum.Parse(typeof(TermUnitEnum), subscription.Term ?? "P1M")
+            },
             Quantity = subscription.Ampquantity,
             Name = subscription.Name,
             SubscriptionStatus = this.GetSubscriptionStatus(subscription.SubscriptionStatus),

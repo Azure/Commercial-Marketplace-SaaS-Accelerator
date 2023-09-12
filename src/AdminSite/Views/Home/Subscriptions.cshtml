@@ -36,6 +36,7 @@
                                         <th>Purchaser Email</th>
                                         <th>Marketplace Subscription Id</th>
                                         <th>Subscription Name</th>
+                                        <th>Offer</th>
                                         <th>Plan</th>
                                         <th>Quantity</th>
                                         <th>Status</th>
@@ -58,6 +59,7 @@
                                                 @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
                                                 @subscription.Name
                                             </td>
+                                            <td class="text-left">@subscription.OfferId</td>
                                             <td class="text-left">@subscription.PlanId</td>
                                             <td class="text-left">
                                                 @if (@subscription.IsPerUserPlan)
