@@ -163,7 +163,6 @@ public class SubscriptionService
             {
                 StartDate = subscription.StartDate.GetValueOrDefault(),
                 EndDate = subscription.EndDate.GetValueOrDefault(),
-                TermUnit = (TermUnitEnum)Enum.Parse(typeof(TermUnitEnum), subscription.Term ?? "P1M")
             },
             Quantity = subscription.Ampquantity,
             Name = subscription.Name,
@@ -173,6 +172,10 @@ public class SubscriptionService
             CustomerName = subscription.User?.FullName,
             IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
         };
+
+        if (!Enum.TryParse<TermUnitEnum>(subscription.Term, out var termUnit))
+            termUnit = TermUnitEnum.P1M;
+        subscritpionDetail.Term.TermUnit = termUnit;
 
         subscritpionDetail.Purchaser = new PurchaserResult();
         subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
