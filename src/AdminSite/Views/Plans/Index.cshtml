@@ -12,16 +12,17 @@
             </div>
 
             <div id="myModal">
+                
                 @if (Model != null && Model.Count() > 0)
                 {
                     <div class="table-responsive mt20">
-                        <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
+                        <table class="table table-bordered dt-responsive cm-table text-center" width="100%" cellspacing="0">
                             <thead class="cm-table-head">
                                 <tr>
-                                    <th>Plan Name</th>
-                                    <th>Description</th>
-                                    <th>Offer</th>
-                                    <th>Action</th>
+                                    <th class="text-center">Plan Name</th>
+                                    <th class="text-center">Description</th>
+                                    <th class="text-center">Offer</th>
+                                    <th class="text-center">Action</th>
 
                                 </tr>
                             </thead>
@@ -39,13 +40,13 @@
                                         <td class="text-left">
                                             @item.OfferName
                                         </td>
-                                        <td class="text-left cm-ellipsis">
-                                            <div class="nav-item dropdown">
-                                                <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                        <td class="text-center cm-ellipsis">
+                                            @* <div class="nav-item dropdown"> *@
+                                            <a class="nav-link dropdown cm-link-button  text-center" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                 <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                    <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewPlandetailsById('@item.PlanGUID')">Edit</a>
+                                                    <a class="dropdown-item cm-dropdown-option" data-bs-target="#myModal" onclick="ViewPlandetailsById('@item.PlanGUID')">Edit</a>
                                                 </div>
-                                            </div>
+                                            @* </div> *@
                                         </td>
                                     </tr>
                                     i++;
@@ -66,6 +67,7 @@
                     </div>
 
                 }
+          
             </div>
         </div>
     </div>

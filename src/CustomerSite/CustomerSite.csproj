@@ -11,9 +11,17 @@
 
   <ItemGroup>
     <Compile Remove="Context\**" />
+    <Compile Remove="wwwroot\lib\bootstrap\4.4.1\**" />
+    <Compile Remove="wwwroot\lib\bootstrap\dist\**" />
     <Content Remove="Context\**" />
+    <Content Remove="wwwroot\lib\bootstrap\4.4.1\**" />
+    <Content Remove="wwwroot\lib\bootstrap\dist\**" />
     <EmbeddedResource Remove="Context\**" />
+    <EmbeddedResource Remove="wwwroot\lib\bootstrap\4.4.1\**" />
+    <EmbeddedResource Remove="wwwroot\lib\bootstrap\dist\**" />
     <None Remove="Context\**" />
+    <None Remove="wwwroot\lib\bootstrap\4.4.1\**" />
+    <None Remove="wwwroot\lib\bootstrap\dist\**" />
   </ItemGroup>
 
   <ItemGroup>

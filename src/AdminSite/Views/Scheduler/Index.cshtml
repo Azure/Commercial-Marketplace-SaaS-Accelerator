@@ -6,10 +6,14 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 <div class="">
     <div class="">
-        <div class="card-body">
-            <div class="text-center">
+        <div class="card-body text-center">
+            <div>
                 <span class="cm-section-heading">Current Metered Plan Scheduled Trigger</span>
-                <button type="submit"  onclick="@("window.location.href='" + @Url.Action("NewScheduler", "Scheduler") + "'");" class="cm-button-default text-right float-right">Add New Scheduled Metered Trigger</button>
+                
+            </div>
+            <div>
+                <button type="submit" onclick="@("window.location.href='" + @Url.Action("NewScheduler", "Scheduler") + "'");" class="btn float-right cm-button-default">Add New Scheduled Metered Trigger</button>
+
             </div>
         </div>
             <div id="myModal">

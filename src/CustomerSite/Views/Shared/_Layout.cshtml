@@ -5,17 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Landing Page</title>
     <link rel="stylesheet" href="~/css/customer-site.css" />
-
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script defer src="~/js/script.js"></script>
     <link href="~/lib/Datatable/css/dataTables.bootstrap.min.css" rel="stylesheet" />
     <link href="~/lib/Datatable/css/responsive.bootstrap.min.css" rel="stylesheet" />
     <link href="~/lib/Datatable/css/jquery.dataTables.min.css" rel="stylesheet" />
-    <link href="~/lib/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/css/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/customer-custom.css" />
     <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
-    <link href="~/lib/bootstrap/4.4.1/css/customer-offcanvas.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap/customer-offcanvas.css" rel="stylesheet" />
+    
 </head>
 <body>
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark cm-top-nav-bar">
@@ -30,7 +31,7 @@
 
             </div>
 
-            <div class="form-inline my-2 my-lg-0">
+            <div class="form-inline my-2 my-lg-0 ms-auto">
                 @if (this.User.Identity.IsAuthenticated)
                 {
                     <span class="cm-username text-white">@User.Identity.Name&nbsp;</span>
@@ -72,13 +73,13 @@
 
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/jquery/dist/jquery.js"></script>
-    <script src="~/lib/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
+    <script src="~/js/script.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" asp-append-version="true"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" asp-append-version="true"></script>
-    <script src="~/lib/bootstrap/4.4.1/js/offcanvas.js"></script>
-
+    <script src="~/lib/bootstrap/offcanvas.js"></script>
+    
     @RenderSection("Scripts", required: false)
 </body>
 </html>
