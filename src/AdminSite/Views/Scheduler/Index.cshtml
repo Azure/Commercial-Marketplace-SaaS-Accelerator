@@ -8,10 +8,14 @@
     @if ((this.TempData["SupportMeteredBilling"] != null) && (this.TempData["SupportMeteredBilling"].ToString() == "1"))
     {
     <div class="">
-        <div class="card-body">
-            <div class="text-center">
+        <div class="card-body text-center">
+            <div>
                 <span class="cm-section-heading">Current Metered Plan Scheduled Trigger</span>
-                <button type="submit"  onclick="@("window.location.href='" + @Url.Action("NewScheduler", "Scheduler") + "'");" class="cm-button-default text-right float-right">Add New Scheduled Metered Trigger</button>
+                
+            </div>
+            <div>
+                <button type="submit" onclick="@("window.location.href='" + @Url.Action("NewScheduler", "Scheduler") + "'");" class="btn float-right cm-button-default">Add New Scheduled Metered Trigger</button>
+
             </div>
         </div>
             <div id="myModal">

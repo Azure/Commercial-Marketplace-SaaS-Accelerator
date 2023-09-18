@@ -1,10 +1,11 @@
 ﻿@model List<Marketplace.SaaS.Accelerator.DataAccess.Entities.SubscriptionAuditLogs>
 
+
 <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
         <div class="modal-header header-bg">
-            <h4><span class="cm-section-heading"> Activity Log</span></h4>
-            <button type="button" class="close text-right" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"><span class="cm-section-heading"> Activity Log</span></h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
             <div class="card card-header mb0 pb0">
@@ -41,6 +42,10 @@
                     }
                 </tbody>
             </table>
+            @* <div class="modal-footer">
+                <button type="button" class="btn-close" data-bs-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>Close</button>
+                
+            </div> *@
             @*<div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>Cancel</button>
             </div>*@
