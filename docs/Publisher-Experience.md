@@ -1,6 +1,8 @@
 # Publisher Portal - Sample Web Application
 
 ## Table of contents
+
+<!-- no toc -->
   - [Table of contents](#table-of-contents)
   - [Overview](#overview)
   - [Manage new subscription landing page input fields](#manage-new-subscription-landing-page-input-fields)
@@ -13,8 +15,9 @@
   - [Change quantity](#change-quantity)
   - [Emit usage events](#emit-usage-events)
   - [Unsubscribe](#unsubscribe)
-  - [View activity log](#view-activity-log)  
+  - [View activity log](#view-activity-log)
   - [External Web Notification Setup](#external-web-notification-setup)
+
   - [Metered Scheduler Manager](./Metered-Scheduler-Manager-Instruction.md)
 
 ## Overview
@@ -285,7 +288,6 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 The "External Notification Configuration" feature enables publishers to set up an external notification URL to receive event notifications for specific actions performed by customers. Publishers can configure the URL to which notifications will be sent when customers interact on thie SaaS Accelerator instance with the following events:
 
 1. **Subscribe or Activate Button Click:** Whenever a customer clicks on the "Subscribe" or "Activate" button on the Landing Page, an event notification will be triggered.
-
 2. **Webhook Notifications is received:** This feature supports various webhook notifications, including "Change Plan," "Change Quantity," and "Unsubscribe" events. Whenever any of these events occur and as they are received on Webhook endpoint, the corresponding notifications will be sent to the configured external URL.
 
 ### How to setup
@@ -294,105 +296,113 @@ The "External Notification Configuration" feature enables publishers to set up a
 1. Edit the config ```WebNotificationUrl``` and set the external web notification URL value (If this setting doesnt exist please make sure you are running the latest version of the Accelerator)
 
 ### Monitoring and payload information
-1. ISV can monitor these events in the Application log page
-1. Below is the format of the body, ISV can expect when they recieve the notification. ```payloadFromLandingpage``` is empty for Webhook notifications and ```payloadFromWebhook``` is empty for Landingpage notification 
+
+1. ISV can review these events in the Application log page
+1. Below is the format of the body, ISV can expect when they recieve the notification. 
+
+    `payloadFromLandingpage` is empty for Webhook notifications and `payloadFromWebhook` is empty for Landingpage notification 
 
 
-#### Example payload from landingpage
-```
-"body": {
-        "applicationName": "Contoso", [App Name from Config]
-        "eventType": "LandingPage",   [LandingPage/Webhook]
-        "payloadFromLandingpage": {
-            "landingpageSubscriptionParams": [
-                {
-                    "key": "country",
-                    "value": "test"
-                },
-                {
-                    "key": "phone",
-                    "value": "test"
-                }
-            ],
-            "id": "<Guid>",
-            "publisherId": "test",
-            "offerId": "test",
-            "name": "test",
-            "saasSubscriptionStatus": "PendingFulfillmentStart",
-            "planId": "basic",
-            "quantity": 0,
-            "purchaser": {
-                "tenantId": "<Guid>",
-                "emailId": "test",
-                "objectId": "<Guid>"
+#### Landing page sample payload
+
+```json
+{
+    "applicationName": "Contoso", // App name from settings
+    "eventType": "LandingPage",   // LandingPage or Webhook
+    "payloadFromLandingpage": {
+        "landingpageSubscriptionParams": // From custom landing page fields
+            {
+                "key": "country",
+                "value": "test"
             },
-            "beneficiary": {
-                "tenantId": "<Guid>",
-                "emailId": "test@test.com",
-                "puid": null,
-                "objectId": "<Guid>"
-            },
-            "term": {
-                "endDate": "0001-01-01T00:00:00+00:00",
-                "startDate": "0001-01-01T00:00:00+00:00",
-                "termUnit": "P1M"
+            {
+                "key": "phone",
+                "value": "test"
             }
+        ],
+        "id": "<Guid>",
+        "publisherId": "test",
+        "offerId": "test",
+        "name": "test",
+        "saasSubscriptionStatus": "PendingFulfillmentStart",
+        "planId": "basic",
+        "quantity": 0,
+        "purchaser": {
+            "tenantId": "<Guid>",
+            "emailId": "test",
+            "objectId": "<Guid>"
         },
-        "payloadFromWebhook": {}
+        "beneficiary": {
+            "tenantId": "<Guid>",
+            "emailId": "test@test.com",
+            "puid": null,
+            "objectId": "<Guid>"
+        },
+        "term": {
+            "endDate": "0001-01-01T00:00:00+00:00",
+            "startDate": "0001-01-01T00:00:00+00:00",
+            "termUnit": "P1M"
+        }
+    },
+    "payloadFromWebhook": {}
+}
+```
+
+#### Webhook `Unsubscribe` event sample payload
+
+```json
+{
+    "applicationName": "Contoso", // App name from settings
+    "eventType": "Webhook",  // LandingPage or Webhook
+    "payloadFromLandingpage": {},
+    "payloadFromWebhook": {
+        "action": "Unsubscribe",
+        "activityId": "<Guid>",
+        "offerId": "test",
+        "Id": "<Guid>",
+        "PlanId": "test",
+        "PublisherId": "test",
+        "Quantity": 1,
+        "status": "Succeeded",
+        "subscriptionId": "<Guid>",
+        "timeStamp": "2023-07-01T21:26:08.1492174+00:00",
+        "subscription": {
+            "id": "<Guid>",
+            "name": "test",
+            "offerId": "test",
+            "planId": "test",
+            "quantity": null,
+            "saasSubscriptionStatus": "Unsubscribed"
+        }
     }
 ```
 
-#### Example payload from Webhook events
-```
-"body": {
-        "applicationName": "Contoso", [App Name from Config]
-        "eventType": "Webhook",  [LandingPage/Webhook]
-        "payloadFromLandingpage": {},
-        "payloadFromWebhook": {
-            "action": "ChangePlan",
-            "activityId": "<Guid>",
-            "offerId": "test",
-            "Id": "<Guid>",
-            "PlanId": "basic",
-            "PublisherId": "test",
-            "Quantity": 1,
-            "status": "InProgress",
-            "subscriptionId": "<Guid>",
-            "timeStamp": "2023-07-01T21:23:24.2354373+00:00",
-            "subscription": {
-                "id": "<Guid>",
-                "name": "test",
-                "offerId": "test",
-                "planId": "test",
-                "quantity": null,
-                "saasSubscriptionStatus": "Subscribed"
-            }
-        }
-    }
+#### Webhook `ChangePlan` event sample payload
 
-   "body": {
-        "applicationName": "Contoso", [App Name from Config]
-        "eventType": "Webhook",  [LandingPage/Webhook]
-        "payloadFromLandingpage": {},
-        "payloadFromWebhook": {
-            "action": "Unsubscribe",
-            "activityId": "<Guid>",
+```json
+{
+    "applicationName": "Contoso", // App name from settings
+    "eventType": "Webhook",  // LandingPage or Webhook
+    "payloadFromLandingpage": {},
+    "payloadFromWebhook": {
+        "action": "ChangePlan",
+        "activityId": "<Guid>",
+        "offerId": "test",
+        "Id": "<Guid>",
+        "PlanId": "basic",
+        "PublisherId": "test",
+        "Quantity": 1,
+        "status": "InProgress",
+        "subscriptionId": "<Guid>",
+        "timeStamp": "2023-07-01T21:23:24.2354373+00:00",
+        "subscription": {
+            "id": "<Guid>",
+            "name": "test",
             "offerId": "test",
-            "Id": "<Guid>",
-            "PlanId": "test",
-            "PublisherId": "test",
-            "Quantity": 1,
-            "status": "Succeeded",
-            "subscriptionId": "<Guid>",
-            "timeStamp": "2023-07-01T21:26:08.1492174+00:00",
-            "subscription": {
-                "id": "<Guid>",
-                "name": "test",
-                "offerId": "test",
-                "planId": "test",
-                "quantity": null,
-                "saasSubscriptionStatus": "Unsubscribed"
-            }
+            "planId": "test",
+            "quantity": null,
+            "saasSubscriptionStatus": "Subscribed"
         }
     }
+}
 ```
