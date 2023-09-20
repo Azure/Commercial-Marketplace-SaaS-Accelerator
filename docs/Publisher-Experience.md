@@ -295,22 +295,37 @@ The "External Notification Configuration" feature enables publishers to set up a
 1. Go to Application configuration on the Admin portal
 1. Edit the config ```WebNotificationUrl``` and set the external web notification URL value (If this setting doesnt exist please make sure you are running the latest version of the Accelerator)
 
-### Monitoring and payload information
+### Monitoring 
 
-1. ISV can review these events in the Application log page
-1. Below is the format of the body, ISV can expect when they recieve the notification. 
+ISV can review these events in the Application log page of the administration portal
 
-    `payloadFromLandingpage` is empty for Webhook notifications and `payloadFromWebhook` is empty for Landingpage notification 
+### Payload information
 
+
+Below is the format of the body, ISV can expect when they recieve the notification. 
+
+`payloadFromLandingpage` is empty for Webhook notifications and `payloadFromWebhook` is empty for Landingpage notification.
+
+#### Interesting JSON values
+
+| Value | Notes |
+| -------- | ------- |
+| `applicationName` | App name from settings |
+| `eventType` | LandingPage or Webhook |
+| `payloadFromLandingpage` | Empty if `payloadFromWebhook` present |
+| `payloadFromWebhook` | Empty if `payloadFromLandingpage` present |
+| `payloadFromWebhook` > `action` | One of:  `ChangePlan`,  `ChangeQuantity`, `Renew`, `Suspend`, `Unsubscribe`, `Reinstate`. For more detail [see here](https://learn.microsoft.com/en-us/partner-center/marketplace/partner-center-portal/pc-saas-fulfillment-webhook). |
 
 #### Landing page sample payload
 
 ```json
 {
-    "applicationName": "Contoso", // App name from settings
-    "eventType": "LandingPage",   // LandingPage or Webhook
+    "applicationName": "Contoso",
+    "eventType": "LandingPage",
     "payloadFromLandingpage": {
-        "landingpageSubscriptionParams": // From custom landing page fields
+        "landingpageSubscriptionParams":
+        [
+            
             {
                 "key": "country",
                 "value": "test"
@@ -352,8 +367,8 @@ The "External Notification Configuration" feature enables publishers to set up a
 
 ```json
 {
-    "applicationName": "Contoso", // App name from settings
-    "eventType": "Webhook",  // LandingPage or Webhook
+    "applicationName": "Contoso", 
+    "eventType": "Webhook", 
     "payloadFromLandingpage": {},
     "payloadFromWebhook": {
         "action": "Unsubscribe",
@@ -375,14 +390,15 @@ The "External Notification Configuration" feature enables publishers to set up a
             "saasSubscriptionStatus": "Unsubscribed"
         }
     }
+}
 ```
 
 #### Webhook `ChangePlan` event sample payload
 
 ```json
 {
-    "applicationName": "Contoso", // App name from settings
-    "eventType": "Webhook",  // LandingPage or Webhook
+    "applicationName": "Contoso",
+    "eventType": "Webhook",
     "payloadFromLandingpage": {},
     "payloadFromWebhook": {
         "action": "ChangePlan",
