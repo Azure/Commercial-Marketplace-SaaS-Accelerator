@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 {
     [DbContext(typeof(SaasKitContext))]
-    [Migration("20230912052848_SubscriptionDetails")]
+    [Migration("20230912052848_SubscriptionDetails_v740")]
     partial class SubscriptionDetails
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
