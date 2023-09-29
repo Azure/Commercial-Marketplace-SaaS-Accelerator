@@ -16,6 +16,7 @@ public partial class Subscriptions
     public Guid AmpsubscriptionId { get; set; }
     public string SubscriptionStatus { get; set; }
     public string AmpplanId { get; set; }
+    public string AmpOfferId { get; set; }
     public bool? IsActive { get; set; }
     public int? CreateBy { get; set; }
     public DateTime? CreateDate { get; set; }
@@ -25,6 +26,11 @@ public partial class Subscriptions
     public int Ampquantity { get; set; }
     public string PurchaserEmail { get; set; }
     public Guid? PurchaserTenantId { get; set; }
+
+    public string Term { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+
 
     public virtual Users User { get; set; }
     public virtual ICollection<MeteredAuditLogs> MeteredAuditLogs { get; set; }

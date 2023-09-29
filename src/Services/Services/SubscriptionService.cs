@@ -67,6 +67,10 @@ public class SubscriptionService
             UserId = customerUserId == 0 ? this.currentUserId : customerUserId,
             PurchaserEmail = subscriptionDetail.Purchaser.EmailId,
             PurchaserTenantId = subscriptionDetail.Purchaser.TenantId,
+            AmpOfferId = subscriptionDetail.OfferId,
+            Term = subscriptionDetail.Term.TermUnit.ToString(),
+            StartDate = subscriptionDetail.Term.StartDate.ToUniversalTime().DateTime,
+            EndDate = subscriptionDetail.Term.EndDate.ToUniversalTime().DateTime
         };
         return this.subscriptionRepository.Save(newSubscription);
     }
@@ -148,12 +152,18 @@ public class SubscriptionService
         {
             existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
         }
-            
+
         SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
         {
             Id = subscription.AmpsubscriptionId,
             SubscribeId = subscription.Id,
             PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId,
+            OfferId = subscription.AmpOfferId,
+            Term = new TermResult
+            {
+                StartDate = subscription.StartDate.GetValueOrDefault(),
+                EndDate = subscription.EndDate.GetValueOrDefault(),
+            },
             Quantity = subscription.Ampquantity,
             Name = subscription.Name,
             SubscriptionStatus = this.GetSubscriptionStatus(subscription.SubscriptionStatus),
@@ -162,6 +172,10 @@ public class SubscriptionService
             CustomerName = subscription.User?.FullName,
             IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
         };
+
+        if (!Enum.TryParse<TermUnitEnum>(subscription.Term, out var termUnit))
+            termUnit = TermUnitEnum.P1M;
+        subscritpionDetail.Term.TermUnit = termUnit;
 
         subscritpionDetail.Purchaser = new PurchaserResult();
         subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
