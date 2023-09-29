@@ -46,6 +46,11 @@ public class SubscriptionsRepository : ISubscriptionsRepository
             existingSubscriptions.SubscriptionStatus = subscriptionDetails.SubscriptionStatus;
             existingSubscriptions.AmpplanId = subscriptionDetails.AmpplanId;
             existingSubscriptions.Ampquantity = subscriptionDetails.Ampquantity;
+            existingSubscriptions.AmpOfferId = subscriptionDetails.AmpOfferId;
+            existingSubscriptions.Term = subscriptionDetails.Term;
+            existingSubscriptions.StartDate = subscriptionDetails.StartDate; 
+            existingSubscriptions.EndDate = subscriptionDetails.EndDate;
+
             this.context.Subscriptions.Update(existingSubscriptions);
             this.context.SaveChanges();
             return existingSubscriptions.Id;

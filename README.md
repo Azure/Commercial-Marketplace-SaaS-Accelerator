@@ -20,21 +20,33 @@
 
 ---
 
+
+
+## Introduction
+
+The SaaS Accelerator is a production-ready solution designed to make it easier for Microsoft partners to sell their SaaS solutions via Microsoft Commercial Marketplace. Microsoft partners can use SaaS Accelerator to simplify the process of bringing their SaaS solutions to the Marketplace. It is a ready-to-use, community-supported solution providing the following capabilities:
+
+🚀 Quick & Easy Deployment: Go live in under 15 minutes with our low-code, production-ready solution.
+
+🔧 Turnkey Solution: Meets all technical prerequisites for your SaaS offers.
+
+💼 Subscriptions Simplified: A streamlined interface to optimize your subscription workflow.
+
+💲 Flexible Billing: Advanced capabilities for custom billing and pricing models.
+
+🛠️ Stay in Control: A dedicated adminstrative portal for managing all your customer subscriptions.
+
+Transform your SaaS game. Leverage SaaS Accelerator now!
+
+## Description
+
+The project is implemented in .NET and uses the commercial marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis). The SaaS Accelerator models how a typical SaaS platform interacts with the marketplace APIs to provision subscriptions for customers, enable logging, and manage commercial marketplace subscriptions. The SaaS Accelerator may be installed as-is or may be customized to support your requirements. 
+
 ## Stay current with the latest updates!
 
 The SaaS Accelerator project team releases regularly releases new versions. Please see the [release notes page](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/releases) for updates. We recommend keeping up to date with latest releases to stay current on security patches, bug fixes, and new features.
 
 To update your SaaS Accelerator installation, use the **Update script** [documented here](./docs/Installation-Instructions.md#update-to-a-newer-version-of-the-saas-accelerator).
-
-## Introduction
-
-This project is a community-supported reference implementation for integrating Software-as-a-Service (SaaS) solutions with Microsoft commercial marketplace SaaS offers. The SaaS Accelerator may be installed as-is or may be customized to support your requirements. The project provides the following capabilities.
-
-1. A configurable landing page for SaaS customers
-2. A webhook that listens for subscription changes
-3. A private portal for the publisher to monitor customer subscriptions
-
-The project is implemented in .NET and uses the commercial marketplace billing system, including the [SaaS Fulfillment API (v2)](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2) and [Marketplace Metering Service API](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/marketplace-metering-service-apis). The SaaS Accelerator models how a typical SaaS platform interacts with the marketplace APIs to provision subscriptions for customers, enable logging, and manage commercial marketplace subscriptions.
 
 ## Intended Use
 
