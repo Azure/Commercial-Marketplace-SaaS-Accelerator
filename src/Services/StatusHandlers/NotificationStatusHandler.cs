@@ -149,6 +149,7 @@ public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
             planEventName = "Unsubscribe";
         }
 
+
         string processStatus = "success";
         if (
             subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed.ToString() ||
@@ -168,6 +169,7 @@ public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
         {
             if (planEventName == "Activate" && isEmailEnabledForPendingActivation && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
             {
+                planEventName = "Pending Activation";
                 triggerEmail = true;
             }
 

@@ -130,6 +130,8 @@ public class EmailHelper
         emailContent.CCEmails = ccEmails;
         emailContent.ToEmails = toEmails;
         emailContent.IsActive = false;
+        emailContent.Subject = subject;
+        emailContent.Body = body;
         emailContent.CopyToCustomer = copyToCustomer;
         emailContent.FromEmail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
         emailContent.Password = this.applicationConfigRepository.GetValueByName("SMTPPassword");
