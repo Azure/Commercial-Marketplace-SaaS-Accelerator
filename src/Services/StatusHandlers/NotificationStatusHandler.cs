@@ -169,7 +169,6 @@ public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
         {
             if (planEventName == "Activate" && isEmailEnabledForPendingActivation && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
             {
-                planEventName = "Pending Activation";
                 triggerEmail = true;
             }
 
