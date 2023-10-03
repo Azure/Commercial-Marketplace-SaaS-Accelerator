@@ -149,7 +149,6 @@ public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
             planEventName = "Unsubscribe";
         }
 
-
         string processStatus = "success";
         if (
             subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed.ToString() ||
