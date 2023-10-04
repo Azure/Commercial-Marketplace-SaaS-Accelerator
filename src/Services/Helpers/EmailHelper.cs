@@ -53,7 +53,6 @@ public class EmailHelper
     /// Error while sending an email, please check the configuration.</exception>
     public EmailContentModel PrepareEmailContent(Guid subscriptionID, Guid planGuId, string processStatus, string planEventName, string subscriptionStatus)
     {
-        EmailContentModel emailContent = new EmailContentModel();
         string body = this.emailTemplateRepository.GetEmailBodyForSubscription(subscriptionID, processStatus);
         var subscriptionEvent = this.eventsRepository.GetByName(planEventName);
         var emailTemplateData = this.emailTemplateRepository.GetTemplateForStatus(subscriptionStatus);
@@ -130,6 +129,8 @@ public class EmailHelper
         emailContent.CCEmails = ccEmails;
         emailContent.ToEmails = toEmails;
         emailContent.IsActive = false;
+        emailContent.Subject = subject;
+        emailContent.Body = body;
         emailContent.CopyToCustomer = copyToCustomer;
         emailContent.FromEmail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
         emailContent.Password = this.applicationConfigRepository.GetValueByName("SMTPPassword");
