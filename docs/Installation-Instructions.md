@@ -37,7 +37,7 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
  -WebAppNamePrefix "SOME-UNIQUE-STRING" `
  -ResourceGroupForDeployment "SOME-RG-NAME" `
- -PublisherAdminUsers "user@email.com" `
+ -PublisherAdminUsers "user1@email.com,user2@email" `
  -Location "East US" 
  ```
 
