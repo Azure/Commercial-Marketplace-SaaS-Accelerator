@@ -489,6 +489,13 @@ public class HomeController : BaseController
                 usageViewModel.MeteredAuditLogs = new List<MeteredAuditLogs>();
                 usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId, true).OrderByDescending(s => s.CreatedDate).ToList();
                 usageViewModel.DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description");
+
+                if (this.saaSApiClientConfiguration.SupportMeteredBilling)
+                {
+                    this.TempData.Add("SupportMeteredBilling", "1");
+                    this.HttpContext.Session.SetString("SupportMeteredBilling", "1");
+                }
+
                 return this.View(usageViewModel);
             }
             else
