@@ -32,13 +32,18 @@ public class SchedulerManagerViewRepository : ISchedulerManagerViewRepository
     {
         this.context = context;
     }
+
     /// <summary>
-    /// Get all records for Scheduler Manager
+    /// Get all records for Scheduler Manager with SubscriptionId
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<SchedulerManagerView> GetAll()
+    public IEnumerable<SchedulerManagerViewExt> GetAll()
     {
-        return this.context.SchedulerManagerView;
+        return this.context.SchedulerManagerView.Join(this.context.MeteredPlanSchedulerManagement, 
+            v => v.Id, 
+            m => m.Id,
+            (v, m) => new SchedulerManagerViewExt(v) { SubscriptionId = m.SubscriptionId })
+            .ToArray();
     }
 
     /// <summary>

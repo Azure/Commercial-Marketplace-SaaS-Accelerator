@@ -14,7 +14,7 @@ public interface ISchedulerManagerViewRepository : IDisposable
     /// Get all scheduler Manager data
     /// </summary>
     /// <returns></returns>
-    IEnumerable<SchedulerManagerView> GetAll();
+    IEnumerable<SchedulerManagerViewExt> GetAll();
     /// <summary>
     /// Get  scheduler Manager data by Id
     /// </summary>

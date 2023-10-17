@@ -7,6 +7,8 @@ using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Helpers;
 using Marketplace.SaaS.Accelerator.Services.Models;
+using Microsoft.Extensions.Caching.Memory;
+
 namespace Marketplace.SaaS.Accelerator.Services.Services;
 
 /// <summary>
@@ -43,7 +45,6 @@ public class MeteredPlanSchedulerManagementService
     /// Application Config Repository
     /// </summary>
     private IApplicationConfigRepository applicationConfigRepository;
-
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MeteredPlanSchedulerManagementService"/> class.
@@ -133,27 +134,37 @@ public class MeteredPlanSchedulerManagementService
     {
         List<SchedulerManagerViewModel> schedulerList = new List<SchedulerManagerViewModel>();
         var allSchedulerViewData = this.schedulerViewRepository.GetAll().OrderBy(s => s.AMPSubscriptionId);
-        foreach (var item in allSchedulerViewData)
+        using (MemoryCache auditLogsCache = new(new MemoryCacheOptions()))
         {
-            SchedulerManagerViewModel schedulerView = new SchedulerManagerViewModel();
-            schedulerView.Id = item.Id;
-            schedulerView.PlanId = item.PlanId;
-            schedulerView.PurchaserEmail = item.PurchaserEmail;
-            schedulerView.SchedulerName = item.SchedulerName;
-            schedulerView.SubscriptionName = item.SubscriptionName;
-            schedulerView.AMPSubscriptionId = item.AMPSubscriptionId;
-            schedulerView.Dimension = item.Dimension;
-            schedulerView.Frequency = item.Frequency;
-            schedulerView.Quantity = item.Quantity;
-            schedulerView.StartDate = item.StartDate;
-            schedulerView.NextRunTime = item.NextRunTime;
-                
-            schedulerList.Add(schedulerView);
-        }
+            foreach (var item in allSchedulerViewData)
+            {
+                SchedulerManagerViewModel schedulerView = new SchedulerManagerViewModel();
+                schedulerView.Id = item.Id;
+                schedulerView.PlanId = item.PlanId;
+                schedulerView.PurchaserEmail = item.PurchaserEmail;
+                schedulerView.SchedulerName = item.SchedulerName;
+                schedulerView.SubscriptionName = item.SubscriptionName;
+                schedulerView.AMPSubscriptionId = item.AMPSubscriptionId;
+                schedulerView.Dimension = item.Dimension;
+                schedulerView.Frequency = item.Frequency;
+                schedulerView.Quantity = item.Quantity;
+                schedulerView.StartDate = item.StartDate;
+                schedulerView.NextRunTime = item.NextRunTime;
+                    
+                schedulerList.Add(schedulerView);
 
-        foreach (var item in schedulerList)
-        {
-            item.LastRunTime = this.GetSchedulerLastRunTime(item.Id,item.SchedulerName);
+                if (item.SubscriptionId.HasValue)
+                {
+                    var meteredAudits = auditLogsCache.GetOrCreate(item.SubscriptionId.Value, entry =>
+                    {
+                        entry.SlidingExpiration = TimeSpan.FromMinutes(1);
+                        return this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(item.SubscriptionId.Value);
+                    });
+
+                    var runBy = $"Scheduler - {item.SchedulerName}";
+                    schedulerView.LastRunTime = GetSchedulerLastRunTime(item.Dimension, runBy, meteredAudits);
+                }
+            }
         }
 
         return schedulerList;
@@ -231,28 +242,20 @@ public class MeteredPlanSchedulerManagementService
 
     }
 
-
-    public DateTime? GetSchedulerLastRunTime(int id,string schedulerName)
+    private static DateTime? GetSchedulerLastRunTime(string dimension, string runBy, List<MeteredAuditLogs> meteredAudits)
     {
-        DateTime? lastRunTime = null;
-        var scheduledItem = this.schedulerRepository.Get(id);
-        var meteredAudits = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(Convert.ToInt32(scheduledItem.SubscriptionId));
-        var scheduledItemView = this.schedulerViewRepository.GetById(id);
         foreach (var auditLog in meteredAudits)
         {
             var MeteringUsageRequest = JsonSerializer.Deserialize<MeteringUsageRequest>(auditLog.RequestJson);
 
-            if ((MeteringUsageRequest.Dimension == scheduledItemView.Dimension)&&(auditLog.RunBy == $"Scheduler - {schedulerName}"))
+            if ((MeteringUsageRequest.Dimension == dimension) && (auditLog.RunBy == runBy))
             {
-                if ((lastRunTime == null)|| (lastRunTime < auditLog.CreatedDate))
-                {
-                    lastRunTime = auditLog.CreatedDate;
-                }
+                //  the result is ordered by audit's created date descending so the first item will be the last run time
+                return auditLog.CreatedDate;
             }
-
         }
-        return lastRunTime;
 
+        return null;
     }
 
     public bool CheckIfSchedulerRun(int id, string schedulerName)
