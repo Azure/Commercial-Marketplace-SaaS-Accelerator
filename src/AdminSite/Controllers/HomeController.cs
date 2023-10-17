@@ -216,7 +216,7 @@ public class HomeController : BaseController
             if (this.saaSApiClientConfiguration.SupportMeteredBilling)
             {
                 this.TempData.Add("SupportMeteredBilling", "1");
-                this.HttpContext.Session.SetString("SupportMeteredBilling", "1");
+             
             }
             return this.View();
         }
@@ -493,7 +493,7 @@ public class HomeController : BaseController
                 if (this.saaSApiClientConfiguration.SupportMeteredBilling)
                 {
                     this.TempData.Add("SupportMeteredBilling", "1");
-                    this.HttpContext.Session.SetString("SupportMeteredBilling", "1");
+                    
                 }
 
                 return this.View(usageViewModel);
