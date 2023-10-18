@@ -63,7 +63,7 @@ public class MeteredPlanSchedulerManagementRepository : IMeteredPlanSchedulerMan
         if (entity.StartDate.HasValue)
         {
             int minute = entity.StartDate.Value.Minute;
-            if (entity.StartDate.Value.Minute >= 30)
+            if (entity.StartDate.Value.Minute >= 30 || entity.StartDate.Value.ToUniversalTime() < DateTime.UtcNow)
             {
                 minute = 60 - entity.StartDate.Value.Minute;
                 entity.StartDate = entity.StartDate.Value.AddMinutes(minute);
