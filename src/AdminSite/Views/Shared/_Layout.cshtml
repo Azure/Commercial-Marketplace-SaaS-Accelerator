@@ -116,7 +116,7 @@
                                     <div class="minline"><a class="left-nav nav-link collapse navbar-collapse navbar-text" id="navbarCollapse" asp-area="" asp-controller="Offers" asp-action="Index">Offers</a></div>
                                 </li>
 
-                                @if (this.Context.Session.GetString("SupportMeteredBilling") != null)
+                                @if (this.TempData["SupportMeteredBilling"] != null)
                                 {
                                     <li class="nav-item nav-link minline">
                                         <div class="minline">
