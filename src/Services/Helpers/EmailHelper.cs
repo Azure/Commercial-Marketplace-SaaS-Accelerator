@@ -133,7 +133,7 @@ public class EmailHelper
         emailContent.Body = body;
         emailContent.CopyToCustomer = copyToCustomer;
         emailContent.FromEmail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
-        emailContent.Password = this.applicationConfigRepository.GetValueByName("SMTPPassword");
+        emailContent.Password = KeyVaultReferenceResolver.ProcessKeyVaultReference(this.applicationConfigRepository.GetValueByName("SMTPPassword"));
         emailContent.SSL = bool.Parse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
         emailContent.UserName = this.applicationConfigRepository.GetValueByName("SMTPUserName");
         emailContent.Port = int.Parse(this.applicationConfigRepository.GetValueByName("SMTPPort"));
