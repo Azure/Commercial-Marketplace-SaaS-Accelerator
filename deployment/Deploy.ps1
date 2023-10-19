@@ -133,6 +133,31 @@ Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
 
 #endregion
 
+#region Check if KV exists
+
+#region Check If KeyVault Exists
+
+$KeyVaultApiUri="https://management.azure.com/subscriptions/$AzureSubscriptionID/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01"
+$KeyVaultApiBody='{"name": "'+$KeyVault+'","type": "Microsoft.KeyVault/vaults"}'
+
+$kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
+
+if( $kv_check.reason -eq "AlreadyExists")
+{
+	Write-Host "KeyVault name is already exists."
+	Write-Host ""
+	Write-Host "To Purge KeyVault please use the following doc:"
+	Write-Host "https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
+	Write-Host ""
+	Write-Host "You could use new KeyVault name by passing parameter -KeyVault"
+	Write-Host ""
+	Throw "🛑 KeyVault name is already in use. Please use different name"
+    Exit
+}
+
+
+#endregion
+
 #region Dowloading assets if provided
 
 # Download Publisher's PNG logo
