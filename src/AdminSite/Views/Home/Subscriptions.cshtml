@@ -17,16 +17,24 @@
         <form method="post">
             <div>
                 <div class="card-body">
-                    <div class="text-left">
-                        <span class="cm-section-heading">Subscriptions</span>
+                    <div>
+                        <div style="float:left">
+                            <span class="cm-section-heading">Subscriptions</span>
                         
+                        </div>
+                        <div style="float:right">
+                            <a onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}" class="btn cm-button">Fetch All Subscriptions</a>
+                        </div>
                     </div>
+                    <br />
+                    <br />
+
                     <hr />
                     <div class="filter-box">
                         <span>Filter: </span>
                         <input type="text" size="50" id="filterTextBox" placeholder="Enter any text to filter subscriptions" onkeyup="filterSubscriptions()">
                         <input type="checkbox" class="statusCheckbox" id="SubscribedOnly" onchange="filterSubscriptions()"/> Hide Unsubscribed
-                        <a onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}" class="btn cm-button">Fetch All Subscriptions</a>
+                        
                     
                     </div>
 
