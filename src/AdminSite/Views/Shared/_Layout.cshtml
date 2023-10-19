@@ -152,11 +152,15 @@
         </div>
 
         <div class="class2">
-            <div class="pb-3 container-fluid">
-                <partial name="_CookieConsentPartial" />
-                <main role="main" class="pb-3">
-                    @RenderBody()
-                </main>
+            <br />
+            <div class="container-fluid" style="padding-bottom: 1rem !important;">
+                <div class="container">
+                    <partial name="_CookieConsentPartial" />
+                    <main role="main" style="padding-bottom: 1rem !important;">
+                        @RenderBody()
+                    </main>
+                
+                </div>
             </div>
         </div>
     </div>
