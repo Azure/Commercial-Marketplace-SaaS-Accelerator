@@ -32,12 +32,12 @@ chmod +x dotnet-install.sh; `
 ./dotnet-install.sh; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
 dotnet tool install --global dotnet-ef; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.3.0 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.4.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
  -WebAppNamePrefix "SOME-UNIQUE-STRING" `
  -ResourceGroupForDeployment "SOME-RG-NAME" `
- -PublisherAdminUsers "user@email.com" `
+ -PublisherAdminUsers "user1@email.com,user2@email" `
  -Location "East US" 
  ```
 
@@ -65,6 +65,8 @@ The script above will perform the following actions.
  ```
 
 ## Update to a newer version of the SaaS Accelerator
+
+⚠️Caution: This will deploy/upgrade the Accelerator to the `<branch-to-deploy>` specified while running the upgrade command, which will replace the current version. If you have any custom changes, we recommend you implement a strategy to backup and replace them after the upgrade.
 
 If you already have deployed the SaaS Accelerator, but you want to update it so that you take advantage of new features developed, you can run the following command:
 
