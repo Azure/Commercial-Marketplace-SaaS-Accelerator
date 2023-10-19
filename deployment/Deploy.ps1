@@ -132,11 +132,11 @@ $kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=ap
 if( $kv_check.reason -eq "AlreadyExists")
 {
 	Write-Host ""
-	Write-Host "KeyVault name is already exists."
+	Write-Host "KeyVault name already exists."
 	Write-Host "To Purge KeyVault please use the following doc:"
 	Write-Host "https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
 	Write-Host "You could use new KeyVault name by passing parameter -KeyVault"
-	Throw "🛑 KeyVault name is already in use."
+	Throw "🛑 KeyVault name already exists."
     Exit
 }
 
@@ -149,9 +149,9 @@ $sql_exists=az sql server show --name $SQLServerName -g $ResourceGroupForDeploym
 if (!($sql_exists[0] -cLike "*ERROR: (ResourceNotFound)*")) 
 {
 	Write-Host ""
-	Write-Host "SQl Server name is already exists."
+	Write-Host "SQl Server name already exists."
 	Write-Host "Please delete existing instance or use new sql Instance name passing parameter -SQLServerName"
-	Throw "🛑 SQL Server name is already in use"
+	Throw "🛑 SQL Server name already exists."
     Exit
 }  
 #endregion
