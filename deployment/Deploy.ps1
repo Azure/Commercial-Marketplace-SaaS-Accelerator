@@ -158,6 +158,23 @@ if( $kv_check.reason -eq "AlreadyExists")
 
 #endregion
 
+$sql_exists=az sql server show --name $SQLServerName -g $ResourceGroupForDeployment 2>&1
+
+if ($sql_exists[0] -cLike "*ERROR: (ResourceNotFound)*") 
+{
+	Write-Host "SQl Server name is already exists."
+	Write-Host ""
+	Write-Host "Please delete existing instance or use new sql Instance name passing parameter -SQLServerName"
+	Write-Host ""
+	Throw "🛑 SQL Server name is already in use. Please use different name"
+    Exit
+}  
+
+#region Check If SQL Server Exist
+
+
+#endregion
+
 #region Dowloading assets if provided
 
 # Download Publisher's PNG logo
