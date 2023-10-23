@@ -87,7 +87,6 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | SQLAdminLoginPassword | SQL Admin password. Default: secure random password. |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
-| MeteredSchedulerSupport | Enable the metered scheduler. This is deployed by default. Use **true** to enable the feature. More information [here](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator/blob/main/docs/Metered-Scheduler-Manager-Instruction.md).
 | Quiet | Disable verbose output when running the script
 
 

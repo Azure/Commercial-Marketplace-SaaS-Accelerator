@@ -48,11 +48,7 @@ public class SchedulerController : BaseController
     /// </summary>
     private readonly IUsersRepository usersRepository;
 
-    /// <summary>
-    /// saaSApiClientConfiguration;
-    /// </summary>
-    private SaaSApiClientConfiguration saaSApiClientConfiguration;
-
+    
     /// <summary>
     /// Initializes a new instance of the <see cref="PlansController" /> class.
     /// </summary>
@@ -71,7 +67,7 @@ public class SchedulerController : BaseController
         ISchedulerManagerViewRepository schedulerViewRepository, 
         IUsersRepository usersRepository,
         SaaSClientLogger<SchedulerController> logger,
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository, SaaSApiClientConfiguration saaSApiClientConfiguration)
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository) : base(applicationConfigRepository)
 
     {
         this.usersRepository = usersRepository;
@@ -79,7 +75,7 @@ public class SchedulerController : BaseController
         this.meteredRepository = meteredRepository;
         this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository,applicationConfigRepository);
         this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
-        this.saaSApiClientConfiguration = saaSApiClientConfiguration;
+        
 
     }
 
@@ -101,13 +97,6 @@ public class SchedulerController : BaseController
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
 
                 getAllSchedulerManagerViewData = this.schedulerService.GetAllSchedulerManagerList();
-
-                if (this.saaSApiClientConfiguration.SupportMeteredBilling)
-                {
-                    this.TempData.Add("SupportMeteredBilling", "1");
-                    
-                }
-
                 return this.View(getAllSchedulerManagerViewData);
             }
             catch (Exception ex)
@@ -127,12 +116,6 @@ public class SchedulerController : BaseController
         this.logger.Info("New Scheduler Controller");
         try
         {
-            if (this.saaSApiClientConfiguration.SupportMeteredBilling)
-            {
-                this.TempData.Add("SupportMeteredBilling", "1");
-                
-            }
-
             SchedulerUsageViewModel schedulerUsageViewModel = new SchedulerUsageViewModel();
 
             this.TempData["ShowWelcomeScreen"] = "True";
@@ -305,11 +288,6 @@ public class SchedulerController : BaseController
         this.logger.Info(HttpUtility.HtmlEncode($"Scheduler Controller / Get Schedule Item Details:  Id {id}"));
         try
         {
-            if (this.saaSApiClientConfiguration.SupportMeteredBilling)
-            {
-                this.TempData.Add("SupportMeteredBilling", "1");
-                
-            }
 
             var SchedulerItem = this.schedulerService.GetSchedulerManagerById(int.Parse(id));
             var detail = this.schedulerService.GetSchedulerItemRunHistory(int.Parse(id));

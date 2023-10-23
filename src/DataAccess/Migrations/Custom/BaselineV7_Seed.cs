@@ -18,6 +18,11 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.Custom
                     BEGIN
                         INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'WebNotificationUrl', N'', N'Setting this URL will enable pushing LandingPage/Webhook events to this external URL')
                     END
+                    IF NOT EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'IsMeteredBillingEnabled')
+                    BEGIN
+                        INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsMeteredBillingEnabled', N'false', N'Enable Metered Billing Feature')
+                    END
+
 
                     IF NOT EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'EnablesSuccessfulSchedulerEmail')
                     BEGIN
@@ -53,7 +58,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.Custom
                     BEGIN
                         INSERT [dbo].[EmailTemplate] ([Status],[Description],[InsertDate],[TemplateBody],[Subject],[isActive]) VALUES (N'Missing',N'Missing',GetDate(),N'<html><head><meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8""/></head><body leftmargin=""0"" marginwidth=""0"" topmargin=""0"" marginheight=""0"" offset=""0""><center><table align=""center"" border=""0"" cellpadding=""0"" cellspacing=""0"" height=""100%"" width=""100%"" id=""bodyTable""><tr><td align=""center"" valign=""top"" id=""bodyCell""><!-- BEGIN TEMPLATE // --><table border=""0"" cellpadding=""0"" cellspacing=""0"" id=""templateContainer""> 	<tr><td align=""center"" valign=""top""><!-- BEGIN BODY // -->	<table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" id=""templateBody""><tr>	<td valign=""top"" class=""bodyContent""><h2 >Subscription ****SubscriptionName****</h2><br><p>The Scheduled Task ****SchedulerTaskName**** was skipped by scheduler engine!</b></p><br>Please try again or contact technical support to troubleshoot the issue.<p>The following section is the deatil results.</p><hr/><table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" id=""templateBody"">****ResponseJson****</table></td></tr></table></td>	</tr></table><!-- // END BODY --></td></tr></table><!-- // END TEMPLATE --></center></body> </html>',N'Scheduled SaaS Metered Task was Skipped!',N'True')
                     END
-
                 GO");
         }
 
@@ -63,6 +67,11 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.Custom
                 IF EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'WebNotificationUrl')
                 BEGIN
                     DELETE FROM [dbo].[ApplicationConfiguration]  WHERE [Name] = 'WebNotificationUrl'
+                END
+
+                IF EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'IsMeteredBillingEnabled')
+                BEGIN
+                    DELETE FROM [dbo].[ApplicationConfiguration]  WHERE [Name] = 'IsMeteredBillingEnabled'
                 END
 
                     IF  EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'EnablesSuccessfulSchedulerEmail')

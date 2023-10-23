@@ -132,7 +132,7 @@ public class HomeController : BaseController
     /// <param name="offersRepository">The offers repository.</param>
     /// <param name="offersAttributeRepository">The offers attribute repository.</param>
     public HomeController(
-        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService,  ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, SaaSApiClientConfiguration saaSApiClientConfiguration, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository, SaaSClientLogger<HomeController> logger)
+        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService,  ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, SaaSApiClientConfiguration saaSApiClientConfiguration, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository, SaaSClientLogger<HomeController> logger):base(applicationConfigRepository)
     {
         this.billingApiService = billingApiService;
         this.subscriptionRepo = subscriptionRepo;
@@ -212,12 +212,6 @@ public class HomeController : BaseController
             this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
 
             var userId = this.userService.AddUser(this.GetCurrentUserDetail());
-
-            if (this.saaSApiClientConfiguration.SupportMeteredBilling)
-            {
-                this.TempData.Add("SupportMeteredBilling", "1");
-             
-            }
             return this.View();
         }
         catch (Exception ex)

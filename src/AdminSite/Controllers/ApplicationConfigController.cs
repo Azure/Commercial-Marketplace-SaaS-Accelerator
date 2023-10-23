@@ -6,6 +6,8 @@ using System.Text.Json;
 using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.DataAccess.Services;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -31,8 +33,8 @@ public class ApplicationConfigController : BaseController
     private readonly IEmailTemplateRepository emailTemplateRepository;
 
     public ApplicationConfigController(
-        ApplicationConfigService appConfigService,
-        IEmailTemplateRepository emailTemplateRepository, SaaSClientLogger<ApplicationConfigController> logger)
+    ApplicationConfigService appConfigService,
+        IEmailTemplateRepository emailTemplateRepository, SaaSClientLogger<ApplicationConfigController> logger, SaaSApiClientConfiguration saaSApiClientConfiguration,IApplicationConfigRepository appConfigRepository) : base(appConfigRepository)
     {
         this.appConfigService = appConfigService;
         this.emailTemplateRepository = emailTemplateRepository;
@@ -46,7 +48,7 @@ public class ApplicationConfigController : BaseController
     [ServiceFilter(typeof(ExceptionHandlerAttribute))]
     public IActionResult Index()
     {
-        var getAllAppConfigData = this.appConfigService.GetAllApplicationConfiguration();
+           var getAllAppConfigData = this.appConfigService.GetAllApplicationConfiguration();
         return this.View(getAllAppConfigData);
     }
 

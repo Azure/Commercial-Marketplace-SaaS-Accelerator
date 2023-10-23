@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.DataAccess.Services;
+using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +22,7 @@ public class ApplicationLogController : BaseController
 
     private readonly IApplicationLogRepository appLogRepository;
 
-    public ApplicationLogController(IApplicationLogRepository applicationLogRepository, SaaSClientLogger<ApplicationLogController> logger)
+    public ApplicationLogController(IApplicationLogRepository applicationLogRepository, SaaSClientLogger<ApplicationLogController> logger, SaaSApiClientConfiguration saaSApiClientConfiguration, IApplicationConfigRepository applicationConfigRepository) : base(applicationConfigRepository)
     {
         this.appLogRepository = applicationLogRepository;
         this.logger = logger;
