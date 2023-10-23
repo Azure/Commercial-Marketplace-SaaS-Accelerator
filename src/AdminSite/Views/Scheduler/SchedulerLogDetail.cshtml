@@ -33,7 +33,7 @@
         detailModal.style.display = "block";
     }
    </script>
-       @if (this.TempData["SupportMeteredBilling"] != null)
+    @if ((this.TempData["SupportMeteredBilling"] != null) && (this.TempData["SupportMeteredBilling"].ToString() == "1"))
     {
     <div class="card-body">
         <div class="modal-header header-bg">
