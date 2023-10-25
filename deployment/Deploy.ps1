@@ -148,7 +148,7 @@ if( $kv_check.reason -eq "AlreadyExists")
 	Write-Host "KeyVault name already exists."
 	Write-Host "To Purge KeyVault please use the following doc:"
 	Write-Host "https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
-	Write-Host "You could use new KeyVault name by passing parameter -KeyVault"
+	Write-Host "You could use new KeyVault name by using parameter -KeyVault"
 	Throw "🛑 KeyVault name already exists."
     Exit
 }
@@ -163,7 +163,7 @@ if (!($sql_exists[0] -cLike "*ERROR: (ResourceNotFound)*"))
 {
 	Write-Host ""
 	Write-Host "SQl Server name already exists."
-	Write-Host "Please delete existing instance or use new sql Instance name passing parameter -SQLServerName"
+	Write-Host "Please delete existing instance or use new sql Instance name by using parameter -SQLServerName"
 	Throw "🛑 SQL Server name already exists."
     Exit
 }  
