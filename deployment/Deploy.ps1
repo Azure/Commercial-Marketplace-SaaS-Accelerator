@@ -144,9 +144,8 @@ if( $kv_check.reason -eq "AlreadyExists")
 #endregion
 
 #region Check If SQL Server Exist
-$sql_exists=az sql server show --name $SQLServerName -g $ResourceGroupForDeployment 2>&1
-
-if (!($sql_exists[0] -cLike "*ERROR: (ResourceNotFound)*")) 
+$sql_exists = Get-AzureRmSqlServer -ServerName sass-msalem-20231-sql -ResourceGroupName msalemsaasws -ErrorAction SilentlyContinue
+if ($sql_exists) 
 {
 	Write-Host ""
 	Write-Host "SQl Server name already exists."
