@@ -106,7 +106,7 @@ public class Executor
     public void Execute()
     {        
         //Get all Scheduled Data
-        List<SchedulerManagerViewModel> getAllScheduledTasks = schedulerService.GetScheduledTasks();
+        var getAllScheduledTasks = schedulerService.GetScheduledTasks();
 
         
         //GetCurrentUTC time
