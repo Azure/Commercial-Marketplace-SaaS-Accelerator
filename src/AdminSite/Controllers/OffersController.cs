@@ -177,7 +177,7 @@ public class OffersController : BaseController
                         IsRequired = offerAttribute.IsRequired,
                         IsDelete = offerAttribute.IsDelete,
                         CreateDate = DateTime.Now,
-                        UserId = currentUserDetail == null ? 0 : currentUserDetail.UserId,
+                        UserId = currentUserDetail?.UserId ?? 0,
                         OfferId = offersData.OfferGuid,
                     };
                     this.offersAttributeRepository.Add(newOfferAttribute);
@@ -189,7 +189,7 @@ public class OffersController : BaseController
             }
 
             this.ModelState.Clear();
-            return this.RedirectToAction(nameof(this.OfferDetails), new { @offerGuId = offersData.OfferGuid });
+            return this.RedirectToAction(nameof(this.OfferDetails), new { @offerGuId = offersData?.OfferGuid });
         }
         catch (Exception ex)
         {

@@ -66,7 +66,7 @@ public class ApplicationConfigController : BaseController
     /// <summary>
     /// Get the fields of an EmailTemplate item by status
     /// </summary>
-    /// <param name=status">The status that corresponds to the EmailTemplate.</param>
+    /// <param name="status">The status that corresponds to the EmailTemplate.</param>
     /// <returns>
     /// return an EmailTemplate
     /// </returns>
@@ -95,7 +95,7 @@ public class ApplicationConfigController : BaseController
 
 
     /// <summary>
-    /// Get the apllication config item by Id.
+    /// Get the application config item by Id.
     /// </summary>
     /// <param name="Id">The app config Id.</param>
     /// <returns>
@@ -136,7 +136,7 @@ public class ApplicationConfigController : BaseController
     [ValidateAntiForgeryToken]
     public IActionResult PostUpload(List<IFormFile> files)
     {
-        if (!(files?.Any() == true))
+        if (files?.Any() != true)
         {
             TempData["Upload"] = "No files to upload";
             return RedirectToAction("Index");
@@ -187,7 +187,7 @@ public class ApplicationConfigController : BaseController
 
         if (files.Count == 1)
         {
-            TempData["Upload"] = files.FirstOrDefault().FileName + "  uploaded successfully";
+            TempData["Upload"] = files.First().FileName + "  uploaded successfully";
         }
         else
         {

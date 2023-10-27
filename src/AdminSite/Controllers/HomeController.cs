@@ -100,12 +100,12 @@ public class HomeController : BaseController
 
     private readonly ApplicationConfigService applicationConfigService;
 
-    private UserService userService;
+    private readonly UserService userService;
 
-    private SubscriptionService subscriptionService = null;
+    private SubscriptionService subscriptionService;
 
-    private ApplicationLogService applicationLogService = null;
-    private SaaSApiClientConfiguration saaSApiClientConfiguration;
+    private readonly ApplicationLogService applicationLogService;
+    private readonly SaaSApiClientConfiguration saaSApiClientConfiguration;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HomeController" /> class.
@@ -125,8 +125,7 @@ public class HomeController : BaseController
     /// <param name="emailTemplateRepository">The email template repository.</param>
     /// <param name="planEventsMappingRepository">The plan events mapping repository.</param>
     /// <param name="eventsRepository">The events repository.</param>
-    /// <param name="SaaSApiClientConfiguration">The SaaSApiClientConfiguration.</param>
-    /// <param name="cloudConfigs">The cloud configs.</param>
+    /// <param name="saaSApiClientConfiguration">The SaaSApiClientConfiguration.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="emailService">The email service.</param>
     /// <param name="offersRepository">The offers repository.</param>
@@ -211,8 +210,6 @@ public class HomeController : BaseController
             this.applicationConfigService.SaveFileToDisk("LogoFile", "contoso-sales.png");
             this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
 
-            var userId = this.userService.AddUser(this.GetCurrentUserDetail());
-
             if (this.saaSApiClientConfiguration.SupportMeteredBilling)
             {
                 this.TempData.Add("SupportMeteredBilling", "1");
@@ -228,7 +225,7 @@ public class HomeController : BaseController
     }
 
     /// <summary>
-    /// Subscriptionses this instance.
+    /// Subscriptions in this instance.
     /// </summary>
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult Subscriptions()
@@ -236,19 +233,19 @@ public class HomeController : BaseController
         this.logger.Info("Home Controller / Subscriptions ");
         try
         {
-            SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
-            if (this.User.Identity.IsAuthenticated)
+            var subscriptionDetail = new SubscriptionViewModel();
+            if (this.User.Identity?.IsAuthenticated == true)
             {
                 this.TempData["ShowWelcomeScreen"] = "True";
 
-                List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
+                var allSubscriptions = new List<SubscriptionResultExtension>();
                 var allSubscriptionDetails = this.subscriptionRepo.Get().ToList();
                 var allPlans = this.planRepository.Get().ToList();
                 foreach (var subscription in allSubscriptionDetails)
                 {
-                    Plans planDetail = allPlans.FirstOrDefault(p => p.PlanId == subscription.AmpplanId);
-                    SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription, planDetail);
-                    subscriptionDetailExtension.IsPerUserPlan = planDetail.IsPerUser.HasValue ? planDetail.IsPerUser.Value : false;
+                    var planDetail = allPlans.FirstOrDefault(p => p.PlanId == subscription.AmpplanId);
+                    var subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription, planDetail);
+                    subscriptionDetailExtension.IsPerUserPlan = planDetail?.IsPerUser ?? false;
                     if (subscriptionDetailExtension != null && subscriptionDetailExtension.SubscribeId > 0)
                     {
                         allSubscriptions.Add(subscriptionDetailExtension);
@@ -289,16 +286,12 @@ public class HomeController : BaseController
         this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionLogDetail : subscriptionId: {subscriptionId}"));
         try
         {
-            if (this.User.Identity.IsAuthenticated)
+            if (this.User.Identity?.IsAuthenticated == true)
             {
-                List<SubscriptionAuditLogs> subscriptionAudit = new List<SubscriptionAuditLogs>();
-                subscriptionAudit = this.subscriptionLogRepository.GetSubscriptionBySubscriptionId(subscriptionId).ToList();
+                var subscriptionAudit = this.subscriptionLogRepository.GetSubscriptionBySubscriptionId(subscriptionId).ToList();
                 return this.PartialView(subscriptionAudit);
             }
-            else
-            {
-                return this.RedirectToAction(nameof(this.Index));
-            }
+            return this.RedirectToAction(nameof(this.Index));
         }
         catch (Exception ex)
         {
@@ -316,12 +309,11 @@ public class HomeController : BaseController
     public async Task<IActionResult> SubscriptionDetails(Guid subscriptionId, string planId)
     {
         this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / ActivateSubscription subscriptionId:{subscriptionId} :: planId:{planId}"));
-        SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+        var subscriptionDetail = new SubscriptionResultExtension();
 
-        if (this.User.Identity.IsAuthenticated)
+        if (this.User.Identity?.IsAuthenticated == true)
         {
             var userId = this.userService.AddUser(this.GetCurrentUserDetail());
-            var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
             this.subscriptionService = new SubscriptionService(this.subscriptionRepo, this.planRepository, userId);
             this.logger.Info(HttpUtility.HtmlEncode($"User authenticate successfully & GetSubscriptionByIdAsync  SubscriptionID :{subscriptionId}"));
             this.TempData["ShowWelcomeScreen"] = false;
@@ -333,19 +325,19 @@ public class HomeController : BaseController
             subscriptionDetail.SubscriptionStatus = oldValue.SubscriptionStatus;
             subscriptionDetail.CustomerEmailAddress = oldValue.CustomerEmailAddress;
             subscriptionDetail.CustomerName = oldValue.CustomerName;
-            var plandetails = this.planRepository.GetById(oldValue.PlanId);
+            var planDetails = this.planRepository.GetById(oldValue.PlanId);
             subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
-            subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
-            subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
-            var detailsFromAPI = await this.fulfillApiService.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false);
-            subscriptionDetail.Beneficiary = detailsFromAPI.Beneficiary;
+            subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+            subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+            var detailsFromApi = await this.fulfillApiService.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false);
+            subscriptionDetail.Beneficiary = detailsFromApi.Beneficiary;
         }
 
         return this.View(subscriptionDetail);
     }
 
     /// <summary>
-    /// Des the activate subscription.
+    /// Describe the activate subscription.
     /// </summary>
     /// <param name="subscriptionId">The subscription identifier.</param>
     /// <param name="planId">The plan identifier.</param>
@@ -356,23 +348,22 @@ public class HomeController : BaseController
         this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / ActivateSubscription subscriptionId::{subscriptionId} :: planID:{planId}:: operation:{operation}"));
         try
         {
-            SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+            var subscriptionDetail = new SubscriptionResultExtension();
 
-            if (this.User.Identity.IsAuthenticated)
+            if (this.User.Identity?.IsAuthenticated == true)
             {
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
-                var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                 this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
                 this.logger.Info(HttpUtility.HtmlEncode($"GetSubscriptionByIdAsync SubscriptionID :{subscriptionId} :: planID:{planId}:: operation:{operation}"));
 
                 this.TempData["ShowWelcomeScreen"] = false;
                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
-                var plandetails = this.planRepository.GetById(oldValue.PlanId);
+                var planDetails = this.planRepository.GetById(oldValue.PlanId);
                 subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                 subscriptionDetail.ShowWelcomeScreen = false;
                 subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                 subscriptionDetail.CustomerName = this.CurrentUserName;
-                subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
+                subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
             }
 
             return this.View("ActivateSubscription", subscriptionDetail);
@@ -390,23 +381,22 @@ public class HomeController : BaseController
     /// <param name="subscriptionId">The subscription identifier.</param>
     /// <param name="planId">The plan identifier.</param>
     /// <param name="operation">The operation.</param>
-    /// <param name="numberofProviders">The numberof providers.</param>
+    /// <param name="numberofProviders">The number of providers.</param>
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation, int numberofProviders)
     {
-        this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionOperation subscriptionId:{subscriptionId} :: planId : {planId} :: operation:{operation} :: NumberofProviders : {numberofProviders}"));
+        this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionOperation subscriptionId:{subscriptionId} :: planId : {planId} :: operation:{operation} :: NumberOfProviders : {numberofProviders}"));
         try
         {
             var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
             var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
-            SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
             if (operation == "Activate")
             {
                 if (oldValue.SubscriptionStatus.ToString() != SubscriptionStatusEnumExtension.PendingActivation.ToString())
                 {
                     this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
 
-                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                    var auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
                         SubscriptionId = oldValue.SubscribeId,
@@ -424,7 +414,7 @@ public class HomeController : BaseController
             if (operation == "Deactivate")
             {
                 this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
-                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                var auditLog = new SubscriptionAuditLogs()
                 {
                     Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
                     SubscriptionId = oldValue.SubscribeId,
@@ -480,21 +470,22 @@ public class HomeController : BaseController
         this.logger.Info("Home Controller / RecordUsage ");
         try
         {
-            if (this.User.Identity.IsAuthenticated)
+            if (this.User.Identity?.IsAuthenticated == true)
             {
                 var subscriptionDetail = this.subscriptionRepo.Get(subscriptionId);
                 var allDimensionsList = this.dimensionsRepository.GetDimensionsByPlanId(subscriptionDetail.AmpplanId);
-                SubscriptionUsageViewModel usageViewModel = new SubscriptionUsageViewModel();
-                usageViewModel.SubscriptionDetail = subscriptionDetail;
-                usageViewModel.MeteredAuditLogs = new List<MeteredAuditLogs>();
-                usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId, true).OrderByDescending(s => s.CreatedDate).ToList();
-                usageViewModel.DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description");
+                var usageViewModel = new SubscriptionUsageViewModel
+                {
+                    SubscriptionDetail = subscriptionDetail,
+                    MeteredAuditLogs = this.subscriptionUsageLogsRepository
+                        .GetMeteredAuditLogsBySubscriptionId(subscriptionId, true)
+                        .OrderByDescending(s => s.CreatedDate)
+                        .ToList(),
+                    DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description"),
+                };
                 return this.View(usageViewModel);
             }
-            else
-            {
-                return this.RedirectToAction(nameof(this.Index));
-            }
+            return this.RedirectToAction(nameof(this.Index));
         }
         catch (Exception ex)
         {
@@ -506,30 +497,33 @@ public class HomeController : BaseController
     /// Records the usage.
     /// </summary>
     /// <param name="subscriptionId">The subscription identifier.</param>
+    /// <param name="dimId">The dimension identifier.</param>
+    /// <param name="quantity">The quantity.</param>
     /// <returns> The <see cref="IActionResult" />.</returns>
     public IActionResult RecordUsageNow(int subscriptionId, string dimId, string quantity)
     {
         this.logger.Info("Home Controller / RecordUsage ");
         try
         {
-            if (this.User.Identity.IsAuthenticated)
+            if (this.User.Identity?.IsAuthenticated == true)
             {
                 var subscriptionDetail = this.subscriptionRepo.Get(subscriptionId);
                 var allDimensionsList = this.dimensionsRepository.GetDimensionsByPlanId(subscriptionDetail.AmpplanId);
-                SubscriptionUsageViewModel usageViewModel = new SubscriptionUsageViewModel();
-                usageViewModel.SubscriptionDetail = subscriptionDetail;
-                usageViewModel.MeteredAuditLogs = new List<MeteredAuditLogs>();
-                usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId).OrderByDescending(s => s.CreatedDate).ToList();
-                usageViewModel.DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description");
+                var usageViewModel = new SubscriptionUsageViewModel
+                {
+                    SubscriptionDetail = subscriptionDetail,
+                    MeteredAuditLogs = this.subscriptionUsageLogsRepository
+                        .GetMeteredAuditLogsBySubscriptionId(subscriptionId)
+                        .OrderByDescending(s => s.CreatedDate)
+                        .ToList(),
+                    DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description"),
+                    SelectedDimension = dimId,
+                    Quantity = quantity
+                };
 
-                usageViewModel.SelectedDimension = dimId;
-                usageViewModel.Quantity = quantity;
                 return this.View("RecordUsage", usageViewModel);
             }
-            else
-            {
-                return this.RedirectToAction(nameof(this.Index));
-            }
+            return this.RedirectToAction(nameof(this.Index));
         }
         catch (Exception ex)
         {
@@ -549,15 +543,12 @@ public class HomeController : BaseController
         this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}"));
         try
         {
-            if (this.User.Identity.IsAuthenticated)
+            if (this.User.Identity?.IsAuthenticated == true)
             {
                 var subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                 return this.View(subscriptionDetail);
             }
-            else
-            {
-                return this.RedirectToAction(nameof(this.Index));
-            }
+            return this.RedirectToAction(nameof(this.Index));
         }
         catch (Exception ex)
         {
@@ -591,7 +582,7 @@ public class HomeController : BaseController
                 };
                 var meteringUsageResult = new MeteringUsageResult();
                 var requestJson = JsonSerializer.Serialize(subscriptionUsageRequest);
-                var responseJson = string.Empty;
+                string responseJson;
                 try
                 {
                     this.logger.Info("EmitUsageEventAsync");
@@ -614,7 +605,7 @@ public class HomeController : BaseController
                     RunBy = "Manual",
                     SubscriptionId = subscriptionData.SubscriptionDetail.Id,
                     SubscriptionUsageDate = DateTime.UtcNow,
-                    CreatedBy = currentUserDetail == null ? 0 : currentUserDetail.UserId,
+                    CreatedBy = currentUserDetail?.UserId ?? 0,
                     CreatedDate = DateTime.Now,
                 };
                 this.subscriptionUsageLogsRepository.Save(newMeteredAuditLog);
@@ -625,7 +616,7 @@ public class HomeController : BaseController
             this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}");
         }
 
-        return this.RedirectToAction(nameof(this.RecordUsage), new { subscriptionId = subscriptionData.SubscriptionDetail.Id });
+        return this.RedirectToAction(nameof(this.RecordUsage), new { subscriptionId = subscriptionData?.SubscriptionDetail?.Id });
     }
 
     /// <summary>
@@ -640,17 +631,14 @@ public class HomeController : BaseController
         this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionDetail subscriptionId:{subscriptionId}"));
         try
         {
-            if (this.User.Identity.IsAuthenticated)
+            if (this.User.Identity?.IsAuthenticated == true)
             {
                 var subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                 subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
                 return this.View(subscriptionDetail);
             }
-            else
-            {
-                return this.RedirectToAction(nameof(this.Index));
-            }
+            return this.RedirectToAction(nameof(this.Index));
         }
         catch (Exception ex)
         {
@@ -705,21 +693,21 @@ public class HomeController : BaseController
 
                     if (jsonResult != null && jsonResult.OperationId != default)
                     {
-                        int _counter = 0;
+                        var counter = 0;
 
-                        //loop untill the operation status has moved away from inprogress or notstarted, generally this will be the result of webhooks' action aganist this operation
+                        //loop until the operation status has moved away from inprogress or not started, generally this will be the result of webhooks' action against this operation
                         while (OperationStatusEnum.InProgress.Equals(changePlanOperationStatus) || OperationStatusEnum.NotStarted.Equals(changePlanOperationStatus))
                         {
                             var changePlanOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                             changePlanOperationStatus = changePlanOperationResult.Status;
 
-                            this.logger.Info(HttpUtility.HtmlEncode($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: ****** OperationId: {jsonResult.OperationId} Operationstatus: {changePlanOperationStatus}."));
-                            await this.applicationLogService.AddApplicationLog($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changePlanOperationStatus}.").ConfigureAwait(false);
+                            this.logger.Info(HttpUtility.HtmlEncode($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: ****** OperationId: {jsonResult.OperationId} Operation status: {changePlanOperationStatus}."));
+                            await this.applicationLogService.AddApplicationLog($"Plan Change Progress. SubscriptionId: {subscriptionDetail.Id} ToPlan: {subscriptionDetail.PlanId} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status: {changePlanOperationStatus}.").ConfigureAwait(false);
 
                             //wait and check every 5secs
                             await Task.Delay(5000);
-                            _counter++;
-                            if (_counter > 100)
+                            counter++;
+                            if (counter > 100)
                             {
                                 //if loop has been executed for more than 100 times then break, to avoid infinite loop just in case
                                 break;
@@ -765,7 +753,7 @@ public class HomeController : BaseController
     public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
     {
         this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{JsonSerializer.Serialize(subscriptionDetail)}"));
-        if (this.User.Identity.IsAuthenticated)
+        if (this.User.Identity?.IsAuthenticated == true)
         {
             try
             {
@@ -781,21 +769,21 @@ public class HomeController : BaseController
 
                         if (jsonResult != null && jsonResult.OperationId != default)
                         {
-                            int _counter = 0;
+                            var counter = 0;
 
-                            //loop untill the operation status has moved away from inprogress or notstarted, generally this will be the result of webhooks' action aganist this operation
+                            //loop until the operation status has moved away from inprogress or not started, generally this will be the result of webhooks' action against this operation
                             while (OperationStatusEnum.InProgress.Equals(changeQuantityOperationStatus) || OperationStatusEnum.NotStarted.Equals(changeQuantityOperationStatus))
                             {
                                 var changeQuantityOperationResult = await this.fulfillApiService.GetOperationStatusResultAsync(subscriptionDetail.Id, jsonResult.OperationId).ConfigureAwait(false);
                                 changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
-                                this.logger.Info(HttpUtility.HtmlEncode($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity}  OperationId: {jsonResult.OperationId} Operationstatus: {changeQuantityOperationStatus}."));
-                                await this.applicationLogService.AddApplicationLog($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changeQuantityOperationStatus}.").ConfigureAwait(false);
+                                this.logger.Info(HttpUtility.HtmlEncode($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity}  OperationId: {jsonResult.OperationId} Operation status: {changeQuantityOperationStatus}."));
+                                await this.applicationLogService.AddApplicationLog($"Quantity Change Progress. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status: {changeQuantityOperationStatus}.").ConfigureAwait(false);
 
                                 //wait and check every 5secs
                                 await Task.Delay(5000);
-                                _counter++;
-                                if (_counter > 100)
+                                counter++;
+                                if (counter > 100)
                                 {
                                     //if loop has been executed for more than 100 times then break, to avoid infinite loop just in case
                                     break;
@@ -809,8 +797,8 @@ public class HomeController : BaseController
                             }
                             else
                             {
-                                this.logger.Info(HttpUtility.HtmlEncode($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: ***** OperationId: {jsonResult.OperationId} Operationstatus: {changeQuantityOperationStatus}."));
-                                await this.applicationLogService.AddApplicationLog($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operationstatus: {changeQuantityOperationStatus}.").ConfigureAwait(false);
+                                this.logger.Info(HttpUtility.HtmlEncode($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: ***** OperationId: {jsonResult.OperationId} Operation status: {changeQuantityOperationStatus}."));
+                                await this.applicationLogService.AddApplicationLog($"Quantity Change Failed. SubscriptionId: {subscriptionDetail.Id} ToQuantity: {subscriptionDetail.Quantity} UserId: {currentUserId} OperationId: {jsonResult.OperationId} Operation status: {changeQuantityOperationStatus}.").ConfigureAwait(false);
 
                                 throw new MarketplaceException($"Quantity Change operation failed with operation status {changeQuantityOperationStatus}. Check if the updates are allowed in the App config \"AcceptSubscriptionUpdates\" key or db application log for more information.");
                             }
@@ -831,10 +819,7 @@ public class HomeController : BaseController
                 return this.View("Error", ex);
             }
         }
-        else
-        {
-            return this.RedirectToAction(nameof(this.Index));
-        }
+        return this.RedirectToAction(nameof(this.Index));
     }
 
     [HttpPost]
@@ -858,7 +843,7 @@ public class HomeController : BaseController
                 if (currentSubscription.Name == null)
                 {
                     // Step 3: Add/Update the Offer
-                    Guid OfferId = this.offersRepository.Add(new Offers()
+                    var offerId = this.offersRepository.Add(new Offers()
                     {
                         OfferId = subscription.OfferId,
                         OfferName = subscription.OfferId,
@@ -870,12 +855,12 @@ public class HomeController : BaseController
                     // Step 4: Add/Update the Plans. For Unsubscribed Only Add current plan from subscription information
                     if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Unsubscribed)
                     {
-                        PlanDetailResultExtension planDetails = new PlanDetailResultExtension
+                        var planDetails = new PlanDetailResultExtension
                         {
                             PlanId = subscription.PlanId,
                             DisplayName = subscription.PlanId,
                             Description = "",
-                            OfferId = OfferId,
+                            OfferId = offerId,
                             PlanGUID = Guid.NewGuid(),
                             IsPerUserPlan = subscription.Quantity > 0,
                         };
@@ -886,7 +871,7 @@ public class HomeController : BaseController
                         var subscriptionPlanDetail = this.fulfillApiService.GetAllPlansForSubscriptionAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
                         subscriptionPlanDetail.ForEach(x =>
                         {
-                            x.OfferId = OfferId;
+                            x.OfferId = offerId;
                             x.PlanGUID = Guid.NewGuid();
                         });
                         this.subscriptionService.AddUpdateAllPlanDetailsForSubscription(subscriptionPlanDetail);
@@ -918,7 +903,7 @@ public class HomeController : BaseController
                     {
                         Attribute = $"{Convert.ToString(SubscriptionLogAttributes.Plan)}-Refresh",
                         SubscriptionId = subscriptionId,
-                        NewValue = subscription.PlanId.ToString(),
+                        NewValue = subscription.PlanId,
                         OldValue = currentSubscription.PlanId,
                         CreateBy = currentUserId,
                         CreateDate = DateTime.Now
@@ -936,7 +921,6 @@ public class HomeController : BaseController
                         CreateDate = DateTime.Now
                     });
                 }
-
             }
         }
         catch (Exception ex)

@@ -31,7 +31,7 @@ public class BaseController : Controller
     /// </value>
     public string CurrentUserEmailAddress
     {
-        get { return (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0) ? this.HttpContext.User.Claims.Where(s => s.Type == ClaimConstants.CLAIM_EMAILADDRESS).FirstOrDefault().Value : string.Empty; }
+        get { return this.HttpContext?.User.Claims.FirstOrDefault(s => s.Type == ClaimConstants.CLAIM_EMAILADDRESS)?.Value ?? string.Empty; }
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class BaseController : Controller
     /// </value>
     public string CurrentUserName
     {
-        get { return (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0) ? this.HttpContext.User.Claims.Where(s => s.Type == ClaimConstants.CLAIM_NAME).FirstOrDefault().Value : string.Empty; }
+        get { return this.HttpContext?.User.Claims.FirstOrDefault(s => s.Type == ClaimConstants.CLAIM_NAME)?.Value ?? string.Empty; }
     }
 
     /// <summary>
@@ -53,12 +53,13 @@ public class BaseController : Controller
     /// </returns>
     public PartnerDetailViewModel GetCurrentUserDetail()
     {
-        if (this.HttpContext != null && this.HttpContext.User.Identity.IsAuthenticated)
+        if (this.HttpContext?.User.Identity?.IsAuthenticated == true)
         {
-            PartnerDetailViewModel partnerDetail = new PartnerDetailViewModel();
-            partnerDetail.FullName = this.CurrentUserName;
-            partnerDetail.EmailAddress = this.CurrentUserEmailAddress;
-            return partnerDetail;
+            return new PartnerDetailViewModel
+            {
+                FullName = this.CurrentUserName,
+                EmailAddress = this.CurrentUserEmailAddress
+            };
         }
 
         return new PartnerDetailViewModel();
@@ -72,14 +73,11 @@ public class BaseController : Controller
     /// </returns>
     public IActionResult CheckAuthentication()
     {
-        if (this.HttpContext == null || !this.HttpContext.User.Identity.IsAuthenticated)
+        if (this.HttpContext?.User.Identity?.IsAuthenticated == true)
         {
             return this.Challenge(new AuthenticationProperties { RedirectUri = "/" }, OpenIdConnectDefaults.AuthenticationScheme);
         }
-        else
-        {
-            return this.RedirectToAction("Index", "Home", new { });
-        }
+        return this.RedirectToAction("Index", "Home", new { });
     }
 
 }

@@ -16,7 +16,7 @@ public class ApplicationLogController : BaseController
 {
     private readonly SaaSClientLogger<ApplicationLogController> logger;
 
-    private ApplicationLogService appLogService;
+    private readonly ApplicationLogService appLogService;
 
     private readonly IApplicationLogRepository appLogRepository;
 
@@ -26,12 +26,13 @@ public class ApplicationLogController : BaseController
         this.logger = logger;
         appLogService = new ApplicationLogService(this.appLogRepository);
     }
+    
     public IActionResult Index()
     {
         this.logger.Info("Application Log Controller / Index");
         try
         {
-            List<ApplicationLog> getAllAppLogData = this.appLogService.GetAllLogs().OrderByDescending(appLog => appLog.ActionTime).ToList();
+            var getAllAppLogData = this.appLogService.GetAllLogs().OrderByDescending(appLog => appLog.ActionTime).ToList();
             getAllAppLogData.ForEach(s => s.LogDetail = Regex.Replace(s.LogDetail, "&quot;", "\""));
             return this.View(getAllAppLogData);
         }
@@ -41,6 +42,4 @@ public class ApplicationLogController : BaseController
             return this.View("Error", ex);
         }
     }
-
-
 }

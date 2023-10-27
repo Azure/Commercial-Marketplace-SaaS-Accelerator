@@ -39,7 +39,7 @@ public class PlansController : BaseController
 
     private readonly SaaSClientLogger<PlansController> logger;
 
-    private PlanService plansService;
+    private readonly PlanService plansService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlansController" /> class.
@@ -72,13 +72,8 @@ public class PlansController : BaseController
         this.logger.Info("Plans Controller / OfferDetails:  offerGuId");
         try
         {
-            List<PlansModel> getAllPlansData = new List<PlansModel>();
             this.TempData["ShowWelcomeScreen"] = "True";
-            var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-
-
-            getAllPlansData = this.plansService.GetPlans();
-
+            var getAllPlansData = this.plansService.GetPlans();
             return this.View(getAllPlansData);
         }
         catch (Exception ex)
@@ -100,10 +95,8 @@ public class PlansController : BaseController
         this.logger.Info(HttpUtility.HtmlEncode($"Plans Controller / PlanDetails:  planGuId {planGuId}"));
         try
         {
-            PlansModel plans = new PlansModel();
             this.TempData["ShowWelcomeScreen"] = "True";
-            var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-            plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
+            var plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
             return this.PartialView(plans);
         }
         catch (Exception ex)
@@ -132,8 +125,8 @@ public class PlansController : BaseController
             {
                 if (plans.PlanAttributes != null)
                 {
-                    var inputAtttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();
-                    foreach (var attributes in inputAtttributes)
+                    var inputAttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();
+                    foreach (var attributes in inputAttributes)
                     {
                         attributes.UserId = currentUserDetail.UserId;
                         this.plansService.SavePlanAttributes(attributes);
@@ -151,7 +144,7 @@ public class PlansController : BaseController
             }
 
             this.ModelState.Clear();
-            return this.RedirectToAction(nameof(this.PlanDetails), new { @planGuId = plans.PlanGUID });
+            return this.RedirectToAction(nameof(this.PlanDetails), new { @planGuId = plans?.PlanGUID });
         }
         catch (Exception ex)
         {
@@ -159,6 +152,4 @@ public class PlansController : BaseController
             return this.PartialView("Error", ex);
         }
     }
-
-
 }
