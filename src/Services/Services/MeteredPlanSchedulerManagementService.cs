@@ -159,6 +159,42 @@ public class MeteredPlanSchedulerManagementService
         return schedulerList;
     }
 
+
+    /// <summary>
+    /// Get All Scheduled Metered trigger list
+    /// </summary>
+    /// <returns>List of Scheduler Manager View</returns>
+    public IReadOnlyList<SchedulerManagerViewModel> GetScheduledTasks()
+    {
+         List<SchedulerManagerViewModel> schedulerList = new List<SchedulerManagerViewModel>();
+        var allSchedulerViewData = this.schedulerViewRepository.GetAll().OrderBy(s => s.StartDate);
+        foreach (var item in allSchedulerViewData)
+        {
+            if (!CheckIfSchedulerRun(item.Id, item.SchedulerName))
+            {
+                SchedulerManagerViewModel schedulerView = new SchedulerManagerViewModel();
+                schedulerView.Id = item.Id;
+                schedulerView.PlanId = item.PlanId;
+                schedulerView.PurchaserEmail = item.PurchaserEmail;
+                schedulerView.SchedulerName = item.SchedulerName;
+                schedulerView.SubscriptionName = item.SubscriptionName;
+                schedulerView.AMPSubscriptionId = item.AMPSubscriptionId;
+                schedulerView.Dimension = item.Dimension;
+                schedulerView.Frequency = item.Frequency;
+                schedulerView.Quantity = item.Quantity;
+                schedulerView.StartDate = item.StartDate;
+                schedulerView.NextRunTime = item.NextRunTime;
+                schedulerView.LastRunTime = this.GetSchedulerLastRunTime(item.Id, item.SchedulerName);
+                schedulerList.Add(schedulerView);
+            }
+
+
+        }
+
+
+        return schedulerList.AsReadOnly();
+    }
+
     /// <summary>
     /// Get All Scheduled Metered trigger list
     /// </summary>
