@@ -68,21 +68,21 @@ $azCliOutput = if($Quiet){'none'} else {'json'}
 
 if($SQLAdminLogin.ToLower() -eq "admin") {
     Throw "🛑 SQLAdminLogin may not be 'admin'."
-    Exit
+    exit 1
 }
 if($SQLAdminLoginPassword.Length -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
-    Exit
+    exit 1
 }
 if($WebAppNamePrefix.Length -gt 21) {
     Throw "🛑 Web name prefix must be less than 21 characters."
-    Exit
+    exit 1
 }
 
 
 if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
     Throw "🛑 KeyVault name only allows alphanumeric and hyphens, but cannot start with a number or special character."
-    Exit
+    exit 1
 }
 
 #endregion 
@@ -144,12 +144,12 @@ $kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=ap
 
 if( $kv_check.reason -eq "AlreadyExists")
 {
-	Write-Host ""
-	Write-Host "🛑 KeyVault name $KeyVault already exists."
-	Write-Host "To Purge KeyVault please use the following doc:"
-	Write-Host "https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
-	Write-Host "You could use new KeyVault name by using parameter -KeyVault"
-    Exit
+	Write-Error ""
+	Write-Error "🛑 KeyVault name $KeyVault already exists."
+	Write-Error "	To Purge KeyVault please use the following doc:"
+	Write-Error "	https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
+	Write-Error "	You could use new KeyVault name by using parameter -KeyVault"
+    exit 1
 }
 
 
@@ -159,10 +159,10 @@ if( $kv_check.reason -eq "AlreadyExists")
 $sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
 if ($sql_exists) 
 {
-	Write-Host ""
-	Write-Host "🛑 SQl Server name $SQLServerName already exists."
-	Write-Host "Please delete existing instance or use new sql Instance name by using parameter -SQLServerName"
-    Exit
+	Write-Error ""
+	Write-Error "🛑 SQl Server name $SQLServerName already exists."
+	Write-Error "	 Please delete existing instance or use new sql Instance name by using parameter -SQLServerName"
+    exit 1
 }  
 #endregion
 
