@@ -106,7 +106,7 @@ public class Executor
     public void Execute()
     {        
         //Get all Scheduled Data
-        List<SchedulerManagerViewModel> getAllSchedulerManagerViewData = schedulerService.GetAllSchedulerManagerList();
+        var getAllScheduledTasks = schedulerService.GetScheduledTasks();
 
         
         //GetCurrentUTC time
@@ -126,7 +126,7 @@ public class Executor
             {
                 LogLine($"==== Checking all {frequency} scheduled items at {_currentUTCTime} UTC. ====");
 
-                var scheduledItems = getAllSchedulerManagerViewData
+                var scheduledItems = getAllScheduledTasks
                     .Where(a => a.Frequency == frequency.ToString())
                     .ToList();
 
