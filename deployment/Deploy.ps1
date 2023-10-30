@@ -120,24 +120,109 @@ else {
 
 #region Create AAD App Registrations
 
-if (!($ADApplicationID) -or !($ADMTApplicationID)) {
-
-    #Record the current ADApps to reduce deployment instructions at the end
-    $ISADMTApplicationIDProvided = $ADMTApplicationID
-
-    Import-Module (Join-Path $PSScriptRoot "./azure-deploy/RegisterAppsFunctions.ps1") -Force
-
-    if (!($ADApplicationID)) {
-        $result = Set-FulfillmentWebAppRegistration -WebAppNamePrefix $WebAppNamePrefix
-        $ADApplicationID = $result.ADApplicationID
-        $ADApplicationSecret = $result.ADApplicationSecret
+#Create App Registration for authenticating calls to the Marketplace API
+if (!($ADApplicationID)) {
+    Write-Host "🔑 Creating Fulfillment API App Registration"
+    try {   
+        $ADApplicationDisplayName = "$WebAppNamePrefix-FulfillmentAppReg"
+        $ADApplication = az ad app create --only-show-errors --display-name $ADApplicationDisplayName | ConvertFrom-Json
+        if ($LASTEXITCODE) { throw "Creating $ADApplicationDisplayName App Registration returned $LASTEXITCODE exit code, terminating ..." }
+        $ADObjectID = $ADApplication.id
+        $ADApplicationID = $ADApplication.appId
+        sleep 5 #this is to give time to AAD to register
+        $ADApplicationSecret = az ad app credential reset --id $ADObjectID --append --display-name 'SaaSAPI' --years 2 --query password --only-show-errors --output tsv
+                
+        Write-Host "   🔵 FulfillmentAPI App Registration created."
+        Write-Host "      ➡️ Application Display Name:" $ADApplicationDisplayName
+        Write-Host "      ➡️ Application ID:" $ADApplicationID
+        Write-Host "      ➡️ App Secret:" $ADApplicationSecret
     }
-    if (!($ADMTApplicationID)) {
-        $result = Set-SsoWebAppRegistration -WebAppNamePrefix $WebAppNamePrefix `
-            -LogoURLpng $LogoURLpng
-        $ADMTApplicationID = $result.ADMTApplicationID
+    catch [System.Net.WebException],[System.IO.IOException] {
+        Write-Host "🚨🚨   $PSItem.Exception"
+        throw;
     }
+}
 
+#Create Multi-Tenant App Registration for Landing Page User Login
+if (!($ADMTApplicationID)) {
+    Write-Host "🔑 Creating Landing Page SSO App Registration"
+    try {
+        $ADMTApplicationDisplayName = "$WebAppNamePrefix-LandingpageAppReg"
+        $appCreateRequestBodyJson = @"
+{
+    "displayName" : "$ADMTApplicationDisplayName",
+    "api": 
+    {
+        "requestedAccessTokenVersion" : 2
+    },
+    "signInAudience" : "AzureADandPersonalMicrosoftAccount",
+    "web":
+    { 
+        "redirectUris": 
+        [
+            "https://$WebAppNamePrefix-portal.azurewebsites.net",
+            "https://$WebAppNamePrefix-portal.azurewebsites.net/",
+            "https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index",
+            "https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net/",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index",
+            "https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
+        ],
+        "logoutUrl": "https://$WebAppNamePrefix-portal.azurewebsites.net/logout",
+        "implicitGrantSettings": 
+            { "enableIdTokenIssuance" : true }
+    },
+    "requiredResourceAccess":
+    [{
+        "resourceAppId": "00000003-0000-0000-c000-000000000000",
+        "resourceAccess":
+            [{ 
+                "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+                "type": "Scope" 
+            }]
+    }]
+}
+"@	
+        if ($PsVersionTable.Platform -ne 'Unix') {
+            #On Windows, we need to escape quotes and remove new lines before sending the payload to az rest. 
+            # See: https://github.com/Azure/azure-cli/blob/dev/doc/quoting-issues-with-powershell.md#double-quotes--are-lost
+            $appCreateRequestBodyJson = $appCreateRequestBodyJson.replace('"','\"').replace("`r`n","")
+        }
+
+        $landingpageLoginAppReg = $(az rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $appCreateRequestBodyJson  ) | ConvertFrom-Json
+        if ($LASTEXITCODE) { throw "Creating $ADMTApplicationDisplayName App Registration returned $LASTEXITCODE exit code, terminating ..." }
+
+        $ADMTApplicationID = $landingpageLoginAppReg.appId
+        $ADMTObjectID = $landingpageLoginAppReg.id
+
+        Write-Host "   🔵 Landing Page SSO App Registration created."
+        Write-Host "      ➡️ Application Display Name:" $ADMTApplicationDisplayName
+        Write-Host "      ➡️ Application Id: $ADMTApplicationID"
+
+        # Download Publisher's AppRegistration logo
+        if($LogoURLpng) { 
+            Write-Host "   🔵 Logo image provided. Setting the Application branding logo"
+            Write-Host "      ➡️ Setting the Application branding logo"
+            $token=(az account get-access-token --resource "https://graph.microsoft.com" --query accessToken --output tsv)
+            $logoWeb = Invoke-WebRequest $LogoURLpng
+            $logoContentType = $logoWeb.Headers["Content-Type"]
+            $logoContent = $logoWeb.Content
+            
+            $uploaded = Invoke-WebRequest `
+                -Uri "https://graph.microsoft.com/v1.0/applications/$ADMTObjectID/logo" `
+                -Method "PUT" `
+                -Header @{"Authorization"="Bearer $token";"Content-Type"="$logoContentType";} `
+                -Body $logoContent
+            
+            Write-Host "      ➡️ Application branding logo set from $LogoURLpng"
+        }
+        
+    }
+    catch [System.Net.WebException],[System.IO.IOException] {
+        Write-Host "🚨🚨   $PSItem.Exception"
+        throw;
+    }
 }
 
 #endregion
