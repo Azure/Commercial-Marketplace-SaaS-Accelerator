@@ -156,6 +156,9 @@ if($LogoURLico) {
  
 #region Create AAD App Registrations
 
+#Record the current ADApps to reduce deployment instructions at the end
+$ISADMTApplicationIDProvided = $ADMTApplicationID
+
 #Create App Registration for authenticating calls to the Marketplace API
 if (!($ADApplicationID)) {
     Write-Host "🔑 Creating Fulfillment API App Registration"
