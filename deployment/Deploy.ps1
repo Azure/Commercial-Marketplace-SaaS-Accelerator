@@ -132,6 +132,28 @@ else {
 
 #endregion
 
+#region Dowloading assets if provided
+
+# Download Publisher's PNG logo
+if($LogoURLpng) { 
+    Write-Host "📷 Logo image provided"
+	Write-Host "   🔵 Downloading Logo image file"
+    Invoke-WebRequest -Uri $LogoURLpng -OutFile "../src/CustomerSite/wwwroot/contoso-sales.png"
+    Invoke-WebRequest -Uri $LogoURLpng -OutFile "../src/AdminSite/wwwroot/contoso-sales.png"
+    Write-Host "   🔵 Logo image downloaded"
+}
+
+# Download Publisher's FAVICON logo
+if($LogoURLico) { 
+    Write-Host "📷 Logo icon provided"
+	Write-Host "   🔵 Downloading Logo icon file"
+    Invoke-WebRequest -Uri $LogoURLico -OutFile "../src/CustomerSite/wwwroot/favicon.ico"
+    Invoke-WebRequest -Uri $LogoURLico -OutFile "../src/AdminSite/wwwroot/favicon.ico"
+    Write-Host "   🔵 Logo icon downloaded"
+}
+
+#endregion
+ 
 #region Create AAD App Registrations
 
 #Create App Registration for authenticating calls to the Marketplace API
@@ -241,28 +263,6 @@ if (!($ADMTApplicationID)) {
 
 #endregion
 
-#region Dowloading assets if provided
-
-# Download Publisher's PNG logo
-if($LogoURLpng) { 
-    Write-Host "📷 Logo image provided"
-	Write-Host "   🔵 Downloading Logo image file"
-    Invoke-WebRequest -Uri $LogoURLpng -OutFile "../src/CustomerSite/wwwroot/contoso-sales.png"
-    Invoke-WebRequest -Uri $LogoURLpng -OutFile "../src/AdminSite/wwwroot/contoso-sales.png"
-    Write-Host "   🔵 Logo image downloaded"
-}
-
-# Download Publisher's FAVICON logo
-if($LogoURLico) { 
-    Write-Host "📷 Logo icon provided"
-	Write-Host "   🔵 Downloading Logo icon file"
-    Invoke-WebRequest -Uri $LogoURLico -OutFile "../src/CustomerSite/wwwroot/favicon.ico"
-    Invoke-WebRequest -Uri $LogoURLico -OutFile "../src/AdminSite/wwwroot/favicon.ico"
-    Write-Host "   🔵 Logo icon downloaded"
-}
-
-#endregion
- 
 #region Prepare Code Packages
 Write-host "📜 Prepare publish files for the application"
 if (!(Test-Path '../Publish')) {		
