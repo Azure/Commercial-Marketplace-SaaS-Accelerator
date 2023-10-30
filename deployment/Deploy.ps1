@@ -145,7 +145,7 @@ $kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=ap
 if( $kv_check.reason -eq "AlreadyExists")
 {
 	Write-Host ""
-	Write-Error "🛑 KeyVault name $KeyVault already exists."
+	Write-Host "🛑 KeyVault name $KeyVault already exists." -ForegroundColor Red
 	Write-Host "	To Purge KeyVault please use the following doc:"
 	Write-Host "	https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
 	Write-Host "	You could use new KeyVault name by using parameter -KeyVault"
@@ -160,7 +160,7 @@ $sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName
 if ($sql_exists) 
 {
 	Write-Host ""
-	Write-Host "🛑 SQl Server name $SQLServerName already exists."
+	Write-Host "🛑 SQl Server name $SQLServerName already exists." -ForegroundColor Red
 	Write-Host "	 Please delete existing instance or use new sql Instance name by using parameter -SQLServerName"
     exit 1
 }  
