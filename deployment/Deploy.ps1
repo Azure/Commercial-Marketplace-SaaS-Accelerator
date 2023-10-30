@@ -166,7 +166,7 @@ if ($sql_exists)
 	Write-Host "🛑 SQl Server name " -NoNewline -ForegroundColor Red
 	Write-Host "$SQLServerName"   -NoNewline -ForegroundColor Red -BackgroundColor Yellow
 	Write-Host " already exists." -ForegroundColor Red
-	Write-Host "Please delete existing instance or use new sql Instance name by using parameter"
+	Write-Host "Please delete existing instance or use new sql Instance name by using parameter" -NoNewline 
 	Write-Host " -SQLServerName"   -ForegroundColor Green
     exit 1
 }  
