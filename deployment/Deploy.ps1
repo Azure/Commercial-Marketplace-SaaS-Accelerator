@@ -159,8 +159,6 @@ if ($sql_exists)
 }  
 #endregion
 
-Write-Host "Exit now"
-exit 
 #region Dowloading assets if provided
 
 # Download Publisher's PNG logo
