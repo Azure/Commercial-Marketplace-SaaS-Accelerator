@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
 {
-    public partial class Baseline_v741 : Migration
+    public partial class Baseline_v7 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.BaselineV741_SeedData();
+            migrationBuilder.BaselineV7_SeedData();
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.BaselineV741_DeSeedData();
+            migrationBuilder.BaselineV7_DeSeedData();
         }
     }
 }
