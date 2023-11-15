@@ -132,7 +132,26 @@ public class HomeController : BaseController
     /// <param name="offersRepository">The offers repository.</param>
     /// <param name="offersAttributeRepository">The offers attribute repository.</param>
     public HomeController(
-        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService,  ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, SaaSApiClientConfiguration saaSApiClientConfiguration, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository, SaaSClientLogger<HomeController> logger):base(applicationConfigRepository)
+        IUsersRepository usersRepository, 
+        IMeteredBillingApiService billingApiService,  
+        ISubscriptionsRepository subscriptionRepo, 
+        IPlansRepository planRepository, 
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, 
+        IMeteredDimensionsRepository dimensionsRepository, 
+        ISubscriptionLogRepository subscriptionLogsRepo, 
+        IApplicationConfigRepository applicationConfigRepository, 
+        IUsersRepository userRepository, 
+        IFulfillmentApiService fulfillApiService, 
+        IApplicationLogRepository applicationLogRepository, 
+        IEmailTemplateRepository emailTemplateRepository, 
+        IPlanEventsMappingRepository planEventsMappingRepository, 
+        IEventsRepository eventsRepository, 
+        SaaSApiClientConfiguration saaSApiClientConfiguration, 
+        ILoggerFactory loggerFactory, 
+        IEmailService emailService, 
+        IOffersRepository offersRepository, 
+        IOfferAttributesRepository offersAttributeRepository, 
+        SaaSClientLogger<HomeController> logger):base(applicationConfigRepository)
     {
         this.billingApiService = billingApiService;
         this.subscriptionRepo = subscriptionRepo;
@@ -483,13 +502,6 @@ public class HomeController : BaseController
                 usageViewModel.MeteredAuditLogs = new List<MeteredAuditLogs>();
                 usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId, true).OrderByDescending(s => s.CreatedDate).ToList();
                 usageViewModel.DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description");
-
-                if (this.saaSApiClientConfiguration.SupportMeteredBilling)
-                {
-                    this.TempData.Add("SupportMeteredBilling", "1");
-                    
-                }
-
                 return this.View(usageViewModel);
             }
             else

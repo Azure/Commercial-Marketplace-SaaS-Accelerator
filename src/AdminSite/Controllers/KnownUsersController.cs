@@ -28,8 +28,8 @@ public class KnownUsersController : BaseController
     /// <param name="logger">The logger.</param>
 
     public KnownUsersController(IKnownUsersRepository knownUsersRepository,
-                                SaaSClientLogger<KnownUsersController> logger,
-                                IApplicationConfigRepository applicationConfigRepository) : base(applicationConfigRepository)
+           SaaSClientLogger<KnownUsersController> logger,
+           IApplicationConfigRepository applicationConfigRepository) : base(applicationConfigRepository)
     {
         this.knownUsersRepository = knownUsersRepository;
         this.logger = logger;

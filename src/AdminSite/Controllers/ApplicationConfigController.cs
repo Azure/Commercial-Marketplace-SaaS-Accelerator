@@ -32,9 +32,10 @@ public class ApplicationConfigController : BaseController
     /// </summary>
     private readonly IEmailTemplateRepository emailTemplateRepository;
 
-    public ApplicationConfigController(
-    ApplicationConfigService appConfigService,
-        IEmailTemplateRepository emailTemplateRepository, SaaSClientLogger<ApplicationConfigController> logger, SaaSApiClientConfiguration saaSApiClientConfiguration,IApplicationConfigRepository appConfigRepository) : base(appConfigRepository)
+    public ApplicationConfigController(ApplicationConfigService appConfigService,
+        IEmailTemplateRepository emailTemplateRepository, 
+        SaaSClientLogger<ApplicationConfigController> logger,
+        IApplicationConfigRepository appConfigRepository) : base(appConfigRepository)
     {
         this.appConfigService = appConfigService;
         this.emailTemplateRepository = emailTemplateRepository;

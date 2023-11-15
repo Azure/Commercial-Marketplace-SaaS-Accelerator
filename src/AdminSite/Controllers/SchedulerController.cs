@@ -67,7 +67,8 @@ public class SchedulerController : BaseController
         ISchedulerManagerViewRepository schedulerViewRepository, 
         IUsersRepository usersRepository,
         SaaSClientLogger<SchedulerController> logger,
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository) : base(applicationConfigRepository)
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
+        IApplicationConfigRepository applicationConfigRepository) : base(applicationConfigRepository)
 
     {
         this.usersRepository = usersRepository;

@@ -51,7 +51,13 @@ public class PlansController : BaseController
     /// <param name="offerAttributeRepository">The offer attribute repository.</param>
     /// <param name="offerRepository">The offer repository.</param>
     /// <param name="logger">The logger.</param>
-    public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, SaaSClientLogger<PlansController> logger) : base(applicationConfigRepository)
+    public PlansController(ISubscriptionsRepository subscriptionRepository, 
+        IUsersRepository usersRepository, 
+        IApplicationConfigRepository applicationConfigRepository, 
+        IPlansRepository plansRepository, 
+        IOfferAttributesRepository offerAttributeRepository, 
+        IOffersRepository offerRepository, 
+        SaaSClientLogger<PlansController> logger) : base(applicationConfigRepository)
     {
         this.subscriptionRepository = subscriptionRepository;
         this.usersRepository = usersRepository;

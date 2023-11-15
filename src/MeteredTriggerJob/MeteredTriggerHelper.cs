@@ -104,83 +104,87 @@ public class Executor
     /// Execute the scheduler engine
     /// </summary>
     public void Execute()
-    {        
-        //Get all Scheduled Data
-        var getAllScheduledTasks = schedulerService.GetScheduledTasks();
-
-        
-        //GetCurrentUTC time
-        DateTime _currentUTCTime = DateTime.UtcNow;
-        TimeSpan ts = new TimeSpan(DateTime.UtcNow.Hour, 0, 0);
-        _currentUTCTime = _currentUTCTime.Date + ts;
-
-        // Send Email in case of missing Scheduler
-        bool.TryParse(this.applicationConfigService.GetValueByName("EnablesMissingSchedulerEmail"), out bool enablesMissingSchedulerEmail);
-        //Process each scheduler frequency
-        foreach (SchedulerFrequencyEnum frequency in Enum.GetValues(typeof(SchedulerFrequencyEnum)))
+    {
+        bool.TryParse(this.applicationConfigService.GetValueByName("IsMeteredBillingEnabled"), out bool supportMeteredBilling);
+        if (supportMeteredBilling)
         {
-           
-            var ableToParse = bool.TryParse(this.applicationConfigService.GetValueByName($"Enable{frequency}MeterSchedules"), out bool runSchedulerForThisFrequency);
+            //Get all Scheduled Data
+            var getAllScheduledTasks = schedulerService.GetScheduledTasks();
 
-            if (ableToParse && runSchedulerForThisFrequency)
+
+            //GetCurrentUTC time
+            DateTime _currentUTCTime = DateTime.UtcNow;
+            TimeSpan ts = new TimeSpan(DateTime.UtcNow.Hour, 0, 0);
+            _currentUTCTime = _currentUTCTime.Date + ts;
+
+            // Send Email in case of missing Scheduler
+            bool.TryParse(this.applicationConfigService.GetValueByName("EnablesMissingSchedulerEmail"), out bool enablesMissingSchedulerEmail);
+            //Process each scheduler frequency
+            foreach (SchedulerFrequencyEnum frequency in Enum.GetValues(typeof(SchedulerFrequencyEnum)))
             {
-                LogLine($"==== Checking all {frequency} scheduled items at {_currentUTCTime} UTC. ====");
 
-                var scheduledItems = getAllScheduledTasks
-                    .Where(a => a.Frequency == frequency.ToString())
-                    .ToList();
+                var ableToParse = bool.TryParse(this.applicationConfigService.GetValueByName($"Enable{frequency}MeterSchedules"), out bool runSchedulerForThisFrequency);
 
-                foreach (var scheduledItem in scheduledItems)
+                if (ableToParse && runSchedulerForThisFrequency)
                 {
-                    // Get the run time.
-                    //Always pickup the NextRuntime, durnig firstRun or OneTime then pickup StartDate, as the NextRunTime will be null
-                    DateTime? _nextRunTime = scheduledItem.NextRunTime ?? scheduledItem.StartDate;
-                    int timeDifferentInHours = (int)_currentUTCTime.Subtract(_nextRunTime.Value).TotalHours;
+                    LogLine($"==== Checking all {frequency} scheduled items at {_currentUTCTime} UTC. ====");
 
-                    // Print the scheduled Item and the expected run date
-                    PrintScheduler(scheduledItem,
-                        _nextRunTime,
-                        timeDifferentInHours);
+                    var scheduledItems = getAllScheduledTasks
+                        .Where(a => a.Frequency == frequency.ToString())
+                        .ToList();
 
-                    //Past scheduler items
-                    if (timeDifferentInHours > 0)
+                    foreach (var scheduledItem in scheduledItems)
                     {
-                        var msg = $"Scheduled Item Id: {scheduledItem.Id} will not run as {_nextRunTime} has passed. Please check audit logs if its has run previously.";
-                        LogLine(msg,true);
-                        
-                         
-                        if (enablesMissingSchedulerEmail)
+                        // Get the run time.
+                        //Always pickup the NextRuntime, durnig firstRun or OneTime then pickup StartDate, as the NextRunTime will be null
+                        DateTime? _nextRunTime = scheduledItem.NextRunTime ?? scheduledItem.StartDate;
+                        int timeDifferentInHours = (int)_currentUTCTime.Subtract(_nextRunTime.Value).TotalHours;
+
+                        // Print the scheduled Item and the expected run date
+                        PrintScheduler(scheduledItem,
+                            _nextRunTime,
+                            timeDifferentInHours);
+
+                        //Past scheduler items
+                        if (timeDifferentInHours > 0)
                         {
-                            var newMeteredAuditLog = new MeteredAuditLogs()
+                            var msg = $"Scheduled Item Id: {scheduledItem.Id} will not run as {_nextRunTime} has passed. Please check audit logs if its has run previously.";
+                            LogLine(msg, true);
+
+
+                            if (enablesMissingSchedulerEmail)
                             {
-                                StatusCode = "Missing",
-                                ResponseJson = msg
-                            };
-                            SendMissingEmail(scheduledItem,newMeteredAuditLog);
+                                var newMeteredAuditLog = new MeteredAuditLogs()
+                                {
+                                    StatusCode = "Missing",
+                                    ResponseJson = msg
+                                };
+                                SendMissingEmail(scheduledItem, newMeteredAuditLog);
+                            }
+
+                            continue;
+                        }
+                        else if (timeDifferentInHours < 0)
+                        {
+                            LogLine($"Scheduled Item Id: {scheduledItem.Id} future run will be at {_nextRunTime} UTC.");
+
+                            continue;
+                        }
+                        else if (timeDifferentInHours == 0)
+                        {
+                            TriggerSchedulerItem(scheduledItem);
+                        }
+                        else
+                        {
+                            LogLine($"Scheduled Item Id: {scheduledItem.Id} will not run as it doesn't match any time difference logic. {_nextRunTime} UTC.");
                         }
 
-                        continue;
                     }
-                    else if (timeDifferentInHours < 0)
-                    {
-                        LogLine($"Scheduled Item Id: {scheduledItem.Id} future run will be at {_nextRunTime} UTC.");
-                        
-                        continue;
-                    }
-                    else if (timeDifferentInHours == 0)
-                    {
-                        TriggerSchedulerItem(scheduledItem);
-                    }
-                    else
-                    {
-                        LogLine($"Scheduled Item Id: {scheduledItem.Id} will not run as it doesn't match any time difference logic. {_nextRunTime} UTC.");
-                    }
-
                 }
-            }
-            else
-            {
-                LogLine($"{frequency} scheduled items will not be run as it's disabled in the application config.");
+                else
+                {
+                    LogLine($"{frequency} scheduled items will not be run as it's disabled in the application config.");
+                }
             }
         }
     }

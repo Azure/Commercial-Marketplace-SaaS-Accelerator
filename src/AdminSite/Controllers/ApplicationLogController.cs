@@ -22,7 +22,9 @@ public class ApplicationLogController : BaseController
 
     private readonly IApplicationLogRepository appLogRepository;
 
-    public ApplicationLogController(IApplicationLogRepository applicationLogRepository, SaaSClientLogger<ApplicationLogController> logger, SaaSApiClientConfiguration saaSApiClientConfiguration, IApplicationConfigRepository applicationConfigRepository) : base(applicationConfigRepository)
+    public ApplicationLogController(IApplicationLogRepository applicationLogRepository, 
+        SaaSClientLogger<ApplicationLogController> logger, 
+        IApplicationConfigRepository applicationConfigRepository) : base(applicationConfigRepository)
     {
         this.appLogRepository = applicationLogRepository;
         this.logger = logger;
