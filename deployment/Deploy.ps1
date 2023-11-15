@@ -87,6 +87,20 @@ if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
 
 #endregion 
 
+#region pre-checks
+
+# check if dotnet 6 is installed
+
+$dotnetversion = dotnet --version
+
+if(!$dotnetversion.StartsWith('6.')) {
+    Throw "🛑 Dotnet 6 not installed. Install dotnet6 and re-run the script."
+    Exit
+}
+
+#endregion
+
+
 Write-Host "Starting SaaS Accelerator Deployment..."
 
 #region Select Tenant / Subscription for deployment
@@ -302,8 +316,8 @@ Write-host "   🔵 KeyVault"
 Write-host "      ➡️ Create KeyVault"
 az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Add Secrets"
-az keyvault secret set --vault-name $KeyVault  --name ADApplicationSecret --value $ADApplicationSecret --output $azCliOutput
-az keyvault secret set --vault-name $KeyVault  --name DefaultConnection --value $Connection --output $azCliOutput
+az keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --output $azCliOutput
+az keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --output $azCliOutput
 
 Write-host "   🔵 App Service Plan"
 Write-host "      ➡️ Create App Service Plan"
