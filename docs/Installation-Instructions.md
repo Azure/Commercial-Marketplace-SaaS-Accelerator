@@ -29,15 +29,15 @@ Copy the following section to an editor and update it to match your company pref
 ``` powershell
 wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
 chmod +x dotnet-install.sh; `
-./dotnet-install.sh; `
+./dotnet-install.sh --channel 6.0; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
-dotnet tool install --global dotnet-ef; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.3.0 --depth 1; `
+dotnet tool install --global dotnet-ef --version 6.0.1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.4.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
  -WebAppNamePrefix "SOME-UNIQUE-STRING" `
  -ResourceGroupForDeployment "SOME-RG-NAME" `
- -PublisherAdminUsers "user@email.com" `
+ -PublisherAdminUsers "user1@email.com,user2@email" `
  -Location "East US" 
  ```
 
