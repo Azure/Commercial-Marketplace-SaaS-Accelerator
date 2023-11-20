@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Content Remove="appsettings.Development.json" />
+    <Content Remove="compilerconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,5 +51,6 @@
 
   <ItemGroup>
     <None Include="appsettings.Development.json" />
+    <None Include="compilerconfig.json" />
   </ItemGroup>
 </Project>
