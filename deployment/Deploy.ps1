@@ -92,9 +92,9 @@ if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
 
 # check if dotnet 6 is installed
 
-$dotnetversion = dotnet --version
+$dotnetversion = dotnet --list-sdks
 
-if(!$dotnetversion.StartsWith('6.')) {
+if(!$dotnetversion -like "*6.*") {
     Throw "🛑 Dotnet 6 not installed. Install dotnet6 and re-run the script."
     Exit
 }
