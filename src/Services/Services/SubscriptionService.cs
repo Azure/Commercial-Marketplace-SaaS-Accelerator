@@ -69,8 +69,8 @@ public class SubscriptionService
             PurchaserTenantId = subscriptionDetail.Purchaser.TenantId,
             AmpOfferId = subscriptionDetail.OfferId,
             Term = subscriptionDetail.Term.TermUnit.ToString(),
-            StartDate = subscriptionDetail.Term.StartDate.ToUniversalTime().DateTime,
-            EndDate = subscriptionDetail.Term.EndDate.ToUniversalTime().DateTime
+            StartDate = subscriptionDetail.Term.StartDate.UtcDateTime,
+            EndDate = subscriptionDetail.Term.EndDate.UtcDateTime
         };
         return this.subscriptionRepository.Save(newSubscription);
     }
