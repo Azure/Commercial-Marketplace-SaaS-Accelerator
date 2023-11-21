@@ -316,8 +316,8 @@ Write-host "   🔵 KeyVault"
 Write-host "      ➡️ Create KeyVault"
 az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Add Secrets"
-az keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --resource-group $ResourceGroupForDeployment --output $azCliOutput
-az keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --resource-group $ResourceGroupForDeployment --output $azCliOutput
+az keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --output $azCliOutput
+az keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --output $azCliOutput
 
 Write-host "   🔵 App Service Plan"
 Write-host "      ➡️ Create App Service Plan"
