@@ -19,17 +19,17 @@ public class SubscriptionService
     /// <summary>
     /// The subscription repository.
     /// </summary>
-    private ISubscriptionsRepository subscriptionRepository;
+    private readonly ISubscriptionsRepository subscriptionRepository;
 
     /// <summary>
     /// The plan repository.
     /// </summary>
-    private IPlansRepository planRepository;
+    private readonly IPlansRepository planRepository;
 
     /// <summary>
     /// The current user identifier.
     /// </summary>
-    private int currentUserId;
+    private readonly int currentUserId;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SubscriptionService"/> class.
@@ -48,11 +48,12 @@ public class SubscriptionService
     /// Adds/Update partner subscriptions.
     /// </summary>
     /// <param name="subscriptionDetail">The subscription detail.</param>
+    /// <param name="customerUserId">The id of the current user.</param>
     /// <returns>Subscription Id.</returns>
     public int AddOrUpdatePartnerSubscriptions(SubscriptionResult subscriptionDetail, int customerUserId = 0)
     {
-        var isActive = this.IsSubscriptionDeleted(Convert.ToString(subscriptionDetail.SaasSubscriptionStatus));
-        Subscriptions newSubscription = new Subscriptions()
+        var isActive = subscriptionDetail.SaasSubscriptionStatus == SubscriptionStatusEnum.Unsubscribed;
+        var newSubscription = new Subscriptions()
         {
             Id = 0,
             AmpplanId = subscriptionDetail.PlanId,
@@ -87,16 +88,6 @@ public class SubscriptionService
     }
 
     /// <summary>
-    /// Subscriptions state from status.
-    /// </summary>
-    /// <param name="status">The status.</param>
-    /// <returns> check if subscription deleted.</returns>
-    public bool IsSubscriptionDeleted(string status)
-    {
-        return SubscriptionStatusEnum.Unsubscribed.ToString().Equals(status, StringComparison.InvariantCultureIgnoreCase);
-    }
-
-    /// <summary>
     /// Gets the subscriptions for partner.
     /// </summary>
     /// <param name="partnerEmailAddress">The partner email address.</param>
@@ -105,19 +96,12 @@ public class SubscriptionService
     /// <returns> subscription status.</returns>
     public List<SubscriptionResultExtension> GetPartnerSubscription(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = true)
     {
-        List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
-        var allSubscriptionsForEmail = this.subscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
-
-        foreach (var subscription in allSubscriptionsForEmail)
-        {
-            SubscriptionResultExtension subscritpionDetail = this.PrepareSubscriptionResponse(subscription);
-            if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
-            {
-                allSubscriptions.Add(subscritpionDetail);
-            }
-        }
-
-        return allSubscriptions;
+        return this.subscriptionRepository
+            .GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed)
+            .OrderByDescending(s => s.CreateDate)
+            .Select(subscription => this.PrepareSubscriptionResponse(subscription))
+            .Where(detail => detail != null && detail.SubscribeId > 0)
+            .ToList();
     }
 
     /// <summary>
@@ -131,10 +115,10 @@ public class SubscriptionService
         var subscriptionDetail = this.subscriptionRepository.GetById(subscriptionId, includeUnsubscribed);
         if (subscriptionDetail != null)
         {
-            SubscriptionResultExtension subscritpionDetail = this.PrepareSubscriptionResponse(subscriptionDetail);
-            if (subscritpionDetail != null)
+            var response = this.PrepareSubscriptionResponse(subscriptionDetail);
+            if (response != null)
             {
-                return subscritpionDetail;
+                return response;
             }
         }
 
@@ -145,15 +129,16 @@ public class SubscriptionService
     /// Prepares the subscription response.
     /// </summary>
     /// <param name="subscription">The subscription.</param>
+    /// <param name="existingPlanDetail">The existing plan detail.</param>
     /// <returns> Subscription.</returns>
     public SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription, Plans existingPlanDetail = null)
     {
-        if(existingPlanDetail == null)
-        {
-            existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
-        }
+        existingPlanDetail ??= this.planRepository.GetById(subscription.AmpplanId);
 
-        SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
+        if (!Enum.TryParse<TermUnitEnum>(subscription.Term, out var termUnit))
+            termUnit = TermUnitEnum.P1M;
+
+        return new SubscriptionResultExtension
         {
             Id = subscription.AmpsubscriptionId,
             SubscribeId = subscription.Id,
@@ -163,6 +148,7 @@ public class SubscriptionService
             {
                 StartDate = subscription.StartDate.GetValueOrDefault(),
                 EndDate = subscription.EndDate.GetValueOrDefault(),
+                TermUnit = termUnit,
             },
             Quantity = subscription.Ampquantity,
             Name = subscription.Name,
@@ -171,40 +157,12 @@ public class SubscriptionService
             CustomerEmailAddress = subscription.User?.EmailAddress,
             CustomerName = subscription.User?.FullName,
             IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
-        };
-
-        if (!Enum.TryParse<TermUnitEnum>(subscription.Term, out var termUnit))
-            termUnit = TermUnitEnum.P1M;
-        subscritpionDetail.Term.TermUnit = termUnit;
-
-        subscritpionDetail.Purchaser = new PurchaserResult();
-        subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
-        subscritpionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
-        return subscritpionDetail;
-    }
-
-    /// <summary>
-    /// Gets the subscriptions for partner.
-    /// </summary>
-    /// <param name="partnerEmailAddress">The partner email address.</param>
-    /// <param name="subscriptionId">The subscription identifier.</param>
-    /// <param name="includeUnsubscribed">if set to <c>true</c> [include unsubscribed].</param>
-    /// <returns> SubscriptionResult.</returns>
-    public List<SubscriptionResult> GetPartnerSubscriptions(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = true)
-    {
-        List<SubscriptionResult> allSubscriptions = new List<SubscriptionResult>();
-        var allSubscriptionsForEmail = this.subscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
-
-        foreach (var subscription in allSubscriptionsForEmail)
-        {
-            SubscriptionResult subscritpionDetail = this.PrepareSubscriptionResponse(subscription);
-            if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
+            Purchaser = new PurchaserResult
             {
-                allSubscriptions.Add(subscritpionDetail);
-            }
-        }
-
-        return allSubscriptions;
+                EmailId = subscription.PurchaserEmail,
+                TenantId = subscription.PurchaserTenantId ?? default
+            },
+        };
     }
 
     /// <summary>
@@ -212,10 +170,10 @@ public class SubscriptionService
     /// </summary>
     /// <param name="subscriptionStatus">The subscription status.</param>
     /// <returns> Subscription Status EnumExtension.</returns>
-    public SubscriptionStatusEnumExtension GetSubscriptionStatus(string subscriptionStatus)
+    private SubscriptionStatusEnumExtension GetSubscriptionStatus(string subscriptionStatus)
     {
-        var parseSuccessfull = Enum.TryParse(subscriptionStatus, out SubscriptionStatusEnumExtension status);
-        return parseSuccessfull ? status : SubscriptionStatusEnumExtension.UnRecognized;
+        var parseSuccessful = Enum.TryParse(subscriptionStatus, out SubscriptionStatusEnumExtension status);
+        return parseSuccessful ? status : SubscriptionStatusEnumExtension.UnRecognized;
     }
 
     /// <summary>
@@ -267,10 +225,10 @@ public class SubscriptionService
     }
 
     /// <summary>
-    /// Only Add current subscription plan. This is more relevent when an unsubscribed subscription gets created
+    /// Only Add current subscription plan. This is more relevant when an unsubscribed subscription gets created
     /// As the ListAvailableplans API is not available, we only add current plan from Subscription
     /// </summary>
-    /// <param name="allPlanDetail">All plan detail.</param>
+    /// <param name="planDetail">plan detail to add.</param>
     public void AddPlanDetailsForSubscription(PlanDetailResultExtension planDetail)
     {
         this.planRepository.Add(new Plans
@@ -293,17 +251,15 @@ public class SubscriptionService
     /// <returns> Plan Details.</returns>
     public List<PlanDetailResult> GetAllSubscriptionPlans()
     {
-        var allPlans = this.planRepository.Get();
-
-        return (from plan in allPlans
-            select new PlanDetailResult()
+        return this.planRepository.Get()
+            .Select(plan => new PlanDetailResult()
             {
                 Id = plan.Id,
                 PlanId = plan.PlanId,
                 DisplayName = plan.DisplayName,
                 Description = plan.Description
-
-            }).ToList();
+            })
+            .ToList();
     }
 
     /// <summary>
@@ -316,14 +272,9 @@ public class SubscriptionService
     /// </returns>
     public List<SubscriptionParametersModel> GetSubscriptionsParametersById(Guid subscriptionId, Guid planId)
     {
-        List<SubscriptionParametersModel> subscriptionParametersList = new List<SubscriptionParametersModel>();
-
         var subscriptionParameters = this.subscriptionRepository.GetSubscriptionsParametersById(subscriptionId, planId);
-
         var serializedSubscription = JsonSerializer.Serialize(subscriptionParameters);
-        subscriptionParametersList = JsonSerializer.Deserialize<List<SubscriptionParametersModel>>(serializedSubscription);
-
-        return subscriptionParametersList;
+        return JsonSerializer.Deserialize<List<SubscriptionParametersModel>>(serializedSubscription);
     }
 
     /// <summary>
@@ -356,61 +307,16 @@ public class SubscriptionService
     /// <returns>a list of subscription with metered plan</returns>
     public List<Subscriptions> GetActiveSubscriptionsWithMeteredPlan()
     {
-        var allActiveSubscription = this.subscriptionRepository.Get().ToList().Where(s => s.SubscriptionStatus == "Subscribed").ToList();
-        var allPlansData = this.planRepository.Get().ToList().Where(p => p.IsmeteringSupported == true).ToList();
+        var allActiveSubscription = this.subscriptionRepository.Get()
+            .Where(s => s.SubscriptionStatus == "Subscribed")
+            .ToList();
+        var allPlansData = this.planRepository.Get()
+            .Where(p => p.IsmeteringSupported == true)
+            .ToList();
         var meteredSubscriptions = from subscription in allActiveSubscription
             join plan in allPlansData
                 on subscription.AmpplanId equals plan.PlanId
             select subscription;
         return meteredSubscriptions.ToList();
     }
-    /*
-    /// <summary>
-    /// Generates the parmlist from response.
-    /// </summary>
-    /// <param name="outputstring">The outputstring.</param>
-    /// <returns> Subscription Template Parameters.</returns>
-    //    public List<SubscriptionTemplateParameters> GenerateParmlistFromResponse(DeploymentExtended outputstring)
-    //    {
-    //        List<SubscriptionTemplateParameters> childlist = new List<SubscriptionTemplateParameters>();
-    //        JObject templateOutputs = (JObject)outputstring.Properties.Outputs;
-    //        foreach (JToken child in templateOutputs.Children())
-    //        {
-    //            SubscriptionTemplateParameters childparms = new SubscriptionTemplateParameters();
-    //            childparms = new SubscriptionTemplateParameters();
-    //            childparms.ParameterType = "output";
-    //            var paramName = (child as JProperty).Name;
-    //            childparms.Parameter = paramName;
-    //            object paramValue = string.Empty;
-
-    //            foreach (JToken grandChild in child)
-    //            {
-    //                foreach (JToken grandGrandChild in grandChild)
-    //                {
-    //                    var property = grandGrandChild as JProperty;
-
-    //                    if (property != null && property.Name == "value")
-    //                    {
-    //                        var type = property.Value.GetType();
-
-    //                        if (type == typeof(JValue) || type == typeof(JArray) ||
-    //                        property.Value.Type == JTokenType.Object ||
-    //                        property.Value.Type == JTokenType.Date)
-    //                        {
-    //                            paramValue = property.Value;
-    //                            if (paramValue != null)
-    //                            {
-    //                                childparms.Value = paramValue.ToString();
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //            }
-
-    //            childlist.Add(childparms);
-    //        }
-
-        return childlist;
-    }
-    */
 }
