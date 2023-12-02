@@ -75,9 +75,9 @@ If you already have deployed the SaaS Accelerator, but you want to update it so 
 ``` powershell
 wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
 chmod +x dotnet-install.sh; `
-./dotnet-install.sh; `
+./dotnet-install.sh --channel 6.0; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
-dotnet tool install --global dotnet-ef; `
+dotnet tool install --global dotnet-ef --version 6.0.1; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b <release-version-branch-to-deploy> --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Upgrade.ps1 `
