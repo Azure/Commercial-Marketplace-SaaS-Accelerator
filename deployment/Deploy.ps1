@@ -69,21 +69,21 @@ $azCliOutput = if($Quiet){'none'} else {'json'}
 
 if($SQLAdminLogin.ToLower() -eq "admin") {
     Throw "🛑 SQLAdminLogin may not be 'admin'."
-    Exit
+    exit 1
 }
 if($SQLAdminLoginPassword.Length -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
-    Exit
+    exit 1
 }
 if($WebAppNamePrefix.Length -gt 21) {
     Throw "🛑 Web name prefix must be less than 21 characters."
-    Exit
+    exit 1
 }
 
 
 if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
     Throw "🛑 KeyVault name only allows alphanumeric and hyphens, but cannot start with a number or special character."
-    Exit
+    exit 1
 }
 
 #endregion 
@@ -132,6 +132,45 @@ else {
 az account set -s $AzureSubscriptionID
 Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
 
+#endregion
+
+#region Check if KV exists
+
+#region Check If KeyVault Exists
+
+$KeyVaultApiUri="https://management.azure.com/subscriptions/$AzureSubscriptionID/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01"
+$KeyVaultApiBody='{"name": "'+$KeyVault+'","type": "Microsoft.KeyVault/vaults"}'
+
+$kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
+
+if( $kv_check.reason -eq "AlreadyExists")
+{
+	Write-Host ""
+	Write-Host "🛑 KeyVault name "  -NoNewline -ForegroundColor Red
+	Write-Host "$KeyVault"  -NoNewline -ForegroundColor Red -BackgroundColor Yellow
+	Write-Host " already exists." -ForegroundColor Red
+	Write-Host "To Purge KeyVault please use the following doc:"
+	Write-Host "https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
+	Write-Host "You could use new KeyVault name by using parameter" -NoNewline 
+	Write-Host " -KeyVault"  -ForegroundColor Green
+    exit 1
+}
+
+
+#endregion
+
+#region Check If SQL Server Exist
+$sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
+if ($sql_exists) 
+{
+	Write-Host ""
+	Write-Host "🛑 SQl Server name " -NoNewline -ForegroundColor Red
+	Write-Host "$SQLServerName"   -NoNewline -ForegroundColor Red -BackgroundColor Yellow
+	Write-Host " already exists." -ForegroundColor Red
+	Write-Host "Please delete existing instance or use new sql Instance name by using parameter" -NoNewline 
+	Write-Host " -SQLServerName"   -ForegroundColor Green
+    exit 1
+}  
 #endregion
 
 #region Dowloading assets if provided
