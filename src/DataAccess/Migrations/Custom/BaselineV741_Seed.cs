@@ -16,7 +16,7 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.Custom
             migrationBuilder.Sql(@$"
                     IF NOT EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'IsMeteredBillingEnabled')
                     BEGIN
-                        INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsMeteredBillingEnabled', N'false', N'Enable Metered Billing Feature')
+                        INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsMeteredBillingEnabled', N'true', N'Enable Metered Billing Feature')
                     END
                 GO");
         }
