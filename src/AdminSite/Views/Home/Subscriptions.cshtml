@@ -42,37 +42,37 @@
                         @if (Model.Subscriptions.Count() > 0)
                         {
                             <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20" width="100%">
-                                <thead class="cm-table-head text-center">
+                                <thead class="cm-table-head text-start">
                                     <tr>
-                                        <th class="text-center">Purchaser Email</th>
-                                        <th class="text-center">Marketplace Subscription Id</th>
-                                        <th class="text-center">Subscription Name</th>
-                                        <th class="text-center">Offer</th>
-                                        <th class="text-center">Plan</th>
-                                        <th class="text-center">Quantity</th>
-                                        <th class="text-center">Status</th>
-                                        <th class="text-center">Action</th>
+                                        <th>Purchaser Email</th>
+                                        <th>Marketplace Subscription Id</th>
+                                        <th>Subscription Name</th>
+                                        <th>Offer</th>
+                                        <th>Plan</th>
+                                        <th>Quantity</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="text-start">
                                     @for (var i = 0; i < Model.Subscriptions.Count; i++)
                                     {
                                         var subscription = Model.Subscriptions[i];
                                         <tr id=@subscription.SubscriptionStatus>
-                                            <td class="text-left">
+                                            <td>
                                                 @subscription.Purchaser.EmailId
                                             </td>
-                                            <td class="text-left text-nowrap">
+                                            <td class="text-nowrap">
                                                 @subscription.Id
                                             </td>
-                                               <td class="text-left">
+                                               <td>
                                                 @Html.HiddenFor(s => s.Subscriptions[i].Id)
                                                 @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
                                                 @subscription.Name
                                             </td>
-                                            <td class="text-left">@subscription.OfferId</td>
-                                            <td class="text-left">@subscription.PlanId</td>
-                                            <td class="text-left">
+                                            <td>@subscription.OfferId</td>
+                                            <td>@subscription.PlanId</td>
+                                            <td>
                                                 @if (@subscription.IsPerUserPlan)
                                                 {
                                                     @subscription.Quantity
@@ -82,10 +82,10 @@
                                                     <span>N/A</span>
                                                 }
                                             </td>
-                                            <td class="text-left">@subscription.SubscriptionStatus</td>
-                                            <td class="text-left cm-ellipsis">
+                                            <td>@subscription.SubscriptionStatus</td>
+                                            <td class="cm-ellipsis">
                                                 @* <div class="nav-item dropdown"> *@
-                                                    <a class="nav-link dropdown cm-link-button text-center" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                                    <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                     <div class="dropdown-menu" aria-labelledby="dropdown01">
                                                         <a class="dropdown-item cm-dropdown-option" asp-controller="Home" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id">View Details</a>
                                                         @if (subscription.IsMeteringSupported && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)

@@ -43,6 +43,7 @@ body {
 .mycontainer {
     margin-top: -8px;
     display: flex;
+    
     height: 100vh;
 }
 
@@ -53,9 +54,11 @@ body {
 }
 
 .class1 {
-    flex: 0 0 10px;
+    flex: 0 0 50px;
+    
     background-color: #333;
 }
+
 
 .navbar-toggler-icon {
     background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
@@ -86,8 +89,11 @@ a.nav-link{
     align-self: center;
 }
 button.navbar-toggler.nav-item.nav-link {
-    margin-left: 10px;
+    margin-left: 20px;
+    
 }
+
+
 .nav-item .nav-link {
     margin-block: -12px;
     padding-left: 10px;
@@ -121,6 +127,8 @@ button.navbar-toggler.nav-item.nav-link {
     .nav-underline .nav-link:hover {
         background-color: #666666;
         font-weight:600;
+        text-decoration:none;
+
         /*font-size: 1rem;*/
         color: #fff;
     }
@@ -128,11 +136,14 @@ button.navbar-toggler.nav-item.nav-link {
     .nav-underline .nav-link:active {
         color: #fff;
         font-size: .875rem;
+        text-decoration:none;
+        
     }
 
 .nav-underline .active {
     color: #fff;
     font-size: .875rem;
+    
     /*background-color: #666666;*/
 }
 
@@ -140,18 +151,20 @@ button.navbar-toggler.nav-item.nav-link {
 
 .navbar-collapse.collapsing {
     height: 100%;
+
     left: -75%;
     transition: height 0s ease;
 }
 
 .navbar-collapse.show {
     height: 100%;
-    left: 200px;
+   /* left: 200px;*/
+    width:55%;
     transition: left 400ms ease-in-out;
 }
 
 .navbar-toggler.collapsed ~ .navbar-collapse {
-    width: 10px;
+    width: 150px;
     transition: left 400ms ease-in;
 }
 
@@ -185,6 +198,7 @@ button.navbar-toggler.nav-item.nav-link {
 }
 
 .navbar-text {
+    /*font-weight:bold;*/
     /*font-weight:bold;*/
 }
 

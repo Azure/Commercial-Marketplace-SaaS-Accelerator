@@ -15,23 +15,23 @@
                 {
                     <div class="table-responsive mt20">
                         <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
-                            <thead class="cm-table-head">
+                            <thead class="cm-table-head text-start">
                                 <tr>
-                                    <th class="text-center">Offer Id</th>
-                                    <th class="text-center">Action</th>
+                                    <th>Offer Id</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="text-start">
                                 @{ var i = 0;}
                                 @foreach (var item in Model)
                                 {
                                     <tr>
-                                        <td class="text-center">
+                                        <td>
                                             @item.OfferId
                                         </td>
-                                        <td class="text-center cm-ellipsis">
+                                        <td class="cm-ellipsis">
 
-                                            <a class="nav-link dropdown cm-link-button text-center" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                            <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                 <div class="dropdown-menu" aria-labelledby="dropdown01">
                                                     <a class="dropdown-item cm-dropdown-option" data-bs-target="#myModal" onclick="ViewOfferDetailsById('@item.OfferGuid')">Edit</a>
                                                 </div>

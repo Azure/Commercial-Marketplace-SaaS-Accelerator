@@ -8,7 +8,7 @@
             </div>
             <form asp-action="ChangeSubscriptionQuantity" id="frmSubscriptionQuantityDetail" method="post">
                 <div class="modal-body text-center">
-                    <dl class="row text-left">
+                    <dl class="row text-start">
                         <dt class="col-sm-4 pl80">
                             @Html.DisplayNameFor(model => model.Id)
                         </dt>
@@ -49,7 +49,7 @@
                             @Html.HiddenFor(s => s.SubscribeId)
                         </dd>
                     </dl>
-                    <div class="text-right">
+                    <div class="text-end">
                         <div id="frmSpinner" class="spinner-border mt-2" role="status" style="margin-bottom: -10px; margin-right: 20px;" hidden>
                             <span class="sr-only">Processing...</span>
                         </div>
