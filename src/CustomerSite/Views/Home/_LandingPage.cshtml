@@ -187,19 +187,19 @@
 
                     </dl>
                 </div>
-                <div class="text-right">
+                <div class="text-end">
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                     {
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
-                        <button type="submit" asp-action="Subscriptions" class="cm-button-default text-right">Go to Subscription List</button>
+                        <button type="submit" asp-action="Subscriptions" class="cm-button-default text-end">Go to Subscription List</button>
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == true)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Activate</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-end">Activate</a>
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == false)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Subscribe</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-end" style="text-decoration:none;">Subscribe</a>
                     }
                 </div>
             }

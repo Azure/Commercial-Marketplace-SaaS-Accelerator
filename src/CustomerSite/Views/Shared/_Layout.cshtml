@@ -21,7 +21,7 @@
 <body>
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark cm-top-nav-bar">
         <a class="navbar-brand mr-auto mr-lg-0" href="@Url.Action("Index", "Home")">
-            <img class="cm-logo pull-left" src="~/contoso-sales.png" />
+            <img class="cm-logo" style="padding-left:15px;" src="~/contoso-sales.png" />
             @*<img class="cm-logo pull-left" src="https://kblnuser.azurewebsites.net/logo.png" />*@
         </a>
         @*<a class="navbar-brand mr-auto mr-lg-0" asp-area="" asp-controller="Home" asp-action="Index">SaasKit Demo</a>*@
@@ -35,7 +35,7 @@
                 @if (this.User.Identity.IsAuthenticated)
                 {
                     <span class="cm-username text-white">@User.Identity.Name&nbsp;</span>
-                    <a class="text-white cm-logout" asp-controller="Account" asp-action="SignOut">&nbsp;<i class="fa fa-sign-out fa-2x"></i></a>
+                    <a class="text-white cm-logout" style="text-decoration: none;" asp-controller="Account" asp-action="SignOut">&nbsp;<i class="fa fa-sign-out fa-2x"></i></a>
                 }
                 else
                 {
@@ -77,7 +77,7 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="~/js/script.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" asp-append-version="true"></script>
-    <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" asp-append-version="true"></script>
+    @* <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" asp-append-version="true"></script> *@
     <script src="~/lib/bootstrap/offcanvas.js"></script>
     
     @RenderSection("Scripts", required: false)

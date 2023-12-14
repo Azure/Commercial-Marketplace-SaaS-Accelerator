@@ -16,33 +16,33 @@
                 @if (Model != null && Model.Count() > 0)
                 {
                     <div class="table-responsive mt20">
-                        <table class="table table-bordered dt-responsive cm-table text-center" width="100%" cellspacing="0">
+                        <table class="table table-bordered dt-responsive cm-table text-start" width="100%" cellspacing="0">
                             <thead class="cm-table-head">
                                 <tr>
-                                    <th class="text-center">Plan Name</th>
-                                    <th class="text-center">Description</th>
-                                    <th class="text-center">Offer</th>
-                                    <th class="text-center">Action</th>
+                                    <th>Plan Name</th>
+                                    <th>Description</th>
+                                    <th>Offer</th>
+                                    <th>Action</th>
 
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="text-start">
                                 @{ var i = 0;}
                                 @foreach (var item in Model)
                                 {
                                     <tr>
-                                        <td class="text-left">
+                                        <td>
                                             @item.DisplayName
                                         </td>
-                                        <td class="text-left">
+                                        <td>
                                             @item.Description
                                         </td>
-                                        <td class="text-left">
+                                        <td>
                                             @item.OfferName
                                         </td>
-                                        <td class="text-center cm-ellipsis">
+                                        <td class="cm-ellipsis">
                                             @* <div class="nav-item dropdown"> *@
-                                            <a class="nav-link dropdown cm-link-button  text-center" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                            <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                 <div class="dropdown-menu" aria-labelledby="dropdown01">
                                                     <a class="dropdown-item cm-dropdown-option" data-bs-target="#myModal" onclick="ViewPlandetailsById('@item.PlanGUID')">Edit</a>
                                                 </div>

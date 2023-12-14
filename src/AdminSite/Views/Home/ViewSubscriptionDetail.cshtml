@@ -10,55 +10,60 @@
             </div>
             <div class="modal-body">
                 <form asp-action="ChangeSubscriptionPlan" id="frmSubscriptionDetail" method="post">
-                    <div class="modal-body text-center">
-                        <dl class="row text-left">
-                            <dt class="col-sm-4 pl80">
-                                @Html.DisplayNameFor(model => model.Id)
-                            </dt>
-                            <dd class="col-sm-8 pl80">
-                                @Html.DisplayFor(model => model.Id)
-                            </dd>
-                            <dt class="col-sm-4 pl80">
+                    
+                        
+                    <dl class="row" style="display: grid;grid-template-columns: max-content auto; text-align:left">
+                            
+                        <dt class="" style="grid-column-start: 1;">
+                            @Html.DisplayNameFor(model => model.Id)
+                        </dt>
+                        <dd class="" style="grid-column-start: 2;">
+                            @Html.DisplayFor(model => model.Id)
+                        </dd>
+
+                        <dt class="" style="grid-column-start: 1;">
                                 @Html.DisplayNameFor(model => model.Name)
-                            </dt>
-                            <dd class="col-sm-8 pl80">
+                        </dt>
+                        <dd class="" style="grid-column-start: 2;">
                                 @Html.DisplayFor(model => model.Name)
-                            </dd>
-                            <dt class="col-sm-4 pl80">
-                                @Html.DisplayNameFor(model => model.SubscriptionStatus)
-                            </dt>
-                            <dd class="col-sm-8 pl80">
-                                @Html.DisplayFor(model => model.SubscriptionStatus)
-                            </dd>
-                            <dt class="col-sm-4 pl80">
-                                @Html.DisplayName("Current Plan")
-                            </dt>
-                            <dd class="col-sm-8 pl80">
-                                @Html.DisplayFor(model => model.PlanId)
-                            </dd>
-                            <dt class="col-sm-4  pl80">
-                                @Html.DisplayName("Change Plan")
-                            </dt>
-                            <dd class="col-sm-8  pl80">
-                                @Html.DropDownListFor(s => s.PlanId, new SelectList(Model.PlanList, "PlanId", "PlanId", Model.PlanId), new { @class = "form-control w-100" })
-                                @Html.HiddenFor(s => s.Id)
-                                @Html.HiddenFor(s => s.PlanId)
-                                @Html.HiddenFor(s => s.SubscribeId)
-                            </dd>
-                        </dl>
-                        <div class="text-right">
+                        </dd>
+                       
+                        <dt class="">
+                            @Html.DisplayNameFor(model => model.SubscriptionStatus)
+                        </dt>
+                        <dd class="">
+                            @Html.DisplayFor(model => model.SubscriptionStatus)
+                        </dd>
+                        
+                        <dt class="">
+                            @Html.DisplayName("Current Plan")
+                        </dt>
+                        <dd class="">
+                            @Html.DisplayFor(model => model.PlanId)
+                        </dd>
+                        
+                        <dt class="">
+                            @Html.DisplayName("Change Plan")
+                        </dt>
+                        <dd class="">
+                            @Html.DropDownListFor(s => s.PlanId, new SelectList(Model.PlanList, "PlanId", "PlanId", Model.PlanId), new { @class = "form-control w-100" })
+                            @Html.HiddenFor(s => s.Id)
+                            @Html.HiddenFor(s => s.PlanId)
+                            @Html.HiddenFor(s => s.SubscribeId)
+                        </dd>
+                    </dl>
+                        <div class="text-end">
                             <div id="frmSpinner" class="spinner-border mt-2" role="status" style="margin-bottom: -10px; margin-right: 20px;" hidden>
-                                <span class="sr-only">Processing...</span>
+                            @* <span class="sr-only">Processing...</span> *@
                             </div>
-                            <button id="frmButton" type="button" onclick="confirmDialog()" class="cm-button-default mt40 text-right">Change Plan</button>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button id="frmButton" type="button" onclick="confirmDialog()" class="cm-button-default mt40 text-right">Change Plan</button>
+                            </div>
                         </div>
-                    </div>
+                   
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                
-            </div>
+            
         </div>
     </div>
 </div>
