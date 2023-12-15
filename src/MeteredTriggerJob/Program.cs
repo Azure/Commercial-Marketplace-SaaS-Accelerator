@@ -27,6 +27,7 @@ class Program
 
         IConfiguration configuration = new ConfigurationBuilder()
             .AddEnvironmentVariables()
+            .AddJsonFile("appsettings.json")
             .Build();
 
         var config = new SaaSApiClientConfiguration()

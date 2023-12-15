@@ -296,15 +296,18 @@ public class MeteredPlanSchedulerManagementService
         var scheduledItem = this.schedulerRepository.Get(id);
         var meteredAudits = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(Convert.ToInt32(scheduledItem.SubscriptionId));
         var scheduledItemView = this.schedulerViewRepository.GetById(id);
-        foreach (var auditLog in meteredAudits)
+        if (scheduledItemView.Frequency == SchedulerFrequencyEnum.OneTime.ToString())
         {
-            var MeteringUsageRequest = JsonSerializer.Deserialize<MeteringUsageRequest>(auditLog.RequestJson);
-
-            if ((MeteringUsageRequest.Dimension == scheduledItemView.Dimension) && (auditLog.RunBy == $"Scheduler - {schedulerName}"))
+            foreach (var auditLog in meteredAudits)
             {
-                    return true;
-            }
+                var MeteringUsageRequest = JsonSerializer.Deserialize<MeteringUsageRequest>(auditLog.RequestJson);
 
+                if ((MeteringUsageRequest.Dimension == scheduledItemView.Dimension) && (auditLog.RunBy == $"Scheduler - {schedulerName}"))
+                {
+                    return true;
+                }
+
+            }
         }
         return false;
 
