@@ -31,7 +31,7 @@
 
             </div>
 
-            <div class="form-inline my-2 my-lg-0 ms-auto">
+            <div class="form-inline my-2 my-lg-0 ms-auto" style="padding-right:10px;">
                 @if (this.User.Identity.IsAuthenticated)
                 {
                     <span class="cm-username text-white">@User.Identity.Name&nbsp;</span>
@@ -39,7 +39,7 @@
                 }
                 else
                 {
-                    <a class="text-white" asp-controller="Account" asp-action="SignIn">Sign in</a>
+                    <a class="text-white" style="text-decoration: none;" asp-controller="Account" asp-action="SignIn">Sign in</a>
                 }
             </div>
         </div>
