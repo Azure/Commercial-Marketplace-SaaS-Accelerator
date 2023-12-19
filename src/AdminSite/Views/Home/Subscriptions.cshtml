@@ -103,7 +103,7 @@
                                                         }
                                                         @if (subscription.IsPerUserPlan && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                         {
-                                                            <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-bs-target="#Mymode">Change Quantity</a>
+                                                            <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-bs-toggle="modal" data-bs-target="#myModal">Change Quantity</a>
                                                         }
                                                     <a class="dropdown-item cm-dropdown-option" data-bs-toggle="modal" data-bs-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
                                                     @* </div> *@
@@ -129,7 +129,7 @@
                 </div>
             </div>
             <!-- Modal -->
-            <div class="modal" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal" id="myModal" tabindex="-1">
                 <div class="modal-dialog">
                     @* <div class="modal-content">
                         <div class="modal-header">
