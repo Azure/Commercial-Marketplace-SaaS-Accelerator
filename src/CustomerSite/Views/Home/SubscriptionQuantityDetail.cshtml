@@ -1,14 +1,15 @@
 ﻿@model Marketplace.SaaS.Accelerator.Services.Models.SubscriptionResultExtension
 <div>
-    <div class="modal-dialog modal-lg mt200" data-backdrop="static">
+    <div class="modal-dialog modal-lg mt200">
         <div class="modal-content">
             <div class="modal-header header-bg">
-                <h4><span class="cm-section-heading">Change Quantity</span></h4>
-                <button type="button" class="close text-right" data-dismiss="modal">&times;</button>
+                <h5 class="modal-title">Change Quantity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="modal-body text-center">
             <form asp-action="ChangeSubscriptionQuantity" id="frmSubscriptionQuantityDetail" method="post">
-                <div class="modal-body text-center">
-                    <dl class="row text-left">
+                
+                    <dl class="row text-start">
                         <dt class="col-sm-4 pl80">
                             @Html.DisplayNameFor(model => model.Id)
                         </dt>
@@ -49,14 +50,15 @@
                             @Html.HiddenFor(s => s.SubscribeId)
                         </dd>
                     </dl>
-                    <div class="text-right">
+                    <div class="text-end">
                         <div id="frmSpinner" class="spinner-border mt-2" role="status" style="margin-bottom: -10px; margin-right: 20px;" hidden>
-                            <span class="sr-only">Processing...</span>
+                            @* <span class="sr-only">Processing...</span> *@
                         </div>
                         <button id="frmButton" type="button" onclick="confirmQuantityDialog()" class="btn cm-button-default mt40 mr20 text-right">Change Quantity</button>
                     </div>
-                </div>
+                
             </form>
+            </div>
         </div>
     </div>
 </div>

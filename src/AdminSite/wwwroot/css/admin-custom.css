@@ -65,9 +65,10 @@
     width: 30%;*/
     border-style: none;
     width: auto;
-    margin-left:-10px;
-    padding: 8px;
-    max-height: 50px;
+
+    /*margin-left:-10px;*/
+    /*padding: 8px;*/
+    max-height: 35px;
 }
 
 .cm-panel-default {
@@ -81,6 +82,7 @@
     /*font-family: 'Segoe UI', 'sans-serif' !important;*/
     font-size: 30px;
     font-weight: 600;
+    text-align: left;
     /*background-color: #fff;*/
     /*border-bottom: 4px solid #2180a6;*/
     /*text-transform: uppercase;*/
