@@ -68,7 +68,7 @@
                                                                 <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-bs-toggle="modal" data-bs-target="#myModal">Change Plan</a>
                                                                 @if (subscription.IsPerUserPlan)
                                                                 {
-                                                                    <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-bs-target="#Mymode">Change Quantity</a>
+                                                                    <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-bs-toggle="modal"  data-bs-target="#myModal">Change Quantity</a>
                                                                 }                                                      
                                                                 <a class="dropdown-item cm-dropdown-option" target="_blank" href="@Model.SaaSAppUrl" title="Click here to go to SaaS App">SaasApp</a>
                                                             }
