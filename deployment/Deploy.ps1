@@ -68,21 +68,21 @@ $azCliOutput = if($Quiet){'none'} else {'json'}
 
 if($SQLAdminLogin.ToLower() -eq "admin") {
     Throw "🛑 SQLAdminLogin may not be 'admin'."
-    Exit
+    exit 1
 }
 if($SQLAdminLoginPassword.Length -lt 8) {
     Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
-    Exit
+    exit 1
 }
 if($WebAppNamePrefix.Length -gt 21) {
     Throw "🛑 Web name prefix must be less than 21 characters."
-    Exit
+    exit 1
 }
 
 
 if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
     Throw "🛑 KeyVault name only allows alphanumeric and hyphens, but cannot start with a number or special character."
-    Exit
+    exit 1
 }
 
 #endregion 
@@ -131,6 +131,45 @@ else {
 az account set -s $AzureSubscriptionID
 Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
 
+#endregion
+
+#region Check if KV exists
+
+#region Check If KeyVault Exists
+
+$KeyVaultApiUri="https://management.azure.com/subscriptions/$AzureSubscriptionID/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01"
+$KeyVaultApiBody='{"name": "'+$KeyVault+'","type": "Microsoft.KeyVault/vaults"}'
+
+$kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
+
+if( $kv_check.reason -eq "AlreadyExists")
+{
+	Write-Host ""
+	Write-Host "🛑 KeyVault name "  -NoNewline -ForegroundColor Red
+	Write-Host "$KeyVault"  -NoNewline -ForegroundColor Red -BackgroundColor Yellow
+	Write-Host " already exists." -ForegroundColor Red
+	Write-Host "To Purge KeyVault please use the following doc:"
+	Write-Host "https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
+	Write-Host "You could use new KeyVault name by using parameter" -NoNewline 
+	Write-Host " -KeyVault"  -ForegroundColor Green
+    exit 1
+}
+
+
+#endregion
+
+#region Check If SQL Server Exist
+$sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
+if ($sql_exists) 
+{
+	Write-Host ""
+	Write-Host "🛑 SQl Server name " -NoNewline -ForegroundColor Red
+	Write-Host "$SQLServerName"   -NoNewline -ForegroundColor Red -BackgroundColor Yellow
+	Write-Host " already exists." -ForegroundColor Red
+	Write-Host "Please delete existing instance or use new sql Instance name by using parameter" -NoNewline 
+	Write-Host " -SQLServerName"   -ForegroundColor Green
+    exit 1
+}  
 #endregion
 
 #region Dowloading assets if provided
@@ -292,7 +331,7 @@ $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=ADApplicationSecret) "
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=DefaultConnection) "
 $ServerUri = $SQLServerName+".database.windows.net"
-$Connection="Data Source=tcp:"+$ServerUri+",1433;Initial Catalog=AMPSaaSDB;User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
+$Connection="Data Source=tcp:"+$ServerUri+",1433;Initial Catalog="+$SQLDatabaseName+";User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
 
 
 Write-host "   🔵 Resource Group"
@@ -329,7 +368,7 @@ az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebApp
 Write-host "      ➡️ Assign Identity"
 $WebAppNameAdminId = az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] --query principalId -o tsv
 Write-host "      ➡️ Setup access to KeyVault"
-az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list --output $azCliOutput
+az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault 
 az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/  SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
@@ -341,7 +380,7 @@ az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebApp
 Write-host "      ➡️ Assign Identity"
 $WebAppNamePortalId= az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] --query principalId -o tsv 
 Write-host "      ➡️ Setup access to KeyVault"
-az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list --output $azCliOutput
+az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault
 az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash

@@ -15,27 +15,27 @@
                 {
                     <div class="table-responsive mt20">
                         <table class="table table-bordered dt-responsive cm-table" width="100%" cellspacing="0">
-                            <thead class="cm-table-head">
+                            <thead class="cm-table-head text-start">
                                 <tr>
                                     <th>Offer Id</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="text-start">
                                 @{ var i = 0;}
                                 @foreach (var item in Model)
                                 {
                                     <tr>
-                                        <td class="text-left">
+                                        <td>
                                             @item.OfferId
                                         </td>
-                                        <td class="text-left cm-ellipsis">
-                                            <div class="nav-item dropdown">
-                                                <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                        <td class="cm-ellipsis">
+
+                                            <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                 <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                                    <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewOfferDetailsById('@item.OfferGuid')">Edit</a>
+                                                    <a class="dropdown-item cm-dropdown-option" data-bs-target="#myModal" onclick="ViewOfferDetailsById('@item.OfferGuid')">Edit</a>
                                                 </div>
-                                            </div>
+                                            
                                         </td>
                                     </tr>
                                     i++;

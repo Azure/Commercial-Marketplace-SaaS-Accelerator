@@ -4,7 +4,7 @@
     <div class="modal-content">
         <div class="modal-header header-bg">
             <h4><span class="cm-section-heading"> Activity Log</span></h4>
-            <button type="button" class="close text-right" data-dismiss="modal">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
             <div class="card card-header mb0 pb0">
@@ -16,7 +16,7 @@
                 </dl>
             </div>
             <table class="table table-bordered dt-responsive cm-table">
-                <thead class="cm-table-head">
+                <thead class="cm-table-head text-start">
                     <tr>
                         <th width="20%">Activity Log Time</th>
                         <th width="20%">Subscription Name</th>
@@ -25,7 +25,7 @@
                         <th width="10%">New Value</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="text-start">
                     @foreach (var log in Model)
                     {
                         <tr>
