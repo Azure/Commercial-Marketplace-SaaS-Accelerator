@@ -18,12 +18,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.Custom
                     BEGIN
                         INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'WebNotificationUrl', N'', N'Setting this URL will enable pushing LandingPage/Webhook events to this external URL')
                     END
-                    IF NOT EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'IsMeteredBillingEnabled')
-                    BEGIN
-                        INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsMeteredBillingEnabled', N'false', N'Enable Metered Billing Feature')
-                    END
-
-
                     IF NOT EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'EnablesSuccessfulSchedulerEmail')
                     BEGIN
                         INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'EnablesSuccessfulSchedulerEmail', N'False', N'This will enable sending email for successful metered usage.')
@@ -68,12 +62,6 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations.Custom
                 BEGIN
                     DELETE FROM [dbo].[ApplicationConfiguration]  WHERE [Name] = 'WebNotificationUrl'
                 END
-
-                IF EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'IsMeteredBillingEnabled')
-                BEGIN
-                    DELETE FROM [dbo].[ApplicationConfiguration]  WHERE [Name] = 'IsMeteredBillingEnabled'
-                END
-
                     IF  EXISTS (SELECT * FROM [dbo].[ApplicationConfiguration] WHERE [Name] = 'EnablesSuccessfulSchedulerEmail')
                     BEGIN
                         DELETE FROM [dbo].[ApplicationConfiguration]  WHERE [Name] = 'EnablesSuccessfulSchedulerEmail'
