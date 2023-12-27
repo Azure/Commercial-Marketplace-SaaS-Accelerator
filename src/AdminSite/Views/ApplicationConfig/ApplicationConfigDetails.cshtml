@@ -25,7 +25,7 @@
                         @Model.Name
                     </td>
                     <td>
-                        @if (@Model.Name.Equals("SMTPPassword") && @Model.Value.Length > 5)
+                        @if (@Model.Name.Equals("SMTPPassword") && @Model?.Value?.Length > 5)
                         {
                             @Html.EditorFor(model => model.Value, new { htmlAttributes = new { type ="password", @class = "form-control" } })
                         }
