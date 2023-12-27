@@ -121,6 +121,7 @@ public class ApplicationConfigController : BaseController
     [ValidateAntiForgeryToken]
     public IActionResult ApplicationConfigDetails(ApplicationConfiguration appConfig)
     {
+        appConfig.Value = appConfig.Value ?? string.Empty;
         this.appConfigService.SaveAppConfig(appConfig);
 
         this.ModelState.Clear();
