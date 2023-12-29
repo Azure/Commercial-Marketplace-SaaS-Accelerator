@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.DataAccess.Services;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -30,11 +31,9 @@ public class ApplicationConfigController : BaseController
     /// </summary>
     private readonly IEmailTemplateRepository emailTemplateRepository;
 
-    public ApplicationConfigController(
-        ApplicationConfigService appConfigService,
-        IEmailTemplateRepository emailTemplateRepository, SaaSClientLogger<ApplicationConfigController> logger)
+    public ApplicationConfigController(IApplicationConfigRepository applicationConfigRepository,IEmailTemplateRepository emailTemplateRepository, SaaSClientLogger<ApplicationConfigController> logger) : base(applicationConfigRepository)
     {
-        this.appConfigService = appConfigService;
+        this.appConfigService = new ApplicationConfigService(applicationConfigRepository);
         this.emailTemplateRepository = emailTemplateRepository;
         this.logger = logger;
     }

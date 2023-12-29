@@ -106,7 +106,7 @@
 
 
 
-                                @if (this.Context.Session.GetString("SupportMeteredBilling") != null)
+                                @if ((this.TempData["SupportMeteredBilling"] != null) && (this.TempData["SupportMeteredBilling"].ToString() == "1"))
                                 {
                                     <a class="minline nav-item navbar-text" asp-area="" asp-controller="Scheduler" asp-action="Index">
                                     <li class="minline container nav-link" style="text-decoration:none; border:0 none;">

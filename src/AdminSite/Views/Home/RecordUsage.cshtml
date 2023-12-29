@@ -40,10 +40,13 @@
                                 <div class="col-md-auto">
                                         <button type="submit" class="cm-button-default mt-auto">Record Usage</button>
                                 </div>
-                                    <div class="col-md-auto">
-                                        <button name="RedirectBtn2" type="button" onclick="RedirectToScheduler(@Model.SubscriptionDetail.Id);" class="cm-button-default mt-auto">Add Scheduler Usage</button>
+                                    @if ((this.TempData["SupportMeteredBilling"] != null) && (this.TempData["SupportMeteredBilling"].ToString() == "1"))
+                                    {
+                                        <div class="col-md-auto">
+                                            <button name="RedirectBtn2" type="button" onclick="RedirectToScheduler(@Model.SubscriptionDetail.Id);" class="cm-button-default mt-auto">Add Scheduler Usage</button>
+                                        </div>
+                                    }
                                 </div>
-                            </div>
 
 
 
