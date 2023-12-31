@@ -212,12 +212,6 @@ public class HomeController : BaseController
             this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
 
             var userId = this.userService.AddUser(this.GetCurrentUserDetail());
-
-            if (this.saaSApiClientConfiguration.SupportMeteredBilling)
-            {
-                this.TempData.Add("SupportMeteredBilling", "1");
-                this.HttpContext.Session.SetString("SupportMeteredBilling", "1");
-            }
             return this.View();
         }
         catch (Exception ex)
