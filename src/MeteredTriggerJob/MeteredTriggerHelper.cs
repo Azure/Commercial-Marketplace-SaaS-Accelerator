@@ -187,6 +187,10 @@ public class Executor
                 }
             }
         }
+        else
+        {
+            LogLine("No scheduled items will not be run becuase scheduler engine is disabled in the application config.");
+        }
     }
     /// <summary>
     /// Trigger scheduler task
