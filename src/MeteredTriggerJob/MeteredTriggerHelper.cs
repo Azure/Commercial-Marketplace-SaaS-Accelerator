@@ -189,7 +189,7 @@ public class Executor
         }
         else
         {
-            LogLine("No scheduled items will not be run becuase scheduler engine is disabled in the application config.");
+            LogLine("Scheduled items will not be run because scheduler engine is disabled in the application config.");
         }
     }
     /// <summary>
