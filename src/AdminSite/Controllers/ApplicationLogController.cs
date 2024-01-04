@@ -20,7 +20,7 @@ public class ApplicationLogController : BaseController
 
     private readonly IApplicationLogRepository appLogRepository;
 
-    public ApplicationLogController(IApplicationLogRepository applicationLogRepository, SaaSClientLogger<ApplicationLogController> logger)
+    public ApplicationLogController(IApplicationLogRepository applicationLogRepository, SaaSClientLogger<ApplicationLogController> logger, IApplicationConfigRepository applicationConfigRepository):base(applicationConfigRepository)
     {
         this.appLogRepository = applicationLogRepository;
         this.logger = logger;

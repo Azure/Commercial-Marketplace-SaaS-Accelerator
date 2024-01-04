@@ -1,10 +1,13 @@
 ﻿using System.Linq;
 using System.Web;
+using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 
@@ -18,11 +21,30 @@ public class BaseController : Controller
     /// Initializes a new instance of the <see cref="BaseController" /> class.
     /// </summary>
     /// 
-    public BaseController()
+    private readonly ApplicationConfigService applicationConfigService;
+    public BaseController(IApplicationConfigRepository applicationConfigRepository)
     {
+        this.applicationConfigService = new ApplicationConfigService(applicationConfigRepository);
         this.CheckAuthentication();
     }
 
+    public override void OnActionExecuting(ActionExecutingContext filterContext)
+    {
+        if (TempData is not null)
+        {
+            bool.TryParse(this.applicationConfigService.GetValueByName("IsMeteredBillingEnabled"), out bool supportMeteredBilling);
+            if (supportMeteredBilling)
+            {
+                TempData["SupportMeteredBilling"] = "1";
+            }
+            else
+            {
+                TempData["SupportMeteredBilling"] = "0";
+            }
+        }
+
+        base.OnActionExecuting(filterContext);
+    }
     /// <summary>
     /// Gets Current Logged in User Email Address.
     /// </summary>
@@ -63,6 +85,8 @@ public class BaseController : Controller
 
         return new PartnerDetailViewModel();
     }
+
+    
 
     /// <summary>
     /// Checks the authentication.

@@ -109,7 +109,7 @@
                 </div>
             </div>
         </li>
-        @if (this.TempData["SupportMeteredBilling"]!=null)
+        @if ((this.TempData["SupportMeteredBilling"] != null) && (this.TempData["SupportMeteredBilling"].ToString() == "1"))
         {
             <li id="onedash-menu-homepage5">
                 <a class="programCardLink text-capitalize" asp-area="" asp-controller="Scheduler" asp-action="Index">Scheduler</a>

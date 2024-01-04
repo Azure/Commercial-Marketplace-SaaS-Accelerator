@@ -62,6 +62,18 @@ Application configuration is initialized with the following keys that the publis
 | IsAutomaticProvisioningSupported | Flag that enables activation workflow. If the value is False, the option Change Plan is not available to the customer. Clicking Subscribe button on the landing page would place the subscription in PendingActivation status and doesn't activate the subscription yet. Publisher has the option to activate the subscription, change plan and unsubscribe. If the value is True, customer can activate and change plan without any intervention required from the publisher.|
 | IsEmailEnabledForPendingActivation | Flag to indicate if an email should be sent out to publisher when activation workflow is enabled.|
 | AcceptSubscriptionUpdates | If True, subscription updates are allowed. If False or the key doesn't exist, Subscription updates are denied.(Allowed values : True / False)|
+| IsMeteredBillingEnabled |Flag to enable Metered Billing Feature. (Allowed values : True / False) | 
+| EnableHourlyMeterSchedules |Flag to enable Hourly meter scheduled frequency. (Allowed values : True / False) |
+| EnableDailyMeterSchedules |Flag to enable Daily meter scheduled frequency. (Allowed values : True / False) |
+| EnableWeeklyMeterSchedules |Flag to enable Weekly meter scheduled frequency. (Allowed values : True / False) |
+| EnableMonthlyMeterSchedules |Flag to enable Monthly meter scheduled frequency. (Allowed values : True / False) |
+| EnableYearlyMeterSchedules |Flag to enable Yearly meter scheduled frequency. (Allowed values : True / False) |
+| EnableOneTimeMeterSchedules |Flag to enable One Time meter scheduled frequency. (Allowed values : True / False) | 
+| EnablesSuccessfulSchedulerEmail |Flag to enable sending email for successful metered usage.(Allowed values : True / False) | 
+| EnablesFailureSchedulerEmail |Flag to enable sending email for failure metered usage. (Allowed values : True / False) | 
+| EnablesMissingSchedulerEmail |Flag to enable sending email for missing metered usage. (Allowed values : True / False) | 
+| SchedulerEmailTo |Scheduler email receiver(s) | 
+| WebNotificationUrl |Setting this URL will enable pushing LandingPage/Webhook events to this external URL | 
 
 
 ### EmailTemplate
