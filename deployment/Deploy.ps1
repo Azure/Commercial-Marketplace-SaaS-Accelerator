@@ -305,13 +305,13 @@ if (!($ADMTApplicationID)) {
 Write-host "📜 Prepare publish files for the application"
 if (!(Test-Path '../Publish')) {		
 	Write-host "   🔵 Preparing Admin Site"  
-	dotnet publish ../src/AdminSite/AdminSite.csproj -c debug -o ../Publish/AdminSite/ -v q
+	dotnet publish ../src/AdminSite/AdminSite.csproj -c release -o ../Publish/AdminSite/ -v q
 
 	Write-host "   🔵 Preparing Metered Scheduler"
-	dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -c debug -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob/ -v q --runtime win-x64 --self-contained true 
+	dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -c release -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob/ -v q --runtime win-x64 --self-contained true 
 
 	Write-host "   🔵 Preparing Customer Site"
-	dotnet publish ../src/CustomerSite/CustomerSite.csproj -c debug -o ../Publish/CustomerSite/ -v q
+	dotnet publish ../src/CustomerSite/CustomerSite.csproj -c release -o ../Publish/CustomerSite/ -v q
 
 	Write-host "   🔵 Zipping packages"
 	Compress-Archive -Path ../Publish/AdminSite/* -DestinationPath ../Publish/AdminSite.zip -Force
