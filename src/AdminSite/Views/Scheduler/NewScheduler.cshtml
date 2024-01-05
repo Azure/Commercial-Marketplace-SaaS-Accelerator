@@ -30,11 +30,14 @@
               var d = new Date();
               var month = d.getMonth()+1;
               var day = d.getDate();
+              var hours =d.getHours()+1;
+              var minutes = d.getMinutes();
+
               var output = d.getFullYear()+ '-' +
                           ((''+month).length<2 ? '0' : '') + month + '-' +
                            ((''+day).length<2 ? '0' : '') + day +'T'+
-                           ((''+d.getHours()).length<2 ? '0' : '')+(d.getHours()+1)+':'+
-                           ((''+d.getMinutes()).length<2 ? '0' : '')+d.getMinutes();
+                           ((''+hours).length<2 ? '0' : '')+hours+':'+
+                           ((''+minutes).length<2 ? '0' : '')+minutes;
 
               var date=document.getElementById("FirstRunDate")
               date.min=output
