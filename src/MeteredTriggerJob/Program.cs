@@ -36,8 +36,7 @@ class Program
             ClientSecret = configuration["SaaSApiConfiguration:ClientSecret"],
             GrantType = configuration["SaaSApiConfiguration:GrantType"],
             Resource = configuration["SaaSApiConfiguration:Resource"],
-            TenantId = configuration["SaaSApiConfiguration:TenantId"],
-            SupportMeteredBilling = Convert.ToBoolean(configuration["SaaSApiConfiguration:SupportMeteredBilling"])
+            TenantId = configuration["SaaSApiConfiguration:TenantId"]
         };
 
         var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
