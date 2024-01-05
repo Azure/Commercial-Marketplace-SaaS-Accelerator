@@ -121,3 +121,5 @@ Write-host "## Deployed code to Customer Portal"
 
 Remove-Item -Path ../Publish -recurse -Force
 Write-host "#### Code deployment complete ####" 
+
+Write-host "#### Warning: If the upgrade to >=7.5.0, MeterScheduler feature is pre-enabled through DB config instead of the App Service. Please update the App config accordingly. ####" 
