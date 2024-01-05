@@ -97,14 +97,6 @@ public class SaaSApiClientConfiguration
     public string SaaSAppUrl { get; set; }
 
     /// <summary>
-    /// Gets or sets the saas metered billing support.
-    /// </summary>
-    /// <value>
-    /// True or false.
-    /// </value>
-    public bool SupportMeteredBilling { get; set; }
-
-    /// <summary>
     /// Initializes or Gets the current run environment. Set to "development" or "production" is assumed.
     /// </summary>
     /// <value>
