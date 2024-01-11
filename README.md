@@ -1,6 +1,7 @@
 # Microsoft Commercial Marketplace - Community Code for SaaS Applications
 
 <!-- no toc -->
+- [Test](#test)
 - [Introduction](#introduction)
 - [Intended Use](#intended-use)
 - [Installation](#installation)
@@ -20,7 +21,9 @@
 
 ---
 
+## Test
 
+Added test for tracking purposes.
 
 ## Introduction
 
