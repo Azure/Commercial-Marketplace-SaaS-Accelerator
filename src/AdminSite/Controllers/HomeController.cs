@@ -839,15 +839,24 @@ public class HomeController : BaseController
 
         try
         {
+            var logMessage = $"Message: currentUserId : {currentUserId}";
+            applicationLogService.AddApplicationLog(logMessage).GetAwaiter().GetResult();
+
             this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, currentUserId);
 
             // Step 1: Get all subscriptions from the API
             var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
+
+            logMessage = $"Message: fulfillApiService subscriptions count for {currentUserId} : {subscriptions.Count}";
+            applicationLogService.AddApplicationLog(logMessage).GetAwaiter().GetResult();
+
             foreach (SubscriptionResult subscription in subscriptions)
             {
                 var customerUserId = 0;
                 var currentSubscription = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscription.Id);
 
+                logMessage = $"Message: subscriptionService subscriptions count for {currentUserId} : {subscriptions.Count}";
+                applicationLogService.AddApplicationLog(logMessage).GetAwaiter().GetResult();
                 // Step 2: Check if they Exist in DB - Create if dont exist
                 if (currentSubscription.Name == null)
                 {
@@ -874,6 +883,8 @@ public class HomeController : BaseController
                             IsPerUserPlan = subscription.Quantity > 0,
                         };
                         this.subscriptionService.AddPlanDetailsForSubscription(planDetails);
+                        logMessage = $"Message: planDetails  {currentUserId} : {planDetails}";
+                        applicationLogService.AddApplicationLog(logMessage).GetAwaiter().GetResult();
                     }
                     else
                     {
@@ -884,6 +895,9 @@ public class HomeController : BaseController
                             x.PlanGUID = Guid.NewGuid();
                         });
                         this.subscriptionService.AddUpdateAllPlanDetailsForSubscription(subscriptionPlanDetail);
+                        
+                        logMessage = $"Message: AddUpdateAllPlanDetailsForSubscription {currentUserId} : {subscriptionPlanDetail}";
+                        applicationLogService.AddApplicationLog(logMessage).GetAwaiter().GetResult();
                     }
 
                     // Step 5: Add/Update the current user from Subscription information
