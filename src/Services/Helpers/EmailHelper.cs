@@ -1,5 +1,6 @@
 ﻿using System;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
 
 namespace Marketplace.SaaS.Accelerator.Services.Helpers;
@@ -134,9 +135,9 @@ public class EmailHelper
         emailContent.CopyToCustomer = copyToCustomer;
         emailContent.FromEmail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
         emailContent.Password = this.applicationConfigRepository.GetValueByName("SMTPPassword");
-        emailContent.SSL = bool.Parse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
+        emailContent.SSL = bool.TryParse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"), out bool smtpssl) ? smtpssl : throw new MarketplaceException("Invalid settings : SMTP SSL");
         emailContent.UserName = this.applicationConfigRepository.GetValueByName("SMTPUserName");
-        emailContent.Port = int.Parse(this.applicationConfigRepository.GetValueByName("SMTPPort"));
+        emailContent.Port = int.TryParse(this.applicationConfigRepository.GetValueByName("SMTPPort"), out int smtpport) ? smtpport : throw new MarketplaceException("Invalid settings : SMTP Port");
         emailContent.SMTPHost = this.applicationConfigRepository.GetValueByName("SMTPHost");
         return emailContent;
     }
