@@ -24,4 +24,14 @@ public enum SubscriptionLogAttributes
     /// The deployment
     /// </summary>
     Deployment = 4,
+
+    /// <summary>
+    /// The Subscription Start Date
+    /// </summary>
+    TermStartDate = 5,
+
+    /// <summary>
+    /// The Subscription End Date
+    /// </summary>
+    TermEndDate = 6,
 }

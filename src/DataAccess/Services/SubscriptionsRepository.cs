@@ -65,6 +65,46 @@ public class SubscriptionsRepository : ISubscriptionsRepository
     }
 
     /// <summary>
+    /// Updates subscriptionStatus and Term dates for a subscription on Activate.
+    /// </summary>
+    /// <param name="subscriptionId">The subscription identifier.</param>
+    /// <param name="subscriptionStatus">The subscription status.</param>
+    /// <param name="isActive">if set to <c>true</c> [is active].</param>
+    /// <param name="startDate">Term start Date.</param>
+    /// <param name="endDate">Term end date.</param>
+    public void UpdateStatusAndTermDatesForSubscription(Guid subscriptionId, string subscriptionStatus, bool isActive, DateTimeOffset startDate, DateTimeOffset endDate)
+    {
+        var existingSubscription = this.context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+        if (existingSubscription != null)
+        {
+            existingSubscription.IsActive = isActive;
+            existingSubscription.SubscriptionStatus = subscriptionStatus;
+            existingSubscription.StartDate = startDate.ToUniversalTime().DateTime;
+            existingSubscription.EndDate = endDate.ToUniversalTime().DateTime;
+            this.context.Subscriptions.Update(existingSubscription);
+        }
+
+        this.context.SaveChanges();
+    }
+
+    /// <summary>
+    /// Updates Term dates for a subscription from Webhook.
+    /// </summary>
+    /// <param name="subscriptionId">The subscription identifier.</param>
+    /// <param name="startDate">Term start Date.</param>
+    /// <param name="endDate">Term end date.</param>
+    public void UpdateTermDatesForSubscription(Guid subscriptionId, DateTimeOffset startDate, DateTimeOffset endDate)
+    {
+        var existingSubscription = this.context.Subscriptions.Where(s => s.AmpsubscriptionId == subscriptionId).FirstOrDefault();
+        if (existingSubscription != null)
+        {   existingSubscription.StartDate = startDate.ToUniversalTime().DateTime;
+            existingSubscription.EndDate = endDate.ToUniversalTime().DateTime;
+            this.context.Subscriptions.Update(existingSubscription);
+        }
+        this.context.SaveChanges();
+    }
+
+    /// <summary>
     /// Adds the specified subscription details.
     /// </summary>
     /// <param name="subscriptionId">The subscription identifier.</param>

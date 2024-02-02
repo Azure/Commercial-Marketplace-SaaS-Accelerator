@@ -12,6 +12,12 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 public interface ISubscriptionLogRepository : IBaseRepository<SubscriptionAuditLogs>
 {
     /// <summary>
+    /// Add multiple subscirption audit logs.
+    /// </summary>
+    /// <param name="subscriptionLogs">List of subscription audit logs.</param>
+    void SaveAll(List<SubscriptionAuditLogs> subscriptionLogs);
+
+    /// <summary>
     /// Gets the subscription by subscription identifier.
     /// </summary>
     /// <param name="subscriptionId">The subscription identifier.</param>

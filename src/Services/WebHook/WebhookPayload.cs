@@ -102,6 +102,15 @@ public class WebhookPayload
     public DateTimeOffset TimeStamp { get; set; }
 
     /// <summary>
+    /// Gets or sets the Operation request source.
+    /// </summary>
+    /// <value>
+    /// The Operation request source.
+    /// </value>
+    [JsonPropertyName("operationRequestSource")]
+    public string OperationRequestSource { get; set; }
+
+    /// <summary>
     /// Gets or sets the Subscription information.
     /// </summary>
     /// <value>

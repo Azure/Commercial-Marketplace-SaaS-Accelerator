@@ -219,6 +219,20 @@ public class SubscriptionService
     }
 
     /// <summary>
+    /// Updates the subscription term dates.
+    /// </summary>
+    /// <param name="subscriptionId">The subscription identifier.</param>
+    /// <param name="startDate">Term start Date.</param>
+    /// <param name="endDate">Term end date.</param>
+    public void UpdateSubscriptionTermDates(Guid subscriptionId, DateTimeOffset startDate, DateTimeOffset endDate)
+    {
+        if (subscriptionId != default)
+        {
+            this.subscriptionRepository.UpdateTermDatesForSubscription(subscriptionId, startDate, endDate);
+        }
+    }
+
+    /// <summary>
     /// Updates the subscription plan.
     /// </summary>
     /// <param name="subscriptionId">The subscription identifier.</param>

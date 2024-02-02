@@ -36,7 +36,7 @@ public interface IWebhookHandler
     /// </summary>
     /// <param name="payload">The payload.</param>
     /// <returns>Renewed Async</returns>
-    Task RenewedAsync();
+    Task RenewedAsync(WebhookPayload payload);
 
     /// <summary>
     /// Suspended the asynchronous.

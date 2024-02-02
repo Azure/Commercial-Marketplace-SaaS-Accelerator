@@ -41,6 +41,17 @@ public class SubscriptionLogRepository : ISubscriptionLogRepository
     }
 
     /// <summary>
+    /// Adds the specified subscription logs.
+    /// </summary>
+    /// <param name="subscriptionLogs">The subscription logs.</param>
+    /// <returns> log Id.</returns>
+    public void SaveAll(List<SubscriptionAuditLogs> subscriptionLogs)
+    {
+        this.context.SubscriptionAuditLogs.AddRange(subscriptionLogs);
+        this.context.SaveChanges();
+    }
+
+    /// <summary>
     /// Gets this instance.
     /// </summary>
     /// <returns> List of log.</returns>

@@ -75,7 +75,7 @@ public class WebhookProcessor : IWebhookProcessor
                 break;
 
             case WebhookAction.Renew:
-                await this.webhookHandler.RenewedAsync().ConfigureAwait(false);
+                await this.webhookHandler.RenewedAsync(payload).ConfigureAwait(false);
                 break;
 
             default:

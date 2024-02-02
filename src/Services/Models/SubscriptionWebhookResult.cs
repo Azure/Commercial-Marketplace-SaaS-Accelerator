@@ -66,4 +66,13 @@ public class SubscriptionWebhookResult
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public SubscriptionStatusEnum SaasSubscriptionStatus { get; set; }
 
+    /// <summary>
+    /// Gets or sets the term.
+    /// </summary>
+    /// <value>
+    /// The term.
+    /// </value>
+    [JsonPropertyName("term")]
+    public TermResultExtension Term { get; set; }
+
 }

@@ -30,12 +30,30 @@ public interface ISubscriptionsRepository : IDisposable, IBaseRepository<Subscri
     Subscriptions GetById(Guid subscriptionId, bool isIncludeDeactvated = false);
 
     /// <summary>
+    /// Updates subscriptionStatus and Term dates for a subscription on Activate.
+    /// </summary>
+    /// <param name="subscriptionId">The subscription identifier.</param>
+    /// <param name="subscriptionStatus">The subscription status.</param>
+    /// <param name="isActive">if set to <c>true</c> [is active].</param>
+    /// <param name="startDate">Term start Date.</param>
+    /// <param name="endDate">Term end date.</param>
+    void UpdateStatusAndTermDatesForSubscription(Guid subscriptionId, string subscriptionStatus, bool isActive, DateTimeOffset startDate, DateTimeOffset endDate);
+
+    /// <summary>
     /// Updates the status for subscription.
     /// </summary>
     /// <param name="subscriptionId">The subscription identifier.</param>
     /// <param name="subscriptionStatus">The subscription status.</param>
     /// <param name="isActive">if set to <c>true</c> [is active].</param>
     void UpdateStatusForSubscription(Guid subscriptionId, string subscriptionStatus, bool isActive);
+
+    /// <summary>
+    /// Updates Term dates for a subscription on Webhook.
+    /// </summary>
+    /// <param name="subscriptionId">The subscription identifier.</param>
+    /// <param name="startDate">Term start Date.</param>
+    /// <param name="endDate">Term end date.</param>
+    void UpdateTermDatesForSubscription(Guid subscriptionId, DateTimeOffset startDate, DateTimeOffset endDate);
 
     /// <summary>
     /// Updates the plan for subscription.
