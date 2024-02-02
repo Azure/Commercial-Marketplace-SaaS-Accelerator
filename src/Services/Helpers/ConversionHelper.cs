@@ -51,6 +51,7 @@ static class ConversionHelper
             },
             Term = new TermResult()
             {
+                TermUnit = subscription.Term.TermUnit.HasValue ? (Models.TermUnitEnum)subscription.Term.TermUnit :         Models.TermUnitEnum.P1M,
                 StartDate = subscription.Term.StartDate ?? default(DateTimeOffset),
                 EndDate = subscription.Term.EndDate ?? default(DateTimeOffset),
             }
@@ -179,7 +180,7 @@ static class ConversionHelper
     /// <returns>
     /// OperationResult Model.
     /// </returns>
-    public static OperationResult operationResult(this Operation operation)
+    public static OperationResult operationResult(this SaaSOperation operation)
     {
         return new OperationResult() 
         { 

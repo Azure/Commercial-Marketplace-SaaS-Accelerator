@@ -347,7 +347,7 @@ Write-host "      ➡️ Add SQL Server Firewall rules"
 az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowAzureIP --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0" --output $azCliOutput
 if ($env:ACC_CLOUD -eq $null){
     Write-host "      ➡️ Running in local environment - Add current IP to firewall"
-	$publicIp = (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
+	$publicIp = (Invoke-WebRequest -uri "https://api.ipify.org").Content
     az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowIP --start-ip-address "$publicIp" --end-ip-address "$publicIp" --output $azCliOutput
 }
 Write-host "      ➡️ Create SQL DB"
