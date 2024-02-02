@@ -179,7 +179,7 @@ static class ConversionHelper
     /// <returns>
     /// OperationResult Model.
     /// </returns>
-    public static OperationResult operationResult(this Operation operation)
+    public static OperationResult operationResult(this SaaSOperation operation)
     {
         return new OperationResult() 
         { 
