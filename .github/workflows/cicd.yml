@@ -53,11 +53,17 @@ jobs:
       run: |
         dotnet build ${{ env.CUSTOMER_PROJECT }} --configuration Release
         dotnet publish ${{ env.CUSTOMER_PROJECT }} --configuration Release --no-build --output ${{ env.CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH }}
-    
+
+    # Run dotnet build and publish admin app
+    - name: Admin App build and publish
+      run: |
+        dotnet build ${{ env.PUBLISHER_PROJECT }} --configuration Release
+        dotnet publish ${{ env.PUBLISHER_PROJECT }} --configuration Release --no-build --output ${{ env.PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH }}
+   
     # Run unit tests
     - name: Run unit Test
       run: dotnet test ${{ env.SERVICES_TEST_PROJECT }}
-    
+  
     # Deploy to Azure Web app
     - name: Customer App deploy to azure
       uses: azure/webapps-deploy@v2
@@ -65,12 +71,6 @@ jobs:
         app-name: ${{ secrets.AZURE_CUSTOMER_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_CUSTOMER_WEBAPP_PUBLISH_PROFILE }}
         package: ${{ env.CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH }}
-  
-    # Run dotnet build and publish
-    - name: Admin App build and publish
-      run: |
-        dotnet build ${{ env.PUBLISHER_PROJECT }} --configuration Release
-        dotnet publish ${{ env.PUBLISHER_PROJECT }} --configuration Release --no-build --output ${{ env.PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH }}
 
     # Deploy to Azure Web app
     - name: Admin App deploy azure
@@ -104,6 +104,7 @@ jobs:
             dotnet-ef migrations script  --output $sqlscriptPath --idempotent --context SaaSKitContext --project $dbAccessProj --startup-project $adminSiteProj
             
             Write-Host "Run sql script"
+            Install-Module sqlserver
             Invoke-Sqlcmd -InputFile $sqlscriptPath -ServerInstance $sqlServerFullName -database $sqlDatabaseName -Username $sqlAdminLogin -Password $sqlAdminPassword 
             Write-Host "Database updated successfully"
   
