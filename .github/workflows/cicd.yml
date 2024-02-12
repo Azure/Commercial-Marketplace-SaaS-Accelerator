@@ -104,6 +104,7 @@ jobs:
             dotnet-ef migrations script  --output $sqlscriptPath --idempotent --context SaaSKitContext --project $dbAccessProj --startup-project $adminSiteProj
             
             Write-Host "Run sql script"
+            Set-PSRepository PSGallery -InstallationPolicy Trusted
             Install-Module sqlserver
             Invoke-Sqlcmd -InputFile $sqlscriptPath -ServerInstance $sqlServerFullName -database $sqlDatabaseName -Username $sqlAdminLogin -Password $sqlAdminPassword 
             Write-Host "Database updated successfully"
