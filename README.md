@@ -12,6 +12,7 @@
 - [Prerequisites](#prerequisites)
 - [Contributing](#contributing)
 - [Developers](#developers)
+- [FAQs](#faqs)
 - [License](#license)
 
 ---
@@ -152,6 +153,10 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 ## Developers
 
 Code contributed should follow the C# specifications and best practices as documented [here](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/inside-a-program/coding-conventions).
+
+## FAQs
+
+There is a list of the Frequent Asked Questions [here](./docs/FAQs.md).
 
 ## License
 
