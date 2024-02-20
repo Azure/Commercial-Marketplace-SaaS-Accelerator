@@ -70,20 +70,15 @@ public class EmailHelper
 
         var eventData = this.planEventsMappingRepository.GetPlanEvent(planGuId, subscriptionEvent.EventsId);
 
-        if (eventData != null)
-        {
-            toReceipents = eventData.SuccessStateEmails;
-            copyToCustomer = Convert.ToBoolean(eventData.CopyToCustomer);
-        }
-
-        if (string.IsNullOrEmpty(toReceipents))
-        {
-            throw new Exception(" Error while sending an email, please check the configuration. ");
-        }
-
+        //First add To, Cc, Bcc email addresses from email template
         if (emailTemplateData != null)
         {
-            if (!string.IsNullOrEmpty(toReceipents) && !string.IsNullOrEmpty(emailTemplateData.Cc))
+            if (!string.IsNullOrEmpty(emailTemplateData.ToRecipients))
+            {
+                toReceipents = emailTemplateData.ToRecipients;
+            }
+
+            if (!string.IsNullOrEmpty(emailTemplateData.Cc))
             {
                 ccReceipents = emailTemplateData.Cc;
             }
@@ -94,6 +89,22 @@ public class EmailHelper
             }
 
             subject = emailTemplateData.Subject;
+        }
+
+        //If the plan event data contains plan specific ToEmailAddress then override the above
+        if (eventData != null)
+        {
+            if (!string.IsNullOrEmpty(eventData.SuccessStateEmails))
+            {
+                toReceipents = eventData.SuccessStateEmails;
+            }
+
+            copyToCustomer = Convert.ToBoolean(eventData.CopyToCustomer);
+        }
+
+        if (string.IsNullOrEmpty(toReceipents))
+        {
+            throw new Exception(" Error while sending an email, please check the configuration. To email empty");
         }
 
         return FinalizeContentEmail(subject, body, ccReceipents, bccReceipents, toReceipents, copyToCustomer);
