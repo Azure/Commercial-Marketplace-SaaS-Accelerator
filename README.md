@@ -80,8 +80,8 @@ This project accelerates the SaaS offer onboarding experience for those building
 The following documents provide how-tos for setting up Azure Monitoring and Alerting for the resources deployed by the SaaS Accelerator:
 
 - [Web App Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md)
-- [SQL Server Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md)
-- [App Registration Credentials Monitoring and Alerting instructions](./docs/WebApp-Monitoring.md)
+- [SQL Server Monitoring and Alerting instructions](./docs/SQL-Server-Monitoring.md)
+- [App Registration Credentials Monitoring and Alerting instructions](./docs/App-Reg-Monitoring.md)
 
 ## Commercial Marketplace Documentation
 
@@ -124,7 +124,7 @@ This project has been developed using the following technologies and versions:
 
 ## Security
 
-The accelerator code has been scanned for vulnerabilities and use secure configurations. Versions have been reviewed to ensure compatibility with the latest security guidelines.
+The accelerator code has been scanned for vulnerabilities and use secure configurations. Versions have been reviewed to ensure compatibility with the latest security guidelines. To enhance the best practices please see [Security best practices](./docs/Security-Best-Practices.md).
 
 ## Prerequisites
 
