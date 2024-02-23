@@ -103,7 +103,12 @@ public class Startup
                 options.TokenValidationParameters.NameClaimType = "name";
                 options.TokenValidationParameters.ValidateIssuer = false;
             })
-            .AddCookie();
+            .AddCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                options.Cookie.MaxAge = options.ExpireTimeSpan;
+                options.SlidingExpiration = true;
+            });
 
         services
             .AddTransient<IClaimsTransformation, CustomClaimsTransformation>()
