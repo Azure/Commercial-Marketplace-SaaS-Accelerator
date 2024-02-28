@@ -148,7 +148,10 @@ public class Startup
             options.Cookie.IsEssential = true;
         });
 
-        services.AddMvc(option => option.EnableEndpointRouting = false);
+        services.AddMvc(option => {
+            option.EnableEndpointRouting = false;
+            option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+        });
         services.AddControllersWithViews();
 
         services.Configure<CookieTempDataProviderOptions>(options =>
