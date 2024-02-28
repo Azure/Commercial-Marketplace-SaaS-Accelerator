@@ -22,8 +22,6 @@ Param(
    [string][Parameter()]$ADMTApplicationID, # Multi-Tenant Active Directory Application ID
    [string][Parameter()]$SQLDatabaseName, # Name of the database (Defaults to AMPSaaSDB)
    [string][Parameter()]$SQLServerName, # Name of the database server (without database.windows.net)
-   [string][Parameter()]$SQLAdminLogin, # SQL Admin login
-   [string][Parameter()][ValidatePattern('^[^\s$@]{1,128}$')]$SQLAdminLoginPassword, # SQL Admin password  
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
    [string][Parameter()]$KeyVault, # Name of KeyVault
@@ -44,14 +42,8 @@ if ($ResourceGroupForDeployment -eq "") {
 if ($SQLServerName -eq "") {
     $SQLServerName = $WebAppNamePrefix + "-sql"
 }
-if ($SQLAdminLogin -eq "") {
-    $SQLAdminLogin = "saasdbadmin" + $(Get-Random -Minimum 1 -Maximum 1000)
-}
-if ($SQLAdminLoginPassword -eq "") {
-    $SQLAdminLoginPassword = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((New-Guid))))+"="
-}
 if ($SQLDatabaseName -eq "") {
-    $SQLDatabaseName = "AMPSaaSDB"
+    $SQLDatabaseName = $WebAppNamePrefix +"AMPSaaSDB"
 }
 
 if($KeyVault -eq "")
@@ -66,14 +58,6 @@ $azCliOutput = if($Quiet){'none'} else {'json'}
 
 #region Validate Parameters
 
-if($SQLAdminLogin.ToLower() -eq "admin") {
-    Throw "🛑 SQLAdminLogin may not be 'admin'."
-    exit 1
-}
-if($SQLAdminLoginPassword.Length -lt 8) {
-    Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
-    exit 1
-}
 if($WebAppNamePrefix.Length -gt 21) {
     Throw "🛑 Web name prefix must be less than 21 characters."
     exit 1
@@ -331,8 +315,7 @@ $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=ADApplicationSecret) "
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=DefaultConnection) "
 $ServerUri = $SQLServerName+".database.windows.net"
-$Connection="Data Source=tcp:"+$ServerUri+",1433;Initial Catalog="+$SQLDatabaseName+";User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
-
+$Connection="Server=tcp:"+$ServerUri+";Database="+$SQLDatabaseName+";Authentication=Active Directory Default;"
 
 Write-host "   🔵 Resource Group"
 Write-host "      ➡️ Create Resource Group"
@@ -340,7 +323,9 @@ az group create --location $Location --name $ResourceGroupForDeployment --output
 
 Write-host "   🔵 SQL Server"
 Write-host "      ➡️ Create Sql Server"
-az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword --output $azCliOutput
+$userId = az ad signed-in-user show --query id
+$userdisplayname = az ad signed-in-user show --query displayName
+az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location  --enable-ad-only-auth --external-admin-principal-type User --external-admin-name $userdisplayname --external-admin-sid $userId --output $azCliOutput
 Write-host "      ➡️ Set minimalTlsVersion to 1.2"
 az sql server update --name $SQLServerName --resource-group $ResourceGroupForDeployment --set minimalTlsVersion="1.2"
 Write-host "      ➡️ Add SQL Server Firewall rules"
@@ -398,7 +383,11 @@ Write-host "      ➡️ Generate SQL schema/data script"
 Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$Connection`"}}"
 dotnet-ef migrations script  --output script.sql --idempotent --context SaaSKitContext --project ../src/DataAccess/DataAccess.csproj --startup-project ../src/AdminSite/AdminSite.csproj
 Write-host "      ➡️ Execute SQL schema/data script"
-Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -Username $SQLAdminLogin -Password $SQLAdminLoginPassword 
+Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken (Get-AzAccessToken -ResourceUrl "https://database.windows.net/").Token
+
+$AddAppsIdsToDB = "CREATE USER [$WebAppNameAdmin] FROM EXTERNAL PROVIDER;ALTER ROLE db_datareader ADD MEMBER  [$WebAppNameAdmin];ALTER ROLE db_datawriter ADD MEMBER  [$WebAppNameAdmin];CREATE USER [$WebAppNamePortal] FROM EXTERNAL PROVIDER;ALTER ROLE db_datareader ADD MEMBER [$WebAppNamePortal];ALTER ROLE db_datawriter ADD MEMBER [$WebAppNamePortal];"
+Write-host $addAppsToDB
+Invoke-Sqlcmd -Query $addAppsToDB -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken (Get-AzAccessToken -ResourceUrl "https://database.windows.net/").Token
 
 Write-host "   🔵 Deploy Code to Admin Portal"
 az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --src-path "../Publish/AdminSite.zip" --type zip --output $azCliOutput
