@@ -194,8 +194,7 @@ if (!($ADApplicationID)) {
         $ADApplicationSecret = az ad app credential reset --id $ADObjectID --append --display-name 'SaaSAPI' --years 2 --query password --only-show-errors --output tsv
 				
         Write-Host "   🔵 FulfilmentAPI App Registration created."
-		Write-Host "      ➡️ Application ID:" $ADApplicationID  
-        Write-Host "      ➡️ App Secret:" $ADApplicationSecret
+		Write-Host "      ➡️ Application ID:" $ADApplicationID
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         Write-Host "🚨🚨   $PSItem.Exception"
