@@ -323,8 +323,8 @@ az group create --location $Location --name $ResourceGroupForDeployment --output
 
 Write-host "   🔵 SQL Server"
 Write-host "      ➡️ Create Sql Server"
-$userId = az ad signed-in-user show --query id
-$userdisplayname = az ad signed-in-user show --query displayName
+$userId = az ad signed-in-user show --query id -o tsv 
+$userdisplayname = az ad signed-in-user show --query displayName -o tsv 
 az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location  --enable-ad-only-auth --external-admin-principal-type User --external-admin-name $userdisplayname --external-admin-sid $userId --output $azCliOutput
 Write-host "      ➡️ Set minimalTlsVersion to 1.2"
 az sql server update --name $SQLServerName --resource-group $ResourceGroupForDeployment --set minimalTlsVersion="1.2"
