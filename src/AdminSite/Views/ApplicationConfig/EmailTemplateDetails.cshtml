@@ -66,9 +66,11 @@
 
     function saveEmailTemplateDetails() {
         var formobject = $('#frmEmailTemplateDetails').serialize();
+        var csrftoken = $('input[name="__RequestVerificationToken"]').val();
         $.ajax({
             url: '/ApplicationConfig/EmailTemplateDetails',
             type: 'POST',
+            headers: { RequestVerificationToken: csrftoken },
             data: formobject,
             cache: false,
             success: function (result) {
