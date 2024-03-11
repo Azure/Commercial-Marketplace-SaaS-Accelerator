@@ -68,7 +68,7 @@ if($KeyVault -eq "")
 		if( $kv_check.reason -eq "AlreadyExists")
 		{
 			Write-Host ""
-			Write-Host "🛑    KeyVault name "  -NoNewline -ForegroundColor Red
+			Write-Host "🛑  KeyVault name "  -NoNewline -ForegroundColor Red
 			Write-Host "$KeyVault"  -NoNewline -ForegroundColor Red -BackgroundColor Yellow
 			Write-Host " already exists." -ForegroundColor Red
 			Write-Host "  To Purge KeyVault please use the following doc:"
