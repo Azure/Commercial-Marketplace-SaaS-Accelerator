@@ -68,12 +68,12 @@ if($KeyVault -eq "")
 		if( $kv_check.reason -eq "AlreadyExists")
 		{
 			Write-Host ""
-			Write-Host "🛑 KeyVault name "  -NoNewline -ForegroundColor Red
+			Write-Host "🛑    KeyVault name "  -NoNewline -ForegroundColor Red
 			Write-Host "$KeyVault"  -NoNewline -ForegroundColor Red -BackgroundColor Yellow
 			Write-Host " already exists." -ForegroundColor Red
-			Write-Host "To Purge KeyVault please use the following doc:"
-			Write-Host "https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
-			Write-Host "You could use new KeyVault name by using parameter" -NoNewline 
+			Write-Host "  To Purge KeyVault please use the following doc:"
+			Write-Host "  https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
+			Write-Host "  You could use new KeyVault name by using parameter" -NoNewline 
 			Write-Host " -KeyVault"  -ForegroundColor Green
 			exit 1
 		}
