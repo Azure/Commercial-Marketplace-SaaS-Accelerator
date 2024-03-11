@@ -100,7 +100,7 @@ public class Startup
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
                 options.CallbackPath = "/Home/Index";
                 options.SignedOutRedirectUri = config.SignedOutRedirectUri;
-                options.TokenValidationParameters.NameClaimType = "name";
+                options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_SHORT_NAME;
                 options.TokenValidationParameters.ValidateIssuer = false;
             })
             .AddCookie();
