@@ -54,7 +54,7 @@ if($KeyVault -eq "")
    $KeyVault=$WebAppNamePrefix+"-kv"
 
    # Check if the KeyVault exists under resource group
-   $kv_check=$(az keyvault show -n $KeyVault -g $ResourceGroupForDeployment)     
+   $kv_check=$(az keyvault show -n $KeyVault -g $ResourceGroupForDeployment) 2>$null    
 
    # If KeyVault does not exist under resource group, then we need to check if it deleted KeyVault
    if($kv_check -eq $null)
