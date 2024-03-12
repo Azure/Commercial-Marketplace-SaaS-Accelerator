@@ -69,9 +69,13 @@ public class AzureWebhookController : ControllerBase
     private readonly ValidateJwtToken validateJwtToken;
 
     /// <summary>
+    /// The ApplicationConfig Repository.
+    /// </summary>
+    private readonly IApplicationConfigRepository applicationConfigRepository;
+
+    /// <summary>
     /// The ApplicationConfig service.
     /// </summary>
-
     private readonly ApplicationConfigService applicationConfigService;
 
 
@@ -85,7 +89,7 @@ public class AzureWebhookController : ControllerBase
     /// <param name="subscriptionsRepository">The subscriptions repository.</param>
     /// <param name="configuration">The SaaSApiClientConfiguration from ENV</param>
     /// <param name="validateJwtToken">The validateJwtToken utility</param>
-    /// <param name="applicationConfigService">The Application Config Service</param>
+    /// <param name="applicationConfigRepository">The application config repository</param>
     public AzureWebhookController(IApplicationLogRepository applicationLogRepository, 
                                   IWebhookProcessor webhookProcessor, 
                                   ISubscriptionLogRepository subscriptionsLogRepository, 
@@ -93,7 +97,7 @@ public class AzureWebhookController : ControllerBase
                                   ISubscriptionsRepository subscriptionsRepository, 
                                   SaaSApiClientConfiguration configuration,
                                   ValidateJwtToken validateJwtToken,
-                                  ApplicationConfigService applicationConfigService)
+                                  IApplicationConfigRepository applicationConfigRepository)
     {
         this.applicationLogRepository = applicationLogRepository;
         this.subscriptionsRepository = subscriptionsRepository;
@@ -104,7 +108,8 @@ public class AzureWebhookController : ControllerBase
         this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
         this.subscriptionService = new SubscriptionService(this.subscriptionsRepository, this.planRepository);
         this.validateJwtToken = validateJwtToken;
-        this.applicationConfigService = applicationConfigService;
+        this.applicationConfigRepository = applicationConfigRepository;
+        this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);
     }
 
     /// <summary>
@@ -117,7 +122,7 @@ public class AzureWebhookController : ControllerBase
         {
             await this.applicationLogService.AddApplicationLog("The azure Webhook Triggered.").ConfigureAwait(false);
 
-            var appConfigValueConversion = bool.TryParse(this.applicationConfigService.GetValueByName("ValidateJwtToken"), out bool appConfigValue);
+            var appConfigValueConversion = bool.TryParse(this.applicationConfigService.GetValueByName("ValidateWebhookJwtToken"), out bool appConfigValue);
             
             if (appConfigValueConversion && appConfigValue)
             {
