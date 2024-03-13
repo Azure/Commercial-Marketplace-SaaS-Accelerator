@@ -152,7 +152,7 @@ public class AzureWebhookController : ControllerBase
         catch (MarketplaceException ex)
         {
             await this.applicationLogService.AddApplicationLog(
-                    $"An error occurred while attempting to process a webhook notification: [{ex.Message}].")
+                    $"A Marketplace exception occurred while attempting to process a webhook notification: [{ex.Message}].")
                 .ConfigureAwait(false);
             return BadRequest();
         }
