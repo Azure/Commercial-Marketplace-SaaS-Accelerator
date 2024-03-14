@@ -53,9 +53,11 @@
 
     function saveAppConfigDetails() {
         var formobject = $('#frmAppConfigDetails').serialize();
+        var csrftoken = $('input[name="__RequestVerificationToken"]').val();
         $.ajax({
             url: 'ApplicationConfig/ApplicationConfigDetails',
             type: 'POST',
+            headers: { RequestVerificationToken: csrftoken },
             data: formobject,
             cache: false,
             success: function (result) {

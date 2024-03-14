@@ -20,6 +20,7 @@ namespace Marketplace.SaaS.Accelerator.CustomerSite.Controllers.WebHook;
 /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
 [Route("api/[controller]")]
 [ApiController]
+[IgnoreAntiforgeryTokenAttribute]
 public class AzureWebhookController : ControllerBase
 {
     /// <summary>
