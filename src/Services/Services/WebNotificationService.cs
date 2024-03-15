@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Helpers;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
 
@@ -141,6 +142,13 @@ public class WebNotificationService : IWebNotificationService
         {
             var WebNotificationUrl = this.applicationConfigRepository.GetValueByName("WebNotificationUrl");
 
+            //validate the URL
+            if (!UrlValidator.IsValidUrlHttps(WebNotificationUrl))
+            {
+                await this.applicationLogService.AddApplicationLog("WebNotificationUrl: URI is not valid, does not use HTTPS scheme, or uses a port other than 443. No notification forwarded").ConfigureAwait(false);
+                return;
+            }
+
             if (!String.IsNullOrWhiteSpace(WebNotificationUrl))
             {
                 using (var httpClient = new HttpClient())
@@ -150,7 +158,6 @@ public class WebNotificationService : IWebNotificationService
 
                     // Send a POST request to the webhook URL
                     var response = await httpClient.PostAsync(WebNotificationUrl, content);
-
                     // Check the response status code
                     if (response.IsSuccessStatusCode)
                     {
