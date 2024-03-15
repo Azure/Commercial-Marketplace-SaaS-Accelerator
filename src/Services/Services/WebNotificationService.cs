@@ -154,22 +154,22 @@ public class WebNotificationService : IWebNotificationService
                     // Check the response status code
                     if (response.IsSuccessStatusCode)
                     {
-                        await this.applicationLogService.AddApplicationLog($"Web notification successfully pushed from {eventType} for {subscriptionId}").ConfigureAwait(false);
+                        await this.applicationLogService.AddApplicationLog($"WebNotificationUrl: Web notification successfully pushed from {eventType} for {subscriptionId}").ConfigureAwait(false);
                     }
                     else
                     {
-                        await this.applicationLogService.AddApplicationLog($"Failed to push web notification from {eventType} for {subscriptionId}. Status code: {response.StatusCode}").ConfigureAwait(false);
+                        await this.applicationLogService.AddApplicationLog($"WebNotificationUrl: Failed to push web notification from {eventType} for {subscriptionId}. Status code: {response.StatusCode}").ConfigureAwait(false);
                     }
                 }
             }
             else
             {
-                await this.applicationLogService.AddApplicationLog($"No notification pushed. Webhook notification URL is empty");
+                await this.applicationLogService.AddApplicationLog($"WebNotificationUrl: No notification pushed. Webhook notification URL is empty");
             }
         }
         catch (Exception ex)
         {
-            await this.applicationLogService.AddApplicationLog($"An error occurred while pushing the notification for {subscriptionId}: {ex.Message}");
+            await this.applicationLogService.AddApplicationLog($"WebNotificationUrl: An error occurred while pushing the notification for {subscriptionId}");
         }
     }
 
