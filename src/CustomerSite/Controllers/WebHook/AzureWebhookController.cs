@@ -9,6 +9,7 @@ using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
 using Microsoft.AspNetCore.Mvc;
 
@@ -64,6 +65,22 @@ public class AzureWebhookController : ControllerBase
     private readonly SubscriptionService subscriptionService;
 
     /// <summary>
+    /// The JWT token validation.
+    /// </summary>
+    private readonly ValidateJwtToken validateJwtToken;
+
+    /// <summary>
+    /// The ApplicationConfig Repository.
+    /// </summary>
+    private readonly IApplicationConfigRepository applicationConfigRepository;
+
+    /// <summary>
+    /// The ApplicationConfig service.
+    /// </summary>
+    private readonly ApplicationConfigService applicationConfigService;
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="AzureWebhookController"/> class.
     /// </summary>
     /// <param name="applicationLogRepository">The application log repository.</param>
@@ -72,7 +89,16 @@ public class AzureWebhookController : ControllerBase
     /// <param name="planRepository">The plan repository.</param>
     /// <param name="subscriptionsRepository">The subscriptions repository.</param>
     /// <param name="configuration">The SaaSApiClientConfiguration from ENV</param>
-    public AzureWebhookController(IApplicationLogRepository applicationLogRepository, IWebhookProcessor webhookProcessor, ISubscriptionLogRepository subscriptionsLogRepository, IPlansRepository planRepository, ISubscriptionsRepository subscriptionsRepository, SaaSApiClientConfiguration configuration)
+    /// <param name="validateJwtToken">The validateJwtToken utility</param>
+    /// <param name="applicationConfigRepository">The application config repository</param>
+    public AzureWebhookController(IApplicationLogRepository applicationLogRepository, 
+                                  IWebhookProcessor webhookProcessor, 
+                                  ISubscriptionLogRepository subscriptionsLogRepository, 
+                                  IPlansRepository planRepository, 
+                                  ISubscriptionsRepository subscriptionsRepository, 
+                                  SaaSApiClientConfiguration configuration,
+                                  ValidateJwtToken validateJwtToken,
+                                  IApplicationConfigRepository applicationConfigRepository)
     {
         this.applicationLogRepository = applicationLogRepository;
         this.subscriptionsRepository = subscriptionsRepository;
@@ -82,6 +108,9 @@ public class AzureWebhookController : ControllerBase
         this.webhookProcessor = webhookProcessor;
         this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
         this.subscriptionService = new SubscriptionService(this.subscriptionsRepository, this.planRepository);
+        this.validateJwtToken = validateJwtToken;
+        this.applicationConfigRepository = applicationConfigRepository;
+        this.applicationConfigService = new ApplicationConfigService(this.applicationConfigRepository);
     }
 
     /// <summary>
@@ -93,6 +122,24 @@ public class AzureWebhookController : ControllerBase
         try
         {
             await this.applicationLogService.AddApplicationLog("The azure Webhook Triggered.").ConfigureAwait(false);
+
+            var appConfigValueConversion = bool.TryParse(this.applicationConfigService.GetValueByName("ValidateWebhookJwtToken"), out bool appConfigValue);
+            
+            if (appConfigValueConversion && appConfigValue)
+            {
+                try
+                {
+                    await this.applicationLogService.AddApplicationLog("Validating the JWT token.").ConfigureAwait(false);
+                    var token = this.HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
+                    await validateJwtToken.ValidateTokenAsync(token);
+                }
+                catch (Exception e)
+                {
+                    await this.applicationLogService.AddApplicationLog($"Jwt token validation failed with error: {e.Message}").ConfigureAwait(false);
+
+                    return new UnauthorizedResult();
+                }
+            }   
 
             if (request != null)
             {
@@ -106,7 +153,7 @@ public class AzureWebhookController : ControllerBase
         catch (MarketplaceException ex)
         {
             await this.applicationLogService.AddApplicationLog(
-                    $"An error occurred while attempting to process a webhook notification: [{ex.Message}].")
+                    $"A Marketplace exception occurred while attempting to process a webhook notification: [{ex.Message}].")
                 .ConfigureAwait(false);
             return BadRequest();
         }
