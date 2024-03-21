@@ -118,7 +118,7 @@ public class ApplicationConfigController : BaseController
         appConfig.Value = appConfig.Value ?? string.Empty;
         
         //check with the config is webhnotifcation url then validate if its proper url
-        if (appConfig.Name == "WebNotificationUrl" && !UrlValidator.IsValidUrlHttps(appConfig.Value))
+        if (appConfig.Name == StringLiteralConstants.WebNotificationUrl && !UrlValidator.IsValidUrlHttps(appConfig.Value))
         {
             return this.BadRequest("Invalid URL, only https and port 443 are allowed.");
         }

@@ -8,7 +8,7 @@ namespace Marketplace.SaaS.Accelerator.Services.Helpers;
 public class UrlValidator
 {
     /// <summary>
-    /// Validates the URLfor HTTPS.
+    /// Validates the URL for HTTPS.
     /// Helps validate if the URL is a valid HTTPS URL.
     /// </summary>
     public static bool IsValidUrlHttps(string url)
