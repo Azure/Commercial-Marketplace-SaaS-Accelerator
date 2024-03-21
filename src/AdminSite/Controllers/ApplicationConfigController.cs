@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
-using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
-using Marketplace.SaaS.Accelerator.DataAccess.Services;
+using Marketplace.SaaS.Accelerator.Services.Helpers;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 
@@ -119,6 +116,13 @@ public class ApplicationConfigController : BaseController
     public IActionResult ApplicationConfigDetails(ApplicationConfiguration appConfig)
     {
         appConfig.Value = appConfig.Value ?? string.Empty;
+        
+        //check with the config is webhnotifcation url then validate if its proper url
+        if (appConfig.Name == StringLiteralConstants.WebNotificationUrl && !UrlValidator.IsValidUrlHttps(appConfig.Value))
+        {
+            return this.BadRequest("Invalid URL, only https and port 443 are allowed.");
+        }
+
         this.appConfigService.SaveAppConfig(appConfig);
 
         this.ModelState.Clear();

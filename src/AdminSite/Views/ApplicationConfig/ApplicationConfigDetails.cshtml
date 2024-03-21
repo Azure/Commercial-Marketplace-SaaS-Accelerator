@@ -10,6 +10,7 @@
     <form method="post" id="frmAppConfigDetails" asp-action="ApplicationConfigDetails" asp-controller="ApplicationConfig">
         <div>
             @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.Name)
         </div>
         <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
             <theader>
@@ -61,20 +62,21 @@
             data: formobject,
             cache: false,
             success: function (result) {
-                debugger;
                 swal({
                     title: "Saved",
                     text: "App config details saved successfully.",
                     icon: "success",
-                    timer: 1000
+                    timer: 2000
                 })
             },
-            Error:
+            error:
                 function (result) {
+                    console.log();
                      swal({
                         title: "Error",
-                        text: "An error has occured, please check the log.",
-                        icon: "error"
+                        text: "An error has occured: "+ result.responseText,
+                        icon: "error",
+                        timer: 3000
                     })
                 }
         });

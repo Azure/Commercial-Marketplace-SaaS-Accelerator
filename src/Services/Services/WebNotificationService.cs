@@ -6,7 +6,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Helpers;
 using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
 
 namespace Marketplace.SaaS.Accelerator.Services.Services;
@@ -139,7 +141,14 @@ public class WebNotificationService : IWebNotificationService
     {
         try
         {
-            var WebNotificationUrl = this.applicationConfigRepository.GetValueByName("WebNotificationUrl");
+            var WebNotificationUrl = this.applicationConfigRepository.GetValueByName(StringLiteralConstants.WebNotificationUrl);
+
+            //validate the URL
+            if (!UrlValidator.IsValidUrlHttps(WebNotificationUrl))
+            {
+                await this.applicationLogService.AddApplicationLog($"{StringLiteralConstants.WebNotificationUrl}: URI is not valid, does not use HTTPS scheme, or uses a port other than 443. No notification forwarded").ConfigureAwait(false);
+                return;
+            }
 
             if (!String.IsNullOrWhiteSpace(WebNotificationUrl))
             {
@@ -150,26 +159,25 @@ public class WebNotificationService : IWebNotificationService
 
                     // Send a POST request to the webhook URL
                     var response = await httpClient.PostAsync(WebNotificationUrl, content);
-
                     // Check the response status code
                     if (response.IsSuccessStatusCode)
                     {
-                        await this.applicationLogService.AddApplicationLog($"Web notification successfully pushed from {eventType} for {subscriptionId}").ConfigureAwait(false);
+                        await this.applicationLogService.AddApplicationLog($"{StringLiteralConstants.WebNotificationUrl}: Web notification successfully pushed from {eventType} for {subscriptionId}").ConfigureAwait(false);
                     }
                     else
                     {
-                        await this.applicationLogService.AddApplicationLog($"Failed to push web notification from {eventType} for {subscriptionId}. Status code: {response.StatusCode}").ConfigureAwait(false);
+                        await this.applicationLogService.AddApplicationLog($"{StringLiteralConstants.WebNotificationUrl}: Failed to push web notification from {eventType} for {subscriptionId}. Status code: {response.StatusCode}").ConfigureAwait(false);
                     }
                 }
             }
             else
             {
-                await this.applicationLogService.AddApplicationLog($"No notification pushed. Webhook notification URL is empty");
+                await this.applicationLogService.AddApplicationLog($"{StringLiteralConstants.WebNotificationUrl}: No notification pushed. Webhook notification URL is empty");
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            await this.applicationLogService.AddApplicationLog($"An error occurred while pushing the notification for {subscriptionId}: {ex.Message}");
+            await this.applicationLogService.AddApplicationLog($"{StringLiteralConstants.WebNotificationUrl}: An error occurred while pushing the notification for {subscriptionId}");
         }
     }
 
