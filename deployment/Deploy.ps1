@@ -48,7 +48,38 @@ if ($SQLDatabaseName -eq "") {
 
 if($KeyVault -eq "")
 {
+# User did not define KeyVault, so we will create one. 
+# We need to check if the KeyVault already exists or purge before going forward
+
    $KeyVault=$WebAppNamePrefix+"-kv"
+
+   # Check if the KeyVault exists under resource group
+   $kv_check=$(az keyvault show -n $KeyVault -g $ResourceGroupForDeployment) 2>$null    
+
+   # If KeyVault does not exist under resource group, then we need to check if it deleted KeyVault
+   if($kv_check -eq $null)
+   {
+	#region Check If KeyVault Exists
+		$KeyVaultApiUri="https://management.azure.com/subscriptions/$AzureSubscriptionID/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01"
+		$KeyVaultApiBody='{"name": "'+$KeyVault+'","type": "Microsoft.KeyVault/vaults"}'
+
+		$kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
+
+		if( $kv_check.reason -eq "AlreadyExists")
+		{
+			Write-Host ""
+			Write-Host "🛑  KeyVault name "  -NoNewline -ForegroundColor Red
+			Write-Host "$KeyVault"  -NoNewline -ForegroundColor Red -BackgroundColor Yellow
+			Write-Host " already exists." -ForegroundColor Red
+			Write-Host "   To Purge KeyVault please use the following doc:"
+			Write-Host "   https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
+			Write-Host "   You could use new KeyVault name by using parameter" -NoNewline 
+			Write-Host " -KeyVault"  -ForegroundColor Green
+			exit 1
+		}
+	#endregion
+	}
+
 }
 
 $SaaSApiConfiguration_CodeHash= git log --format='%H' -1
@@ -63,11 +94,11 @@ if($WebAppNamePrefix.Length -gt 21) {
     exit 1
 }
 
-
 if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
     Throw "🛑 KeyVault name only allows alphanumeric and hyphens, but cannot start with a number or special character."
     exit 1
 }
+
 
 #endregion 
 
@@ -117,30 +148,6 @@ Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
 
 #endregion
 
-#region Check if KV exists
-
-#region Check If KeyVault Exists
-
-$KeyVaultApiUri="https://management.azure.com/subscriptions/$AzureSubscriptionID/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01"
-$KeyVaultApiBody='{"name": "'+$KeyVault+'","type": "Microsoft.KeyVault/vaults"}'
-
-$kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
-
-if( $kv_check.reason -eq "AlreadyExists")
-{
-	Write-Host ""
-	Write-Host "🛑 KeyVault name "  -NoNewline -ForegroundColor Red
-	Write-Host "$KeyVault"  -NoNewline -ForegroundColor Red -BackgroundColor Yellow
-	Write-Host " already exists." -ForegroundColor Red
-	Write-Host "To Purge KeyVault please use the following doc:"
-	Write-Host "https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
-	Write-Host "You could use new KeyVault name by using parameter" -NoNewline 
-	Write-Host " -KeyVault"  -ForegroundColor Green
-    exit 1
-}
-
-
-#endregion
 
 #region Check If SQL Server Exist
 $sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
