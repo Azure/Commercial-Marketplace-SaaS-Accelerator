@@ -8,18 +8,18 @@
         <div>
             <div id="myModal">
 
-                <div class="text-center ">
+                <div class="text-center">
                     <form method="post" id="frmOfferattributes" asp-action="OfferDetails" asp-controller="Offers">
                         <div class="container mrtop maxwidth" style="float: left; margin-left: -20px;">
 
-                            <div class="card card-header mb0 pb0 maxwidth">
+                            <div class="card card-header mb0 pb0 maxwidth" style="background-color:#fff;">
                                 <input type='hidden' id='OfferID' name='OfferID' value="@Model.OfferID"/>
                                 <input type='hidden' id='OfferName' name='OfferName' value="@Model.OfferName"/>
                                 <input type='hidden' id='OfferGuid' name='OfferGuid' value="@Model.OfferGuid"/>
                                 <input type='hidden' id='Id' name='Id' value="@Model.Id"/>
                                 <dl class="row">
-                                    <dt class="col-2 text-right" style="margin-left: -100px;"><span>Offer name</span></dt>
-                                    <dd class="col-3 text-left">@Model.OfferID</dd>
+                                    <dt class="col-auto mr-auto text-start">Offer  name</dt>
+                                    <dd class="col-auto mr-auto text-start">@Model.OfferID</dd>
                                 </dl>
                             </div>
 
@@ -228,10 +228,12 @@
 
     function saveOfferParameters() {
         debugger;
+        var csrftoken = $('input[name="__RequestVerificationToken"]').val();
         var formobject = $('#frmOfferattributes').serialize();
         $.ajax({
             url: 'Offers/OfferDetails',
             type: 'POST',
+            headers: { RequestVerificationToken: csrftoken },
             data: formobject,
             cache: false,
             success: function (result) {

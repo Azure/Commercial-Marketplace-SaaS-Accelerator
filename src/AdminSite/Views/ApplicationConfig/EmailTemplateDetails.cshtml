@@ -15,47 +15,47 @@
         <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
             <theader>
                 <tr>
-                    <th class="text-left">Field</th>
-                    <th class="text-left">Value</th>
+                    <th class="text-start">Field</th>
+                    <th class="text-start">Value</th>
                 </tr>
             </theader>
             <tbody>
                 <tr>
-                    <td class="text-left">IsActive</td>
-                    <td class="text-left">@Html.CheckBoxFor(model => model.IsActive, new { htmlAttributes = new { type ="checkbox", @class = "float-left", name="IsActive" } })</td>
+                    <td class="text-start">IsActive</td>
+                    <td class="text-start">@Html.CheckBoxFor(model => model.IsActive, new { htmlAttributes = new { type ="checkbox", @class = "float-left", name="IsActive" } })</td>
                 </tr>
                 <tr>
-                    <td class="text-left">Subject</td>
-                    <td class="text-left">@Html.EditorFor(model => model.Subject, new { htmlAttributes = new {  @class = "form-control", name="Subject" } })</td>
+                    <td class="text-start">Subject</td>
+                    <td class="text-start">@Html.EditorFor(model => model.Subject, new { htmlAttributes = new {  @class = "form-control", name="Subject" } })</td>
                 </tr>
                 <tr>
-                    <td class="text-left">Description</td>
-                    <td class="text-left">@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", name="Description" } })</td>
+                    <td class="text-start">Description</td>
+                    <td class="text-start">@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", name="Description" } })</td>
                 </tr>
                 <tr>
-                    <td class="text-left">TemplateBody</td>
-                    <td class="text-left">
+                    <td class="text-start">TemplateBody</td>
+                    <td class="text-start">
                         @Html.TextAreaFor(model => model.TemplateBody, new { @class = "form-control" })
-                        <span class="font-italic hint-text text-left">Due to the content size, it is recommended to copy the content to an external editor, modify the Template body, paste it back into here and save.</span>
+                        <span class="fst-italic text-start">Due to the content size, it is recommended to copy the content to an external editor, modify the Template body, paste it back into here and save.</span>
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-left">ToRecipients</td>
-                    <td class="text-left">@Html.EditorFor(model => model.ToRecipients, new { htmlAttributes = new { @class = "form-control", name="ToRecipients" } })</td>
+                    <td class="text-start">ToRecipients</td>
+                    <td class="text-start">@Html.EditorFor(model => model.ToRecipients, new { htmlAttributes = new { @class = "form-control", name="ToRecipients" } })</td>
                 </tr>
                 <tr>
-                    <td class="text-left">Bcc</td>
-                    <td class="text-left">@Html.EditorFor(model => model.Bcc, new { htmlAttributes = new { @class = "form-control", name="Bcc" } })</td>
+                    <td class="text-start">Bcc</td>
+                    <td class="text-start">@Html.EditorFor(model => model.Bcc, new { htmlAttributes = new { @class = "form-control", name="Bcc" } })</td>
                 </tr>
                 <tr>
-                    <td class="text-left">Cc</td>
-                    <td class="text-left">@Html.EditorFor(model => model.Cc, new { htmlAttributes = new { @class = "form-control", name="Cc" } })</td>
+                    <td class="text-start">Cc</td>
+                    <td class="text-start">@Html.EditorFor(model => model.Cc, new { htmlAttributes = new { @class = "form-control", name="Cc" } })</td>
                 </tr>
             </tbody>
         </table>
         <div class="ac-save-d">
             <p>
-                <a class="cm-button-default mt0" id="backButton" asp-area="" asp-controller="ApplicationConfig" asp-action="EmailTemplates">Back</a>
+                <a class="cm-button-default mt0" id="backButton" style="text-decoration: none;" asp-area="" asp-controller="ApplicationConfig" asp-action="EmailTemplates">Back</a>
                 <input class="cm-button-default mt0 ac-save-i" type="button" onclick="saveEmailTemplateDetails()" value="Save Template" />
             </p>
         </div>
@@ -66,9 +66,11 @@
 
     function saveEmailTemplateDetails() {
         var formobject = $('#frmEmailTemplateDetails').serialize();
+        var csrftoken = $('input[name="__RequestVerificationToken"]').val();
         $.ajax({
             url: '/ApplicationConfig/EmailTemplateDetails',
             type: 'POST',
+            headers: { RequestVerificationToken: csrftoken },
             data: formobject,
             cache: false,
             success: function (result) {

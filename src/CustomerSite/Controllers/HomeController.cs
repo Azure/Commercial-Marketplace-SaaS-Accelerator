@@ -337,84 +337,95 @@ public class HomeController : BaseController
     }
   }
 
-  /// <summary>
-  /// Get All Subscription List for Current Logged in User.
-  /// </summary>
-  /// <param name="subscriptionId">The subscription identifier.</param>
-  /// <returns>
-  /// The <see cref="IActionResult" />.
-  /// </returns>
-  public IActionResult SubscriptionDetail(Guid subscriptionId)
-  {
-    this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionDetail subscriptionId:{subscriptionId}"));
-    try
+    /// <summary>
+    /// Get All Subscription List for Current Logged in User.
+    /// </summary>
+    /// <param name="subscriptionId">The subscription identifier.</param>
+    /// <returns>
+    /// The <see cref="IActionResult" />.
+    /// </returns>
+    public IActionResult SubscriptionDetail(Guid subscriptionId)
     {
-      if (this.User.Identity.IsAuthenticated)
-      {
-        var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-        subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
-
-        return this.PartialView(subscriptionDetail);
-      }
-      else
-      {
-        return this.RedirectToAction(nameof(this.Index));
-      }
-    }
-    catch (Exception ex)
-    {
-      this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}   ");
-      return this.View("Error", ex);
-    }
-  }
-
-  /// <summary>
-  /// Get Subscription Details for selected Subscription.
-  /// </summary>
-  /// <param name="subscriptionId">The subscription identifier.</param>
-  /// <returns>
-  /// The <see cref="IActionResult" />.
-  /// </returns>
-  public IActionResult SubscriptionQuantityDetail(Guid subscriptionId)
-  {
-    this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}"));
-    try
-    {
-      if (this.User.Identity.IsAuthenticated)
-      {
-        var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-        return this.PartialView(subscriptionDetail);
-      }
-      else
-      {
-        return this.RedirectToAction(nameof(this.Index));
-      }
-    }
-    catch (Exception ex)
-    {
-      this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}   ");
-      return this.View("Error", ex);
-    }
-  }
-
-  /// <summary>
-  /// Subscriptions the log detail.
-  /// </summary>
-  /// <param name="subscriptionId">The subscription identifier.</param>
-  /// <returns> Subscription log detail.</returns>
-  public IActionResult SubscriptionLogDetail(Guid subscriptionId)
-  {
-    this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}"));
-    try
-    {
-      if (this.User.Identity.IsAuthenticated)
-      {
-        // Validate subscription from same customer
-        var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-        if (subscriptionDetail == null)
+        this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionDetail subscriptionId:{subscriptionId}"));
+        try
         {
-          return this.RedirectToAction(nameof(this.Index));
+            if (this.User.Identity.IsAuthenticated)
+            {
+                var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                if (subscriptionDetail == null)
+                {
+                    this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                    return this.RedirectToAction(nameof(this.Index));
+                }
+                subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
+
+        return this.PartialView(subscriptionDetail);
+      }
+      else
+      {
+        return this.RedirectToAction(nameof(this.Index));
+      }
+    }
+    catch (Exception ex)
+    {
+      this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}   ");
+      return this.View("Error", ex);
+    }
+  }
+
+    /// <summary>
+    /// Get Subscription Details for selected Subscription.
+    /// </summary>
+    /// <param name="subscriptionId">The subscription identifier.</param>
+    /// <returns>
+    /// The <see cref="IActionResult" />.
+    /// </returns>
+    public IActionResult SubscriptionQuantityDetail(Guid subscriptionId)
+    {
+        this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}"));
+        try
+        {
+            if (this.User.Identity.IsAuthenticated)
+            {
+                var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                if (subscriptionDetail == null)
+                {
+                    this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                    return this.RedirectToAction(nameof(this.Index));
+                }
+                return this.PartialView(subscriptionDetail);
+            }
+            else
+            {
+                return this.RedirectToAction(nameof(this.Index));
+            }
         }
+        catch (Exception ex)
+        {
+            this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}   ");
+            return this.View("Error", ex);
+        }
+    }
+
+    /// <summary>
+    /// Subscriptions the log detail.
+    /// </summary>
+    /// <param name="subscriptionId">The subscription identifier.</param>
+    /// <returns> Subscription log detail.</returns>
+    public IActionResult SubscriptionLogDetail(Guid subscriptionId)
+    {
+        this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionQuantityDetail subscriptionId:{subscriptionId}"));
+        try
+        {
+            if (this.User.Identity.IsAuthenticated)
+            {
+                // Validate subscription from same customer
+                var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                if(subscriptionDetail == null)
+                {
+                    this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                    return this.RedirectToAction(nameof(this.Index));
+                }
 
         List<SubscriptionAuditLogs> subscriptionAudit = new List<SubscriptionAuditLogs>();
         subscriptionAudit = this.subscriptionLogRepository.GetSubscriptionBySubscriptionId(subscriptionId).ToList();
@@ -537,27 +548,32 @@ public class HomeController : BaseController
       {
         var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
 
-        if (subscriptionId != default)
-        {
-          this.logger.Info("GetPartnerSubscription");
-          var oldValue = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
-          Plans planDetail = this.planRepository.GetById(oldValue.PlanId);
-          this.logger.Info("GetUserIdFromEmailAddress");
-          var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-          if (operation == "Activate")
-          {
-            try
-            {
-              this.logger.Info(HttpUtility.HtmlEncode($"Save Subscription Parameters:  {JsonSerializer.Serialize(subscriptionResultExtension.SubscriptionParameters)}"));
-              if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
-              {
-                var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input");
-                if (inputParms != null)
+                if (subscriptionId != default)
                 {
-                  var inputParmsList = inputParms.ToList();
-                  this.subscriptionService.AddSubscriptionParameters(inputParmsList, currentUserId);
-                }
-              }
+                    this.logger.Info("GetPartnerSubscription");
+                    var oldValue = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
+                    if (oldValue == null)
+                    {
+                        this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                        return this.RedirectToAction(nameof(this.Index));
+                    }
+                    Plans planDetail = this.planRepository.GetById(oldValue.PlanId);
+                    this.logger.Info("GetUserIdFromEmailAddress");
+                    var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                    if (operation == "Activate")
+                    {
+                        try
+                        {
+                            this.logger.Info(HttpUtility.HtmlEncode($"Save Subscription Parameters:  {JsonSerializer.Serialize(subscriptionResultExtension.SubscriptionParameters)}" ));
+                            if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
+                            {
+                                var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input");
+                                if (inputParms != null)
+                                {
+                                    var inputParmsList = inputParms.ToList();
+                                    this.subscriptionService.AddSubscriptionParameters(inputParmsList, currentUserId);
+                                }
+                            }
 
               if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
               {
@@ -711,26 +727,32 @@ public class HomeController : BaseController
     return this.RedirectToAction(nameof(this.Index));
   }
 
-  /// <summary>
-  /// Changes the quantity plan.
-  /// </summary>
-  /// <param name="subscriptionDetail">The subscription detail.</param>
-  /// <returns>Changes subscription quantity.</returns>
-  [HttpPost]
-  [ValidateAntiForgeryToken]
-  public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
-  {
-    this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{JsonSerializer.Serialize(subscriptionDetail)}"));
-    if (this.User.Identity.IsAuthenticated)
+    /// <summary>
+    /// Changes the quantity plan.
+    /// </summary>
+    /// <param name="subscriptionDetail">The subscription detail.</param>
+    /// <returns>Changes subscription quantity.</returns>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
     {
-      try
-      {
-        if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity > 0)
+        this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{JsonSerializer.Serialize(subscriptionDetail)}"));
+        if (this.User.Identity.IsAuthenticated)
         {
-          try
-          {
-            //initiate change quantity
-            var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+            try
+            {
+                if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity > 0)
+                {
+                    try
+                    {
+                        //initiate change quantity
+                        var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                        
+                        if (this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionDetail.Id).FirstOrDefault() == null)
+                        {
+                            this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                            return this.RedirectToAction(nameof(this.Index));
+                        }
 
             var jsonResult = await this.apiService.ChangeQuantityForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.Quantity).ConfigureAwait(false);
             var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
@@ -805,20 +827,25 @@ public class HomeController : BaseController
     {
       SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
-      if (this.User.Identity.IsAuthenticated)
-      {
-        var userId = this.userService.AddUser(this.GetCurrentUserDetail());
-        var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-        this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
-        var planDetails = this.planRepository.GetById(planId);
-        this.TempData["ShowWelcomeScreen"] = false;
-        subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-        subscriptionDetail.ShowWelcomeScreen = false;
-        subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
-        subscriptionDetail.CustomerName = this.CurrentUserName;
-        subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
-        subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
-      }
+            if (this.User.Identity.IsAuthenticated)
+            {
+                var userId = this.userService.AddUser(this.GetCurrentUserDetail());
+                var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
+                var planDetails = this.planRepository.GetById(planId);
+                this.TempData["ShowWelcomeScreen"] = false;
+                subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                if (subscriptionDetail == null)
+                {
+                    this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                    return this.RedirectToAction(nameof(this.Index));
+                }
+                subscriptionDetail.ShowWelcomeScreen = false;
+                subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
+                subscriptionDetail.CustomerName = this.CurrentUserName;
+                subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+                subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
+            }
 
       return this.View("Index", subscriptionDetail);
     }

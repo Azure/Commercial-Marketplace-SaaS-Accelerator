@@ -92,11 +92,11 @@ Write-host "#### Database Deployment complete ####"
 
 Write-host "#### Deploying new code ####" 
 
-dotnet publish ../src/AdminSite/AdminSite.csproj -v q -c debug -o ../Publish/AdminSite/
+dotnet publish ../src/AdminSite/AdminSite.csproj -v q -c release -o ../Publish/AdminSite/
 Write-host "## Admin Portal built" 
-dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -v q -c debug -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob --runtime win-x64 --self-contained true 
+dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -v q -c release -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob --runtime win-x64 --self-contained true 
 Write-host "## Metered Scheduler to Admin Portal Built"
-dotnet publish ../src/CustomerSite/CustomerSite.csproj -v q -c debug -o ../Publish/CustomerSite
+dotnet publish ../src/CustomerSite/CustomerSite.csproj -v q -c release -o ../Publish/CustomerSite
 Write-host "## Customer Portal Built" 
 
 Compress-Archive -Path ../Publish/CustomerSite/* -DestinationPath ../Publish/CustomerSite.zip -Force
@@ -121,3 +121,7 @@ Write-host "## Deployed code to Customer Portal"
 
 Remove-Item -Path ../Publish -recurse -Force
 Write-host "#### Code deployment complete ####" 
+Write-host ""
+Write-host "#### Warning!!! ####"
+Write-host "#### If the upgrade is to >=7.5.0, MeterScheduler feature is pre-enabled and changed to DB config instead of the App Service configuration. Please update the IsMeteredBillingEnabled value accordingly in the Admin portal -> Settings page. ####"
+Write-host "#### "

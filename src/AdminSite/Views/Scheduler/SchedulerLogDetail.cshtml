@@ -33,7 +33,8 @@
         detailModal.style.display = "block";
     }
    </script>
-
+ @if ((this.TempData["SupportMeteredBilling"] != null) && (this.TempData["SupportMeteredBilling"].ToString() == "1"))
+    {
     <div class="card-body">
         <div class="modal-header header-bg">
             <h1><span class="cm-section-heading"> Activity Log</span></h1>
@@ -41,7 +42,7 @@
         </div>
         <div class="modal-body">
             <div>
-                <table border=1>
+                <table class="table-bordered">
                     <tr>
                         <th>Subscription</th>
                         <td> @Html.DisplayFor(model => model.SelectedSubscription)</td>
@@ -128,4 +129,11 @@
 
         </div>
     </div>
+    }
+    else
+    {
+        <div>
+            <h1><span class="cm-section-heading"> Please activate Scheduler feature to access this section</span></h1>
+        </div>
+    }
     </body>

@@ -25,7 +25,7 @@
                         @Model.Name
                     </td>
                     <td>
-                        @if (@Model.Name.Equals("SMTPPassword") && @Model.Value.Length > 5)
+                        @if (@Model.Name.Equals("SMTPPassword") && @Model?.Value?.Length > 5)
                         {
                             @Html.EditorFor(model => model.Value, new { htmlAttributes = new { type ="password", @class = "form-control" } })
                         }
@@ -42,7 +42,7 @@
         </table>
         <div class="ac-save-d">
             <p>
-                <a class="cm-button-default mt0" id="backButton" asp-area="" asp-controller="ApplicationConfig" asp-action="Index">Back</a>
+                <a class="cm-button-default mt0" id="backButton"  asp-area="" asp-controller="ApplicationConfig" asp-action="Index">Back</a>
                 <input class="cm-button-default mt0 ac-save-i" type="button" onclick="saveAppConfigDetails()" value="Save App Config" />
             </p>
         </div>
@@ -53,9 +53,11 @@
 
     function saveAppConfigDetails() {
         var formobject = $('#frmAppConfigDetails').serialize();
+        var csrftoken = $('input[name="__RequestVerificationToken"]').val();
         $.ajax({
             url: 'ApplicationConfig/ApplicationConfigDetails',
             type: 'POST',
+            headers: { RequestVerificationToken: csrftoken },
             data: formobject,
             cache: false,
             success: function (result) {

@@ -5,13 +5,20 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 <div class="">
-    <div class="">
-        <div class="card-body">
-            <div class="text-center">
-                <span class="cm-section-heading">Current Metered Plan Scheduled Trigger</span>
-                <button type="submit"  onclick="@("window.location.href='" + @Url.Action("NewScheduler", "Scheduler") + "'");" class="cm-button-default text-right float-right">Add New Scheduled Metered Trigger</button>
+    @if ((this.TempData["SupportMeteredBilling"] != null) && (this.TempData["SupportMeteredBilling"].ToString() == "1"))
+    {
+        <div class="">
+            <div class="card-body text-center">
+                <div>
+                    <span class="cm-section-heading">Current Metered Plan Scheduled Trigger</span>
+
+                </div>
+                <div class="text-end">
+                    <button type="submit" onclick="@("window.location.href='" + @Url.Action("NewScheduler", "Scheduler") + "'");" class="btn btn-secondary 
+float-right cm-button-default">Add New Scheduled Metered Trigger</button>
+
+                </div>
             </div>
-        </div>
             <div id="myModal">
                 @if (Model != null && Model.Count() > 0)
                 {
@@ -21,7 +28,7 @@
                     </div>
 
                     <div class="table-responsive mt20">
-                    <b>Current UTC time: @DateTime.UtcNow; </b>  <br />
+                        <b>Current UTC time: @DateTime.UtcNow; </b>  <br />
                         <table class="table table-bordered dt-responsive cm-table" width="90%" cellspacing="0">
                             <thead class="cm-table-head">
                                 <tr>
@@ -39,7 +46,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @{ var i = 0;}
+                                @{
+                                    var i = 0;
+                                }
                                 @foreach (var item in Model)
                                 {
                                     <tr>
@@ -76,9 +85,9 @@
                                         <td class="text-left">
                                             @item.NextRunTime
                                         </td>
-                                         <td class="text-left cm-ellipsis">
+                                        <td class="text-left cm-ellipsis">
                                             <div class="nav-item dropdown">
-                                                <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                                <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                 <div class="dropdown-menu" aria-labelledby="dropdown01">
                                                     <a  class="dropdown-item cm-dropdown-option" href="Scheduler/DeleteSchedulerItem/@item.Id" onclick="return confirm('Are you sure?');" >Delete</a>
                                                     <a  class="dropdown-item cm-dropdown-option" href="Scheduler/SchedulerLogDetail/@item.Id">History</a>
@@ -107,6 +116,14 @@
                 }
             </div>
         </div>
+    }
+    else
+    {
+        <div>
+            <h1><span class="cm-section-heading"> Please activate Scheduler feature to access this section</span></h1>
+        </div>
+    }
+
 </div>
 
 

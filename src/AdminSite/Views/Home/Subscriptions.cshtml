@@ -17,21 +17,32 @@
         <form method="post">
             <div>
                 <div class="card-body">
-                    <div class="text-left">
-                        <span class="cm-section-heading">Subscriptions</span>
-                        <a onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}" class="btn cm-button text-right float-right">Fetch All Subscriptions</a>
+                    <div>
+                        <div style="float:left">
+                            <span class="cm-section-heading">Subscriptions</span>
+                        
+                        </div>
+                        <div style="float:right">
+                            <a onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}" class="btn btn-secondary cm-button">Fetch All Subscriptions</a>
+                        </div>
                     </div>
+                    <br />
+                    <br />
+
                     <hr />
                     <div class="filter-box">
                         <span>Filter: </span>
                         <input type="text" size="50" id="filterTextBox" placeholder="Enter any text to filter subscriptions" onkeyup="filterSubscriptions()">
                         <input type="checkbox" class="statusCheckbox" id="SubscribedOnly" onchange="filterSubscriptions()"/> Hide Unsubscribed
+                        
+                    
                     </div>
+
                     <div class="table-responsive mt20">
                         @if (Model.Subscriptions.Count() > 0)
                         {
                             <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20" width="100%">
-                                <thead class="cm-table-head">
+                                <thead class="cm-table-head text-start">
                                     <tr>
                                         <th>Purchaser Email</th>
                                         <th>Marketplace Subscription Id</th>
@@ -43,25 +54,25 @@
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody class="text-start">
                                     @for (var i = 0; i < Model.Subscriptions.Count; i++)
                                     {
                                         var subscription = Model.Subscriptions[i];
                                         <tr id=@subscription.SubscriptionStatus>
-                                            <td class="text-left">
+                                            <td>
                                                 @subscription.Purchaser.EmailId
                                             </td>
-                                            <td class="text-left text-nowrap">
+                                            <td class="text-nowrap">
                                                 @subscription.Id
                                             </td>
-                                               <td class="text-left">
+                                               <td>
                                                 @Html.HiddenFor(s => s.Subscriptions[i].Id)
                                                 @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
                                                 @subscription.Name
                                             </td>
-                                            <td class="text-left">@subscription.OfferId</td>
-                                            <td class="text-left">@subscription.PlanId</td>
-                                            <td class="text-left">
+                                            <td>@subscription.OfferId</td>
+                                            <td>@subscription.PlanId</td>
+                                            <td>
                                                 @if (@subscription.IsPerUserPlan)
                                                 {
                                                     @subscription.Quantity
@@ -71,10 +82,10 @@
                                                     <span>N/A</span>
                                                 }
                                             </td>
-                                            <td class="text-left">@subscription.SubscriptionStatus</td>
-                                            <td class="text-left cm-ellipsis">
-                                                <div class="nav-item dropdown">
-                                                    <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
+                                            <td>@subscription.SubscriptionStatus</td>
+                                            <td class="cm-ellipsis">
+                                                @* <div class="nav-item dropdown"> *@
+                                                    <a class="nav-link dropdown cm-link-button" href="#" id="dropdown01" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-bars"></i></a>
                                                     <div class="dropdown-menu" aria-labelledby="dropdown01">
                                                         <a class="dropdown-item cm-dropdown-option" asp-controller="Home" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id">View Details</a>
                                                         @if (subscription.IsMeteringSupported && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
@@ -87,15 +98,15 @@
                                                         }
                                                         @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed || subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed)
                                                         {
-                                                            <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Plan</a>
+                                                        <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-bs-toggle="modal" data-bs-target="#myModal">Change Plan</a>
                                                             <a class="dropdown-item cm-dropdown-option" asp-action="SubscriptionDetails" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
                                                         }
                                                         @if (subscription.IsPerUserPlan && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                         {
-                                                            <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Quantity</a>
+                                                            <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-bs-toggle="modal" data-bs-target="#myModal">Change Quantity</a>
                                                         }
-                                                        <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
-                                                    </div>
+                                                    <a class="dropdown-item cm-dropdown-option" data-bs-toggle="modal" data-bs-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
+                                                    @* </div> *@
                                                 </div>
 
                                             </td>
@@ -118,7 +129,22 @@
                 </div>
             </div>
             <!-- Modal -->
-            <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal" id="myModal" tabindex="-1">
+                <div class="modal-dialog">
+                    @* <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div> *@
+                        @* <div class="modal-body">
+
+                        </div>
+                        <div class="modal-footer">
+
+
+                        </div> *@
+                   @*  </div> *@
+                </div>
             </div>
         </form>
     </div>
@@ -219,16 +245,11 @@
                 }
             });
     }
-
-    var t = $("input[name='__RequestVerificationToken']").val();
-
+    var csrftoken = $('input[name="__RequestVerificationToken"]').val();
     function fetchAllSubscriptions() {
         $.ajax({
             type: "Post",
-            headers:
-            {
-                "RequestVerificationToken": t
-            },
+            headers: { RequestVerificationToken: csrftoken },
             url: "FetchAllSubscriptions",
             contentType: "application/json; charset=utf-8",
             datatype: "json",

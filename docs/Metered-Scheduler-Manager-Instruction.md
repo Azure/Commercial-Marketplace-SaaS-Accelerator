@@ -6,15 +6,12 @@ Metered Scheduler Manager is a feature where Publisher can schedule **FIX Quanti
 1. Monthly
 1. Yearly
 1. OneTime
-## Enable and Disable Metered Scheduler Manager Feature During Installation
-By default, this feature is disabled during the installation. Publisher can enable this feature during the installion process by passing an optional parameter **MeteredSchedulerSupport**. Please refer to the installation steps [here](./Installation-Instructions.md)
-
 
 ## Enable and Disable Metered Scheduler Manager Feature Post Installation
-Publisher can active the **Metered Scheduler** feature by updating Admin portal web configuration and set **SaaSApiConfiguration__SupportmeteredBilling** to **true**
+Publisher can active the **Metered Scheduler** feature by updating Admin portal App Setting and set **IsMeteredBillingEnabled** to **true**
 ![home](./images/scheduler-config.png)
 
-Publisher can disable the feature by feature by updating Admin portal web configuration and set **SaaSApiConfiguration__SupportmeteredBilling** to **false**
+Publisher can disable the feature by feature by updating Admin portal web configuration and set **IsMeteredBillingEnabled** to **false**
 
 ## IMPORTANT: Enable Scheduler Frequencies
 Publisher must enable scheduler Frequencies before start scheduling tasks. From **App Config**, publisher can enable or disable available frequencies per business needs. Without enable the frequencies, Publisher will not able to add tasks also the scheduler engine will skip any disabled frequencies.

@@ -28,12 +28,12 @@
 <body>
 
     <div class="card text-center mt20">
-        <div class="card-header">
+        <div class="card-header" style="background-color:#fff">
             <dl class="row">
-                <dt class="col-2 text-right"><span>Offer Name</span></dt>
-                <dd class="col-3 text-left">@Model.OfferName</dd>
-                <dt class="col-3 text-right"><span>Plan name</span></dt>
-                <dd class="col-4 text-left">@Model.DisplayName</dd>
+                <dt class="col-2 text-end"><span>Offer Name</span></dt>
+                <dd class="col-3 text-start">@Model.OfferName</dd>
+                <dt class="col-3 text-end"><span>Plan name</span></dt>
+                <dd class="col-4 text-start">@Model.DisplayName</dd>
             </dl>
         </div>
 
@@ -46,8 +46,8 @@
                 </div>
 
                 <ul class="nav nav-tabs m-0 tabsborder" role="tablist">
-                    <li class="nav-item  mr-1"><a class="nav-link m-0 active" data-toggle="tab" href="#tabs-Parameters">Parameters</a></li>
-                    <li class="nav-item"><a class="nav-link m-0 " data-toggle="tab" href="#tabs-Events">Events</a></li>
+                    <li class="nav-item  mr-1"><a class="nav-link m-0 active" data-bs-toggle="tab" href="#tabs-Parameters">Parameters</a></li>
+                    <li class="nav-item"><a class="nav-link m-0 " data-bs-toggle="tab" href="#tabs-Events">Events</a></li>
                 </ul>
 
                 <div class="tab-content">
@@ -63,7 +63,7 @@
                                             <th>Enable</th>
                                         </tr>
                                     </theader>
-                                    <tbody id="ReplacingTable">
+                                    <tbody id="ReplacingTable" >
                                         @for (int i = 0; i < Model.PlanAttributes.Count(); i++)
                                         {
 
@@ -177,9 +177,11 @@
     }
     function savePlanParameters() {
         var formobject = $('#frmPlanEvents').serialize();
+        var csrftoken = $('input[name="__RequestVerificationToken"]').val();
         $.ajax({
             url: 'Plans/PlanDetails',
             type: 'POST',
+            headers: { RequestVerificationToken: csrftoken },
             data: formobject,
             cache: false,
             success: function (result) {

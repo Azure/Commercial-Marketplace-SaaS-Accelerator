@@ -22,12 +22,9 @@ Param(
    [string][Parameter()]$ADMTApplicationID, # Multi-Tenant Active Directory Application ID
    [string][Parameter()]$SQLDatabaseName, # Name of the database (Defaults to AMPSaaSDB)
    [string][Parameter()]$SQLServerName, # Name of the database server (without database.windows.net)
-   [string][Parameter()]$SQLAdminLogin, # SQL Admin login
-   [string][Parameter()][ValidatePattern('^[^\s$@]{1,128}$')]$SQLAdminLoginPassword, # SQL Admin password  
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
    [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
    [string][Parameter()]$KeyVault, # Name of KeyVault
-   [switch][Parameter()]$MeteredSchedulerSupport, # Add this key like -MeteredSchedulerSupport to the command to enable Metered Scheduler Support
    [switch][Parameter()]$Quiet #if set, only show error / warning output from script commands
 )
 
@@ -45,14 +42,8 @@ if ($ResourceGroupForDeployment -eq "") {
 if ($SQLServerName -eq "") {
     $SQLServerName = $WebAppNamePrefix + "-sql"
 }
-if ($SQLAdminLogin -eq "") {
-    $SQLAdminLogin = "saasdbadmin" + $(Get-Random -Minimum 1 -Maximum 1000)
-}
-if ($SQLAdminLoginPassword -eq "") {
-    $SQLAdminLoginPassword = ([System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((New-Guid))))+"="
-}
 if ($SQLDatabaseName -eq "") {
-    $SQLDatabaseName = "AMPSaaSDB"
+    $SQLDatabaseName = $WebAppNamePrefix +"AMPSaaSDB"
 }
 
 if($KeyVault -eq "")
@@ -67,23 +58,15 @@ $azCliOutput = if($Quiet){'none'} else {'json'}
 
 #region Validate Parameters
 
-if($SQLAdminLogin.ToLower() -eq "admin") {
-    Throw "🛑 SQLAdminLogin may not be 'admin'."
-    Exit
-}
-if($SQLAdminLoginPassword.Length -lt 8) {
-    Throw "🛑 SQLAdminLoginPassword must be at least 8 characters."
-    Exit
-}
 if($WebAppNamePrefix.Length -gt 21) {
     Throw "🛑 Web name prefix must be less than 21 characters."
-    Exit
+    exit 1
 }
 
 
 if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
     Throw "🛑 KeyVault name only allows alphanumeric and hyphens, but cannot start with a number or special character."
-    Exit
+    exit 1
 }
 
 #endregion 
@@ -134,6 +117,45 @@ Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
 
 #endregion
 
+#region Check if KV exists
+
+#region Check If KeyVault Exists
+
+$KeyVaultApiUri="https://management.azure.com/subscriptions/$AzureSubscriptionID/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01"
+$KeyVaultApiBody='{"name": "'+$KeyVault+'","type": "Microsoft.KeyVault/vaults"}'
+
+$kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
+
+if( $kv_check.reason -eq "AlreadyExists")
+{
+	Write-Host ""
+	Write-Host "🛑 KeyVault name "  -NoNewline -ForegroundColor Red
+	Write-Host "$KeyVault"  -NoNewline -ForegroundColor Red -BackgroundColor Yellow
+	Write-Host " already exists." -ForegroundColor Red
+	Write-Host "To Purge KeyVault please use the following doc:"
+	Write-Host "https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
+	Write-Host "You could use new KeyVault name by using parameter" -NoNewline 
+	Write-Host " -KeyVault"  -ForegroundColor Green
+    exit 1
+}
+
+
+#endregion
+
+#region Check If SQL Server Exist
+$sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
+if ($sql_exists) 
+{
+	Write-Host ""
+	Write-Host "🛑 SQl Server name " -NoNewline -ForegroundColor Red
+	Write-Host "$SQLServerName"   -NoNewline -ForegroundColor Red -BackgroundColor Yellow
+	Write-Host " already exists." -ForegroundColor Red
+	Write-Host "Please delete existing instance or use new sql Instance name by using parameter" -NoNewline 
+	Write-Host " -SQLServerName"   -ForegroundColor Green
+    exit 1
+}  
+#endregion
+
 #region Dowloading assets if provided
 
 # Download Publisher's PNG logo
@@ -172,8 +194,7 @@ if (!($ADApplicationID)) {
         $ADApplicationSecret = az ad app credential reset --id $ADObjectID --append --display-name 'SaaSAPI' --years 2 --query password --only-show-errors --output tsv
 				
         Write-Host "   🔵 FulfilmentAPI App Registration created."
-		Write-Host "      ➡️ Application ID:" $ADApplicationID  
-        Write-Host "      ➡️ App Secret:" $ADApplicationSecret
+		Write-Host "      ➡️ Application ID:" $ADApplicationID
     }
     catch [System.Net.WebException],[System.IO.IOException] {
         Write-Host "🚨🚨   $PSItem.Exception"
@@ -267,13 +288,13 @@ if (!($ADMTApplicationID)) {
 Write-host "📜 Prepare publish files for the application"
 if (!(Test-Path '../Publish')) {		
 	Write-host "   🔵 Preparing Admin Site"  
-	dotnet publish ../src/AdminSite/AdminSite.csproj -c debug -o ../Publish/AdminSite/ -v q
+	dotnet publish ../src/AdminSite/AdminSite.csproj -c release -o ../Publish/AdminSite/ -v q
 
 	Write-host "   🔵 Preparing Metered Scheduler"
-	dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -c debug -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob/ -v q --runtime win-x64 --self-contained true 
+	dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -c release -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob/ -v q --runtime win-x64 --self-contained true 
 
 	Write-host "   🔵 Preparing Customer Site"
-	dotnet publish ../src/CustomerSite/CustomerSite.csproj -c debug -o ../Publish/CustomerSite/ -v q
+	dotnet publish ../src/CustomerSite/CustomerSite.csproj -c release -o ../Publish/CustomerSite/ -v q
 
 	Write-host "   🔵 Zipping packages"
 	Compress-Archive -Path ../Publish/AdminSite/* -DestinationPath ../Publish/AdminSite.zip -Force
@@ -293,8 +314,7 @@ $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=ADApplicationSecret) "
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=DefaultConnection) "
 $ServerUri = $SQLServerName+".database.windows.net"
-$Connection="Data Source=tcp:"+$ServerUri+",1433;Initial Catalog="+$SQLDatabaseName+";User Id="+$SQLAdminLogin+"@"+$SQLServerName+".database.windows.net;Password="+$SQLAdminLoginPassword+";"
-
+$Connection="Server=tcp:"+$ServerUri+";Database="+$SQLDatabaseName+";Authentication=Active Directory Default;"
 
 Write-host "   🔵 Resource Group"
 Write-host "      ➡️ Create Resource Group"
@@ -302,12 +322,16 @@ az group create --location $Location --name $ResourceGroupForDeployment --output
 
 Write-host "   🔵 SQL Server"
 Write-host "      ➡️ Create Sql Server"
-az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location --admin-user $SQLAdminLogin --admin-password $SQLAdminLoginPassword --output $azCliOutput
+$userId = az ad signed-in-user show --query id -o tsv 
+$userdisplayname = az ad signed-in-user show --query displayName -o tsv 
+az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location  --enable-ad-only-auth --external-admin-principal-type User --external-admin-name $userdisplayname --external-admin-sid $userId --output $azCliOutput
+Write-host "      ➡️ Set minimalTlsVersion to 1.2"
+az sql server update --name $SQLServerName --resource-group $ResourceGroupForDeployment --set minimalTlsVersion="1.2"
 Write-host "      ➡️ Add SQL Server Firewall rules"
 az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowAzureIP --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0" --output $azCliOutput
 if ($env:ACC_CLOUD -eq $null){
     Write-host "      ➡️ Running in local environment - Add current IP to firewall"
-	$publicIp = (Invoke-WebRequest -uri "http://ifconfig.me/ip").Content
+	$publicIp = (Invoke-WebRequest -uri "https://api.ipify.org").Content
     az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowIP --start-ip-address "$publicIp" --end-ip-address "$publicIp" --output $azCliOutput
 }
 Write-host "      ➡️ Create SQL DB"
@@ -330,10 +354,10 @@ az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebApp
 Write-host "      ➡️ Assign Identity"
 $WebAppNameAdminId = az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] --query principalId -o tsv
 Write-host "      ➡️ Setup access to KeyVault"
-az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list --output $azCliOutput
+az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault 
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration__SupportmeteredBilling=$MeteredSchedulerSupport SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true  --output $azCliOutput
 
 Write-host "   🔵 Customer Portal WebApp"
@@ -342,7 +366,7 @@ az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebApp
 Write-host "      ➡️ Assign Identity"
 $WebAppNamePortalId= az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] --query principalId -o tsv 
 Write-host "      ➡️ Setup access to KeyVault"
-az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list --output $azCliOutput
+az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault
 az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationID SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
@@ -358,7 +382,12 @@ Write-host "      ➡️ Generate SQL schema/data script"
 Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$Connection`"}}"
 dotnet-ef migrations script  --output script.sql --idempotent --context SaaSKitContext --project ../src/DataAccess/DataAccess.csproj --startup-project ../src/AdminSite/AdminSite.csproj
 Write-host "      ➡️ Execute SQL schema/data script"
-Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -Username $SQLAdminLogin -Password $SQLAdminLoginPassword 
+$dbaccesstoken = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
+Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken $dbaccesstoken
+
+Write-host "      ➡️ Execute SQL script to Add WebApps"
+$AddAppsIdsToDB = "CREATE USER [$WebAppNameAdmin] FROM EXTERNAL PROVIDER;ALTER ROLE db_datareader ADD MEMBER  [$WebAppNameAdmin];ALTER ROLE db_datawriter ADD MEMBER  [$WebAppNameAdmin];CREATE USER [$WebAppNamePortal] FROM EXTERNAL PROVIDER;ALTER ROLE db_datareader ADD MEMBER [$WebAppNamePortal];ALTER ROLE db_datawriter ADD MEMBER [$WebAppNamePortal];"
+Invoke-Sqlcmd -Query $AddAppsIdsToDB -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken $dbaccesstoken
 
 Write-host "   🔵 Deploy Code to Admin Portal"
 az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --src-path "../Publish/AdminSite.zip" --type zip --output $azCliOutput

@@ -5,6 +5,7 @@
     
 </head>
 <body>
+
    <script type="text/javascript">
     $(function () {
         $("#SelectedSubscription").change(function () {
@@ -26,14 +27,17 @@
         });
 
         $(document).ready(function() {
-              var d = new Date();
+              var d =  new Date();
+              d.setHours(d.getHours() + 1);
               var month = d.getMonth()+1;
               var day = d.getDate();
+              var minutes = d.getMinutes();
+              var hours=d.getHours();
               var output = d.getFullYear()+ '-' +
                           ((''+month).length<2 ? '0' : '') + month + '-' +
                            ((''+day).length<2 ? '0' : '') + day +'T'+
-                           ((''+d.getHours()).length<2 ? '0' : '')+(d.getHours()+1)+':'+
-                           ((''+d.getMinutes()).length<2 ? '0' : '')+d.getMinutes();
+                           ((''+hours).length<2 ? '0' : '')+hours+':'+
+                           ((''+minutes).length<2 ? '0' : '')+minutes;
 
               var date=document.getElementById("FirstRunDate")
               date.min=output
@@ -45,86 +49,91 @@
     });
 
 </script>
+@if ((this.TempData["SupportMeteredBilling"] != null) && (this.TempData["SupportMeteredBilling"].ToString() == "1"))
+    {
 
+        <div class="container">
 
-    <div class="container">
-        
-        <div class="card-body">
-            <div class="text-left">
-                <span class="cm-section-heading">Add New Scheduled Trigger for Metered Plan</span>
+            <div class="card-body">
+                <div class="text-left">
+                    <span class="cm-section-heading">Add New Scheduled Trigger for Metered Plan</span>
+                </div>
             </div>
-        </div>
 
 
-        <form method="post" id="frmSchedulerEvents" asp-action="AddNewScheduledTrigger" asp-controller="Scheduler" >
-            <div style="align-content:center">
-                <table>
-                    <tr>
-                        <th colspan="2">
-                            * Select a First Run Date at least an hour later than the current time.<br />
-                            * To update an existing scheduler item, please use the same Name, Subscription id, Plan and Dimension.
-                            <hr />
-                            <br />
-                        </th>
-                    </tr>
-
-                    <tr>
-                        <th>Scheduler Name&nbsp;&nbsp;</th>
-                        <th>@Html.TextBoxFor(s => s.SchedulerName, "",  new { @class = "form-control", required = "required" , pattern = @"^[a-zA-Z0-9-_]+$" })</th>
-                    </tr>
-                    <tr>
-                        <th>Subscription</th>
-                        <th>@Html.DropDownListFor(s => s.SelectedSubscription, Model.SubscriptionList, "-- Select Subscription --", new { @class = "form-control", required = "required"})</th>
-                    </tr>
-                    <tr>
-                        <th>Dimension</th>
-                        <th>@Html.DropDownListFor(s => s.SelectedDimension, Model.DimensionsList, "-- Select Dimension --", new { @class = "form-control", required = "required" })</th>
-                    </tr>
-                    <tr>
-                        <th>Quantity</th>
-                        <th><input asp-for="Quantity" type="number" class="form-control"  step="0.01" min="0.01" value="@Model.Quantity" required="true"></th>
-                    </tr>
-
-                    <tr>
-                        <th>Frequency</th>
-                       <th>@Html.DropDownListFor(s => s.SelectedSchedulerFrequency, Model.SchedulerFrequencyList, "-- Select Frequency --", new { @class = "form-control", required = "required" })</th>
-                        @if (Model.SchedulerFrequencyList.Count() == 0 )
-                        {
-                            <th>
-                                <span style="color:red">Please enable frequencies from the App Config, to allow the system to generate frequecies list. You can enable frequecies from <a href="/applicationconfig">here</a></span>
+            <form method="post" id="frmSchedulerEvents" asp-action="AddNewScheduledTrigger" asp-controller="Scheduler" >
+                <div style="align-content:center">
+                    <table>
+                        <tr>
+                            <th colspan="2">
+                                * Select a First Run Date at least an hour later than the current time.<br />
+                                * To update an existing scheduler item, please use the same Name, Subscription id, Plan and Dimension.
+                                <hr />
+                                <br />
                             </th>
-                        }
-                    </tr>
-                    <tr>
-                        <th>First Run Date &nbsp;&nbsp; </th>
-                        <th>  
-                            <input asp-for="FirstRunDate" id="FirstRunDate" type="datetime-local" class="form-control"  required="true" size="24">
-                        </th>
-                         <th>Time will be rounded to nearest Hour</th>
-                    </tr>
+                        </tr>
 
-                    <tr>
-                        <th></th>
-                        <th>  
-  
-                            <br/>
-                              <div class="input-group-append">
-                                <button type="submit" id="btnSubmit" class="btn btn-success">Add Scheduler Usage Task</button>
-                            </div>
-                       </th>
-                       <th>  
+                        <tr>
+                            <th>Scheduler Name&nbsp;&nbsp;</th>
+                            <th>@Html.TextBoxFor(s => s.SchedulerName, "",  new { @class = "form-control", required = "required" , pattern = @"^[a-zA-Z0-9-_]+$" })</th>
+                        </tr>
+                        <tr>
+                            <th>Subscription</th>
+                            <th>@Html.DropDownListFor(s => s.SelectedSubscription, Model.SubscriptionList, "-- Select Subscription --", new { @class = "form-control", required = "required"})</th>
+                        </tr>
+                        <tr>
+                            <th>Dimension</th>
+                            <th>@Html.DropDownListFor(s => s.SelectedDimension, Model.DimensionsList, "-- Select Dimension --", new { @class = "form-control", required = "required" })</th>
+                        </tr>
+                        <tr>
+                            <th>Quantity</th>
+                            <th><input asp-for="Quantity" type="number" class="form-control"  step="0.01" min="0.01" value="@Model.Quantity" required="true"></th>
+                        </tr>
 
-                       </th>
-                    </tr>
+                        <tr>
+                            <th>Frequency</th>
+                            <th>@Html.DropDownListFor(s => s.SelectedSchedulerFrequency, Model.SchedulerFrequencyList, "-- Select Frequency --", new { @class = "form-control", required = "required" })</th>
+                            @if (Model.SchedulerFrequencyList.Count() == 0)
+                            {
+                                <th>
+                                    <span style="color:red">Please enable frequencies from the App Config, to allow the system to generate frequecies list. You can enable frequecies from <a href="/applicationconfig">here</a></span>
+                                </th>
+                            }
+                        </tr>
+                        <tr>
+                            <th>First Run Date &nbsp;&nbsp; </th>
+                            <th>  
+                                <input asp-for="FirstRunDate" id="FirstRunDate" type="datetime-local" class="form-control"  required="true" size="24">
+                            </th>
+                            <th>Time will be rounded to nearest Hour</th>
+                        </tr>
 
-                </table>
-            </div>
+                        <tr>
+                            <th></th>
+                            <th>  
 
-            <input type="hidden" id="TimezoneOffset" name="TimezoneOffset" />
+                                <br/>
+                                <div class="input-group-append">
+                                    <button type="submit" id="btnSubmit" class="btn btn-success">Add Scheduler Usage Task</button>
+                                </div>
+                            </th>
+                            <th>  
 
-        </form>
+                            </th>
+                        </tr>
+
+                    </table>
+                </div>
+
+                <input type="hidden" id="TimezoneOffset" name="TimezoneOffset" />
+
+            </form>
+        </div>
+    }
+    else
+    {
+    <div>
+        <h1><span class="cm-section-heading"> Please activate Scheduler feature to access this section</span></h1>
     </div>
-      
-
-
+    }
 </body>

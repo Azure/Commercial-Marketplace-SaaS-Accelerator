@@ -22,15 +22,18 @@ on:
 env:  
   CUSTOMER_PROJECT: './src/CustomerSite/CustomerSite.csproj'
   PUBLISHER_PROJECT: './src/AdminSite/AdminSite.csproj'
+  PUBLISHER_PROJECT_PATH: './src/AdminSite'
+  DATAACCESS_PROJECT: './src/DataAccess/DataAccess.csproj'
   SERVICES_TEST_PROJECT: './src/Services.Test/Services.Test.csproj'
   UI_TEST_PROJECT: './src/UI.Test/UI.Test.csproj'
   CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.CustomerSite/publish'
   PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/publish'
+  SQLSCRIPT_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/publish'
   DOTNET_CORE_VERSION: '6.0.x'
   
 jobs:
-  deploytocustomer:
-    name: Deploy customer app to dev
+  deployandtest:
+    name: Deploy and test
     runs-on: ubuntu-latest
     environment: dev
 
@@ -45,58 +48,72 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }} 
 
-    # Run dotnet build and publish
-    - name: Build app
+    # Run dotnet build and publish customer app
+    - name: Customer App build and publish
       run: |
         dotnet build ${{ env.CUSTOMER_PROJECT }} --configuration Release
         dotnet publish ${{ env.CUSTOMER_PROJECT }} --configuration Release --no-build --output ${{ env.CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH }}
-    
+
+    # Run dotnet build and publish admin app
+    - name: Admin App build and publish
+      run: |
+        dotnet build ${{ env.PUBLISHER_PROJECT }} --configuration Release
+        dotnet publish ${{ env.PUBLISHER_PROJECT }} --configuration Release --no-build --output ${{ env.PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH }}
+   
     # Run unit tests
-    - name: Unit Test
+    - name: Run unit Test
       run: dotnet test ${{ env.SERVICES_TEST_PROJECT }}
-    
+  
     # Deploy to Azure Web app
-    - name: Deploy to Azure WebApp
+    - name: Customer App deploy to azure
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ secrets.AZURE_CUSTOMER_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_CUSTOMER_WEBAPP_PUBLISH_PROFILE }}
         package: ${{ env.CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH }}
-  
-    # Run Customer APP UI tests
-    - name: Customer App UI Tests
-      run: AppSetting__adminAppURL=${{ secrets.UI_TEST_ADMIN_APP_URL }} AppSetting__customerAppURL=${{ secrets.UI_TEST_CUSTOMER_APP_URL }} AppSetting__loginUserName=${{ secrets.UI_TEST_APP_USERNAME }} AppSetting__password=${{ secrets.UI_TEST_APP_PASSWORD }} AppSetting__landingPageToken=${{ secrets.UI_TEST_LANDINGPAGE_TOKEN }} dotnet test ${{ env.UI_TEST_PROJECT }} --filter TestCategory="CustomerApp" -v n
-      
-  deploytopublisher:
-    name: Deploy publisher app to dev
-    runs-on: ubuntu-latest
-    environment: dev
-
-    steps:
-
-    # Checkout the repo
-    - uses: actions/checkout@v3
-
-    # Setup .NET Core SDK
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ env.DOTNET_CORE_VERSION }} 
-
-    # Run dotnet build and publish
-    - name: Build app
-      run: |
-        dotnet build ${{ env.PUBLISHER_PROJECT }} --configuration Release
-        dotnet publish ${{ env.PUBLISHER_PROJECT }} --configuration Release --no-build --output ${{ env.PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH }}
 
     # Deploy to Azure Web app
-    - name: Deploy to Azure WebApp
+    - name: Admin App deploy azure
       uses: azure/webapps-deploy@v2
       with:
         app-name: ${{ secrets.AZURE_PUBLISHER_WEBAPP_NAME }}
         publish-profile: ${{ secrets.AZURE_PUBLISHER_WEBAPP_PUBLISH_PROFILE }}
         package: ${{ env.PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH }}
     
+    - name: EF Database Update
+      shell: pwsh
+      run: |
+            Write-Host "dotnet tools restore"
+            dotnet tool install --global dotnet-ef --version 6.0.1
+            
+            Write-Host "Set to the Admin site connection string"
+            $sqlServerName = "${{ secrets.SQL_SERVER_NAME }}"
+            $sqlServerFullName = $sqlServerName+".database.windows.net"            
+            $sqlDatabaseName = "${{ secrets.SQL_DATABASE_NAME }}"
+            $sqlAdminLogin = "${{ secrets.SQL_ADMIN_LOGIN }}"
+            $sqlAdminPassword = "${{ secrets.SQL_ADMIN_LOGIN_PASSWORD }}"
+
+            $connectionString = $Connection="Data Source=tcp:"+$sqlServerFullName+",1433;Initial Catalog="+$sqlDatabaseName+";User Id="+$sqlAdminLogin+"@"+$sqlServerFullName+";Password="+$sqlAdminPassword+";"
+            $publisherPath = "${{env.PUBLISHER_PROJECT_PATH}}/appsettings.Development.json"
+            Set-Content -Path $publisherPath -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$connectionString`"}}"
+            
+            Write-Host "Generate sql script"
+            $sqlscriptPath = "${{env.SQLSCRIPT_PATH}}/script.sql"
+            $dbAccessProj = "${{env.DATAACCESS_PROJECT}}"
+            $adminSiteProj = "${{env.PUBLISHER_PROJECT}}"
+            dotnet-ef migrations script  --output $sqlscriptPath --idempotent --context SaaSKitContext --project $dbAccessProj --startup-project $adminSiteProj
+            
+            Write-Host "Run sql script"
+            Set-PSRepository PSGallery -InstallationPolicy Trusted
+            Install-Module sqlserver
+            Invoke-Sqlcmd -InputFile $sqlscriptPath -ServerInstance $sqlServerFullName -database $sqlDatabaseName -Username $sqlAdminLogin -Password $sqlAdminPassword 
+            Write-Host "Database updated successfully"
+  
+
     # Run Admin APP UI tests
     - name: Admin App UI Tests
       run: AppSetting__adminAppURL=${{ secrets.UI_TEST_ADMIN_APP_URL }} AppSetting__customerAppURL=${{ secrets.UI_TEST_CUSTOMER_APP_URL }} AppSetting__loginUserName=${{ secrets.UI_TEST_APP_USERNAME }} AppSetting__password=${{ secrets.UI_TEST_APP_PASSWORD }} AppSetting__landingPageToken=${{ secrets.UI_TEST_LANDINGPAGE_TOKEN }} dotnet test ${{ env.UI_TEST_PROJECT }} --filter TestCategory="AdminApp" -v n
+
+    # Run Customer APP UI tests
+    - name: Customer App UI Tests
+      run: AppSetting__adminAppURL=${{ secrets.UI_TEST_ADMIN_APP_URL }} AppSetting__customerAppURL=${{ secrets.UI_TEST_CUSTOMER_APP_URL }} AppSetting__loginUserName=${{ secrets.UI_TEST_APP_USERNAME }} AppSetting__password=${{ secrets.UI_TEST_APP_PASSWORD }} AppSetting__landingPageToken=${{ secrets.UI_TEST_LANDINGPAGE_TOKEN }} dotnet test ${{ env.UI_TEST_PROJECT }} --filter TestCategory="CustomerApp" -v n

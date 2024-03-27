@@ -1,5 +1,6 @@
 ﻿using System;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
 
 namespace Marketplace.SaaS.Accelerator.Services.Helpers;
@@ -69,20 +70,15 @@ public class EmailHelper
 
         var eventData = this.planEventsMappingRepository.GetPlanEvent(planGuId, subscriptionEvent.EventsId);
 
-        if (eventData != null)
-        {
-            toReceipents = eventData.SuccessStateEmails;
-            copyToCustomer = Convert.ToBoolean(eventData.CopyToCustomer);
-        }
-
-        if (string.IsNullOrEmpty(toReceipents))
-        {
-            throw new Exception(" Error while sending an email, please check the configuration. ");
-        }
-
+        //First add To, Cc, Bcc email addresses from email template
         if (emailTemplateData != null)
         {
-            if (!string.IsNullOrEmpty(toReceipents) && !string.IsNullOrEmpty(emailTemplateData.Cc))
+            if (!string.IsNullOrEmpty(emailTemplateData.ToRecipients))
+            {
+                toReceipents = emailTemplateData.ToRecipients;
+            }
+
+            if (!string.IsNullOrEmpty(emailTemplateData.Cc))
             {
                 ccReceipents = emailTemplateData.Cc;
             }
@@ -93,6 +89,22 @@ public class EmailHelper
             }
 
             subject = emailTemplateData.Subject;
+        }
+
+        //If the plan event data contains plan specific ToEmailAddress then override the above
+        if (eventData != null)
+        {
+            if (!string.IsNullOrEmpty(eventData.SuccessStateEmails))
+            {
+                toReceipents = eventData.SuccessStateEmails;
+            }
+
+            copyToCustomer = Convert.ToBoolean(eventData.CopyToCustomer);
+        }
+
+        if (string.IsNullOrEmpty(toReceipents))
+        {
+            throw new Exception(" Error while sending an email, please check the configuration. To email empty");
         }
 
         return FinalizeContentEmail(subject, body, ccReceipents, bccReceipents, toReceipents, copyToCustomer);
@@ -134,9 +146,9 @@ public class EmailHelper
         emailContent.CopyToCustomer = copyToCustomer;
         emailContent.FromEmail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
         emailContent.Password = this.applicationConfigRepository.GetValueByName("SMTPPassword");
-        emailContent.SSL = bool.Parse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"));
+        emailContent.SSL = bool.TryParse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"), out bool smtpssl) ? smtpssl : throw new MarketplaceException("Invalid settings : SMTP SSL");
         emailContent.UserName = this.applicationConfigRepository.GetValueByName("SMTPUserName");
-        emailContent.Port = int.Parse(this.applicationConfigRepository.GetValueByName("SMTPPort"));
+        emailContent.Port = int.TryParse(this.applicationConfigRepository.GetValueByName("SMTPPort"), out int smtpport) ? smtpport : throw new MarketplaceException("Invalid settings : SMTP Port");
         emailContent.SMTPHost = this.applicationConfigRepository.GetValueByName("SMTPHost");
         return emailContent;
     }

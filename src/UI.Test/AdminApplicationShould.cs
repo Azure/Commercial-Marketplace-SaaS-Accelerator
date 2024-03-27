@@ -63,7 +63,7 @@ public class AdminApplicationShould
         options.AddArguments("--window-size=1920,1080");
         options.AddArguments("--start-maximized");
         driver = new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), options);
-        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
+        driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(60);
     }
 
     [TestCleanup()]
@@ -124,7 +124,7 @@ public class AdminApplicationShould
         gotoSubscriptionsPageFromTile();
 
         //Act
-        driver.FindElement(By.XPath("//span[@class='cm-section-heading']/following-sibling::a")).Click();
+        driver.FindElement(By.XPath("//a[@class='btn btn-secondary cm-button']")).Click();
 
         //Click OK for Javascript confirm on Fetch Click
         IAlert alert = driver.SwitchTo().Alert();

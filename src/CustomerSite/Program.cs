@@ -24,7 +24,7 @@ public class Program
         });
 
         ILogger logger = loggerFactory.CreateLogger<Program>();
-        logger.LogInformation("Povisioning service initialized!!");
+        logger.LogInformation("Service Provisioning initialized!!");
     }
 
     /// <summary>

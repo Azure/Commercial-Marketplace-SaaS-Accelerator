@@ -22,28 +22,31 @@
                         </div>
                         <form asp-action="ManageSubscriptionUsage" method="post">
                             <div class="row p10">
-                                <div class="col-md-1 pt-1">
+                                <div class="col-md-auto pt-1">
                                     @Html.HiddenFor(s => s.SubscriptionDetail.Id)
                                     @Html.HiddenFor(s => s.SubscriptionDetail.AmpsubscriptionId)
                                     @Html.HiddenFor(s => s.SubscriptionDetail.AmpplanId)
-                                    @Html.LabelFor(s => s.Quantity, new { @class = "font-weight-bold" })
+                                    @Html.LabelFor(s => s.Quantity, new { @class = "fw-bold" })
                                 </div>
-                                <div class="col-md-2">
-                                    @Html.TextBoxFor(s => s.Quantity, null, new { @class = "form-control", @placeholder = "Quantity", required = "required" })
+                                <div class="col-md-auto">
+                                        @Html.TextBoxFor(s => s.Quantity, null, new { @class = "form-control", @placeholder = "Quantity", required = "required" })
                                 </div>
-                                <div class="col-md-1 pt-1">
-                                    @Html.LabelFor(s => s.DimensionsList, "Dimension", new { @class = "font-weight-bold" })
+                                <div class="col-md-auto pt-1">
+                                        @Html.LabelFor(s => s.DimensionsList, "Dimension", new { @class = "fw-bold" })
                                 </div>
                                 <div class="col-md-3">
                                     @Html.DropDownListFor(s => s.SelectedDimension, Model.DimensionsList, "-- Select Dimension --", new { @class = "form-control", required = "required" })
                                 </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="cm-button-default mt0">Record Usage</button>
+                                <div class="col-md-auto">
+                                        <button type="submit" class="cm-button-default mt-auto">Record Usage</button>
                                 </div>
-                                <div class="col-md-2">
-                                    <button name="RedirectBtn2" type="button" onclick="RedirectToScheduler(@Model.SubscriptionDetail.Id);" class="cm-button-default mt0">Add Scheduler Usage</button>
+                                    @if ((this.TempData["SupportMeteredBilling"] != null) && (this.TempData["SupportMeteredBilling"].ToString() == "1"))
+                                    {
+                                        <div class="col-md-auto">
+                                            <button name="RedirectBtn2" type="button" onclick="RedirectToScheduler(@Model.SubscriptionDetail.Id);" class="cm-button-default mt-auto">Add Scheduler Usage</button>
+                                        </div>
+                                    }
                                 </div>
-                            </div>
 
 
 
