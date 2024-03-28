@@ -236,9 +236,11 @@ else
     function SubscriptionOperation(subscriptionId, planId, operation) {
         if (validate()) {
             var formobject = $('#frmIndex').serialize();
+            var csrftoken = $('input[name="__RequestVerificationToken"]').val();
             $.ajax({
                 url: '/Home/SubscriptionOperation',
                 type: 'POST',
+                headers: { RequestVerificationToken: csrftoken },
                 data: formobject + "&subscriptionId=" + subscriptionId + "&planId=" + planId + "&operation=" + operation,
                 cache: false,
                 success: function (result) {

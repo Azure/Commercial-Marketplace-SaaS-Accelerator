@@ -352,6 +352,11 @@ public class HomeController : BaseController
             if (this.User.Identity.IsAuthenticated)
             {
                 var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                if (subscriptionDetail == null)
+                {
+                    this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                    return this.RedirectToAction(nameof(this.Index));
+                }
                 subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
                 return this.PartialView(subscriptionDetail);
@@ -383,6 +388,11 @@ public class HomeController : BaseController
             if (this.User.Identity.IsAuthenticated)
             {
                 var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                if (subscriptionDetail == null)
+                {
+                    this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                    return this.RedirectToAction(nameof(this.Index));
+                }
                 return this.PartialView(subscriptionDetail);
             }
             else
@@ -413,6 +423,7 @@ public class HomeController : BaseController
                 var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                 if(subscriptionDetail == null)
                 {
+                    this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
                     return this.RedirectToAction(nameof(this.Index));
                 }
 
@@ -541,6 +552,11 @@ public class HomeController : BaseController
                 {
                     this.logger.Info("GetPartnerSubscription");
                     var oldValue = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
+                    if (oldValue == null)
+                    {
+                        this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                        return this.RedirectToAction(nameof(this.Index));
+                    }
                     Plans planDetail = this.planRepository.GetById(oldValue.PlanId);
                     this.logger.Info("GetUserIdFromEmailAddress");
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
@@ -731,6 +747,12 @@ public class HomeController : BaseController
                     {
                         //initiate change quantity
                         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                        
+                        if (this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionDetail.Id).FirstOrDefault() == null)
+                        {
+                            this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                            return this.RedirectToAction(nameof(this.Index));
+                        }
 
                         var jsonResult = await this.apiService.ChangeQuantityForSubscriptionAsync(subscriptionDetail.Id, subscriptionDetail.Quantity).ConfigureAwait(false);
                         var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
@@ -813,6 +835,11 @@ public class HomeController : BaseController
                 var planDetails = this.planRepository.GetById(planId);
                 this.TempData["ShowWelcomeScreen"] = false;
                 subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                if (subscriptionDetail == null)
+                {
+                    this.logger.LogError($"Cannot find subscription or subscription associated to the current user");
+                    return this.RedirectToAction(nameof(this.Index));
+                }
                 subscriptionDetail.ShowWelcomeScreen = false;
                 subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                 subscriptionDetail.CustomerName = this.CurrentUserName;

@@ -228,10 +228,12 @@
 
     function saveOfferParameters() {
         debugger;
+        var csrftoken = $('input[name="__RequestVerificationToken"]').val();
         var formobject = $('#frmOfferattributes').serialize();
         $.ajax({
             url: 'Offers/OfferDetails',
             type: 'POST',
+            headers: { RequestVerificationToken: csrftoken },
             data: formobject,
             cache: false,
             success: function (result) {

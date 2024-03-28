@@ -177,9 +177,11 @@
     }
     function savePlanParameters() {
         var formobject = $('#frmPlanEvents').serialize();
+        var csrftoken = $('input[name="__RequestVerificationToken"]').val();
         $.ajax({
             url: 'Plans/PlanDetails',
             type: 'POST',
+            headers: { RequestVerificationToken: csrftoken },
             data: formobject,
             cache: false,
             success: function (result) {

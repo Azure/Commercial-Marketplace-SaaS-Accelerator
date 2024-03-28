@@ -48,7 +48,38 @@ if ($SQLDatabaseName -eq "") {
 
 if($KeyVault -eq "")
 {
+# User did not define KeyVault, so we will create one. 
+# We need to check if the KeyVault already exists or purge before going forward
+
    $KeyVault=$WebAppNamePrefix+"-kv"
+
+   # Check if the KeyVault exists under resource group
+   $kv_check=$(az keyvault show -n $KeyVault -g $ResourceGroupForDeployment) 2>$null    
+
+   # If KeyVault does not exist under resource group, then we need to check if it deleted KeyVault
+   if($kv_check -eq $null)
+   {
+	#region Check If KeyVault Exists
+		$KeyVaultApiUri="https://management.azure.com/subscriptions/$AzureSubscriptionID/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01"
+		$KeyVaultApiBody='{"name": "'+$KeyVault+'","type": "Microsoft.KeyVault/vaults"}'
+
+		$kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
+
+		if( $kv_check.reason -eq "AlreadyExists")
+		{
+			Write-Host ""
+			Write-Host "🛑  KeyVault name "  -NoNewline -ForegroundColor Red
+			Write-Host "$KeyVault"  -NoNewline -ForegroundColor Red -BackgroundColor Yellow
+			Write-Host " already exists." -ForegroundColor Red
+			Write-Host "   To Purge KeyVault please use the following doc:"
+			Write-Host "   https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
+			Write-Host "   You could use new KeyVault name by using parameter" -NoNewline 
+			Write-Host " -KeyVault"  -ForegroundColor Green
+			exit 1
+		}
+	#endregion
+	}
+
 }
 
 $SaaSApiConfiguration_CodeHash= git log --format='%H' -1
@@ -63,11 +94,11 @@ if($WebAppNamePrefix.Length -gt 21) {
     exit 1
 }
 
-
 if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
     Throw "🛑 KeyVault name only allows alphanumeric and hyphens, but cannot start with a number or special character."
     exit 1
 }
+
 
 #endregion 
 
@@ -117,30 +148,6 @@ Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
 
 #endregion
 
-#region Check if KV exists
-
-#region Check If KeyVault Exists
-
-$KeyVaultApiUri="https://management.azure.com/subscriptions/$AzureSubscriptionID/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01"
-$KeyVaultApiBody='{"name": "'+$KeyVault+'","type": "Microsoft.KeyVault/vaults"}'
-
-$kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
-
-if( $kv_check.reason -eq "AlreadyExists")
-{
-	Write-Host ""
-	Write-Host "🛑 KeyVault name "  -NoNewline -ForegroundColor Red
-	Write-Host "$KeyVault"  -NoNewline -ForegroundColor Red -BackgroundColor Yellow
-	Write-Host " already exists." -ForegroundColor Red
-	Write-Host "To Purge KeyVault please use the following doc:"
-	Write-Host "https://learn.microsoft.com/en-us/cli/azure/keyvault?view=azure-cli-latest#az-keyvault-purge."
-	Write-Host "You could use new KeyVault name by using parameter" -NoNewline 
-	Write-Host " -KeyVault"  -ForegroundColor Green
-    exit 1
-}
-
-
-#endregion
 
 #region Check If SQL Server Exist
 $sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
@@ -309,6 +316,9 @@ Write-host "☁ Deploy Azure Resources"
 $WebAppNameService=$WebAppNamePrefix+"-asp"
 $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
+$VnetName=$WebAppNamePrefix+"-portal"
+$WebSubnetName="web"
+$DefaultSubnetName="default"
 
 #keep the space at the end of the string - bug in az cli running on windows powershell truncates last char https://github.com/Azure/azure-cli/issues/10066
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=ADApplicationSecret) "
@@ -320,7 +330,12 @@ Write-host "   🔵 Resource Group"
 Write-host "      ➡️ Create Resource Group"
 az group create --location $Location --name $ResourceGroupForDeployment --output $azCliOutput
 
-Write-host "   🔵 SQL Server"
+Write-host "      ➡️ Create VNET and Subnet"
+az network vnet create --resource-group $ResourceGroupForDeployment --name $VnetName --address-prefixes "10.0.0.0/20" --output $azCliOutput
+az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $DefaultSubnetName --address-prefixes "10.0.0.0/24" --output $azCliOutput
+az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $WebSubnetName --address-prefixes "10.0.1.0/24" --service-endpoints Microsoft.Sql Microsoft.KeyVault --delegations Microsoft.Web/serverfarms  --output $azCliOutput 
+
+
 Write-host "      ➡️ Create Sql Server"
 $userId = az ad signed-in-user show --query id -o tsv 
 $userdisplayname = az ad signed-in-user show --query displayName -o tsv 
@@ -334,6 +349,7 @@ if ($env:ACC_CLOUD -eq $null){
 	$publicIp = (Invoke-WebRequest -uri "https://api.ipify.org").Content
     az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowIP --start-ip-address "$publicIp" --end-ip-address "$publicIp" --output $azCliOutput
 }
+
 Write-host "      ➡️ Create SQL DB"
 az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name $SQLDatabaseName  --edition Standard  --capacity 10 --zone-redundant false --output $azCliOutput
 
@@ -343,6 +359,9 @@ az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment
 Write-host "      ➡️ Add Secrets"
 az keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --output $azCliOutput
 az keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --output $azCliOutput
+Write-host "      ➡️ Update Firewall"
+az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --default-action Deny --output $azCliOutput
+az keyvault network-rule add --name $KeyVault --resource-group $ResourceGroupForDeployment --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
 
 Write-host "   🔵 App Service Plan"
 Write-host "      ➡️ Create App Service Plan"
@@ -394,6 +413,11 @@ az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppName
 
 Write-host "   🔵 Deploy Code to Customer Portal"
 az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --src-path "../Publish/CustomerSite.zip" --type zip --output $azCliOutput
+
+Write-host "   🔵 Update Firewall for WebApps and SQL"
+az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
+az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
+az sql server vnet-rule create --name $WebAppNamePrefix-vnet --resource-group $ResourceGroupForDeployment --server $SQLServerName --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
 
 Write-host "   🔵 Clean up"
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
