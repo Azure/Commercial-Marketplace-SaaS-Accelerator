@@ -316,7 +316,7 @@ Write-host "☁ Deploy Azure Resources"
 $WebAppNameService=$WebAppNamePrefix+"-asp"
 $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
-$VnetName=$WebAppNamePrefix+"-portal"
+$VnetName=$WebAppNamePrefix+"-vnet"
 $WebSubnetName="web"
 $DefaultSubnetName="default"
 
