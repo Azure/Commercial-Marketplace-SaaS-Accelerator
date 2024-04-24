@@ -32,7 +32,7 @@ chmod +x dotnet-install.sh; `
 ./dotnet-install.sh -version 6.0.417; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
 dotnet tool install --global dotnet-ef --version 6.0.1; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.5.1 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.6.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
  -WebAppNamePrefix "SOME-UNIQUE-STRING" `
@@ -44,7 +44,7 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 The script above will perform the following actions.
 
 - Create required App Registration for SaaS Marketplace API authentication
-- Create required Aoo Registration for SSO on your Landing Page
+- Create required App Registration for SSO on your Landing Page
 - Deploy required infrastructure in Azure for hosting the landing page, webhook and admin portal
 - Deploy the code and database on the infrastructure.
 
