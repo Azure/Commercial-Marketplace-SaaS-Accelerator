@@ -13,7 +13,7 @@
                 <span class="cm-section-heading">Users</span>
             </div>
             <div id="myModal">
-                <form id="formKnownUsers">
+                <form id="formKnownUsers" method="post">
                     @if (Model != null && Model.Count() > 0)
                     {
                         <div class="table-responsive mt20">
@@ -90,9 +90,11 @@
                 knownUsers.push(knownUser);
             }
         });
+        var csrftoken = $('input[name="__RequestVerificationToken"]').val();
         $.ajax({
             type: "POST",
             url: "KnownUsers/SaveKnownUsers",
+            headers: { RequestVerificationToken: csrftoken },
             data: JSON.stringify(knownUsers),
             contentType: "application/json",
             dataType: "json",

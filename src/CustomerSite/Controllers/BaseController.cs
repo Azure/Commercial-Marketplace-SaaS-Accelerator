@@ -45,7 +45,24 @@ public class BaseController : Controller
     {
         get
         {
-            return HttpContext?.User?.Claims?.FirstOrDefault(s => s.Type == ClaimConstants.CLAIM_NAME)?.Value ?? string.Empty;
+            if (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0)
+            {
+                var shortNameClaim = this.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimConstants.CLAIM_SHORT_NAME);
+                if (shortNameClaim != null)
+                {
+                    return shortNameClaim.Value;
+                }
+                else
+                {
+                    var fullNameClaim = this.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimConstants.CLAIM_NAME);
+                    if (fullNameClaim != null)
+                    {
+                        return fullNameClaim.Value;
+                    }
+                }
+            }
+
+            return string.Empty;
         }
     }
 

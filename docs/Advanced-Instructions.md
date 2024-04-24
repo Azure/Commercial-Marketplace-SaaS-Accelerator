@@ -38,7 +38,7 @@ Please note: the SaaS Accelerator is community-supported. If you need help or ha
    1. Copy the following section to an editor and update it to match your company preference. Replace SOME-UNIQUE-STRING with your Team name or some other random string.
 ``` powershell
 dotnet tool install --global dotnet-ef; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.5.1 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.6.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
@@ -83,8 +83,6 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | ADApplicationSecret | Valid secret for the ADApplication. Required if ADApplicationID is provided. If `ADApplicationID` is not provided, a secret will be generated. |
 | ADMTApplicationID | A valid App Id for an Azure AD Application configured for SSO login. If value not provided, a new application will be created. |
 | SQLServerName | A unique name of the database server (without database.windows.net). Default: `WebAppNamePrefix`-sql |
-| SQLAdminLogin | SQL Admin login. Default: 'saasdbadminxxx' where xxx is a random number. |
-| SQLAdminLoginPassword | SQL Admin password. Default: secure random password. |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
 | Quiet | Disable verbose output when running the script

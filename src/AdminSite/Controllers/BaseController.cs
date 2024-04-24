@@ -53,7 +53,10 @@ public class BaseController : Controller
     /// </value>
     public string CurrentUserEmailAddress
     {
-        get { return (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0) ? this.HttpContext.User.Claims.Where(s => s.Type == ClaimConstants.CLAIM_EMAILADDRESS).FirstOrDefault().Value : string.Empty; }
+        get
+        {
+            return HttpContext?.User?.Claims?.FirstOrDefault(s => s.Type == ClaimConstants.CLAIM_EMAILADDRESS)?.Value ?? string.Empty;
+        }
     }
 
     /// <summary>
@@ -64,7 +67,27 @@ public class BaseController : Controller
     /// </value>
     public string CurrentUserName
     {
-        get { return (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0) ? this.HttpContext.User.Claims.Where(s => s.Type == ClaimConstants.CLAIM_NAME).FirstOrDefault().Value : string.Empty; }
+        get
+        {
+            if (this.HttpContext != null && this.HttpContext.User.Claims.Count() > 0)
+            {
+                var shortNameClaim = this.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimConstants.CLAIM_SHORT_NAME);
+                if (shortNameClaim != null)
+                {
+                    return shortNameClaim.Value;
+                }
+                else
+                {
+                    var fullNameClaim = this.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimConstants.CLAIM_NAME);
+                    if (fullNameClaim != null)
+                    {
+                        return fullNameClaim.Value;
+                    }
+                }
+            }
+
+            return string.Empty;
+        }
     }
 
     /// <summary>

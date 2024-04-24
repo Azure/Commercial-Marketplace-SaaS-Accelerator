@@ -32,7 +32,7 @@ chmod +x dotnet-install.sh; `
 ./dotnet-install.sh -version 6.0.417; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
 dotnet tool install --global dotnet-ef --version 6.0.1; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.5.1 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.6.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
  -WebAppNamePrefix "SOME-UNIQUE-STRING" `
@@ -44,7 +44,7 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 The script above will perform the following actions.
 
 - Create required App Registration for SaaS Marketplace API authentication
-- Create required Aoo Registration for SSO on your Landing Page
+- Create required App Registration for SSO on your Landing Page
 - Deploy required infrastructure in Azure for hosting the landing page, webhook and admin portal
 - Deploy the code and database on the infrastructure.
 
@@ -98,8 +98,6 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 | ADApplicationSecret | Valid secret for the ADApplication. Required if ADApplicationID is provided. If `ADApplicationID` is not provided, a secret will be generated. |
 | ADMTApplicationID | A valid App Id for an Azure AD Application configured for SSO login. If value not provided, a new application will be created. |
 | SQLServerName | A unique name of the database server (without database.windows.net). Default: `WebAppNamePrefix`-sql |
-| SQLAdminLogin | SQL Admin login. Default: 'saasdbadminxxx' where xxx is a random number. |
-| SQLAdminLoginPassword | SQL Admin password. Default: secure random password. |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
 | Quiet | Disable verbose output when running the script
@@ -114,3 +112,7 @@ The video is rather lengthy, so use the chapter links in the video description t
 
 ## Alternative deployments
 There are other ways to deploy the SaaS Accelerator environment (e.g. development, maual deployment, etc).  Additional instruction can be found [here](Advanced-Instructions.md).
+
+## Authentication between the WebApps and the Database
+The Webapps uses Managed Identity to communicate with the database. The Managed Identity is created during the deployment of the WebApps. The Managed Identity is then used to create a user in the database and grant the user the necessary permissions. The connection string used by the WebApps to connect to the database is then updated to use the Managed Identity.
+For more information on how App Service use Managed Identity to connect to the database, please refer to the following [link](https://learn.microsoft.com/en-us/azure/app-service/tutorial-connect-msi-sql-database).

@@ -100,10 +100,15 @@ public class Startup
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
                 options.CallbackPath = "/Home/Index";
                 options.SignedOutRedirectUri = config.SignedOutRedirectUri;
-                options.TokenValidationParameters.NameClaimType = "name";
+                options.TokenValidationParameters.NameClaimType = ClaimConstants.CLAIM_SHORT_NAME;
                 options.TokenValidationParameters.ValidateIssuer = false;
             })
-            .AddCookie();
+            .AddCookie(options =>
+            {
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                options.Cookie.MaxAge = options.ExpireTimeSpan;
+                options.SlidingExpiration = true;
+            });
 
         services
             .AddTransient<IClaimsTransformation, CustomClaimsTransformation>()
@@ -143,7 +148,10 @@ public class Startup
             options.Cookie.IsEssential = true;
         });
 
-        services.AddMvc(option => option.EnableEndpointRouting = false);
+        services.AddMvc(option => {
+            option.EnableEndpointRouting = false;
+            option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+        });
         services.AddControllersWithViews();
 
         services.Configure<CookieTempDataProviderOptions>(options =>
