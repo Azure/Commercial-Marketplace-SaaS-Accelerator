@@ -198,7 +198,7 @@ if($ISADMTApplicationIDProvided){
 }
 else {
 	Write-Host "🔑 Multi-Tenant App Registrations not provided."
-}}
+}
 
 
 #Create App Registration for authenticating calls to the Marketplace API
