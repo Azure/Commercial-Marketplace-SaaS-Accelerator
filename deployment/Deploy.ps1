@@ -189,7 +189,7 @@ if($LogoURLico) {
 #region Create AAD App Registrations
 
 #Record the current ADApps to reduce deployment instructions at the end
-$ISADMTApplicationIDProvided = $ADMTApplicationIDAdmin && $ADMTApplicationIDPortal
+$ISADMTApplicationIDProvided = ($ADMTApplicationIDAdmin && $ADMTApplicationIDPortal)
 
 #Create App Registration for authenticating calls to the Marketplace API
 if (!($ADApplicationID)) {   
@@ -256,10 +256,10 @@ if (!($ADMTApplicationID)) {
 			$appCreateRequestBodyJson = $appCreateRequestBodyJson.replace('"','\"').replace("`r`n","")
 		}
 
-		$adminPortalLoginAppReg = $(az rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $appCreateRequestBodyJson  ) | ConvertFrom-Json
+		$adminPortalAppReg = $(az rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $appCreateRequestBodyJson  ) | ConvertFrom-Json
 	
-		$ADMTApplicationIDAdmin = $adminPortalLoginAppReg.appId
-		$ADMTObjectIDAdmin = $adminPortalLoginAppReg.id
+		$ADMTApplicationIDAdmin = $adminPortalAppReg.appId
+		$ADMTObjectIDAdmin = $adminPortalAppReg.id
 	
         Write-Host "   🔵 Admin Portal SSO App Registration created."
 		Write-Host "      ➡️ Application Id: $ADMTApplicationIDAdmin"
@@ -310,11 +310,8 @@ if (!($ADMTApplicationID)) {
 			"https://$WebAppNamePrefix-portal.azurewebsites.net",
 			"https://$WebAppNamePrefix-portal.azurewebsites.net/",
 			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index",
-			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index",
-			"https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/"
+			"https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/"
+			
 		],
 		"logoutUrl": "https://$WebAppNamePrefix-portal.azurewebsites.net/logout",
 		"implicitGrantSettings": 
@@ -457,7 +454,7 @@ Write-host "      ➡️ Setup access to KeyVault"
 az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault 
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationIDAdmin SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientIdAdmin=$ADMTApplicationIDAdmin SaaSApiConfiguration__MTCLientIdPortal=$ADMTApplicationIDPortal SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true  --output $azCliOutput
 
 Write-host "   🔵 Customer Portal WebApp"
@@ -469,7 +466,7 @@ Write-host "      ➡️ Setup access to KeyVault"
 az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationIDPortal SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientIdPortal=$ADMTApplicationIDPortal SaaSApiConfiguration__MTClientIdAdmin=$ADMTApplicationIDAdmin SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNamePortal --always-on true --output $azCliOutput
 
 #endregion
