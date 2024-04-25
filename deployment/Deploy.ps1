@@ -191,7 +191,7 @@ if($LogoURLico) {
 #Record the current ADApps to reduce deployment instructions at the end
 $ISADMTApplicationIDProvided = ($ADMTApplicationIDAdmin && $ADMTApplicationIDPortal)
 
-if($ISADMTApplicationIDProvided){
+if($ISADMTApplicationIDProvided -eq $null){
 	Write-Host "🔑 Multi-Tenant App Registrations provided."
 	Write-Host "   ➡️ Admin Portal App Registration ID:" $ADMTApplicationIDAdmin
 	Write-Host "   ➡️ Landing Page App Registration ID:" $ADMTApplicationIDPortal
