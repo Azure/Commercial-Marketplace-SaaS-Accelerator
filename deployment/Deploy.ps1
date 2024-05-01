@@ -194,7 +194,7 @@ $ISADMTApplicationIDProvided = $ADMTApplicationID
 if (!($ADApplicationID)) {   
     Write-Host "🔑 Creating Fulfilment API App Registration"
     try {   
-        $ADApplication = az ad app create --only-show-errors --display-name "$WebAppNamePrefix-FulfillmentAppReg" | ConvertFrom-Json
+        $ADApplication = az ad app create --only-show-errors --sign-in-audience AzureADMYOrg --display-name "$WebAppNamePrefix-FulfillmentAppReg" | ConvertFrom-Json
 		$ADObjectID = $ADApplication.id
         $ADApplicationID = $ADApplication.appId
         sleep 5 #this is to give time to AAD to register
