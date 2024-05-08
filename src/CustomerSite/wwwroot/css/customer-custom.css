@@ -6,13 +6,27 @@
     margin: 0;
 }
 
+.card-header {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.card-body dt {
+    font-weight: bold;
+}
+
+.form-group label {
+    font-weight: bold;
+}
+
+
 .cm-content {
     min-height: 100%;
     margin-bottom: 20px;
 }
 
 .cm-top-nav-bar {
-    background-color: #0E1234 !important;
+    background-image: linear-gradient(to right, white, #0E1234) !important;
     margin-bottom: 0px;
     border: 0px;
     height: 48px;
@@ -20,7 +34,7 @@
 }
 
 .cm-menu-bar {
-    background-color: #0E1234 !important;
+    background-image: linear-gradient(to right, white, #0E1234) !important;
     margin-top: -168px;
 }
 
@@ -68,7 +82,7 @@
     width: auto;
     margin-left: -10px;
     padding: 8px;
-    max-height: 50px;
+    max-height: 70px;
 }
 
 .cm-panel-default {
@@ -136,13 +150,13 @@
     -ms-touch-action: manipulation;
     touch-action: manipulation;
     cursor: pointer;
-    background-image: none;
+    background-image: linear-gradient(to right, #EC572E, #E82A79);
     border: 1px solid transparent;
     padding: 12px 20px;
     font-size: 16px;
     font-weight: bold;
     line-height: 1.42857143;
-    border-radius: 4px;
+    border-radius: 25px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -152,8 +166,8 @@
 }
 
     .cm-button-default:hover {
-        background-color: #2180a6;
-        border-radius: 5px;
+        background-image: linear-gradient(to right, #E82A79, #EC572E);
+        border-radius: 30px;
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;

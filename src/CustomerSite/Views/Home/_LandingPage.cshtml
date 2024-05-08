@@ -23,6 +23,8 @@
             else
             {
                 <div class="cm-panel-default mt20">
+                    <div class="row">
+                        <div class="col-md-6">
                     <dl class="row text-left">
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Customer Email")
@@ -36,43 +38,43 @@
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.CustomerName)
                         </dd>
-                        <dt class="col-sm-3 p-2 p10">
+@*                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("ID ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.Id)
-                        </dd>
+                        </dd> *@
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Name ")
+                            @Html.DisplayName("Subscription Name ")
                         </dt>
                         <dd class="col-sm-9 p-2">
                             @Html.DisplayFor(model => model.Name)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Status ")
+                            @Html.DisplayName("Current Subscription Status ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.SubscriptionStatus)
                         </dd>
-                        <dt class="col-sm-3 p-2 p10">
+@*                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Offer Name ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.OfferId)
-                        </dd>
-                        <dt class="col-sm-3 p-2 p10">
+                        </dd> *@
+@*                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Plan ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.PlanId)
-                        </dd>
-                        <dt class="col-sm-3 p-2 p10">
+                        </dd> *@
+@*                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Purchaser Email ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.Purchaser.EmailId)
                             @Html.HiddenFor(model => model.Purchaser.EmailId)
-                        </dd>
+                        </dd> *@
 
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Azure Tenant ID ")
@@ -81,14 +83,6 @@
                             @Html.DisplayFor(model => model.Purchaser.TenantId)
                             @Html.HiddenFor(model => model.Purchaser.TenantId)
                         </dd>
-                        <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayNameFor(model => model.NumberOfUsers)
-                        </dt>
-                        <dd class="col-sm-9 p-2 p10">
-                            @Html.TextBoxFor(model => model.NumberOfUsers, new { @class = "form-control", @type = "number", @min = "1" })
-                            @Html.ValidationMessageFor(model => model.NumberOfUsers, "", new { @class = "text-danger" })
-                        </dd>
-
                         @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
                         {
 
@@ -108,7 +102,9 @@
                                     <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
                                         @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
                                         @if (Model.SubscriptionParameters[i].IsRequired == true)
-                                        {<span class="red-star @Model.SubscriptionParameters[i].Type">*</span>}
+                                        {
+                                            <span class="red-star @Model.SubscriptionParameters[i].Type">*</span>
+                                        }
 
 
                                     </dt>
@@ -193,6 +189,16 @@
                         }
 
                     </dl>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <dt class="col-sm-3 p-2 p10">@Html.DisplayNameFor(model => model.NumberOfUsers)</dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.TextBoxFor(model => model.NumberOfUsers, new { @class = "form-control", @type = "number", @min = "1" })
+                            @Html.ValidationMessageFor(model => model.NumberOfUsers, "", new { @class = "text-danger" })
+                        </dd>
+                        </div>
+                    </div>
                 </div>
                 <div class="text-end">
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
