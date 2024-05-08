@@ -81,7 +81,7 @@ GO"
 
 Invoke-Sqlcmd -query $compatibilityScript -ServerInstance tcp:botsa-saas-sql.database.windows.net -database botsa-saasAMPSaaSDB -Username CloudSA3fd2f8f3 -Password 4lq7%PyOhFz59hzh
 Write-host "## Ran compatibility script against database"
-Invoke-Sqlcmd -inputFile script.sql -ServerInstance $Server -database $Database -Username $User -Password $Pass
+Invoke-Sqlcmd -inputFile script.sql -ServerInstance tcp:botsa-saas-sql.database.windows.net -database botsa-saasAMPSaaSDB -Username CloudSA3fd2f8f3 -Password 4lq7%PyOhFz59hzh
 Write-host "## Ran migration against database"	
 
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
