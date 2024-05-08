@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Marketplace.SaaS.Accelerator.Services.Models;
 
@@ -73,4 +74,6 @@ public class SubscriptionResultExtension : SubscriptionResult
     /// Gets or sets a value indicating if we allow subscription updates on the customer side.
     /// </summary>
     public bool AcceptSubscriptionUpdates { get; set; }
+    [Display(Name = "Number User Licenses")]
+    public int NumberOfUsers { get; set; }
 }

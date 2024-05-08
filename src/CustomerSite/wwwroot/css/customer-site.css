@@ -13,15 +13,23 @@ a {
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #E82A79;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   color: #fff;
   background-color: #1b6ec2;
   border-color: #1861ac;
+  font-size: 18px;
+}
+
+/* Increased size for specific nav links */
+.nav-scroller .nav-link {
+    font-size: 18px; /* larger font size */
+    padding: 10px 15px; /* larger padding for bigger click area */
+    font-weight: bold; /* make text bold */
 }
 
 /* Sticky footer styles

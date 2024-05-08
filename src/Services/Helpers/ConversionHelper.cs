@@ -28,6 +28,8 @@ static class ConversionHelper
     /// </returns>
     public static SubscriptionResult subscriptionResult(this Subscription subscription)
     {
+        DateTimeOffset defaultDate = new DateTimeOffset(new DateTime(2000, 1, 1));
+
         var subscriptionResult = new SubscriptionResult()
         {
             Id = subscription.Id ?? throw new MarketplaceException("Subscription Id cannot be null"),
@@ -52,8 +54,8 @@ static class ConversionHelper
             Term = new TermResult()
             {
                 TermUnit = subscription.Term.TermUnit.HasValue ? (Models.TermUnitEnum)subscription.Term.TermUnit :         Models.TermUnitEnum.P1M,
-                StartDate = subscription.Term.StartDate ?? default(DateTimeOffset),
-                EndDate = subscription.Term.EndDate ?? default(DateTimeOffset),
+                StartDate = subscription.Term.StartDate ?? defaultDate,
+                EndDate = subscription.Term.EndDate ?? defaultDate,
             }
         };
         return subscriptionResult;

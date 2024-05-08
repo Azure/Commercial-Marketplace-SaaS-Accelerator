@@ -23,6 +23,8 @@
             else
             {
                 <div class="cm-panel-default mt20">
+                    <div class="row">
+                        <div class="col-md-6">
                     <dl class="row text-left">
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Customer Email")
@@ -36,43 +38,43 @@
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.CustomerName)
                         </dd>
-                        <dt class="col-sm-3 p-2 p10">
+@*                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("ID ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.Id)
-                        </dd>
+                        </dd> *@
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Name ")
+                            @Html.DisplayName("Subscription Name ")
                         </dt>
                         <dd class="col-sm-9 p-2">
                             @Html.DisplayFor(model => model.Name)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Status ")
+                            @Html.DisplayName("Current Subscription Status ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.SubscriptionStatus)
                         </dd>
-                        <dt class="col-sm-3 p-2 p10">
+@*                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Offer Name ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.OfferId)
-                        </dd>
-                        <dt class="col-sm-3 p-2 p10">
+                        </dd> *@
+@*                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Plan ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.PlanId)
-                        </dd>
-                        <dt class="col-sm-3 p-2 p10">
+                        </dd> *@
+@*                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Purchaser Email ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.Purchaser.EmailId)
                             @Html.HiddenFor(model => model.Purchaser.EmailId)
-                        </dd>
+                        </dd> *@
 
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Azure Tenant ID ")
@@ -81,7 +83,6 @@
                             @Html.DisplayFor(model => model.Purchaser.TenantId)
                             @Html.HiddenFor(model => model.Purchaser.TenantId)
                         </dd>
-
                         @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
                         {
 
@@ -101,7 +102,9 @@
                                     <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
                                         @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
                                         @if (Model.SubscriptionParameters[i].IsRequired == true)
-                                        {<span class="red-star @Model.SubscriptionParameters[i].Type">*</span>}
+                                        {
+                                            <span class="red-star @Model.SubscriptionParameters[i].Type">*</span>
+                                        }
 
 
                                     </dt>
@@ -186,6 +189,16 @@
                         }
 
                     </dl>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <dt class="col-sm-3 p-2 p10">@Html.DisplayNameFor(model => model.NumberOfUsers)</dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.TextBoxFor(model => model.NumberOfUsers, new { @class = "form-control", @type = "number", @min = "1" })
+                            @Html.ValidationMessageFor(model => model.NumberOfUsers, "", new { @class = "text-danger" })
+                        </dd>
+                        </div>
+                    </div>
                 </div>
                 <div class="text-end">
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
@@ -199,7 +212,7 @@
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == false)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-end" style="text-decoration:none;">Subscribe</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-end" style="text-decoration:none;">Subscribe to Botsa</a>
                     }
                 </div>
             }
@@ -209,27 +222,32 @@
 else
 {
     <div class="pt-5">
-        <div class="card p-3 ">
-            <div class="text-center">
-                <h1 class="display-4">Welcome</h1>
+        <div class="card p-3">
+            <div class="row">
+                <!-- Text Column on the left -->
+                <div class="col-md-6" style="color: #0E1234; /* Navy */">
+                    <h1 class="display-4" style="color: #E82A79; /* Pink */">Transform Your Workplace With Botsa.</h1>
+                    <p>
+                        The Intelligent ChatBot. <br>
+                        Streamline Communications. Enhance Productivity. Connect Effortlessly.
+                    </p>
+                </div>
+                <!-- Image Column on the right -->
+                <div class="col-md-6">
+                    <img src="~/images/botsa-logo.png" class="img-fluid" alt="Transform Your Workplace">
+                </div>
             </div>
-            <div class="text-left">
-                <p>
-                    Get started with integrating your <b> Software as a Service (SaaS) </b> solution with the <b> SaaS fulfillment APIs version 2 in Microsoft commercial marketplace. </b>
-                </p>
-                <p><a href="https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2" target="_blank">Click here </a><span>for the API documentation.</span> </p>
-            </div>
-            <div>
-                <b>To purchase this SaaS offer:</b>
+            <div class="text-left mt-4" style="color: #0E1234; /* Navy */">
+                <strong>To purchase Botsa:</strong>
                 <ul>
-                    <li>Search for resources of type <b> Software as a Service (SaaS) </b></li>
-                    <li>Search for your offer</li>
-                    <li>Click <b> Create</b> to subscribe to the offer</li>
-                    <li>Click <b>Configure Account </b> after the subscription created</li>
+                    <li>Search for Botsa in the <strong>Marketplace, AppSource or MS Teams store</strong></li>
+                    <li>Click <strong>Create</strong> to subscribe to the offer</li>
+                    <li>Click <strong>Configure Account</strong> after the subscription is created and you'll be set. Get Botsa Today!</li>
                 </ul>
             </div>
         </div>
     </div>
+
 }
 <script type="text/javascript">
 
