@@ -49,6 +49,10 @@ The SaaS Accelerator project team releases regularly releases new versions. Plea
 
 To update your SaaS Accelerator installation, use the **Update script** [documented here](./docs/Installation-Instructions.md#update-to-a-newer-version-of-the-saas-accelerator).
 
+## SaaS fulfilment Policy 1000.4
+[Policy 1000.4 SaaS fulfilment API](https://github.com/santhoshb-msft/Commercial-Marketplace-SaaS-Accelerator/tree/main/docs/imagesPolicy-1000-4-SaaS-fulfilment-api.mp4)
+
+
 ## Intended Use
 
 This code is a reference implementation of required components of a commercial marketplace SaaS offer and complements the existing commercial marketplace documentation.
