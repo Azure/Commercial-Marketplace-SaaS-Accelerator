@@ -198,6 +198,8 @@ if (!($ADApplicationID)) {
 		$ADObjectID = $ADApplication.id
         $ADApplicationID = $ADApplication.appId
         sleep 5 #this is to give time to AAD to register
+		# create service principal
+		az ad sp create --id $ADApplicationID
         $ADApplicationSecret = az ad app credential reset --id $ADObjectID --append --display-name 'SaaSAPI' --years 2 --query password --only-show-errors --output tsv
 				
         Write-Host "   🔵 FulfilmentAPI App Registration created."
