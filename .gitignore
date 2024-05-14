@@ -361,3 +361,5 @@ src/Marketplace.SaaS.Accelerator.CustomerSite/appsettings.Development.json
 
 .vscode/launch.json
 .vscode/tasks.json
+
+/src/CustomerSite/Properties

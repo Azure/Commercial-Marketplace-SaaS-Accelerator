@@ -4,7 +4,7 @@
     <div class="modal-dialog modal-lg mt200" data-backdrop="static">
         <div class="modal-content">
             <div class="modal-header header-bg">
-                <h4><span class="cm-section-heading">Change Plan</span></h4>
+                <h4><span class="cm-section-heading">Change My Botsa Plan</span></h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form asp-action="ChangeSubscriptionPlan" id="frmSubscriptionDetail" method="post">
@@ -23,7 +23,7 @@
                             @Html.DisplayFor(model => model.Name)
                         </dd>
                         <dt class="col-sm-4 pl80">
-                            @Html.DisplayNameFor(model => model.SubscriptionStatus)
+                            @Html.DisplayName("Subscription Status")
                         </dt>
                         <dd class="col-sm-8 pl80">
                             @Html.DisplayFor(model => model.SubscriptionStatus)
@@ -32,13 +32,24 @@
                             @Html.DisplayName("Current Plan")
                         </dt>
                         <dd class="col-sm-8 pl80">
-                            @Html.DisplayFor(model => model.PlanId)
+                            @{
+                                string displayName = Model.PlanId switch
+                                {
+                                    "a9459739-78ad-4f3d-924d-c7807de422cb" => "Starter Plan",
+                                    "694a4c21-bb0d-4651-91bc-dc91da6208bc" => "Team Plan",
+                                    "03fc223e-75df-4329-82ff-cdd8befe01d1" => "Business Plan",
+                                    "1e2f32ef-10c4-4038-b938-f155b92b8f21" => "Enterprise Plan",
+                                    _ => "Unknown Plan"
+                                };
+                                @displayName
+                            }
+@*                             @Html.DisplayName(displayName) *@
                         </dd>
                         <dt class="col-sm-4  pl80">
-                            @Html.DisplayName("Change Plan")
+                            @Html.DisplayName("Change My Botsa Plan")
                         </dt>
                         <dd class="col-sm-8  pl80">
-                            @Html.DropDownListFor(s => s.PlanId, new SelectList(Model.PlanList, "PlanId", "PlanId", Model.PlanId), new { @class = "form-control w-100" })
+                            @Html.DropDownListFor(s => s.PlanId, new SelectList(Model.PlanList, "PlanId", "DisplayName", Model.PlanId), new { @class = "form-control w-100" })
                             @Html.HiddenFor(s => s.Id)
                             @Html.HiddenFor(s => s.PlanId)
                             @Html.HiddenFor(s => s.SubscribeId)

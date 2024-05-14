@@ -46,10 +46,10 @@
             <a class="nav-link active">
                 @if (this.User.Identity.IsAuthenticated)
                 {
-                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    <a class="nav-link nav-link-enhanced" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     @if (TempData["ShowWelcomeScreen"] != null && Convert.ToString(TempData["ShowWelcomeScreen"]) == "True")
                     {
-                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
+                        <a class="nav-link nav-link-enhanced" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
                     }
                 }
             </a>

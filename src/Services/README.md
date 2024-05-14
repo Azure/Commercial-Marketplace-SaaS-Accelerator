@@ -17,3 +17,15 @@ The project is located in the **SaaS.SDK.Services** folder. The project is compo
 | Services | Implementation of the interfaces |
 | Status Handlers | Status handlers to support notifications including: AbstractSubscription, ISubscription, Notification, PendingActivation, PendingFulfillment, Unsubscribe |
 | Utilities| Utility classes |
+
+Redeployment:
+wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
+chmod +x dotnet-install.sh; `
+./dotnet-install.sh -version 6.0.417; `
+$ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
+dotnet tool install --global dotnet-ef --version 6.0.1; `
+git clone https://github.com/Zakhele-TechWannabe/Commercial-Marketplace-SaaS-Accelerator.git --depth 1; `
+cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
+.\Upgrade.ps1 `
+ -WebAppNamePrefix "botsa-saas" `
+ -ResourceGroupForDeployment "botsa-saas-app" `

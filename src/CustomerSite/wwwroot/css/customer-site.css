@@ -22,12 +22,11 @@ a {
   color: #fff;
   background-color: #1b6ec2;
   border-color: #1861ac;
-  font-size: 18px;
 }
 
 /* Increased size for specific nav links */
-.nav-scroller .nav-link {
-    font-size: 18px; /* larger font size */
+.nav-scroller .nav-link .nav-link-enhanced {
+    font-size: 25px; /* larger font size */
     padding: 10px 15px; /* larger padding for bigger click area */
     font-weight: bold; /* make text bold */
 }

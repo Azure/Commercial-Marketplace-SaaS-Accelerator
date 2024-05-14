@@ -12,7 +12,7 @@
         <form method="post" id="frmIndex">
 
             <div class="text-white mt20">
-                <span class="cm-section-heading">Subscription Details</span>
+                <span class="cm-section-heading">Your Botsa Subscription Details</span>
             </div>
             @if (Model != null && !string.IsNullOrEmpty(Model.ErrorMessage))
             {
@@ -23,66 +23,69 @@
             else
             {
                 <div class="cm-panel-default mt20">
-                    <div class="row">
-                        <div class="col-md-6">
                     <dl class="row text-left">
-                        <dt class="col-sm-3 p-2 p10">
+
+                        <dt class="col-sm-4 p-2 p10">
+                            @Html.DisplayName("Offer Name")
+                        </dt>
+                        <dt class="col-sm-4 p-2 p10">
                             @Html.DisplayName("Customer Email")
                         </dt>
-                        <dd class="col-sm-9 p-2 p10">
+                        <dt class="col-sm-4 p-2 p10">
+                            @Html.DisplayName("Customer Name")
+                        </dt>
+                        <dd class="col-sm-4 p-2 p10">
+                            @Html.DisplayName("Botsa")
+                        </dd>
+                        <dd class="col-sm-4 p-2 p10">
                             @Html.DisplayFor(model => model.CustomerEmailAddress)
                         </dd>
-                        <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Customer Name ")
-                        </dt>
-                        <dd class="col-sm-9 p-2 p10">
+                        <dd class="col-sm-4 p-2 p10">
                             @Html.DisplayFor(model => model.CustomerName)
                         </dd>
-@*                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("ID ")
+
+                        <dt class="col-sm-4 p-2 p10">
+                            @Html.DisplayName("Plan")
                         </dt>
-                        <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.Id)
-                        </dd> *@
-                        <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Subscription Name ")
+                        <dt class="col-sm-4 p-2 p10">
+                            @Html.DisplayName("Term")
                         </dt>
-                        <dd class="col-sm-9 p-2">
-                            @Html.DisplayFor(model => model.Name)
+                        <dt class="col-sm-4 p-2 p10">
+                            @Html.DisplayName("Status")
+                        </dt>
+                        @{
+                            string displayName = Model.PlanId switch
+                            {
+                                "a9459739-78ad-4f3d-924d-c7807de422cb" => "Starter Plan",
+                                "694a4c21-bb0d-4651-91bc-dc91da6208bc" => "Team Plan",
+                                "03fc223e-75df-4329-82ff-cdd8befe01d1" => "Business Plan",
+                                "1e2f32ef-10c4-4038-b938-f155b92b8f21" => "Enterprise Plan",
+                                _ => "Unknown Plan"
+                            };
+                        }
+                        <dd class="col-sm-4 p-2 p10">
+                            @Html.DisplayName(displayName)
                         </dd>
-                        <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Current Subscription Status ")
-                        </dt>
-                        <dd class="col-sm-9 p-2 p10">
+
+                        @if (Model.Term.TermUnit == TermUnitEnum.P1M)
+                        {
+                        <dd class="col-sm-4 p-2 p10">
+                            @Html.DisplayName("Monthly")
+                            </dd>
+                        }
+                        else
+                        {
+                            @Html.DisplayName("Yearly")
+                        }
+                        <dd class="col-sm-4 p-2 p10">
                             @Html.DisplayFor(model => model.SubscriptionStatus)
                         </dd>
-@*                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Offer Name ")
-                        </dt>
-                        <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.OfferId)
-                        </dd> *@
-@*                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Plan ")
-                        </dt>
-                        <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.PlanId)
-                        </dd> *@
-@*                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Purchaser Email ")
-                        </dt>
-                        <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.Purchaser.EmailId)
-                            @Html.HiddenFor(model => model.Purchaser.EmailId)
-                        </dd> *@
 
-                        <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Azure Tenant ID ")
-                        </dt>
-                        <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.Purchaser.TenantId)
-                            @Html.HiddenFor(model => model.Purchaser.TenantId)
-                        </dd>
+                        <div class="text-white mt20">
+                            <span class="cm-section-subheading">Configuration Details</span>
+                            <p class="text-black p-2 p10">To complete the activation of your Botsa Azure Marketplace subscriptions, please provide us with the following configuration details:</p>
+                        </div>
+                       
                         @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
                         {
 
@@ -189,16 +192,6 @@
                         }
 
                     </dl>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <dt class="col-sm-3 p-2 p10">@Html.DisplayNameFor(model => model.NumberOfUsers)</dt>
-                        <dd class="col-sm-9 p-2 p10">
-                            @Html.TextBoxFor(model => model.NumberOfUsers, new { @class = "form-control", @type = "number", @min = "1" })
-                            @Html.ValidationMessageFor(model => model.NumberOfUsers, "", new { @class = "text-danger" })
-                        </dd>
-                        </div>
-                    </div>
                 </div>
                 <div class="text-end">
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
@@ -212,7 +205,7 @@
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == false)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-end" style="text-decoration:none;">Subscribe to Botsa</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-end" style="text-decoration:none;">Subscribe</a>
                     }
                 </div>
             }
@@ -224,30 +217,22 @@ else
     <div class="pt-5">
         <div class="card p-3">
             <div class="row">
-                <!-- Text Column on the left -->
-                <div class="col-md-6" style="color: #0E1234; /* Navy */">
-                    <h1 class="display-4" style="color: #E82A79; /* Pink */">Transform Your Workplace With Botsa.</h1>
-                    <p>
-                        The Intelligent ChatBot. <br>
-                        Streamline Communications. Enhance Productivity. Connect Effortlessly.
-                    </p>
-                </div>
-                <!-- Image Column on the right -->
-                <div class="col-md-6">
-                    <img src="~/images/botsa-logo.png" class="img-fluid" alt="Transform Your Workplace">
-                </div>
+            <div class="col-md-6">
+                <p>
+                    Hello 1
+                 </p>
             </div>
-            <div class="text-left mt-4" style="color: #0E1234; /* Navy */">
-                <strong>To purchase Botsa:</strong>
-                <ul>
-                    <li>Search for Botsa in the <strong>Marketplace, AppSource or MS Teams store</strong></li>
-                    <li>Click <strong>Create</strong> to subscribe to the offer</li>
-                    <li>Click <strong>Configure Account</strong> after the subscription is created and you'll be set. Get Botsa Today!</li>
-                </ul>
+            <div class="col-md-6">
+                <p>
+                    Hello 2
+                </p>
+            </div>
+                <div class="downloadcard">
+                    <span class="title">Download our mobile application.</span>
+                </div>
             </div>
         </div>
     </div>
-
 }
 <script type="text/javascript">
 

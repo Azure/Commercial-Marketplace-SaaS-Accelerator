@@ -1,7 +1,7 @@
 ﻿@using Marketplace.SaaS.Accelerator.Services.Models
 @model Marketplace.SaaS.Accelerator.Services.Models.SubscriptionViewModel
 @{
-    ViewData["Title"] = "Subscriptions";
+    ViewData["Title"] = "My Subscriptions";
 }
 
 <div class="text-center">
@@ -18,7 +18,7 @@
                 <div class="card-body">
                     <div>
                         <div class="text-start">
-                            <span class="cm-section-heading">Subscriptions</span>
+                            <span class="cm-section-heading">My Subscriptions</span>
                         </div>
                         @if (Model.Subscriptions.Count() > 0)
                         {
@@ -28,7 +28,8 @@
                                         <th>Name</th>
                                         <th>Offer</th>
                                         <th>Plan</th>
-                                        <th>Quantity</th>
+                                        <th>User Licenses</th>
+                                        <th>Assigned Licenses</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -43,8 +44,21 @@
                                                 @Html.HiddenFor(s => s.Subscriptions[i].PlanId)
                                                 @subscription.Name
                                             </td>
-                                            <td class="text-left">@subscription.OfferId</td>
-                                            <td class="text-left">@subscription.PlanId</td>
+                                            <td class="text-left">Botsa</td>
+                                            <td class="text-left">
+                                                @{
+                                                    string displayName = subscription.PlanId switch
+                                                    {
+                                                        "a9459739-78ad-4f3d-924d-c7807de422cb" => "Starter Plan",
+                                                        "694a4c21-bb0d-4651-91bc-dc91da6208bc" => "Team Plan",
+                                                        "03fc223e-75df-4329-82ff-cdd8befe01d1" => "Business Plan",
+                                                        "1e2f32ef-10c4-4038-b938-f155b92b8f21" => "Enterprise Plan",
+                                                        _ => "Invalid Plan"
+                                                    };
+                                                    @displayName
+                                                }
+                                            </td>
+                                            @* <td class="text-left">@subscription.PlanId</td> *@
                                             <td class="text-left">
                                                 @if (@subscription.IsPerUserPlan)
                                                 {
@@ -52,8 +66,21 @@
                                                 }
                                                 else
                                                 {
-                                                    <span>N/A</span>
+                                                    {
+                                                    string displayUsers = subscription.PlanId switch
+                                                    {
+                                                        "a9459739-78ad-4f3d-924d-c7807de422cb" => "3",
+                                                        "694a4c21-bb0d-4651-91bc-dc91da6208bc" => "50",
+                                                        "03fc223e-75df-4329-82ff-cdd8befe01d1" => "200",
+                                                        "1e2f32ef-10c4-4038-b938-f155b92b8f21" => "",
+                                                        _ => "Invalid Plan"
+                                                    };
+                                                        @displayUsers
                                                 }
+                                                }
+                                            </td>
+                                            <td class="text-left">
+                                                0
                                             </td>
                                             <td class="text-left">@subscription.SubscriptionStatus</td>
                                             <td class="text-left  cm-ellipsis">
@@ -65,7 +92,7 @@
                                                             <a class="dropdown-item cm-dropdown-option" asp-action="ViewSubscription" asp-route-subscriptionId="@Model.Subscriptions[i].Id" asp-route-planId="@Model.Subscriptions[i].PlanId" asp-route-operation="Deactivate">Unsubscribe</a>
                                                             @if (subscription.AcceptSubscriptionUpdates == true)
                                                             {
-                                                                <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-bs-toggle="modal" data-bs-target="#myModal">Change Plan</a>
+                                                                <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionDetail('@Model.Subscriptions[i].Id')" data-bs-toggle="modal" data-bs-target="#myModal">Change My Botsa Plan</a>
                                                                 @if (subscription.IsPerUserPlan)
                                                                 {
                                                                     <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-bs-toggle="modal"  data-bs-target="#myModal">Change Quantity</a>
@@ -120,7 +147,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                            <h5 class="modal-title" id="exampleModalLabel">Loading Details</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         @* <div class="modal-body">
@@ -230,7 +257,20 @@
     }
 
     function confirmDialog() {
-        var newPlanName = $('#PlanId').val();
+        var planIdToNameMap = {
+        "a9459739-78ad-4f3d-924d-c7807de422cb": "Starter Plan",
+        "694a4c21-bb0d-4651-91bc-dc91da6208bc": "Team Plan",
+        "03fc223e-75df-4329-82ff-cdd8befe01d1": "Business Plan",
+        "1e2f32ef-10c4-4038-b938-f155b92b8f21": "Enterprise Plan"
+        };
+
+        var selectedPlanId = $('#PlanId').val();
+        var newPlanName = planIdToNameMap[selectedPlanId];
+
+        if (!newPlanName) {
+            newPlanName = "Please contact the Botsa Administrator";
+        }
+
         swal({
             text: "Are you sure you want to switch to " + newPlanName + " plan?",
             icon: "warning",
