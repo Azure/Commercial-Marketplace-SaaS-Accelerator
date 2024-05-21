@@ -301,7 +301,8 @@ public class SubscriptionService
                 Id = plan.Id,
                 PlanId = plan.PlanId,
                 DisplayName = plan.DisplayName,
-                Description = plan.Description
+                Description = plan.Description,
+                PlanLicenses = plan.PlanLicenses
 
             }).ToList();
     }

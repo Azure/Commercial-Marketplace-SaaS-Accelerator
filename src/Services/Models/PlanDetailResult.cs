@@ -23,6 +23,7 @@ public class PlanDetailResult : SaaSApiResult
     /// </value>
         
     public int Id { get; set; }
+    public int PlanLicenses { get; set; }
         
     /// <summary>
     /// Gets or sets the plan identifier.

@@ -19,6 +19,8 @@ public partial class Plans
     public bool? IsPerUser { get; set; }
     public Guid PlanGuid { get; set; }
     public Guid OfferId { get; set; }
+    public int PlanLicenses { get; set; }
+    public int CostPerUser { get; set; }
 
     public virtual ICollection<MeteredDimensions> MeteredDimensions { get; set; }
     public virtual ICollection<MeteredPlanSchedulerManagement> MeteredPlanSchedulerManagements { get; set; }

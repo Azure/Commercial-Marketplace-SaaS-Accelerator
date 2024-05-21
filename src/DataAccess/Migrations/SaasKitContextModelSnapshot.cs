@@ -614,10 +614,56 @@ namespace Marketplace.SaaS.Accelerator.DataAccess.Migrations
                         .HasMaxLength(100)
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");
+                    b.Property<int>("PlanLicenses")
+                        .HasColumnType("int");
+                    b.Property<int>("CostPerUser")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("Plans");
+                });
+
+            modelBuilder.Entity("Marketplace.SaaS.Accelerator.DataAccess.Entities.KnowledgeBaseSource", b =>
+            {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("SubscriptionPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Source")
+                        .HasMaxLength(225)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(225)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("KnowledgeBaseSource");
+                });
+            
+            modelBuilder.Entity("Marketplace.SaaS.Accelerator.DataAccess.Entities.Features", b =>
+            {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("SubscriptionPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Feature")
+                        .HasMaxLength(225)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(225)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Features");
                 });
 
             modelBuilder.Entity("Marketplace.SaaS.Accelerator.DataAccess.Entities.Roles", b =>
