@@ -55,6 +55,8 @@ public class Startup
     /// <param name="services">The services<see cref="IServiceCollection"/>.</param>
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddHttpClient<IBotssaApiService, BotssaApiService>();
+
         services.Configure<CookiePolicyOptions>(options =>
         {
             // This lambda determines whether user consent for non-essential cookies is needed for a given request.

@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 
 namespace Marketplace.SaaS.Accelerator.CustomerSite.Controllers;
@@ -95,6 +96,8 @@ public class HomeController : BaseController
     private ApplicationLogService applicationLogService = null;
 
     private PlanService planService = null;
+    private readonly IBotssaApiService _botssaApiService;
+    private readonly SaaSClientLogger<HomeController> _logger;
 
     /// <summary>
     /// The user service.
@@ -120,8 +123,28 @@ public class HomeController : BaseController
     /// <param name="cloudConfigs">The cloud configs.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="emailService">The email service.</param>
-    public HomeController(SaaSClientLogger<HomeController> logger, IFulfillmentApiService apiService, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService,IWebNotificationService webNotificationService)
+    public HomeController(
+        SaaSClientLogger<HomeController> logger,
+        IFulfillmentApiService apiService,
+        ISubscriptionsRepository subscriptionRepo,
+        IPlansRepository planRepository,
+        IUsersRepository userRepository,
+        IApplicationLogRepository applicationLogRepository,
+        ISubscriptionLogRepository subscriptionLogsRepo,
+        IApplicationConfigRepository applicationConfigRepository,
+        IEmailTemplateRepository emailTemplateRepository,
+        IOffersRepository offersRepository,
+        IPlanEventsMappingRepository planEventsMappingRepository,
+        IOfferAttributesRepository offerAttributesRepository,
+        IEventsRepository eventsRepository,
+        ILoggerFactory loggerFactory,
+        IEmailService emailService,
+        IWebNotificationService webNotificationService,
+        IBotssaApiService botssaApiService
+        )
     {
+        _botssaApiService = botssaApiService;
+        _logger = logger;
         this.apiService = apiService;
         this.subscriptionRepository = subscriptionRepo;
         this.subscriptionLogRepository = subscriptionLogsRepo;
@@ -856,5 +879,32 @@ public class HomeController : BaseController
         }
     }
 
+    /// <summary>
+    ///
+    [HttpPost]
+    public async Task<IActionResult> ValidatePromoCode([FromBody] PromoCode model)
+    {
+        logger.Info($"Validating promo code: {model.PromoCodeId}");
+        try
+        {
+            if (model == null || string.IsNullOrWhiteSpace(model.PromoCodeId))
+            {
+                return BadRequest(new { message = "Invalid promo code" });
+            }
+
+            var result = await _botssaApiService.ValidatePromoCodeAsync(model.PromoCodeId);
+            if (result == null)
+            {
+                return Json(new { success = false, message = "Failed to validate promo code" });
+            }
+
+            return Json(new { success = true, message = $"Promo code valid for {result.Duration} days" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Message: {ex.Message} :: {ex.InnerException}");
+            return Json(new { success = false, message = ex.Message });
+        }
+    }
 
 }
