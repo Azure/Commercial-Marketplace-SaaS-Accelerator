@@ -78,10 +78,10 @@ BEGIN
 	        VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1'), (N'20221118211554_Baseline_v6', N'6.0.1');
 END;
 GO"
-
-Invoke-Sqlcmd -query $compatibilityScript -ServerInstance $Server -database $Database -Username $User -Password $Pass
+# Server=tcp:botsa-saas-sql.database.windows.net,1433;Initial Catalog=botsa-saas;Persist Security Info=False;User ID=CloudSA3fd2f8f3;Password={your_password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+Invoke-Sqlcmd -query $compatibilityScript -ServerInstance $Server -database $Database CloudSA3fd2f8f3 $User -Password 4lq7%PyOhFz59hzh
 Write-host "## Ran compatibility script against database"
-Invoke-Sqlcmd -inputFile script.sql -ServerInstance $Server -database $Database -Username $User -Password $Pass
+Invoke-Sqlcmd -inputFile script.sql -ServerInstance $Server botsa-saas $Database CloudSA3fd2f8f3 $User -Password 4lq7%PyOhFz59hzh
 Write-host "## Ran migration against database"	
 
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
