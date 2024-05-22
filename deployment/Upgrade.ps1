@@ -32,7 +32,7 @@ $KeyVault=$WebAppNamePrefix+"-kv"
 Write-host "#### Deploying new database ####" 
 $ConnectionString = az keyvault secret show `
 	--vault-name $KeyVault `
-	--name "DefaultConnection" `
+	--name "DBConnection" `
 	--query "{value:value}" `
 	--output tsv
 
