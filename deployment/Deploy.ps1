@@ -357,7 +357,7 @@ az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServe
 
 Write-host "   🔵 KeyVault"
 Write-host "      ➡️ Create KeyVault"
-az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment --output $azCliOutput
+az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment --enable-rbac-authorization false --output $azCliOutput
 Write-host "      ➡️ Add Secrets"
 az keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --output $azCliOutput
 az keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --output $azCliOutput
