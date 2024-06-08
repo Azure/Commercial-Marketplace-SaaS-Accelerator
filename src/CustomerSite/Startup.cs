@@ -67,7 +67,7 @@ public class Startup
             AdAuthenticationEndPoint = this.Configuration["SaaSApiConfiguration:AdAuthenticationEndPoint"],
             ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
             ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
-            MTClientIdAdmin = this.Configuration["SaaSApiConfiguration:MTClientIdAdmin"],
+            ClientIdAdmin = this.Configuration["SaaSApiConfiguration:ClientIdAdmin"],
             MTClientIdPortal = this.Configuration["SaaSApiConfiguration:MTClientIdPortal"],
             FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
             FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],

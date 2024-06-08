@@ -71,7 +71,7 @@ public class Startup
             ClientId = this.Configuration["SaaSApiConfiguration:ClientId"] ?? Guid.Empty.ToString(),
             ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"] ?? String.Empty,
             FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
-            MTClientIdAdmin = this.Configuration["SaaSApiConfiguration:MTClientIdAdmin"] ?? Guid.Empty.ToString(),
+            ClientIdAdmin = this.Configuration["SaaSApiConfiguration:ClientIdAdmin"] ?? Guid.Empty.ToString(),
             MTClientIdPortal = this.Configuration["SaaSApiConfiguration:MTClientIdPortal"] ?? Guid.Empty.ToString(),
             FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
             GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
@@ -96,8 +96,8 @@ public class Startup
             })
             .AddOpenIdConnect(options =>
             {
-                options.Authority = $"{config.AdAuthenticationEndPoint}/common/v2.0";
-                options.ClientId = config.MTClientIdAdmin;
+                options.Authority = $"{config.AdAuthenticationEndPoint}/{config.TenantId}/v2.0";
+                options.ClientId = config.ClientIdAdmin;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
                 options.CallbackPath = "/Home/Index";
                 options.SignedOutRedirectUri = config.SignedOutRedirectUri;
