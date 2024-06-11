@@ -386,6 +386,7 @@ public class HomeController : BaseController
     /// <param name="operation">The operation.</param>
     /// <param name="numberofProviders">The numberof providers.</param>
     /// <returns> The <see cref="IActionResult" />.</returns>
+    [HttpPost]
     public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation, int numberofProviders)
     {
         this.logger.Info(HttpUtility.HtmlEncode($"Home Controller / SubscriptionOperation subscriptionId:{subscriptionId} :: planId : {planId} :: operation:{operation} :: NumberofProviders : {numberofProviders}"));
