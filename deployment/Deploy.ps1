@@ -424,7 +424,7 @@ $ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=DefaultConnection) "
 $ServerUri = $SQLServerName+".database.windows.net"
 $ServerUriPrivate = $SQLServerName+".privatelink.database.windows.net"
-$Connection="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";Authentication=Active Directory Default;"
+$Connection="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";TrustServerCertificate=True;Authentication=Active Directory Managed Identity;"
 
 Write-host "   🔵 Resource Group"
 Write-host "      ➡️ Create Resource Group"
