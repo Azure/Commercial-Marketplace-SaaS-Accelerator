@@ -550,7 +550,7 @@ az network private-endpoint dns-zone-group create --resource-group $ResourceGrou
 $keyVaultId=az keyvault show --name $KeyVault --resource-group $ResourceGroupForDeployment --query id -o tsv
 
 # Create a KV private endpoint
-az network private-endpoint create --name $privateKvEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $KvSubnetNameSubnetName --private-connection-resource-id $keyVaultId --group-ids vault  --connection-name kvConnection
+az network private-endpoint create --name $privateKvEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $KvSubnetName --private-connection-resource-id $keyVaultId --group-ids vault  --connection-name kvConnection
 
 
 # Create a KV private DNS zone
