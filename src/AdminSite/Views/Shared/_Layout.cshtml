@@ -50,7 +50,7 @@
                 </button>
 
                 <nav class="container nav flex-column nav-underline">
-                    
+
                     @if (this.User.Identity.IsAuthenticated)
                     {
                         <div>
@@ -150,19 +150,19 @@
         <div class="class2">
             <br />
             <div class="container-fluid" style="padding-bottom: 1rem !important;">
-                
+
                 <partial name="_CookieConsentPartial" />
                 <main role="main" style="padding-bottom: 1rem !important;">
                     @RenderBody()
                 </main>
-                
-                
+
+
             </div>
         </div>
     </div>
     <footer class="cm-footer">
         <div class="container text-center">
-            &copy; 2020 - SaasKit - Demo
+            &copy; 2024 TD SYNNEX Corporation
         </div>
     </footer>
 
@@ -180,7 +180,7 @@
 
  <script type="text/javascript">
      function RedirectToScheduler(sub)
-    {   
+    {
         var dim =$("select#SelectedDimension").val();
         var qty =$("#Quantity").val();
         if (sub)
