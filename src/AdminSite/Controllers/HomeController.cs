@@ -12,6 +12,7 @@ using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Exceptions;
+using Marketplace.SaaS.Accelerator.Services.Helpers;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.StatusHandlers;
@@ -100,11 +101,14 @@ public class HomeController : BaseController
 
     private readonly ApplicationConfigService applicationConfigService;
 
+    private readonly ISAGitReleasesService sAGitReleasesService; 
+
     private UserService userService;
 
     private SubscriptionService subscriptionService = null;
 
     private ApplicationLogService applicationLogService = null;
+
     private SaaSApiClientConfiguration saaSApiClientConfiguration;
 
     /// <summary>
@@ -132,7 +136,28 @@ public class HomeController : BaseController
     /// <param name="offersRepository">The offers repository.</param>
     /// <param name="offersAttributeRepository">The offers attribute repository.</param>
     public HomeController(
-        IUsersRepository usersRepository, IMeteredBillingApiService billingApiService,  ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiService fulfillApiService, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, SaaSApiClientConfiguration saaSApiClientConfiguration, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository, SaaSClientLogger<HomeController> logger) : base(applicationConfigRepository)
+        IUsersRepository usersRepository, 
+        IMeteredBillingApiService billingApiService,  
+        ISubscriptionsRepository subscriptionRepo, 
+        IPlansRepository planRepository, 
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, 
+        IMeteredDimensionsRepository dimensionsRepository, 
+        ISubscriptionLogRepository subscriptionLogsRepo, 
+        IApplicationConfigRepository applicationConfigRepository, 
+        IUsersRepository userRepository, 
+        IFulfillmentApiService fulfillApiService, 
+        IApplicationLogRepository applicationLogRepository, 
+        IEmailTemplateRepository emailTemplateRepository, 
+        IPlanEventsMappingRepository planEventsMappingRepository, 
+        IEventsRepository eventsRepository, 
+        SaaSApiClientConfiguration saaSApiClientConfiguration, 
+        ILoggerFactory loggerFactory, 
+        IEmailService emailService, 
+        IOffersRepository offersRepository, 
+        IOfferAttributesRepository offersAttributeRepository,
+        IAppVersionService appVersionService,
+        ISAGitReleasesService sAGitReleasesService, 
+        SaaSClientLogger<HomeController> logger) : base(applicationConfigRepository, appVersionService)
     {
         this.billingApiService = billingApiService;
         this.subscriptionRepo = subscriptionRepo;
@@ -158,6 +183,7 @@ public class HomeController : BaseController
         this.offersAttributeRepository = offersAttributeRepository;
         this.loggerFactory = loggerFactory;
         this.saaSApiClientConfiguration = saaSApiClientConfiguration;
+        this.sAGitReleasesService = sAGitReleasesService;
 
         this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
             fulfillApiService,
@@ -210,6 +236,15 @@ public class HomeController : BaseController
         {
             this.applicationConfigService.SaveFileToDisk("LogoFile", "contoso-sales.png");
             this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
+            var newReleaseVersion = this.sAGitReleasesService.GetLatestRelease().GetAwaiter().GetResult();
+            if (NewSAVersionCheckHelper.IsNewVersionAvailable(newReleaseVersion, GetAppReleaseVersion()))
+            {
+                TempData["ShowNewVersionMessage"] = "1";
+            }
+            else
+            {
+                TempData["ShowNewVersionMessage"] = "0";
+            }
 
             var userId = this.userService.AddUser(this.GetCurrentUserDetail());
             return this.View();

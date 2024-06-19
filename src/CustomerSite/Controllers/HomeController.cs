@@ -90,6 +90,8 @@ public class HomeController : BaseController
 
     private readonly IWebNotificationService _webNotificationService;
 
+    private readonly IAppVersionService _appVersionService;
+
     private SubscriptionService subscriptionService = null;
 
     private ApplicationLogService applicationLogService = null;
@@ -120,7 +122,24 @@ public class HomeController : BaseController
     /// <param name="cloudConfigs">The cloud configs.</param>
     /// <param name="loggerFactory">The logger factory.</param>
     /// <param name="emailService">The email service.</param>
-    public HomeController(SaaSClientLogger<HomeController> logger, IFulfillmentApiService apiService, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService,IWebNotificationService webNotificationService)
+    public HomeController(
+        SaaSClientLogger<HomeController> logger, 
+        IFulfillmentApiService apiService, 
+        ISubscriptionsRepository subscriptionRepo, 
+        IPlansRepository planRepository, 
+        IUsersRepository userRepository, 
+        IApplicationLogRepository applicationLogRepository, 
+        ISubscriptionLogRepository subscriptionLogsRepo, 
+        IApplicationConfigRepository applicationConfigRepository, 
+        IEmailTemplateRepository emailTemplateRepository, 
+        IOffersRepository offersRepository, 
+        IPlanEventsMappingRepository planEventsMappingRepository, 
+        IOfferAttributesRepository offerAttributesRepository, 
+        IEventsRepository eventsRepository, 
+        ILoggerFactory loggerFactory, 
+        IEmailService emailService,
+        IWebNotificationService webNotificationService,
+        IAppVersionService appVersionService) : base(appVersionService)
     {
         this.apiService = apiService;
         this.subscriptionRepository = subscriptionRepo;

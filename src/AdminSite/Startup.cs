@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 using System;
+using System.Diagnostics;
+using System.Reflection;
 using Azure.Identity;
 using Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
@@ -127,8 +129,10 @@ public class Startup
             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new SaaSClientLogger<MeteredBillingApiService>()))
             .AddSingleton<SaaSApiClientConfiguration>(config)
             .AddSingleton<KnownUsersModel>(knownUsers);
-            
 
+        // Read the versionInfo and Add to services
+        var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+        services.AddSingleton<IAppVersionService>(new AppVersionService(versionInfo));
 
 
         services
@@ -216,6 +220,7 @@ public class Startup
         services.AddScoped<IEventsRepository, EventsRepository>();
         services.AddScoped<KnownUserAttribute>();
         services.AddScoped<IEmailService, SMTPEmailService>();
+        services.AddScoped<ISAGitReleasesService, SAGitReleasesService>();
         services.AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>();
         services.AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>();
         services.AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>();
