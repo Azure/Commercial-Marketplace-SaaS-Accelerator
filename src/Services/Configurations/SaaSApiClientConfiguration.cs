@@ -37,15 +37,7 @@ public class SaaSApiClientConfiguration
     /// <value>
     /// The resource.
     /// </value>
-    public string ClientIdAdmin { get; set; }
-
-    /// <summary>
-    /// Gets or sets the AAD Client ID resource.
-    /// </summary>
-    /// <value>
-    /// The resource.
-    /// </value>
-    public string MTClientIdPortal { get; set; }
+    public string MTClientId { get; set; }
 
     /// <summary>
     /// Gets or sets the resource.
