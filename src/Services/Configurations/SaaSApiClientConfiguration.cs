@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
+using System;
+
 namespace Marketplace.SaaS.Accelerator.Services.Configurations;
 
 /// <summary>
@@ -103,6 +105,13 @@ public class SaaSApiClientConfiguration
     /// The production-level environment. Typically, "development", "production", or null.
     /// </value>
     public string Environment { get; init; }
+    /// <summary>
+    /// Initializes or Gets the value for IsAdminPortalMultiTenant. Set to true or false is assumed.
+    /// </summary>
+    /// <value>
+    /// The value for IsAdminPortalMultiTenant. Typically, true, false, or null.
+    /// </value>
+    public string IsAdminPortalMultiTenant { get; set; }
 
 
 }
