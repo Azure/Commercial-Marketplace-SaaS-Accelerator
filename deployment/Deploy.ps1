@@ -19,8 +19,9 @@ Param(
    [string][Parameter()]$AzureSubscriptionID, # Subscription where the resources be deployed
    [string][Parameter()]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
    [string][Parameter()]$ADApplicationSecret, # Secret key of the AD Application
-   [string][Parameter()]$ADMTApplicationIDAdmin, # Multi-Tenant Active Directory Application ID for the Admin Portal
+   [string][Parameter()]$ADApplicationIDAdmin, # Multi-Tenant Active Directory Application ID 
    [string][Parameter()]$ADMTApplicationIDPortal, #Multi-Tenant Active Directory Application ID for the Landing Portal
+   [string][Parameter()]$IsAdminPortalMultiTenant, # If set to true, the Admin Portal will be configured as a multi-tenant application. This is by default set to false. 
    [string][Parameter()]$SQLDatabaseName, # Name of the database (Defaults to AMPSaaSDB)
    [string][Parameter()]$SQLServerName, # Name of the database server (without database.windows.net)
    [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
@@ -189,11 +190,11 @@ if($LogoURLico) {
 #region Create AAD App Registrations
 
 #Record the current ADApps to reduce deployment instructions at the end
-$ISADMTApplicationIDProvided = ($ADMTApplicationIDAdmin && $ADMTApplicationIDPortal)
+$ISLoginAppProvided = ($ADApplicationIDAdmin && $ADMTApplicationIDPortal)
 
-if($ISADMTApplicationIDProvided -eq $null){
+if($ISLoginAppProvided -eq $null){
 	Write-Host "🔑 Multi-Tenant App Registrations provided."
-	Write-Host "   ➡️ Admin Portal App Registration ID:" $ADMTApplicationIDAdmin
+	Write-Host "   ➡️ Admin Portal App Registration ID:" $ADApplicationIDAdmin
 	Write-Host "   ➡️ Landing Page App Registration ID:" $ADMTApplicationIDPortal
 }
 else {
@@ -201,11 +202,26 @@ else {
 }
 
 
+
+if($IsAdminPortalMultiTenant -eq "true"){
+	Write-Host "🔑 Admin Portal App Registration set as Multi-Tenant."
+	$IsAdminPortalMultiTenant = $true
+}
+else {
+	Write-Host "🔑 Admin Portal App Registration set as Single-Tenant."
+	$IsAdminPortalMultiTenant = $false
+}
+
+
+
+
+
+
 #Create App Registration for authenticating calls to the Marketplace API
 if (!($ADApplicationID)) {   
     Write-Host "🔑 Creating Fulfilment API App Registration"
     try {   
-        $ADApplication = az ad app create --only-show-errors --display-name "$WebAppNamePrefix-FulfillmentAppReg" | ConvertFrom-Json
+        $ADApplication = az ad app create --only-show-errors --sign-in-audience AzureADMYOrg --display-name "$WebAppNamePrefix-FulfillmentAppReg" | ConvertFrom-Json
 		$ADObjectID = $ADApplication.id
         $ADApplicationID = $ADApplication.appId
         sleep 5 #this is to give time to AAD to register
@@ -223,7 +239,7 @@ if (!($ADApplicationID)) {
 }
 
 #Create Multi-Tenant App Registration for Admin Portal User Login
-if (!($ADMTApplicationID)) {  
+if (!($ADApplicationIDAdmin)) {  
     Write-Host "🔑 Creating Admin Portal SSO App Registration"
     try {
 	
@@ -234,7 +250,7 @@ if (!($ADMTApplicationID)) {
 	{
 		"requestedAccessTokenVersion" : 2
 	},
-	"signInAudience" : "AzureADandPersonalMicrosoftAccount",
+	"signInAudience" : "AzureADMyOrg",
 	"web":
 	{ 
 		"redirectUris": 
@@ -268,11 +284,11 @@ if (!($ADMTApplicationID)) {
 
 		$adminPortalAppReg = $(az rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $appCreateRequestBodyJson  ) | ConvertFrom-Json
 	
-		$ADMTApplicationIDAdmin = $adminPortalAppReg.appId
+		$ADApplicationIDAdmin = $adminPortalAppReg.appId
 		$ADMTObjectIDAdmin = $adminPortalAppReg.id
 	
         Write-Host "   🔵 Admin Portal SSO App Registration created."
-		Write-Host "      ➡️ Application Id: $ADMTApplicationIDAdmin"
+		Write-Host "      ➡️ Application Id: $ADApplicationIDAdmin"
 
 
 		# Download Publisher's AppRegistration logo
@@ -301,7 +317,7 @@ if (!($ADMTApplicationID)) {
 }
 
 #Create Multi-Tenant App Registration for Landing Page User Login
-if (!($ADMTApplicationID)) {  
+if (!($ADMTApplicationIDPortal)) {  
     Write-Host "🔑 Creating Landing Page SSO App Registration"
     try {
 	
@@ -464,7 +480,7 @@ Write-host "      ➡️ Setup access to KeyVault"
 az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault 
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientIdAdmin=$ADMTApplicationIDAdmin SaaSApiConfiguration__MTCLientIdPortal=$ADMTApplicationIDPortal SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADApplicationIDAdmin SaaSApiConfiguration__IsAdminPortalMultiTenant=$IsAdminPortalMultiTenant SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true  --output $azCliOutput
 
 Write-host "   🔵 Customer Portal WebApp"
@@ -476,7 +492,7 @@ Write-host "      ➡️ Setup access to KeyVault"
 az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientIdPortal=$ADMTApplicationIDPortal SaaSApiConfiguration__MTClientIdAdmin=$ADMTApplicationIDAdmin SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationIDPortal SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNamePortal --always-on true --output $azCliOutput
 
 #endregion
@@ -517,7 +533,7 @@ Remove-Item -Path script.sql
 #region Present Output
 
 Write-host "✅ If the intallation completed without error complete the folllowing checklist:"
-if ($ISADMTApplicationIDProvided -ne $null) {  #If provided then show the user where to add the landing page in AAD, otherwise script did this already for the user.
+if ($ISLoginAppProvided -ne $null) {  #If provided then show the user where to add the landing page in AAD, otherwise script did this already for the user.
 	Write-host "   🔵 Add The following URLs to the multi-tenant Landing Page AAD App Registration in Azure Portal:"
 	Write-host "      ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net"
 	Write-host "      ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net/"

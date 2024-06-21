@@ -60,6 +60,7 @@ The script above will perform the following actions.
  -ADMTApplicationID "xxxx-xxx-xxx-xxx-xxxx" `
  -LogoURLpng "https://company_com/company_logo.png" `
  -LogoURLico "https://company_com/company_logo.ico" `
+ -IsAdminPortalMultiTenant "true" `
  -Quiet
  ```
 
@@ -100,6 +101,7 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 | SQLServerName | A unique name of the database server (without database.windows.net). Default: `WebAppNamePrefix`-sql |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
+| IsAdminPortalMultiTenant | Set to `true` if you want to enable multi-tenant support for the admin portal. Default: `false` |
 | Quiet | Disable verbose output when running the script
 
 ## Setting up a development environment
