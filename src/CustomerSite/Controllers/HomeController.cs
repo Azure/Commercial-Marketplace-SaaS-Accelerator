@@ -90,8 +90,6 @@ public class HomeController : BaseController
 
     private readonly IWebNotificationService _webNotificationService;
 
-    private readonly IAppVersionService _appVersionService;
-
     private SubscriptionService subscriptionService = null;
 
     private ApplicationLogService applicationLogService = null;
