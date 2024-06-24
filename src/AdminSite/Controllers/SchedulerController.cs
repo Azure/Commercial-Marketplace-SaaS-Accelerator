@@ -56,7 +56,8 @@ public class SchedulerController : BaseController
     /// <param name="offerAttributeRepository">The offer attribute repository.</param>
     /// <param name="offerRepository">The offer repository.</param>
     /// <param name="logger">The logger.</param>
-    public SchedulerController(ISubscriptionsRepository subscriptionRepository,
+    public SchedulerController(
+        ISubscriptionsRepository subscriptionRepository,
         IMeteredDimensionsRepository meteredRepository,
         ISchedulerFrequencyRepository frequencyRepository,
         IPlansRepository plansRepository,
@@ -64,7 +65,8 @@ public class SchedulerController : BaseController
         ISchedulerManagerViewRepository schedulerViewRepository, 
         IUsersRepository usersRepository,
         SaaSClientLogger<SchedulerController> logger,
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository):base(applicationConfigRepository)
+        IAppVersionService appVersionService,
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository):base(applicationConfigRepository, appVersionService)
 
     {
         this.usersRepository = usersRepository;

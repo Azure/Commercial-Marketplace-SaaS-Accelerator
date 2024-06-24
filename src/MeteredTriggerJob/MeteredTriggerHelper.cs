@@ -50,6 +50,11 @@ public class Executor
     ///  Metered Plan Scheduler Management Service
     /// </summary>
     private MeteredPlanSchedulerManagementService schedulerService;
+    /// <summary>
+    /// AppVersion Interface
+    /// </summary>
+    private readonly IAppVersionService appVersionService;
+
 
     /// <summary>
     /// Application Log Service
@@ -75,7 +80,9 @@ public class Executor
         IMeteredBillingApiService billingApiService,
         IApplicationConfigRepository applicationConfigRepository,
         IEmailService emailService,
-        IEmailTemplateRepository emailTemplateRepository, IApplicationLogRepository applicationLogRepository)
+        IEmailTemplateRepository emailTemplateRepository, 
+        IApplicationLogRepository applicationLogRepository,
+        IAppVersionService appVersionService)
     {
         this.frequencyRepository = frequencyRepository;
         this.schedulerRepository = schedulerRepository;
@@ -93,8 +100,7 @@ public class Executor
                                this.emailTemplateRepository,
                                this.emailService);
         this.billingApiService = billingApiService;
-
-        
+        this.appVersionService = appVersionService;        
         this.applicationLogService = new ApplicationLogService(applicationLogRepository);
         this.applicationConfigService = new ApplicationConfigService(applicationConfigRepository);
 
@@ -105,6 +111,8 @@ public class Executor
     /// </summary>
     public void Execute()
     {
+        LogLine($"Executing the Meter scheduler {appVersionService?.Version}");
+
         bool.TryParse(this.applicationConfigService.GetValueByName("IsMeteredBillingEnabled"), out bool supportMeteredBilling);
         if (supportMeteredBilling)
         {

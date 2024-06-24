@@ -4,6 +4,7 @@ using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.DataAccess.Services;
+using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,11 @@ public class KnownUsersController : BaseController
     /// <param name = "knownUsersRepository" > The known users repository.</param>
     /// <param name="logger">The logger.</param>
 
-    public KnownUsersController(IKnownUsersRepository knownUsersRepository, SaaSClientLogger<KnownUsersController> logger, IApplicationConfigRepository applicationConfigRepository):base(applicationConfigRepository)
+    public KnownUsersController(
+        IKnownUsersRepository knownUsersRepository,
+        IAppVersionService appVersionService,
+        SaaSClientLogger<KnownUsersController> logger, 
+        IApplicationConfigRepository applicationConfigRepository):base(applicationConfigRepository, appVersionService)
     {
         this.knownUsersRepository = knownUsersRepository;
         this.logger = logger;
