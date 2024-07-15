@@ -1,8 +1,10 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Mail;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Models;
+using Marketplace.SaaS.Accelerator.Services.Utilities;
 
 namespace Marketplace.SaaS.Accelerator.Services.Services;
 
@@ -18,12 +20,25 @@ public class SMTPEmailService : IEmailService
     private readonly IApplicationConfigRepository applicationConfigRepository;
 
     /// <summary>
+    /// The application log repository.
+    /// </summary>
+    private readonly IApplicationLogRepository applicationLogRepository;
+
+    /// <summary>
+    /// The application log service.
+    /// </summary>
+    private readonly ApplicationLogService applicationLogService;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="SMTPEmailService"/> class.
     /// </summary>
     /// <param name="applicationConfigRepository">The application configuration repository.</param>
-    public SMTPEmailService(IApplicationConfigRepository applicationConfigRepository)
+    public SMTPEmailService(IApplicationConfigRepository applicationConfigRepository,
+                            IApplicationLogRepository applicationLogRepository)
     {
         this.applicationConfigRepository = applicationConfigRepository;
+        this.applicationLogRepository = applicationLogRepository;
+        this.applicationLogService = new ApplicationLogService(this.applicationLogRepository);
     }
 
     /// <summary>
@@ -32,36 +47,55 @@ public class SMTPEmailService : IEmailService
     /// <param name="emailContent">Content of the email.</param>
     public void SendEmail(EmailContentModel emailContent)
     {
-        MailMessage mail = new MailMessage();
         if (!string.IsNullOrEmpty(emailContent.ToEmails) || !string.IsNullOrEmpty(emailContent.BCCEmails))
         {
-            mail.From = new MailAddress(emailContent.FromEmail);
-            mail.IsBodyHtml = true;
-            mail.Subject = emailContent.Subject;
-            mail.Body = emailContent.Body;
-
-            string[] toEmails = emailContent.ToEmails.Split(';');
-            foreach (string multimailid in toEmails)
+            try
             {
-                mail.To.Add(new MailAddress(multimailid));
-            }
-
-            if (!string.IsNullOrEmpty(emailContent.BCCEmails))
-            {
-                foreach (string multimailid1 in toEmails)
+                using (SmtpClient smtp = new SmtpClient())
                 {
-                    mail.Bcc.Add(new MailAddress(multimailid1));
+                    //set smtp settings
+                    smtp.Host = emailContent.SMTPHost;
+                    smtp.Port = emailContent.Port;
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential(
+                        emailContent.UserName, emailContent.Password);
+                    smtp.EnableSsl = emailContent.SSL;
+
+                    //set message from, body, to and bcc
+                    MailMessage mail = new MailMessage();
+                    mail.From = new MailAddress(emailContent.FromEmail);
+                    mail.IsBodyHtml = true;
+                    mail.Subject = emailContent.Subject;
+                    mail.Body = emailContent.Body;
+                    string[] toEmails = emailContent.ToEmails.Split(';');
+                    foreach (string multimailid in toEmails)
+                    {
+                        mail.To.Add(new MailAddress(multimailid));
+                    }
+
+                    if (!string.IsNullOrEmpty(emailContent.BCCEmails))
+                    {
+                        foreach (string multimailid1 in toEmails)
+                        {
+                            mail.Bcc.Add(new MailAddress(multimailid1));
+                        }
+                    }
+
+                    //send message
+                    smtp.Send(mail);
+                    this.applicationLogService.AddApplicationLog($"{emailContent?.Subject}: Email sent succesfully!").ConfigureAwait(false);
                 }
             }
-
-            SmtpClient smtp = new SmtpClient();
-            smtp.Host = emailContent.SMTPHost;
-            smtp.Port = emailContent.Port;
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new NetworkCredential(
-                emailContent.UserName, emailContent.Password);
-            smtp.EnableSsl = emailContent.SSL;
-            smtp.Send(mail);
+            catch (SmtpException smtpEx)
+            {
+                // Handle SMTP specific exceptions here
+                applicationLogService.AddApplicationLog($"SMTP Error: {emailContent?.Subject} {smtpEx.Message}").ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                // Handle other general exceptions here
+                applicationLogService.AddApplicationLog($"Error in Email send: {emailContent?.Subject} {ex.Message}").ConfigureAwait(false);
+            }
         }
     }
 }
