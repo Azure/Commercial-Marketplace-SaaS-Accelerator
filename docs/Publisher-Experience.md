@@ -76,22 +76,29 @@ The publisher web application is the admin console for the publisher for definin
 
 ## Email setup
 
-* Go to the **Publisher Portal** and in **Application Config**, make sure the **SMTP** values are updated
+1. **Configure SMTP:** Go to the **Publisher Portal** and in **Application Config**, make sure the **SMTP** values are updated
 
-![Application Config Page](./images/config-page.png)
+    ![Application Config Page](./images/config-page.png)
 
-* In the **Plans** page, go to the **Events** tab
-* Set the emails' recipients under **Success/Failure Event Emails** and mark them as active in the checkboxes under **Active** [To send the email to the customer, enable the **Copy To Customer** flag]
 
-![Plan Events](./images/events-activity.png)
+1. **Update settings:** In the **Application Config** page, enable the respective config values to send the emails in different scenarios:
+      1. To send emails when a customer is requesting activation on Landing page, set **IsEmailEnabledForPendingActivation** to **True**
+      1. To send emails when a subscription is activated, set **IsEmailEnabledForSubscriptionActivation** to **True**
+      1. To send emails when a subscription is unsubscribed, set **IsEmailEnabledForUnsubscription** to **True**
 
-* To add Bcc emails, go to the **Email Template** in the **Application Config** page and add Bcc emails to the appropriate template
-* In the **Application Config** page, enable the respective config values to send the emails in different scenarios:
-  * To send emails when a subscription is requesting activation, set **IsEmailEnabledForPendingActivation** to **True**
-  * To send emails when a subscription is activated, set **IsEmailEnabledForSubscriptionActivation** to **True**
-  * To send emails when a subscription is unsubscribed, set **IsEmailEnabledForUnsubscription** to **True**
+    ![Application Config Page](./images/config-page2.png)
 
-![Application Config Page](./images/config-page2.png)
+1. **Add To addresses:** For global email setup, goto Email **Email Templates** page in the bottom on **Application Config** page, update the **ToRecipients** tab for each template. You can add mulitple email ( ; seperated)
+
+	![Email Templates](./images/email-templates.png)
+
+    1. [Optional] To override for specific plan. In the **Plans** page, go to the **Events** tab
+    2. Set the emails' recipients under **Success/Failure Event Emails** and mark them as active in the checkboxes under **Active** [To send the email to the customer, enable the **Copy To Customer** flag]
+
+    ![Plan Events](./images/events-activity.png)
+  
+    3. To add Bcc emails, go to the **Email Template** in the **Application Config** page and add Bcc emails to the appropriate template
+
 
 ## Manage subscriptions
 
