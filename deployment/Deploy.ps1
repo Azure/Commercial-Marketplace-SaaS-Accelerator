@@ -138,7 +138,7 @@ if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
 
 #region pre-checks
 
-# check if dotnet 6 is installed
+# check if dotnet 8 is installed
 
 $dotnetversion = dotnet --version
 
