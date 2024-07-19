@@ -1,10 +1,11 @@
 ---
 
-## Intended Use
-
-### The SaaS Accelerator is offered under the MIT License as open source software and is not supported by Microsoft.
+### The SaaS Accelerator is offered under the MIT License as open source software and is <ins>not supported</ins> by Microsoft.
 ### If you need help with the accelerator or would like to report defects or feature requests, use the Issues feature on this GitHub repository.
+
 ---
+
+
 
 # Microsoft Commercial Marketplace - Community Code for SaaS Applications
 
