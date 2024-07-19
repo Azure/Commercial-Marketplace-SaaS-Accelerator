@@ -5,6 +5,30 @@
 # Powershell script to deploy the resources - Customer portal, Publisher portal and the Azure SQL Database
 #
 
+# Define the message
+$message = @"
+The SaaS Accelerator is offered under the MIT License as open source software and is not supported by Microsoft.
+
+If you need help with the accelerator or would like to report defects or feature requests use the Issues feature on the GitHub repository at https://aka.ms/SaaSAccelerator
+
+Do you agree? (Y/N)
+"@
+
+# Display the message in yellow
+Write-Host $message -ForegroundColor Yellow
+
+# Prompt the user for input
+$response = Read-Host
+
+# Check the user's response
+if ($response -ne 'Y' -and $response -ne 'y') {
+    Write-Host "You did not agree. Exiting..." -ForegroundColor Red
+    exit
+}
+
+# Proceed if the user agrees
+Write-Host "Thank you for agreeing. Proceeding with the script..." -ForegroundColor Green
+
 Param(  
    [string][Parameter(Mandatory)]$WebAppNamePrefix, # Prefix used for creating web applications
    [string][Parameter(Mandatory)]$ResourceGroupForDeployment # Name of the resource group to deploy the resources
