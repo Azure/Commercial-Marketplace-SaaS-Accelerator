@@ -1,3 +1,15 @@
+---
+
+## Intended Use
+
+### This code is a reference implementation of required components of a commercial marketplace SaaS offer and complements the existing commercial marketplace documentation.
+
+### This project accelerates the SaaS offer onboarding experience for those building SaaS solutions for the Microsoft commercial marketplace. Whether installed and used as-is or customized for your particular requirements, this reference implementation provides all main components required by a commercial marketplace SaaS offer.
+
+### > NOTE: Support for this project is community-based and contributions are welcome. Details on contributing can be found [below.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator#contributing). This is not an officially supported Microsoft product.`
+
+---
+
 # Microsoft Commercial Marketplace - Community Code for SaaS Applications
 
 <!-- no toc -->
@@ -49,13 +61,6 @@ The SaaS Accelerator project team releases regularly releases new versions. Plea
 
 To update your SaaS Accelerator installation, use the **Update script** [documented here](./docs/Installation-Instructions.md#update-to-a-newer-version-of-the-saas-accelerator).
 
-## Intended Use
-
-This code is a reference implementation of required components of a commercial marketplace SaaS offer and complements the existing commercial marketplace documentation.
-
-This project accelerates the SaaS offer onboarding experience for those building SaaS solutions for the Microsoft commercial marketplace. Whether installed and used as-is or customized for your particular requirements, this reference implementation provides all main components required by a commercial marketplace SaaS offer.
-
-> NOTE: Support for this project is community-based and contributions are welcome. Details on contributing can be found [below.](https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator#contributing). This is not an officially supported Microsoft product.
 
 ## Installation
 
