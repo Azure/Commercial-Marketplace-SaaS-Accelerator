@@ -104,7 +104,7 @@ public class EmailHelper
 
         if (string.IsNullOrEmpty(toReceipents))
         {
-            throw new Exception(" Error while sending an email, please check the configuration. To email empty");
+            throw new Exception("Error while sending an email, please check the configuration. To email empty");
         }
 
         return FinalizeContentEmail(subject, body, ccReceipents, bccReceipents, toReceipents, copyToCustomer);
