@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 
@@ -236,14 +237,26 @@ public class HomeController : BaseController
         {
             this.applicationConfigService.SaveFileToDisk("LogoFile", "contoso-sales.png");
             this.applicationConfigService.SaveFileToDisk("FaviconFile", "favicon.ico");
-            var newReleaseVersion = this.sAGitReleasesService.GetLatestRelease().GetAwaiter().GetResult();
-            if (NewSAVersionCheckHelper.IsNewVersionAvailable(newReleaseVersion, GetAppReleaseVersion()))
+
+            try
             {
-                TempData["ShowNewVersionMessage"] = "1";
+                // Get the latest release version from GitHub
+                var latestReleaseVersion = this.sAGitReleasesService.GetLatestReleaseFromGitHub();
+
+                // If its come back empty then there is nothing we can check
+                if (!String.IsNullOrEmpty(latestReleaseVersion))
+                {
+                    // Get the current release version from the app
+                    var appReleaseVersion = GetAppReleaseVersion();
+
+                    // Check if the latest release is newer than the current release
+                    TempData["ShowNewVersionMessage"] = NewSAVersionCheckHelper.IsNewVersionAvailable(latestReleaseVersion, appReleaseVersion);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ShowNewVersionMessage"] = "0";
+                //This exception is for release version check is not critical, hence logging and continue
+                this.logger.LogError($"Release version check error:{ex.Message} :: {ex.InnerException}");
             }
 
             var userId = this.userService.AddUser(this.GetCurrentUserDetail());

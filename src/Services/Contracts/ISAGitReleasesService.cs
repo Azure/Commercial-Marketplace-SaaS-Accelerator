@@ -11,5 +11,5 @@ public interface ISAGitReleasesService
     /// Gets the latest release number.
     /// </summary>
     /// <returns> Release Version.</returns>
-    public Task<string> GetLatestRelease();
+    public string GetLatestReleaseFromGitHub();
 }
