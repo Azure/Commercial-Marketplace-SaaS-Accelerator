@@ -399,8 +399,7 @@ BEGIN
     INSERT INTO ApplicationConfiguration (Name,Value,Description)
     VALUES ('FaviconFile','','Favicon File')
 END
-GO
-");
+GO");
             migrationBuilder.Sql(@$"
 INSERT INTO EmailTemplate
 	([Status],[Description],[InsertDate],[TemplateBody],[Subject],[IsActive])
@@ -410,8 +409,7 @@ VALUES
 	('Subscribed','Subscribed','{seedDate}', '{SUBSCRIBED_EMAIL_TEMPLATE}','Subscribed',1),
 	('Unsubscribed','Unsubscribed','{seedDate}', '{UNSUBSCRIBED_EMAIL_TEMPLATE}','Unsubscribed',1)
 ");
-
-        }
+ }
 
 
         private static string FAILED_EMAIL_TEMPLATE = @"
@@ -667,7 +665,5 @@ VALUES
       </center>
    </body>
 </html>
-";
-
-    }
+";}
 }
