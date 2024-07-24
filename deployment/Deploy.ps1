@@ -10,6 +10,25 @@
 # -Location "<region>" `
 # -PublisherAdminUsers "<your@email.address>"
 
+Param(  
+   [string][Parameter(Mandatory)]$WebAppNamePrefix, # Prefix used for creating web applications
+   [string][Parameter()]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
+   [string][Parameter(Mandatory)]$Location, # Location of the resource group
+   [string][Parameter(Mandatory)]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
+   [string][Parameter()]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter()]$AzureSubscriptionID, # Subscription where the resources be deployed
+   [string][Parameter()]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
+   [string][Parameter()]$ADApplicationSecret, # Secret key of the AD Application
+   [string][Parameter()]$ADMTApplicationIDAdmin, # Multi-Tenant Active Directory Application ID for the Admin Portal
+   [string][Parameter()]$ADMTApplicationIDPortal, #Multi-Tenant Active Directory Application ID for the Landing Portal
+   [string][Parameter()]$SQLDatabaseName, # Name of the database (Defaults to AMPSaaSDB)
+   [string][Parameter()]$SQLServerName, # Name of the database server (without database.windows.net)
+   [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
+   [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
+   [string][Parameter()]$KeyVault, # Name of KeyVault
+   [switch][Parameter()]$Quiet #if set, only show error / warning output from script commands
+)
+
 # Define the warning message
 $message = @"
 The SaaS Accelerator is offered under the MIT License as open source software and is not supported by Microsoft.
@@ -33,26 +52,6 @@ if ($response -ne 'Y' -and $response -ne 'y') {
 
 # Proceed if the user agrees
 Write-Host "Thank you for agreeing. Proceeding with the script..." -ForegroundColor Green
- 
-
-Param(  
-   [string][Parameter(Mandatory)]$WebAppNamePrefix, # Prefix used for creating web applications
-   [string][Parameter()]$ResourceGroupForDeployment, # Name of the resource group to deploy the resources
-   [string][Parameter(Mandatory)]$Location, # Location of the resource group
-   [string][Parameter(Mandatory)]$PublisherAdminUsers, # Provide a list of email addresses (as comma-separated-values) that should be granted access to the Publisher Portal
-   [string][Parameter()]$TenantID, # The value should match the value provided for Active Directory TenantID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string][Parameter()]$AzureSubscriptionID, # Subscription where the resources be deployed
-   [string][Parameter()]$ADApplicationID, # The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center
-   [string][Parameter()]$ADApplicationSecret, # Secret key of the AD Application
-   [string][Parameter()]$ADMTApplicationIDAdmin, # Multi-Tenant Active Directory Application ID for the Admin Portal
-   [string][Parameter()]$ADMTApplicationIDPortal, #Multi-Tenant Active Directory Application ID for the Landing Portal
-   [string][Parameter()]$SQLDatabaseName, # Name of the database (Defaults to AMPSaaSDB)
-   [string][Parameter()]$SQLServerName, # Name of the database server (without database.windows.net)
-   [string][Parameter()]$LogoURLpng,  # URL for Publisher .png logo
-   [string][Parameter()]$LogoURLico,  # URL for Publisher .ico logo
-   [string][Parameter()]$KeyVault, # Name of KeyVault
-   [switch][Parameter()]$Quiet #if set, only show error / warning output from script commands
-)
 
 # Make sure to install Az Module before running this script
 # Install-Module Az
