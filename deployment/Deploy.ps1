@@ -30,9 +30,65 @@ Param(
    [switch][Parameter()]$Quiet #if set, only show error / warning output from script commands
 )
 
+# Define the warning message
+$message = @"
+The SaaS Accelerator is offered under the MIT License as open source software and is not supported by Microsoft.
+
+If you need help with the accelerator or would like to report defects or feature requests use the Issues feature on the GitHub repository at https://aka.ms/SaaSAccelerator
+
+Do you agree? (Y/N)
+"@
+
+# Display the message in yellow
+Write-Host $message -ForegroundColor Yellow
+
+# Prompt the user for input
+$response = Read-Host
+
+# Check the user's response
+if ($response -ne 'Y' -and $response -ne 'y') {
+    Write-Host "You did not agree. Exiting..." -ForegroundColor Red
+    exit
+}
+
+# Proceed if the user agrees
+Write-Host "Thank you for agreeing. Proceeding with the script..." -ForegroundColor Green
+
 # Make sure to install Az Module before running this script
 # Install-Module Az
 # Install-Module -Name AzureAD
+
+#region Select Tenant / Subscription for deployment
+
+$currentContext = az account show | ConvertFrom-Json
+$currentTenant = $currentContext.tenantId
+$currentSubscription = $currentContext.id
+
+#Get TenantID if not set as argument
+if(!($TenantID)) {    
+    Get-AzTenant | Format-Table
+    if (!($TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }    
+}
+else {
+    Write-Host "🔑 Tenant provided: $TenantID"
+}
+
+#Get Azure Subscription if not set as argument
+if(!($AzureSubscriptionID)) {    
+    Get-AzSubscription -TenantId $TenantID | Format-Table
+    if (!($AzureSubscriptionID = Read-Host "⌨  Type your SubscriptionID or press Enter to accept your current one [$currentSubscription]")) { $AzureSubscriptionID = $currentSubscription }
+}
+else {
+    Write-Host "🔑 Azure Subscription provided: $AzureSubscriptionID"
+}
+
+#Set the AZ Cli context
+az account set -s $AzureSubscriptionID
+Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
+
+#endregion
+
+
 
 $ErrorActionPreference = "Stop"
 $startTime = Get-Date
@@ -119,37 +175,6 @@ if(!$dotnetversion.StartsWith('6.')) {
 
 
 Write-Host "Starting SaaS Accelerator Deployment..."
-
-#region Select Tenant / Subscription for deployment
-
-$currentContext = az account show | ConvertFrom-Json
-$currentTenant = $currentContext.tenantId
-$currentSubscription = $currentContext.id
-
-#Get TenantID if not set as argument
-if(!($TenantID)) {    
-    Get-AzTenant | Format-Table
-    if (!($TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }    
-}
-else {
-    Write-Host "🔑 Tenant provided: $TenantID"
-}
-
-#Get Azure Subscription if not set as argument
-if(!($AzureSubscriptionID)) {    
-    Get-AzSubscription -TenantId $TenantID | Format-Table
-    if (!($AzureSubscriptionID = Read-Host "⌨  Type your SubscriptionID or press Enter to accept your current one [$currentSubscription]")) { $AzureSubscriptionID = $currentSubscription }
-}
-else {
-    Write-Host "🔑 Azure Subscription provided: $AzureSubscriptionID"
-}
-
-#Set the AZ Cli context
-az account set -s $AzureSubscriptionID
-Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
-
-#endregion
-
 
 #region Check If SQL Server Exist
 $sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue

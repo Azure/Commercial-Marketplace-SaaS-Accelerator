@@ -1,3 +1,10 @@
+---
+
+The SaaS Accelerator is offered under the MIT License as open source software and is <ins>not supported</ins> by Microsoft. <br>
+If you need help with the accelerator or would like to report defects or feature requests, use the Issues feature on this GitHub repository.
+
+---
+
 # Install the Azure Marketplace SaaS Accelerator using Azure Cloud Shell
 
 <!-- no toc -->
