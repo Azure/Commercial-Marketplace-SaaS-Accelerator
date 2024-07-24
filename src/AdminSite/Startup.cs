@@ -24,6 +24,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Marketplace.Metering;
 using Microsoft.Marketplace.SaaS;
@@ -85,7 +86,8 @@ public class Startup
             KnownUsers = this.Configuration["KnownUsers"],
         };
         var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
-        var boolMultiTenant = config.IsAdminPortalMultiTenant.ToLower().Trim();
+        var boolMultiTenant = config.IsAdminPortalMultiTenant?.ToLower().Trim() ?? "false";
+
 
 
         services
@@ -98,7 +100,7 @@ public class Startup
             .AddOpenIdConnect(options =>
             {
 
-                if(boolMultiTenant == "false")
+                if (boolMultiTenant == "false")
                 {
                     options.Authority = $"{config.AdAuthenticationEndPoint}/{config.TenantId}/v2.0";
                 }
