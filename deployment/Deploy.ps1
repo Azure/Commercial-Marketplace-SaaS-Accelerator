@@ -215,17 +215,10 @@ if($LogoURLico) {
 #region Create AAD App Registrations
 
 #Record the current ADApps to reduce deployment instructions at the end
-$ISLoginAppProvided = ($ADApplicationIDAdmin -ne "" -and $ADMTApplicationIDPortal -ne "")
-
-$ISLoginAppProvided1 = ($ADApplicationIDAdmin && $ADMTApplicationIDPortal)
-Write-Host "adapidadmin: $ADApplicationIDAdmin"
-Write-Host "admtapidportal: $ADMTApplicationIDPortal"
-Write-Host "1: $ISLoginAppProvided"
-Write-Host "2: $ISLoginAppProvided1"
+$ISLoginAppProvided = ($ADApplicationIDAdmin -ne "" -or $ADMTApplicationIDPortal -ne "")
 
 
-
-if($ISLoginAppProvided -eq $null){
+if($ISLoginAppProvided){
 	Write-Host "🔑 Multi-Tenant App Registrations provided."
 	Write-Host "   ➡️ Admin Portal App Registration ID:" $ADApplicationIDAdmin
 	Write-Host "   ➡️ Landing Page App Registration ID:" $ADMTApplicationIDPortal
