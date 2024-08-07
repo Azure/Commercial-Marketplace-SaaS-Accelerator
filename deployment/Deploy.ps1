@@ -215,7 +215,7 @@ if($LogoURLico) {
 #region Create AAD App Registrations
 
 #Record the current ADApps to reduce deployment instructions at the end
-$ISLoginAppProvided = ($ADApplicationIDAdmin -ne $null -and $ADMTApplicationIDPortal -ne $null)
+$ISLoginAppProvided = ($ADApplicationIDAdmin -ne "" -and $ADMTApplicationIDPortal -ne "")
 
 $ISLoginAppProvided1 = ($ADApplicationIDAdmin && $ADMTApplicationIDPortal)
 Write-Host "adapidadmin: $ADApplicationIDAdmin"
