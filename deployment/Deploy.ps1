@@ -218,7 +218,8 @@ if($LogoURLico) {
 $ISLoginAppProvided = ($ADApplicationIDAdmin -ne $null -and $ADMTApplicationIDPortal -ne $null)
 
 $ISLoginAppProvided1 = ($ADApplicationIDAdmin && $ADMTApplicationIDPortal)
-
+Write-Host "adapidadmin: $ADApplicationIDAdmin"
+Write-Host "admtapidportal: $ADMTApplicationIDPortal"
 Write-Host "1: $ISLoginAppProvided"
 Write-Host "2: $ISLoginAppProvided1"
 
