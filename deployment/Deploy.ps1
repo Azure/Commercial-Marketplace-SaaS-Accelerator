@@ -92,6 +92,39 @@ Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
 
 $ErrorActionPreference = "Stop"
 $startTime = Get-Date
+#region Select Tenant / Subscription for deployment
+
+$currentContext = az account show | ConvertFrom-Json
+$currentTenant = $currentContext.tenantId
+$currentSubscription = $currentContext.id
+
+#Get TenantID if not set as argument
+if(!($TenantID)) {    
+    Get-AzTenant | Format-Table
+    if (!($TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }    
+}
+else {
+    Write-Host "🔑 Tenant provided: $TenantID"
+}
+
+#Get Azure Subscription if not set as argument
+if(!($AzureSubscriptionID)) {    
+    Get-AzSubscription -TenantId $TenantID | Format-Table
+    if (!($AzureSubscriptionID = Read-Host "⌨  Type your SubscriptionID or press Enter to accept your current one [$currentSubscription]")) { $AzureSubscriptionID = $currentSubscription }
+}
+else {
+    Write-Host "🔑 Azure Subscription provided: $AzureSubscriptionID"
+}
+
+#Set the AZ Cli context
+az account set -s $AzureSubscriptionID
+Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
+
+#endregion
+
+
+
+
 #region Set up Variables and Default Parameters
 
 if ($ResourceGroupForDeployment -eq "") {
@@ -175,6 +208,7 @@ if(!$dotnetversion.StartsWith('6.')) {
 
 
 Write-Host "Starting SaaS Accelerator Deployment..."
+
 
 #region Check If SQL Server Exist
 $sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
@@ -447,14 +481,23 @@ $WebAppNameService=$WebAppNamePrefix+"-asp"
 $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $VnetName=$WebAppNamePrefix+"-vnet"
+$privateSqlEndpointName=$WebAppNamePrefix+"-db-pe"
+$privateKvEndpointName=$WebAppNamePrefix+"-kv-pe"
+$privateSqlDnsZoneName="privatelink.database.windows.net"
+$privateKvDnsZoneName="privatelink.vaultcore.windows.net"
+$privateSqlLink =$WebAppNamePrefix+"-db-link"
+$privateKvlink =$WebAppNamePrefix+"-kv-link"
 $WebSubnetName="web"
+$SqlSubnetName="sql"
+$KvSubnetName="kv"
 $DefaultSubnetName="default"
 
 #keep the space at the end of the string - bug in az cli running on windows powershell truncates last char https://github.com/Azure/azure-cli/issues/10066
 $ADApplicationSecretKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=ADApplicationSecret) "
 $DefaultConnectionKeyVault="@Microsoft.KeyVault(VaultName=$KeyVault;SecretName=DefaultConnection) "
 $ServerUri = $SQLServerName+".database.windows.net"
-$Connection="Server=tcp:"+$ServerUri+";Database="+$SQLDatabaseName+";Authentication=Active Directory Default;"
+$ServerUriPrivate = $SQLServerName+".privatelink.database.windows.net"
+$Connection="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";TrustServerCertificate=True;Authentication=Active Directory Managed Identity;"
 
 Write-host "   🔵 Resource Group"
 Write-host "      ➡️ Create Resource Group"
@@ -464,7 +507,8 @@ Write-host "      ➡️ Create VNET and Subnet"
 az network vnet create --resource-group $ResourceGroupForDeployment --name $VnetName --address-prefixes "10.0.0.0/20" --output $azCliOutput
 az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $DefaultSubnetName --address-prefixes "10.0.0.0/24" --output $azCliOutput
 az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $WebSubnetName --address-prefixes "10.0.1.0/24" --service-endpoints Microsoft.Sql Microsoft.KeyVault --delegations Microsoft.Web/serverfarms  --output $azCliOutput 
-
+az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $SqlSubnetName --address-prefixes "10.0.2.0/24"  --output $azCliOutput 
+az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $KvSubnetName --address-prefixes "10.0.3.0/24"   --output $azCliOutput 
 
 Write-host "      ➡️ Create Sql Server"
 $userId = az ad signed-in-user show --query id -o tsv 
@@ -555,6 +599,43 @@ Remove-Item -Path script.sql
 #Remove-Item -Path ../Publish -recurse -Force
 
 #endregion
+
+#region Create SQL Private Endpoints
+# Get SQL Server
+$sqlServerId=az sql server show --name $SQLServerName --resource-group $ResourceGroupForDeployment --query id -o tsv
+
+# Create a private endpoint
+az network private-endpoint create --name $privateSqlEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $SqlSubnetName --private-connection-resource-id $sqlServerId --group-ids sqlServer --connection-name sqlConnection
+
+
+# Create a SQL private DNS zone
+az network private-dns zone create --name $privateSqlDnsZoneName --resource-group $ResourceGroupForDeployment
+
+# Link the SQL private DNS zone to the VNet
+az network private-dns link vnet create --name $privateSqlLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateSqlDnsZoneName --registration-enabled false
+
+az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateSqlEndpointName --name "sql-zone-group"   --private-dns-zone $privateSqlDnsZoneName   --zone-name "sqlserver"
+#endregion
+
+
+#region Create KV Private Endpoints
+# Get KV Server
+$keyVaultId=az keyvault show --name $KeyVault --resource-group $ResourceGroupForDeployment --query id -o tsv
+
+# Create a KV private endpoint
+az network private-endpoint create --name $privateKvEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $KvSubnetName --private-connection-resource-id $keyVaultId --group-ids vault  --connection-name kvConnection
+
+
+# Create a KV private DNS zone
+az network private-dns zone create --name $privateKvDnsZoneName --resource-group $ResourceGroupForDeployment
+
+# Link the KV private DNS zone to the VNet
+az network private-dns link vnet create --name $privateKvLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateKvDnsZoneName --registration-enabled false
+
+az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateKvEndpointName --name "Kv-zone-group"   --private-dns-zone $privateKvDnsZoneName   --zone-name "Kv-zone"
+#endregion
+
+
 
 #region Present Output
 
