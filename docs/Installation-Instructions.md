@@ -1,3 +1,10 @@
+---
+
+The SaaS Accelerator is offered under the MIT License as open source software and is <ins>not supported</ins> by Microsoft. <br>
+If you need help with the accelerator or would like to report defects or feature requests, use the Issues feature on this GitHub repository.
+
+---
+
 # Install the Azure Marketplace SaaS Accelerator using Azure Cloud Shell
 
 <!-- no toc -->
@@ -32,7 +39,7 @@ chmod +x dotnet-install.sh; `
 ./dotnet-install.sh -version 6.0.417; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
 dotnet tool install --global dotnet-ef --version 6.0.1; `
-git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.6.1 --depth 1; `
+git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 7.6.2 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
  -WebAppNamePrefix "SOME-UNIQUE-STRING" `
@@ -60,6 +67,7 @@ The script above will perform the following actions.
  -ADMTApplicationID "xxxx-xxx-xxx-xxx-xxxx" `
  -LogoURLpng "https://company_com/company_logo.png" `
  -LogoURLico "https://company_com/company_logo.ico" `
+ -IsAdminPortalMultiTenant "true" `
  -Quiet
  ```
 
@@ -100,6 +108,7 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 | SQLServerName | A unique name of the database server (without database.windows.net). Default: `WebAppNamePrefix`-sql |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
+| IsAdminPortalMultiTenant | Set to `true` if you want to enable multi-tenant support for the admin portal. Default: `false` |
 | Quiet | Disable verbose output when running the script
 
 ## Setting up a development environment
