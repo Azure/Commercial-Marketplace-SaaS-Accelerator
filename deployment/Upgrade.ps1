@@ -5,6 +5,11 @@
 # Powershell script to deploy the resources - Customer portal, Publisher portal and the Azure SQL Database
 #
 
+Param(  
+   [string][Parameter(Mandatory)]$WebAppNamePrefix, # Prefix used for creating web applications
+   [string][Parameter(Mandatory)]$ResourceGroupForDeployment # Name of the resource group to deploy the resources
+)
+
 # Define the message
 $message = @"
 The SaaS Accelerator is offered under the MIT License as open source software and is not supported by Microsoft.
@@ -28,11 +33,6 @@ if ($response -ne 'Y' -and $response -ne 'y') {
 
 # Proceed if the user agrees
 Write-Host "Thank you for agreeing. Proceeding with the script..." -ForegroundColor Green
-
-Param(  
-   [string][Parameter(Mandatory)]$WebAppNamePrefix, # Prefix used for creating web applications
-   [string][Parameter(Mandatory)]$ResourceGroupForDeployment # Name of the resource group to deploy the resources
-)
 
 Function String-Between
 {

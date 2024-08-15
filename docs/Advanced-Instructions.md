@@ -85,6 +85,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | SQLServerName | A unique name of the database server (without database.windows.net). Default: `WebAppNamePrefix`-sql |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
+| IsAdminPortalMultiTenant | Set to `true` if you want to enable multi-tenant support for the admin portal. Default: `false` |
 | Quiet | Disable verbose output when running the script
 
 
