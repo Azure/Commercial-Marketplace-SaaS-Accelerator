@@ -199,8 +199,8 @@ if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
 
 $dotnetversion = dotnet --version
 
-if(!$dotnetversion.StartsWith('6.')) {
-    Throw "🛑 Dotnet 6 not installed. Install dotnet6 and re-run the script."
+if(!$dotnetversion.StartsWith('8.')) {
+    Throw "🛑 Dotnet 8 not installed. Install dotnet8 and re-run the script."
     Exit
 }
 

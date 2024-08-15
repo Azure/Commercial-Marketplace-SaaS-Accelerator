@@ -399,8 +399,7 @@ BEGIN
     INSERT INTO ApplicationConfiguration (Name,Value,Description)
     VALUES ('FaviconFile','','Favicon File')
 END
-GO
-");
+GO");
             migrationBuilder.Sql(@$"
 INSERT INTO EmailTemplate
 	([Status],[Description],[InsertDate],[TemplateBody],[Subject],[IsActive])
@@ -667,7 +666,5 @@ VALUES
       </center>
    </body>
 </html>
-";
-
-    }
+";}
 }
