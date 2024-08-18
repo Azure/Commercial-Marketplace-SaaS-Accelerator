@@ -22,10 +22,14 @@ public class BaseController : Controller
     /// </summary>
     /// 
     private readonly ApplicationConfigService applicationConfigService;
-    public BaseController(IApplicationConfigRepository applicationConfigRepository)
+
+    private readonly IAppVersionService appVersionService;
+    public BaseController(IApplicationConfigRepository applicationConfigRepository, 
+                          IAppVersionService appVersionService)
     {
         this.applicationConfigService = new ApplicationConfigService(applicationConfigRepository);
         this.CheckAuthentication();
+        this.appVersionService = appVersionService;
     }
 
     public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -42,7 +46,7 @@ public class BaseController : Controller
                 TempData["SupportMeteredBilling"] = "0";
             }
         }
-
+        ViewData["AppVersion"] = appVersionService?.Version;
         base.OnActionExecuting(filterContext);
     }
     /// <summary>
@@ -129,4 +133,15 @@ public class BaseController : Controller
         }
     }
 
+
+    /// <summary>
+    /// Gets the Application Version
+    /// </summary>
+    /// <value>
+    /// The name of the Application Version.
+    /// </value>
+    public string GetAppReleaseVersion()
+    {
+        return this.appVersionService?.Version;
+    }
 }

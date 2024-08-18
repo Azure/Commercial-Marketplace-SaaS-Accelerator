@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 using System;
+using System.Diagnostics;
+using System.Reflection;
 using Azure.Identity;
 using Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
@@ -24,6 +26,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Marketplace.Metering;
 using Microsoft.Marketplace.SaaS;
@@ -71,20 +74,22 @@ public class Startup
             ClientId = this.Configuration["SaaSApiConfiguration:ClientId"] ?? Guid.Empty.ToString(),
             ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"] ?? String.Empty,
             FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
-            MTClientIdAdmin = this.Configuration["SaaSApiConfiguration:MTClientIdAdmin"] ?? Guid.Empty.ToString(),
-            MTClientIdPortal = this.Configuration["SaaSApiConfiguration:MTClientIdPortal"] ?? Guid.Empty.ToString(),
+            MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"] ?? Guid.Empty.ToString(),
             FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
             GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
             Resource = this.Configuration["SaaSApiConfiguration:Resource"],
             SaaSAppUrl = this.Configuration["SaaSApiConfiguration:SaaSAppUrl"],
             SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
-            TenantId = this.Configuration["SaaSApiConfiguration:TenantId"] ?? Guid.Empty.ToString()
+            TenantId = this.Configuration["SaaSApiConfiguration:TenantId"] ?? Guid.Empty.ToString(),
+            IsAdminPortalMultiTenant = this.Configuration["SaaSApiConfiguration:IsAdminPortalMultiTenant"]
         };
         var knownUsers = new KnownUsersModel()
         {
             KnownUsers = this.Configuration["KnownUsers"],
         };
         var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
+        var boolMultiTenant = config.IsAdminPortalMultiTenant?.ToLower().Trim() ?? "false";
+
 
 
         services
@@ -96,8 +101,16 @@ public class Startup
             })
             .AddOpenIdConnect(options =>
             {
-                options.Authority = $"{config.AdAuthenticationEndPoint}/common/v2.0";
-                options.ClientId = config.MTClientIdAdmin;
+
+                if (boolMultiTenant == "false")
+                {
+                    options.Authority = $"{config.AdAuthenticationEndPoint}/{config.TenantId}/v2.0";
+                }
+                else
+                {
+                    options.Authority = $"{config.AdAuthenticationEndPoint}/common/v2.0";
+                }
+                options.ClientId = config.MTClientId;
                 options.ResponseType = OpenIdConnectResponseType.IdToken;
                 options.CallbackPath = "/Home/Index";
                 options.SignedOutRedirectUri = config.SignedOutRedirectUri;
@@ -127,8 +140,10 @@ public class Startup
             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new SaaSClientLogger<MeteredBillingApiService>()))
             .AddSingleton<SaaSApiClientConfiguration>(config)
             .AddSingleton<KnownUsersModel>(knownUsers);
-            
 
+        // Read the versionInfo and Add to services
+        var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+        services.AddSingleton<IAppVersionService>(new AppVersionService(versionInfo));
 
 
         services
@@ -216,6 +231,7 @@ public class Startup
         services.AddScoped<IEventsRepository, EventsRepository>();
         services.AddScoped<KnownUserAttribute>();
         services.AddScoped<IEmailService, SMTPEmailService>();
+        services.AddScoped<ISAGitReleasesService, SAGitReleasesService>();
         services.AddScoped<ISchedulerFrequencyRepository, SchedulerFrequencyRepository>();
         services.AddScoped<IMeteredPlanSchedulerManagementRepository, MeteredPlanSchedulerManagementRepository>();
         services.AddScoped<ISchedulerManagerViewRepository, SchedulerManagerViewRepository>();
