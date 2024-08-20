@@ -29,7 +29,7 @@ env:
   CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.CustomerSite/publish'
   PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/publish'
   SQLSCRIPT_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/publish'
-  DOTNET_CORE_VERSION: '8.0.x'
+  DOTNET_CORE_VERSION: '8.0.303'
   
 jobs:
   deployandtest:
