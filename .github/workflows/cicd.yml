@@ -29,7 +29,7 @@ env:
   CUSTOMER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.CustomerSite/publish'
   PUBLISHER_AZURE_WEBAPP_PACKAGE_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/publish'
   SQLSCRIPT_PATH: './src/Marketplace.SaaS.Accelerator.AdminSite/publish'
-  DOTNET_CORE_VERSION: '6.0.x'
+  DOTNET_CORE_VERSION: '8.0.303'
   
 jobs:
   deployandtest:
@@ -84,7 +84,7 @@ jobs:
       shell: pwsh
       run: |
             Write-Host "dotnet tools restore"
-            dotnet tool install --global dotnet-ef --version 6.0.1
+            dotnet tool install --global dotnet-ef --version 8.0.0
             
             Write-Host "Set to the Admin site connection string"
             $sqlServerName = "${{ secrets.SQL_SERVER_NAME }}"
