@@ -29,6 +29,8 @@ using Microsoft.Marketplace.SaaS;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
+
 
 namespace Marketplace.SaaS.Accelerator.CustomerSite;
 
