@@ -10,6 +10,7 @@ using Marketplace.SaaS.Accelerator.DataAccess.Services;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Helpers;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
 using Microsoft.AspNetCore.Authentication;
@@ -70,6 +71,7 @@ public class Startup
             ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
             ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
             MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],
+            KeyVault = this.Configuration["SaaSApiConfiguration:KeyVault"],
             FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
             FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
             GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
@@ -79,7 +81,17 @@ public class Startup
             TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
             Environment = this.Configuration["SaaSApiConfiguration:Environment"]
         };
-        var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
+
+        string keyVaultUrl = $"https://{config.KeyVault}.vault.azure.net/";
+
+        string certificateName = "pfx-cert";
+        string certificatePassword = "pfx-pwd";
+
+        var certHelper = new CertificateHelper(keyVaultUrl, certificateName, certificatePassword);
+
+        X509Certificate2 certificate = certHelper.GetCertificate();
+
+        var creds = new ClientCertificateCredential(config.TenantId.ToString(), config.ClientId.ToString(), certificate);
 
         services
             .AddAuthentication(options =>
