@@ -10,7 +10,6 @@ using Marketplace.SaaS.Accelerator.DataAccess.Services;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Services;
-using Marketplace.SaaS.Accelerator.Services.Helpers;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
 using Microsoft.AspNetCore.Authentication;
