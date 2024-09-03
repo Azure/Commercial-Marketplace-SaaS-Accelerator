@@ -10,7 +10,7 @@ env:
   CUSTOMER_PROJECT: './src/CustomerSite/CustomerSite.csproj'
   PUBLISHER_PROJECT: './src/AdminSite/AdminSite.csproj'
   SERVICES_TEST_PROJECT: './src/Services.Test/Services.Test.csproj'
-  DOTNET_CORE_VERSION: '6.0.x'
+  DOTNET_CORE_VERSION: '8.0.303'
   
 jobs:
   BuildApps:

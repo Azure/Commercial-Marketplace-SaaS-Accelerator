@@ -25,8 +25,7 @@ INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'EnableMonthlyMeterSchedules', N'False', N'This will enable to run Monthly meter scheduled items')
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'EnableYearlyMeterSchedules', N'False', N'This will enable to run Yearly meter scheduled items')
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'EnableOneTimeMeterSchedules', N'False', N'This will enable to run OneTime meter scheduled items')
-GO
-");
+GO");
         }
     }
 }
