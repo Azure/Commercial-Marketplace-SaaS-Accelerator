@@ -102,13 +102,7 @@ public class EmailHelper
             copyToCustomer = Convert.ToBoolean(eventData.CopyToCustomer);
         }
 
-        if (string.IsNullOrEmpty(toReceipents))
-        {
-            throw new Exception("Error while sending an email, please check the configuration. To email empty");
-        }
-
         return FinalizeContentEmail(subject, body, ccReceipents, bccReceipents, toReceipents, copyToCustomer);
-        
     }
     /// <summary>
     /// Prepares the content of the scheduler email.
@@ -146,9 +140,9 @@ public class EmailHelper
         emailContent.CopyToCustomer = copyToCustomer;
         emailContent.FromEmail = this.applicationConfigRepository.GetValueByName("SMTPFromEmail");
         emailContent.Password = this.applicationConfigRepository.GetValueByName("SMTPPassword");
-        emailContent.SSL = bool.TryParse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"), out bool smtpssl) ? smtpssl : throw new MarketplaceException("Invalid settings : SMTP SSL");
+        emailContent.SSL = bool.TryParse(this.applicationConfigRepository.GetValueByName("SMTPSslEnabled"), out bool smtpssl) ? smtpssl : false;
         emailContent.UserName = this.applicationConfigRepository.GetValueByName("SMTPUserName");
-        emailContent.Port = int.TryParse(this.applicationConfigRepository.GetValueByName("SMTPPort"), out int smtpport) ? smtpport : throw new MarketplaceException("Invalid settings : SMTP Port");
+        emailContent.Port = int.TryParse(this.applicationConfigRepository.GetValueByName("SMTPPort"), out int smtpport) ? smtpport : 0;
         emailContent.SMTPHost = this.applicationConfigRepository.GetValueByName("SMTPHost");
         return emailContent;
     }
