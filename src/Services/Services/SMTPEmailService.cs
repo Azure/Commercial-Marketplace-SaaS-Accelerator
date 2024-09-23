@@ -81,21 +81,25 @@ public class SMTPEmailService : IEmailService
                         }
                     }
 
-                    //send message
+                    //send email
                     smtp.Send(mail);
                     this.applicationLogService.AddApplicationLog($"{emailContent?.Subject}: Email sent succesfully!").ConfigureAwait(false);
                 }
             }
             catch (SmtpException smtpEx)
             {
-                // Handle SMTP specific exceptions here
-                applicationLogService.AddApplicationLog($"SMTP Error: {emailContent?.Subject} {smtpEx.Message}").ConfigureAwait(false);
+                // Log SMTP specific exceptions here
+                applicationLogService.AddApplicationLog($"{emailContent?.Subject}: SMTP exception {smtpEx.Message}.").ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                // Handle other general exceptions here
-                applicationLogService.AddApplicationLog($"Error in Email send: {emailContent?.Subject} {ex.Message}").ConfigureAwait(false);
+                // Log other general exceptions here
+                applicationLogService.AddApplicationLog($"{emailContent?.Subject}: General exception {ex.Message}.").ConfigureAwait(false);
             }
+        }
+        else
+        {
+            applicationLogService.AddApplicationLog($"{emailContent?.Subject}: Email is Not sent because the To email address is empty. Update at the Email Template or Plan details page.").ConfigureAwait(false);
         }
     }
 }
