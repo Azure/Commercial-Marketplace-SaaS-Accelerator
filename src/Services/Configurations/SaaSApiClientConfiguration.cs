@@ -113,5 +113,12 @@ public class SaaSApiClientConfiguration
     /// </value>
     public string IsAdminPortalMultiTenant { get; set; }
 
+    /// <summary>
+    /// Gets or sets the keyvault name
+    /// </summary>
+    /// <value>
+    /// The Authentication end point.
+    /// </value>
+    public string KeyVault { get; set; }
 
 }

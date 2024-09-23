@@ -29,6 +29,8 @@ using Microsoft.Marketplace.SaaS;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
+
 
 namespace Marketplace.SaaS.Accelerator.CustomerSite;
 
@@ -70,6 +72,7 @@ public class Startup
             ClientId = this.Configuration["SaaSApiConfiguration:ClientId"],
             ClientSecret = this.Configuration["SaaSApiConfiguration:ClientSecret"],
             MTClientId = this.Configuration["SaaSApiConfiguration:MTClientId"],
+            KeyVault = this.Configuration["SaaSApiConfiguration:KeyVault"],
             FulFillmentAPIBaseURL = this.Configuration["SaaSApiConfiguration:FulFillmentAPIBaseURL"],
             FulFillmentAPIVersion = this.Configuration["SaaSApiConfiguration:FulFillmentAPIVersion"],
             GrantType = this.Configuration["SaaSApiConfiguration:GrantType"],
@@ -79,7 +82,17 @@ public class Startup
             TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
             Environment = this.Configuration["SaaSApiConfiguration:Environment"]
         };
-        var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
+
+        string keyVaultUrl = $"https://{config.KeyVault}.vault.azure.net/";
+
+        string certificateName = "pfx-cert";
+        string certificatePassword = "pfx-pwd";
+
+        var certHelper = new CertificateHelper(keyVaultUrl, certificateName, certificatePassword);
+
+        X509Certificate2 certificate = certHelper.GetCertificate();
+
+        var creds = new ClientCertificateCredential(config.TenantId.ToString(), config.ClientId.ToString(), certificate);
 
         services
             .AddAuthentication(options =>

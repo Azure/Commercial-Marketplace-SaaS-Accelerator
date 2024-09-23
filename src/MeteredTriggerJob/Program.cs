@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using Azure.Identity;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
@@ -38,10 +39,19 @@ class Program
             ClientSecret = configuration["SaaSApiConfiguration:ClientSecret"],
             GrantType = configuration["SaaSApiConfiguration:GrantType"],
             Resource = configuration["SaaSApiConfiguration:Resource"],
-            TenantId = configuration["SaaSApiConfiguration:TenantId"]
+            TenantId = configuration["SaaSApiConfiguration:TenantId"],
+            KeyVault = configuration["SaaSApiConfiguration:KeyVault"]
         };
 
-        var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
+        string keyVaultUrl = $"https://{config.KeyVault}.vault.azure.net/";
+        string certificateName = "pfx-cert";
+        string certificatePassword = "pfx-pwd";
+
+        var certHelper = new CertificateHelper(keyVaultUrl, certificateName, certificatePassword);
+
+        X509Certificate2 certificate = certHelper.GetCertificate();
+
+        var creds = new ClientCertificateCredential(config.TenantId.ToString(), config.ClientId.ToString(), certificate);
         var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 
         var services = new ServiceCollection()
