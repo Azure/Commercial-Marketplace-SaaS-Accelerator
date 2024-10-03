@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,20 +14,18 @@ public class AppVersionService : IAppVersionService
 
     public string Version { get; }
 
-    public int? ProductMajorPart { get; }
-
-    public int? ProductMinorPart { get; }
-
-    public int? ProductBuildPart { get; }
-
     /// <summary>
     /// Sets the Application Version.
     /// </summary>
-    public AppVersionService(FileVersionInfo version)
+    public AppVersionService(Version version)
     {
-        Version = version.ProductVersion;
-        ProductMajorPart = version.ProductMajorPart;
-        ProductMinorPart = version.ProductMinorPart;
-        ProductBuildPart = version.ProductBuildPart;
+        if (version != null)
+        {
+            Version = $"{version?.Major}.{version?.Minor}.{version?.Build}";
+        }
+        else
+        {
+            Version = "1.0.0";
+        }
     }
 }

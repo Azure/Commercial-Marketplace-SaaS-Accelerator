@@ -8,11 +8,4 @@ namespace Marketplace.SaaS.Accelerator.Services.Services;
 public interface IAppVersionService
 {
     string Version { get; }
-
-    int? ProductMajorPart { get; }
-
-    int? ProductMinorPart { get; }
-
-    int? ProductBuildPart { get; }
-
 }
