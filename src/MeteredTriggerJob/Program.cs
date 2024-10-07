@@ -42,7 +42,7 @@ class Program
         };
 
         var creds = new ClientSecretCredential(config.TenantId.ToString(), config.ClientId.ToString(), config.ClientSecret);
-        var versionInfo = new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version)
+        var versionInfo = new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version);
 
         var services = new ServiceCollection()
             .AddDbContext<SaasKitContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient)
