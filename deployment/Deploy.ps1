@@ -593,8 +593,7 @@ az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --na
 
 Write-host "   🔵 Disable public network for KV and SQL as we will add Private Endpoints next"
 az sql server update --resource-group $ResourceGroupForDeployment --name $SQLServerName --enable-public-network false
-az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --public-network-access Disabled
-
+	az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --public-network-access Disabled --bypass None
 
 Write-host "   🔵 Clean up"
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
