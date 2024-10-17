@@ -534,7 +534,7 @@ Write-host "      ➡️ Add Secrets"
 az keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --output $azCliOutput
 az keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --output $azCliOutput
 Write-host "      ➡️ Update Firewall"
-az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --default-action Deny --output $azCliOutput
+az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --default-action Deny --public-network-access Disabled --bypass None --output $azCliOutput
 
 Write-host "   🔵 App Service Plan"
 Write-host "      ➡️ Create App Service Plan"
@@ -593,7 +593,6 @@ az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --na
 
 Write-host "   🔵 Disable public network for KV and SQL as we will add Private Endpoints next"
 az sql server update --resource-group $ResourceGroupForDeployment --name $SQLServerName --enable-public-network false
-	az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --public-network-access Disabled --bypass None
 
 Write-host "   🔵 Clean up"
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
