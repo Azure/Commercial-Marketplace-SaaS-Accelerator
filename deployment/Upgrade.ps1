@@ -34,17 +34,35 @@ if ($response -ne 'Y' -and $response -ne 'y') {
 # Proceed if the user agrees
 Write-Host "Thank you for agreeing. Proceeding with the script..." -ForegroundColor Green
 
-Function String-Between
-{
-	[CmdletBinding()]
-	Param(
-		[Parameter(Mandatory=$true)][String]$Source,
-		[Parameter(Mandatory=$true)][String]$Start,
-		[Parameter(Mandatory=$true)][String]$End
-	)
-	$sIndex = $Source.indexOf($Start) + $Start.length
-	$eIndex = $Source.indexOf($End, $sIndex)
-	return $Source.Substring($sIndex, $eIndex-$sIndex)
+# Function String-Between
+# {
+# 	[CmdletBinding()]
+# 	Param(
+# 		[Parameter(Mandatory=$true)][String]$Source,
+# 		[Parameter(Mandatory=$true)][String]$Start,
+# 		[Parameter(Mandatory=$true)][String]$End
+# 	)
+# 	$sIndex = $Source.indexOf($Start) + $Start.length
+# 	$eIndex = $Source.indexOf($End, $sIndex)
+# 	return $Source.Substring($sIndex, $eIndex-$sIndex)
+# }
+
+Function String-Between {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)][String]$Source,
+        [Parameter(Mandatory=$true)][String]$Start,
+        [Parameter(Mandatory=$true)][String]$End
+    )
+
+    $pattern = [regex]::Escape($Start) + '(.*?)' + [regex]::Escape($End)
+    $match = [regex]::Match($Source, $pattern)
+    
+    if ($match.Success) {
+        return $match.Groups[1].Value
+    } else {
+        throw "Could not find the value between '$Start' and '$End' in the source."
+    }
 }
 
 $ErrorActionPreference = "Stop"
@@ -60,11 +78,27 @@ $ConnectionString = az keyvault secret show `
 	--query "{value:value}" `
 	--output tsv
 
-#Extract components from ConnectionString since Invoke-Sqlcmd needs them separately
-$Server = String-Between -source $ConnectionString -start "Data Source=" -end ";"
-$Database = String-Between -source $ConnectionString -start "Initial Catalog=" -end ";"
-$User = String-Between -source $ConnectionString -start "User Id=" -end ";"
-$Pass = String-Between -source $ConnectionString -start "Password=" -end ";"
+# #Extract components from ConnectionString since Invoke-Sqlcmd needs them separately
+# $Server = String-Between -source $ConnectionString -start "Data Source=" -end ";"
+# $Database = String-Between -source $ConnectionString -start "Initial Catalog=" -end ";"
+# $User = String-Between -source $ConnectionString -start "User Id=" -end ";"
+# $Pass = String-Between -source $ConnectionString -start "Password=" -end ";"
+
+try {
+    $Server = String-Between -source $ConnectionString -start "Server=" -end ";"
+    $Database = String-Between -source $ConnectionString -start "Initial Catalog=" -end ";"
+    $User = String-Between -source $ConnectionString -start "User ID=" -end ";"
+    $Pass = String-Between -source $ConnectionString -start "Password=" -end ";"
+
+    # 抽出した値を確認のため出力
+    Write-Host "Server: $Server"
+    Write-Host "Database: $Database"
+    Write-Host "User: $User"
+    Write-Host "Password: $Pass"
+} catch {
+    Write-Host "Error extracting values: $_" -ForegroundColor Red
+}
+
 
 Write-host "## Retrieved ConnectionString from KeyVault"
 Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
