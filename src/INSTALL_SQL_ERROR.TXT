@@ -1,0 +1,51 @@
+﻿e": "Microsoft.Network/virtualNetworks/subnets"
+}
+      ➡️ Create Sql Server
+(MissingSubscriptionRegistration) The subscription is not registered to use namespace 'Microsoft.Sql'. See https://aka.ms/rps-not-found for how to register subscriptions.
+Code: MissingSubscriptionRegistration
+Message: The subscription is not registered to use namespace 'Microsoft.Sql'. See https://aka.ms/rps-not-found for how to register subscriptions.
+Exception Details:      (MissingSubscriptionRegistration) The subscription is not registered to use namespace 'Microsoft.Sql'. See https://aka.ms/rps-not-found for how to register subscriptions.
+        Code: MissingSubscriptionRegistration
+        Message: The subscription is not registered to use namespace 'Microsoft.Sql'. See https://aka.ms/rps-not-found for how to register subscriptions.
+        Target: Microsoft.Sql
+
+      ➡️ Set minimalTlsVersion to 1.2
+(ResourceNotFound) The Resource 'Microsoft.Sql/servers/WflowSaasOffer2024-sql' under resource group 'wflow-saasoffer' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix
+Code: ResourceNotFound
+Message: The Resource 'Microsoft.Sql/servers/WflowSaasOffer2024-sql' under resource group 'wflow-saasoffer' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix
+      ➡️ Add SQL Server Firewall rules
+(ResourceNotFound) The Resource 'Microsoft.Sql/servers/WflowSaasOffer2024-sql' under resource group 'wflow-saasoffer' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix
+Code: ResourceNotFound
+Message: The Resource 'Microsoft.Sql/servers/WflowSaasOffer2024-sql' under resource group 'wflow-saasoffer' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix
+    
+    ➡️ Create SQL DB
+(ResourceNotFound) The Resource 'Microsoft.Sql/servers/WflowSaasOffer2024-sql' under resource group 'wflow-saasoffer' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix
+Code: ResourceNotFound
+Message: The Resource 'Microsoft.Sql/servers/WflowSaasOffer2024-sql' under resource group 'wflow-saasoffer' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix
+   🔵 KeyVault
+   
+   ➡️ Create KeyVault
+The specified vault: WflowSaasOffer2024-kv already exists
+      ➡️ Add Secrets
+(Forbidden) Client address is not authorized and caller is not a trusted service.
+Client address: 48.216.131.109
+Caller: appid=b677c290-cf4b-4a8e-a60e-91ba650a4abe;oid=87118c92-bee3-4ce8-ae50-4e9588bd0be4;iss=https://sts.windows.net/97d1fb75-540a-436c-a547-6acd9bf286b2/
+Vault: WflowSaasOffer2024-kv;location=centralus
+Code: Forbidden
+Message: Client address is not authorized and caller is not a trusted service.
+Client address: 48.216.131.109
+Caller: appid=b677c290-cf4b-4a8e-a60e-91ba650a4abe;oid=87118c92-bee3-4ce8-ae50-4e9588bd0be4;iss=https://sts.windows.net/97d1fb75-540a-436c-a547-6acd9bf286b2/
+Vault: WflowSaasOffer2024-kv;location=centralus
+Inner error: {
+    "code": "ForbiddenByFirewall"
+}
+(Forbidden) Client address is not authorized and caller is not a trusted service.
+Client address: 48.216.131.109
+Caller: appid=b677c290-cf4b-4a8e-a60e-91ba650a4abe;oid=87118c92-bee3-4ce8-ae50-4e9588bd0be4;iss=https://sts.windows.net/97d1fb75-540a-436c-a547-6acd9bf286b2/
+Vault: WflowSaasOffer2024-kv;location=centralus
+Code: Forbidden
+Message: Client address is not authorized and caller is not a trusted service.
+Client address: 48.216.131.109
+Caller: appid=b677c290-cf4b-4a8e-a60e-91ba650a4abe;oid=87118c92-bee3-4ce8-ae50-4e9588bd0be4;iss=https://sts.windows.net/97d1fb75-540a-436c-a547-6acd9bf286b2/
+Vault: WflowSaasOffer2024-kv;location=centralus
+Inner error: {

@@ -17,7 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Test", "Services.T
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6247B9F5-5DA1-4395-8C35-41C2D9CF01F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.Test", "UI.Test\UI.Test.csproj", "{BDB5EB1B-F561-478F-89F3-AF887E8ECB97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI.Test", "UI.Test\UI.Test.csproj", "{BDB5EB1B-F561-478F-89F3-AF887E8ECB97}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MIKENOTES", "MIKENOTES", "{C722A283-2B82-4520-910D-D87A6A24475B}"
+	ProjectSection(SolutionItems) = preProject
+		Install-AzCloudShell.ps1 = Install-AzCloudShell.ps1
+		INSTALL_SQL_ERROR.TXT = INSTALL_SQL_ERROR.TXT
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
