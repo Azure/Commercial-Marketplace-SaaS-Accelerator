@@ -539,7 +539,7 @@ az keyvault network-rule add --name $KeyVault --resource-group $ResourceGroupFor
 
 Write-host "   🔵 App Service Plan"
 Write-host "      ➡️ Create App Service Plan"
-az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1 --output $azCliOutput
+az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1 ii-is-linux --output $azCliOutput
 
 Write-host "   🔵 Admin Portal WebApp"
 Write-host "      ➡️ Create Web App"
