@@ -109,7 +109,7 @@ jobs:
             Invoke-Sqlcmd -InputFile $sqlscriptPath -ServerInstance $sqlServerFullName -database $sqlDatabaseName -Username $sqlAdminLogin -Password $sqlAdminPassword 
             Write-Host "Database updated successfully"
   
-
+   
     # Run Admin APP UI tests
     - name: Admin App UI Tests
       run: AppSetting__adminAppURL=${{ secrets.UI_TEST_ADMIN_APP_URL }} AppSetting__customerAppURL=${{ secrets.UI_TEST_CUSTOMER_APP_URL }} AppSetting__loginUserName=${{ secrets.UI_TEST_APP_USERNAME }} AppSetting__password=${{ secrets.UI_TEST_APP_PASSWORD }} AppSetting__landingPageToken=${{ secrets.UI_TEST_LANDINGPAGE_TOKEN }} dotnet test ${{ env.UI_TEST_PROJECT }} --filter TestCategory="AdminApp" -v n
