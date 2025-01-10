@@ -231,11 +231,22 @@ public class SchedulerController : BaseController
     {
         try
         {
-            //Get AMP Plan ID from Subscription Detail
+            //Retrieve the active subscription detail to get the AMP Plan ID
             var subscriptionDetail = this.subscriptionService.GetActiveSubscriptionsWithMeteredPlan().Where(s => s.Id == Convert.ToInt32(schedulerUsageViewModel.SelectedSubscription)).FirstOrDefault();
-            // Get Plan detail by AMP Plan ID
+            // Check if subscriptionDetail is null
+            if (subscriptionDetail == null)
+            {
+                this.logger.LogError("Subscription detail not found for the given subscription ID.");
+                return this.View("Error", "Subscription detail not found.");
+            }
+            // Retrieve the active Plan detail by AMP Plan ID
             var selectedPlan = this.plansRepository.GetById(subscriptionDetail.AmpplanId);
-
+            // Check if subscriptionDetail is null
+            if (selectedPlan == null)
+            {
+                this.logger.LogError("Plan detail not found for the given subscription.");
+                return this.View("Error", "Plan detail not found.");
+            }
 
             MeteredPlanSchedulerManagementModel schedulerManagement = new MeteredPlanSchedulerManagementModel()
             {
