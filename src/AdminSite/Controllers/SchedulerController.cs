@@ -42,6 +42,11 @@ public class SchedulerController : BaseController
     private SubscriptionService subscriptionService;
 
     /// <summary>
+    /// the plan service
+    /// </summary>
+    private IPlansRepository plansRepository;
+
+    /// <summary>
     /// the user repository
     /// </summary>
     private readonly IUsersRepository usersRepository;
@@ -74,7 +79,7 @@ public class SchedulerController : BaseController
         this.meteredRepository = meteredRepository;
         this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository,applicationConfigRepository);
         this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
-
+        this.plansRepository = plansRepository;
     }
 
     /// <summary>
@@ -134,8 +139,6 @@ public class SchedulerController : BaseController
                     Value = item.Id.ToString(),
                 });
             }
-            // Create Plan Dropdown list
-            List<SelectListItem> PlanList = new List<SelectListItem>();
             List<SelectListItem> DimensionsList = new List<SelectListItem>();
 
             schedulerUsageViewModel.DimensionsList = new SelectList(DimensionsList, "Value", "Text");
@@ -228,13 +231,18 @@ public class SchedulerController : BaseController
     {
         try
         {
-            var selectedDimension = this.meteredRepository.Get(int.Parse(schedulerUsageViewModel.SelectedDimension));
+            //Get AMP Plan ID from Subscription Detail
+            var subscriptionDetail = this.subscriptionService.GetActiveSubscriptionsWithMeteredPlan().Where(s => s.Id == Convert.ToInt32(schedulerUsageViewModel.SelectedSubscription)).FirstOrDefault();
+            // Get Plan detail by AMP Plan ID
+            var selectedPlan = this.plansRepository.GetById(subscriptionDetail.AmpplanId);
+
+
             MeteredPlanSchedulerManagementModel schedulerManagement = new MeteredPlanSchedulerManagementModel()
             {
                 FrequencyId = Convert.ToInt32(schedulerUsageViewModel.SelectedSchedulerFrequency),
                 SchedulerName = Convert.ToString(schedulerUsageViewModel.SchedulerName),
                 SubscriptionId = Convert.ToInt32(schedulerUsageViewModel.SelectedSubscription),
-                PlanId = Convert.ToInt32(selectedDimension.PlanId),
+                PlanId = Convert.ToInt32(selectedPlan.Id),
                 DimensionId = Convert.ToInt32(schedulerUsageViewModel.SelectedDimension),
                 Quantity = Convert.ToDouble(schedulerUsageViewModel.Quantity),
                 StartDate = schedulerUsageViewModel.FirstRunDate.AddHours(schedulerUsageViewModel.TimezoneOffset)
