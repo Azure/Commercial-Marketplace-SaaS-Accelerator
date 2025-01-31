@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.DataAccess.Services;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
@@ -41,6 +42,23 @@ public class SchedulerController : BaseController
     /// </summary>
     private SubscriptionService subscriptionService;
 
+    private PlanService plansService;
+
+    /// <summary>
+    /// the plan service
+    /// </summary>
+    private IPlansRepository plansRepository;
+
+    /// <summary>
+    /// the offer repository
+    /// </summary>
+    private readonly IOffersRepository offerRepository;
+
+    /// <summary>
+    /// the offer attribute repository
+    /// </summary>
+    private readonly IOfferAttributesRepository offerAttributeRepository;
+
     /// <summary>
     /// the user repository
     /// </summary>
@@ -66,7 +84,11 @@ public class SchedulerController : BaseController
         IUsersRepository usersRepository,
         SaaSClientLogger<SchedulerController> logger,
         IAppVersionService appVersionService,
-        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,IApplicationConfigRepository applicationConfigRepository):base(applicationConfigRepository, appVersionService)
+        ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository,
+        IApplicationConfigRepository applicationConfigRepository,
+        IOfferAttributesRepository offerAttributeRepository,
+        IOffersRepository offerRepository
+        ) :base(applicationConfigRepository, appVersionService)
 
     {
         this.usersRepository = usersRepository;
@@ -74,6 +96,10 @@ public class SchedulerController : BaseController
         this.meteredRepository = meteredRepository;
         this.schedulerService = new MeteredPlanSchedulerManagementService(frequencyRepository, schedulerRepository, schedulerViewRepository,subscriptionUsageLogsRepository,applicationConfigRepository);
         this.subscriptionService = new SubscriptionService(subscriptionRepository,plansRepository);
+        this.plansRepository = plansRepository;
+        this.offerAttributeRepository = offerAttributeRepository;
+        this.offerRepository = offerRepository;
+        this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
 
     }
 
@@ -134,8 +160,6 @@ public class SchedulerController : BaseController
                     Value = item.Id.ToString(),
                 });
             }
-            // Create Plan Dropdown list
-            List<SelectListItem> PlanList = new List<SelectListItem>();
             List<SelectListItem> DimensionsList = new List<SelectListItem>();
 
             schedulerUsageViewModel.DimensionsList = new SelectList(DimensionsList, "Value", "Text");
@@ -228,13 +252,30 @@ public class SchedulerController : BaseController
     {
         try
         {
-            var selectedDimension = this.meteredRepository.Get(int.Parse(schedulerUsageViewModel.SelectedDimension));
+            //Retrieve the active subscription detail to get the AMP Plan ID
+            var subscriptionDetail = this.subscriptionService.GetActiveSubscriptionsWithMeteredPlan().Where(s => s.Id == Convert.ToInt32(schedulerUsageViewModel.SelectedSubscription)).FirstOrDefault();
+            // Check if subscriptionDetail is null
+            if (subscriptionDetail == null)
+            {
+                this.logger.LogError("Subscription detail not found for the given subscription ID.");
+                return this.View("Error", "Subscription detail not found.");
+            }
+            // Retrieve the active Plan detail by AMP Plan ID
+
+            var selectedPlan = this.plansService.GetPlansModelByAmpPlanIdOfferId(subscriptionDetail.AmpplanId, subscriptionDetail.AmpOfferId);
+            // Check if Plan is null
+            if (selectedPlan == null)
+            {
+                this.logger.LogError("Plan detail not found for the given subscription.");
+                return this.View("Error", "Plan detail not found.");
+            }
+
             MeteredPlanSchedulerManagementModel schedulerManagement = new MeteredPlanSchedulerManagementModel()
             {
                 FrequencyId = Convert.ToInt32(schedulerUsageViewModel.SelectedSchedulerFrequency),
                 SchedulerName = Convert.ToString(schedulerUsageViewModel.SchedulerName),
                 SubscriptionId = Convert.ToInt32(schedulerUsageViewModel.SelectedSubscription),
-                PlanId = Convert.ToInt32(selectedDimension.PlanId),
+                PlanId = Convert.ToInt32(selectedPlan.Id),
                 DimensionId = Convert.ToInt32(schedulerUsageViewModel.SelectedDimension),
                 Quantity = Convert.ToDouble(schedulerUsageViewModel.Quantity),
                 StartDate = schedulerUsageViewModel.FirstRunDate.AddHours(schedulerUsageViewModel.TimezoneOffset)

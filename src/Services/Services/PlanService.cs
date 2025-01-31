@@ -227,4 +227,26 @@ public class PlanService
 
 
     }
+
+    /// <summary>
+    /// <param name="ampOfferId"></param>
+    /// <paramref name="ampPlanId"></paramre>
+
+    public PlansModel GetPlansModelByAmpPlanIdOfferId(string ampPlanId,string ampOfferId)
+    {
+        var offer=this.offerRepository.GetAll().Where(o => o.OfferId == ampOfferId).FirstOrDefault();
+        var plan = this.plansRepository.Get().Where(p => p.PlanId==ampPlanId && p.OfferId == offer.OfferGuid).FirstOrDefault();
+        return new PlansModel
+        {
+            PlanId = plan.PlanId,
+            DisplayName = plan.DisplayName,
+            Description = plan.Description,
+            IsmeteringSupported = plan.IsmeteringSupported,
+            OfferID = plan.OfferId,
+            PlanGUID = plan.PlanGuid,
+            OfferName = offer.OfferName,
+            Id = plan.Id
+        };
+
+    }
 }
