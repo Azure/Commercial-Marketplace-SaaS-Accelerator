@@ -22,7 +22,7 @@ public interface IEmailTemplateRepository
     /// <param name="subscriptionID">The subscription identifier.</param>
     /// <param name="processStatus">The process status.</param>
     /// <returns> Email body.</returns>
-    string GetEmailBodyForSubscription(Guid subscriptionID, string processStatus);
+    string GetEmailBodyForSubscription(Guid subscriptionID, string processStatus, bool sendToCustomer = false);
 
     /// <summary>
     /// Gets all editable email templates
