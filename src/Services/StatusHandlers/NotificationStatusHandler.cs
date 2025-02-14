@@ -180,16 +180,14 @@ public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
                 copyToCustomer = Convert.ToBoolean(eventData.CopyToCustomer);
             }
 
-
             var emailContent = this.emailHelper.PrepareEmailContent(subscriptionID, planDetails.PlanGuid, processStatus, eventData, subscription.SubscriptionStatus);
-            this.emailService.SendEmail(emailContent);
-
             if(copyToCustomer && !string.IsNullOrEmpty(userdetails.EmailAddress))
             {
-                emailContent = this.emailHelper.PrepareEmailContent(subscriptionID, planDetails.PlanGuid, processStatus, eventData, subscription.SubscriptionStatus , copyToCustomer);
-                emailContent.ToEmails = userdetails.EmailAddress;
-                this.emailService.SendEmail(emailContent);
+                var emailContentToCustomer = this.emailHelper.PrepareEmailContent(subscriptionID, planDetails.PlanGuid, processStatus, eventData, subscription.SubscriptionStatus , copyToCustomer);
+                emailContentToCustomer.ToEmails = userdetails.EmailAddress;
+                this.emailService.SendEmail(emailContentToCustomer);
             }
+            this.emailService.SendEmail(emailContent);
         }
     }
 }
