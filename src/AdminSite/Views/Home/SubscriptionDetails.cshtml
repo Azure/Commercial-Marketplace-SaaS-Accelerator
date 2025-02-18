@@ -70,6 +70,18 @@
                             @Html.DisplayFor(model => model.SubscriptionStatus)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Term Start Date")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Term.StartDate)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Term End Date")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Term.EndDate)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Purchaser Email ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
