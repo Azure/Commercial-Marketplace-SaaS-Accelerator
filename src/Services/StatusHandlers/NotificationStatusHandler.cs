@@ -185,9 +185,9 @@ public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
             {
                 var emailContentToCustomer = this.emailHelper.PrepareEmailContent(subscriptionID, planDetails.PlanGuid, processStatus, eventData, subscription.SubscriptionStatus , copyToCustomer);
                 emailContentToCustomer.ToEmails = userdetails.EmailAddress;
-                this.emailService.SendEmail(emailContentToCustomer);
+                this.emailService.SendEmail(emailContentToCustomer, subscriptionID.ToString());
             }
-            this.emailService.SendEmail(emailContent);
+            this.emailService.SendEmail(emailContent, subscriptionID.ToString());
         }
     }
 }

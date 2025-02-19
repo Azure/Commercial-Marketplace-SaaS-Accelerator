@@ -146,7 +146,7 @@ public class WebNotificationService : IWebNotificationService
             //validate the URL
             if (!UrlValidator.IsValidUrlHttps(WebNotificationUrl))
             {
-                await this.applicationLogService.AddApplicationLog($"{StringLiteralConstants.WebNotificationUrl}: URI is not valid, does not use HTTPS scheme, or uses a port other than 443. No notification forwarded").ConfigureAwait(false);
+                await this.applicationLogService.AddApplicationLog($"{StringLiteralConstants.WebNotificationUrl}: URI is not valid, does not use HTTPS scheme, or uses a port other than 443. No notification forwarded.SubscriptionId:{subscriptionId}").ConfigureAwait(false);
                 return;
             }
 
@@ -172,7 +172,7 @@ public class WebNotificationService : IWebNotificationService
             }
             else
             {
-                await this.applicationLogService.AddApplicationLog($"{StringLiteralConstants.WebNotificationUrl}: No notification pushed. Webhook notification URL is empty");
+                await this.applicationLogService.AddApplicationLog($"{StringLiteralConstants.WebNotificationUrl}: No notification pushed. Webhook notification URL is empty.SubscriptionId:{subscriptionId}");
             }
         }
         catch (Exception)

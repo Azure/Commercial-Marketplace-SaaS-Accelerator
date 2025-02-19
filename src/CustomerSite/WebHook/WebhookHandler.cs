@@ -185,7 +185,7 @@ public class WebHookHandler : IWebhookHandler
         }
 
         this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
-        await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
+        await this.applicationLogService.AddApplicationLog($"Plan Successfully Changed.SubscriptionId:{payload.SubscriptionId}").ConfigureAwait(false);
         auditLog.NewValue = payload.PlanId;
         this.subscriptionsLogRepository.Save(auditLog);
         await Task.CompletedTask;
@@ -223,7 +223,7 @@ public class WebHookHandler : IWebhookHandler
         }
 
         this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
-        await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
+        await this.applicationLogService.AddApplicationLog($"Quantity Successfully Changed.SubscriptionId:{payload.SubscriptionId}").ConfigureAwait(false);
         auditLog.NewValue = payload.Quantity.ToString();
         this.subscriptionsLogRepository.Save(auditLog);
         await Task.CompletedTask;
@@ -255,7 +255,7 @@ public class WebHookHandler : IWebhookHandler
         if (_acceptSubscriptionUpdates && oldValue != null)
         {
             this.subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Subscribed.ToString(), false);
-            await this.applicationLogService.AddApplicationLog("Reinstated Successfully.").ConfigureAwait(false);
+            await this.applicationLogService.AddApplicationLog($"Reinstated Successfully.SubscriptionId:{payload.SubscriptionId}").ConfigureAwait(false);
             auditLog.NewValue = Convert.ToString(SubscriptionStatusEnum.Subscribed);
                 
         }
@@ -264,12 +264,12 @@ public class WebHookHandler : IWebhookHandler
             var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
             if (patchOperation != null && patchOperation.Status != 200)
             {
-                await this.applicationLogService.AddApplicationLog($"Reinstate operation PATCH failed with status statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
+                await this.applicationLogService.AddApplicationLog($"Reinstate operation PATCH failed with status statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.SubscriptionId:{payload.SubscriptionId}").ConfigureAwait(false);
                 //partner trying to fail update operation from customer but PATCH on operation didnt succeced, hence throwing an error
                 throw new Exception(patchOperation.ReasonPhrase);
             }
 
-            await this.applicationLogService.AddApplicationLog("Reinstate Change Request Rejected Successfully.").ConfigureAwait(false);
+            await this.applicationLogService.AddApplicationLog($"Reinstate Change Request Rejected Successfully.SubscriptionId:{payload.SubscriptionId}").ConfigureAwait(false);
             auditLog.NewValue = Convert.ToString(oldValue?.SubscriptionStatus);
         }
 
@@ -300,7 +300,7 @@ public class WebHookHandler : IWebhookHandler
     {
         var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
         this.subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Suspend.ToString(), false);
-        await this.applicationLogService.AddApplicationLog("Offer Successfully Suspended.").ConfigureAwait(false);
+        await this.applicationLogService.AddApplicationLog($"Offer Successfully Suspended.SubscriptionId:{payload.SubscriptionId}").ConfigureAwait(false);
 
         if (oldValue != null)
         {
@@ -328,7 +328,7 @@ public class WebHookHandler : IWebhookHandler
     {
         var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
         this.subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Unsubscribed.ToString(), false);
-        await this.applicationLogService.AddApplicationLog("Offer Successfully UnSubscribed.").ConfigureAwait(false);
+        await this.applicationLogService.AddApplicationLog($"Offer Successfully UnSubscribed.SubscriptionId:{payload.SubscriptionId}").ConfigureAwait(false);
 
         if (oldValue != null)
         {
@@ -356,7 +356,7 @@ public class WebHookHandler : IWebhookHandler
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public async Task UnknownActionAsync(WebhookPayload payload)
     {
-        await this.applicationLogService.AddApplicationLog("Offer Received an unknown action: " + payload.Action).ConfigureAwait(false);
+        await this.applicationLogService.AddApplicationLog("Offer Received an unknown action: " + payload.Action + $"SubscriptionId:{payload.SubscriptionId}").ConfigureAwait(false);
 
         await Task.CompletedTask;
     }

@@ -11,5 +11,5 @@ public interface IEmailService
     /// Sends the email.
     /// </summary>
     /// <param name="emailContent">Content of the email.</param>
-    void SendEmail(EmailContentModel emailContent);
+    void SendEmail(EmailContentModel emailContent, string subscriptionId = "");
 }

@@ -121,7 +121,7 @@ public class AzureWebhookController : ControllerBase
     {
         try
         {
-            await this.applicationLogService.AddApplicationLog("The azure Webhook Triggered.").ConfigureAwait(false);
+            await this.applicationLogService.AddApplicationLog($"The azure Webhook Triggered.SubscriptionId:{request.SubscriptionId}").ConfigureAwait(false);
 
             var appConfigValueConversion = bool.TryParse(this.applicationConfigService.GetValueByName("ValidateWebhookJwtToken"), out bool appConfigValue);
             
@@ -129,13 +129,13 @@ public class AzureWebhookController : ControllerBase
             {
                 try
                 {
-                    await this.applicationLogService.AddApplicationLog("Validating the JWT token.").ConfigureAwait(false);
+                    await this.applicationLogService.AddApplicationLog($"Validating the JWT token.SubscriptionId:{request.SubscriptionId}").ConfigureAwait(false);
                     var token = this.HttpContext.Request.Headers["Authorization"].ToString().Split(' ')[1];
                     await validateJwtToken.ValidateTokenAsync(token);
                 }
                 catch (Exception e)
                 {
-                    await this.applicationLogService.AddApplicationLog($"Jwt token validation failed with error: {e.Message}").ConfigureAwait(false);
+                    await this.applicationLogService.AddApplicationLog($"Jwt token validation failed with error: {e.Message}.SubscriptionId:{request.SubscriptionId}").ConfigureAwait(false);
 
                     return new UnauthorizedResult();
                 }
@@ -144,7 +144,7 @@ public class AzureWebhookController : ControllerBase
             if (request != null)
             {
                 var json = JsonSerializer.Serialize(request);
-                await this.applicationLogService.AddApplicationLog("Webhook Serialize Object " + json).ConfigureAwait(false);
+                await this.applicationLogService.AddApplicationLog("Webhook Serialize Object " + json + $".SubscriptionId:{request.SubscriptionId}").ConfigureAwait(false);
                 await this.webhookProcessor.ProcessWebhookNotificationAsync(request, configuration).ConfigureAwait(false);
                 return Ok();
             }
@@ -153,14 +153,14 @@ public class AzureWebhookController : ControllerBase
         catch (MarketplaceException ex)
         {
             await this.applicationLogService.AddApplicationLog(
-                    $"A Marketplace exception occurred while attempting to process a webhook notification: [{ex.Message}].")
+                    $"A Marketplace exception occurred while attempting to process a webhook notification: [{ex.Message}].SubscriptionId:{request.SubscriptionId}")
                 .ConfigureAwait(false);
             return BadRequest();
         }
         catch (Exception ex)
         {
             await this.applicationLogService.AddApplicationLog(
-                    $"An error occurred while attempting to process a webhook notification: [{ex.Message}].")
+                    $"An error occurred while attempting to process a webhook notification: [{ex.Message}].SubscriptionId:{request.SubscriptionId}")
                 .ConfigureAwait(false);
             return StatusCode(500);
         }

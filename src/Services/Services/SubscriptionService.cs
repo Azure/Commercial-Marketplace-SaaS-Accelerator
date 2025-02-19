@@ -153,6 +153,12 @@ public class SubscriptionService
             existingPlanDetail = this.planRepository.GetById(subscription.AmpplanId);
         }
 
+        bool isDebugging;
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            isDebugging = true;
+        else
+            isDebugging = false;
+
         SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
         {
             Id = subscription.AmpsubscriptionId,
@@ -161,8 +167,8 @@ public class SubscriptionService
             OfferId = subscription.AmpOfferId,
             Term = new TermResult
             {
-                StartDate = subscription.StartDate.GetValueOrDefault(),
-                EndDate = subscription.EndDate.GetValueOrDefault(),
+                StartDate = isDebugging == false ? subscription.StartDate.GetValueOrDefault() : subscription.StartDate.GetValueOrDefault().ToLocalTime(),
+                EndDate = isDebugging == false ? subscription.EndDate.GetValueOrDefault() : subscription.EndDate.GetValueOrDefault().ToLocalTime(),
             },
             Quantity = subscription.Ampquantity,
             Name = subscription.Name,

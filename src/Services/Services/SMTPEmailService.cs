@@ -45,7 +45,7 @@ public class SMTPEmailService : IEmailService
     /// Sends the email.
     /// </summary>
     /// <param name="emailContent">Content of the email.</param>
-    public void SendEmail(EmailContentModel emailContent)
+    public void SendEmail(EmailContentModel emailContent,string subscriptionId = "")
     {
         if (!string.IsNullOrEmpty(emailContent.ToEmails) || !string.IsNullOrEmpty(emailContent.BCCEmails))
         {
@@ -93,23 +93,23 @@ public class SMTPEmailService : IEmailService
 
                     //send email
                     smtp.Send(mail);
-                    this.applicationLogService.AddApplicationLog($"{emailContent?.Subject}: Email sent succesfully!").ConfigureAwait(false);
+                    this.applicationLogService.AddApplicationLog($"{emailContent?.Subject}: Email sent to {emailContent?.ToEmails} succesfully!SubscriptionId:{subscriptionId}").ConfigureAwait(false);
                 }
             }
             catch (SmtpException smtpEx)
             {
                 // Log SMTP specific exceptions here
-                applicationLogService.AddApplicationLog($"{emailContent?.Subject}: SMTP exception {smtpEx.Message}.").ConfigureAwait(false);
+                applicationLogService.AddApplicationLog($"{emailContent?.Subject}: SMTP exception {smtpEx.Message}.SubscriptionId:{subscriptionId}").ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 // Log other general exceptions here
-                applicationLogService.AddApplicationLog($"{emailContent?.Subject}: General exception {ex.Message}.").ConfigureAwait(false);
+                applicationLogService.AddApplicationLog($"{emailContent?.Subject}: General exception {ex.Message}.SubscriptionId:{subscriptionId}").ConfigureAwait(false);
             }
         }
         else
         {
-            applicationLogService.AddApplicationLog($"{emailContent?.Subject}: Email is Not sent because the To email address is empty. Update at the Email Template or Plan details page.").ConfigureAwait(false);
+            applicationLogService.AddApplicationLog($"{emailContent?.Subject}: Email is Not sent because the To email address is empty. Update at the Email Template or Plan details page.SubscriptionId:{subscriptionId}").ConfigureAwait(false);
         }
     }
 }
