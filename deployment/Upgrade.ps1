@@ -1,4 +1,4 @@
-﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 #
@@ -36,15 +36,25 @@ Write-Host "Thank you for agreeing. Proceeding with the script..." -ForegroundCo
 
 Function String-Between
 {
-	[CmdletBinding()]
-	Param(
-		[Parameter(Mandatory=$true)][String]$Source,
-		[Parameter(Mandatory=$true)][String]$Start,
-		[Parameter(Mandatory=$true)][String]$End
-	)
-	$sIndex = $Source.indexOf($Start) + $Start.length
-	$eIndex = $Source.indexOf($End, $sIndex)
-	return $Source.Substring($sIndex, $eIndex-$sIndex)
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)][String]$Source,
+        [Parameter(Mandatory=$true)][String]$Start,
+        [Parameter(Mandatory=$true)][String]$End
+    )
+    try {
+        $sIndex = $Source.indexOf($Start)
+        if ($sIndex -eq -1) { return $null }
+        $sIndex = $sIndex + $Start.length
+        $eIndex = $Source.indexOf($End, $sIndex)
+        if ($eIndex -eq -1) { $eIndex = $Source.length }
+        return $Source.Substring($sIndex, $eIndex-$sIndex)
+    }
+    catch {
+        Write-Host "Error parsing connection string component: $Start" -ForegroundColor Red
+        Write-Host "Connection string: $Source" -ForegroundColor Yellow
+        throw
+    }
 }
 
 $ErrorActionPreference = "Stop"
@@ -55,31 +65,53 @@ $KeyVault=$WebAppNamePrefix+"-kv"
 #### THIS SECTION DEPLOYS CODE AND DATABASE CHANGES
 Write-host "#### Deploying new database ####" 
 $ConnectionString = az keyvault secret show `
-	--vault-name $KeyVault `
-	--name "DefaultConnection" `
-	--query "{value:value}" `
-	--output tsv
+    --vault-name $KeyVault `
+    --name "DefaultConnection" `
+    --query "value" `
+    --output tsv
+
+Write-Host "Retrieved connection string from KeyVault"
 
 #Extract components from ConnectionString since Invoke-Sqlcmd needs them separately
-$Server = String-Between -source $ConnectionString -start "Data Source=" -end ";"
-$Database = String-Between -source $ConnectionString -start "Initial Catalog=" -end ";"
-$User = String-Between -source $ConnectionString -start "User Id=" -end ";"
-$Pass = String-Between -source $ConnectionString -start "Password=" -end ";"
+try {
+    $Server = String-Between -source $ConnectionString -start "Data Source=" -end ";"
+    if (!$Server) { $Server = String-Between -source $ConnectionString -start "Server=" -end ";" }
+    
+    $Database = String-Between -source $ConnectionString -start "Initial Catalog=" -end ";"
+    if (!$Database) { $Database = String-Between -source $ConnectionString -start "Database=" -end ";" }
+    
+    $User = String-Between -source $ConnectionString -start "User Id=" -end ";"
+    if (!$User) { $User = String-Between -source $ConnectionString -start "User=" -end ";" }
+    
+    $Pass = String-Between -source $ConnectionString -start "Password=" -end ";"
+    if (!$Pass) { $Pass = String-Between -source $ConnectionString -start "pwd=" -end ";" }
+
+    if (!$Server -or !$Database -or !$User -or !$Pass) {
+        throw "Could not parse all required connection string components"
+    }
+
+    Write-Host "Successfully parsed connection string components" -ForegroundColor Green
+}
+catch {
+    Write-Host "Failed to parse connection string. Please verify the connection string format in KeyVault" -ForegroundColor Red
+    Write-Host "Expected format: 'Data Source=server;Initial Catalog=database;User Id=user;Password=pass;'" -ForegroundColor Yellow
+    throw
+}
 
 Write-host "## Retrieved ConnectionString from KeyVault"
 Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
 
 dotnet-ef migrations script `
-	--idempotent `
-	--context SaaSKitContext `
-	--project ../src/DataAccess/DataAccess.csproj `
-	--startup-project ../src/AdminSite/AdminSite.csproj `
-	--output script.sql
-	
-Write-host "## Generated migration script"	
+    --idempotent `
+    --context SaaSKitContext `
+    --project ../src/DataAccess/DataAccess.csproj `
+    --startup-project ../src/AdminSite/AdminSite.csproj `
+    --output script.sql
+    
+Write-host "## Generated migration script"    
 
-Write-host "## !!!Attempting to upgrade database to migration compatibility.!!!"	
-$compatibilityScript = "
+Write-host "## !!!Attempting to upgrade database to migration compatibility.!!!"    
+$compatibilityScript = @"
 IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL 
 -- No __EFMigrations table means Database has not been upgraded to support EF Migrations
 BEGIN
@@ -90,62 +122,80 @@ BEGIN
     );
 
     IF (SELECT TOP 1 VersionNumber FROM DatabaseVersionHistory ORDER BY CreateBy DESC) = '2.10'
-	    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion]) 
-	        VALUES (N'20221118045814_Baseline_v2', N'6.0.1');
+        INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion]) 
+            VALUES (N'20221118045814_Baseline_v2', N'6.0.1');
 
     IF (SELECT TOP 1 VersionNumber FROM DatabaseVersionHistory ORDER BY CreateBy DESC) = '5.00'
-	    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])  
-	        VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1');
+        INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])  
+            VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1');
 
     IF (SELECT TOP 1 VersionNumber FROM DatabaseVersionHistory ORDER BY CreateBy DESC) = '6.10'
-	    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])  
-	        VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1'), (N'20221118211554_Baseline_v6', N'6.0.1');
+        INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])  
+            VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1'), (N'20221118211554_Baseline_v6', N'6.0.1');
 END;
-GO"
+GO
+"@
 
-Invoke-Sqlcmd -query $compatibilityScript -ServerInstance $Server -database $Database -Username $User -Password $Pass
-Write-host "## Ran compatibility script against database"
-Invoke-Sqlcmd -inputFile script.sql -ServerInstance $Server -database $Database -Username $User -Password $Pass
-Write-host "## Ran migration against database"	
+try {
+    Invoke-Sqlcmd -query $compatibilityScript -ServerInstance $Server -database $Database -Username $User -Password $Pass
+    Write-host "## Ran compatibility script against database"
+    
+    Invoke-Sqlcmd -inputFile script.sql -ServerInstance $Server -database $Database -Username $User -Password $Pass
+    Write-host "## Ran migration against database"    
+}
+catch {
+    Write-Host "Error executing SQL commands. Error: $_" -ForegroundColor Red
+    throw
+}
 
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
 Remove-Item -Path script.sql
-Write-host "#### Database Deployment complete ####"	
-
-
+Write-host "#### Database Deployment complete ####"    
 
 Write-host "#### Deploying new code ####" 
 
-dotnet publish ../src/AdminSite/AdminSite.csproj -v q -c release -o ../Publish/AdminSite/
-Write-host "## Admin Portal built" 
-dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -v q -c release -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob --runtime win-x64 --self-contained true 
-Write-host "## Metered Scheduler to Admin Portal Built"
-dotnet publish ../src/CustomerSite/CustomerSite.csproj -v q -c release -o ../Publish/CustomerSite
-Write-host "## Customer Portal Built" 
+try {
+    dotnet publish ../src/AdminSite/AdminSite.csproj -v q -c release -o ../Publish/AdminSite/
+    Write-host "## Admin Portal built" 
+    
+    dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -v q -c release -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob --runtime win-x64 --self-contained true 
+    Write-host "## Metered Scheduler to Admin Portal Built"
+    
+    dotnet publish ../src/CustomerSite/CustomerSite.csproj -v q -c release -o ../Publish/CustomerSite
+    Write-host "## Customer Portal Built" 
 
-Compress-Archive -Path ../Publish/CustomerSite/* -DestinationPath ../Publish/CustomerSite.zip -Force
-Compress-Archive -Path ../Publish/AdminSite/* -DestinationPath ../Publish/AdminSite.zip -Force
-Write-host "## Code packages prepared." 
+    Compress-Archive -Path ../Publish/CustomerSite/* -DestinationPath ../Publish/CustomerSite.zip -Force
+    Compress-Archive -Path ../Publish/AdminSite/* -DestinationPath ../Publish/AdminSite.zip -Force
+    Write-host "## Code packages prepared." 
 
-Write-host "## Deploying code to Admin Portal"
-az webapp deploy `
-	--resource-group $ResourceGroupForDeployment `
-	--name $WebAppNameAdmin `
-	--src-path "../Publish/AdminSite.zip" `
-	--type zip
-Write-host "## Deployed code to Admin Portal"
+    Write-host "## Deploying code to Admin Portal"
+    az webapp deploy `
+        --resource-group $ResourceGroupForDeployment `
+        --name $WebAppNameAdmin `
+        --src-path "../Publish/AdminSite.zip" `
+        --type zip
+    Write-host "## Deployed code to Admin Portal"
 
-Write-host "## Deploying code to Customer Portal"
-az webapp deploy `
-	--resource-group $ResourceGroupForDeployment `
-	--name $WebAppNamePortal `
-	--src-path "../Publish/CustomerSite.zip"  `
-	--type zip
-Write-host "## Deployed code to Customer Portal"
+    Write-host "## Deploying code to Customer Portal"
+    az webapp deploy `
+        --resource-group $ResourceGroupForDeployment `
+        --name $WebAppNamePortal `
+        --src-path "../Publish/CustomerSite.zip"  `
+        --type zip
+    Write-host "## Deployed code to Customer Portal"
+}
+catch {
+    Write-Host "Error during code deployment. Error: $_" -ForegroundColor Red
+    throw
+}
+finally {
+    if (Test-Path ../Publish) {
+        Remove-Item -Path ../Publish -recurse -Force
+    }
+}
 
-Remove-Item -Path ../Publish -recurse -Force
 Write-host "#### Code deployment complete ####" 
 Write-host ""
-Write-host "#### Warning!!! ####"
-Write-host "#### If the upgrade is to >=7.5.0, MeterScheduler feature is pre-enabled and changed to DB config instead of the App Service configuration. Please update the IsMeteredBillingEnabled value accordingly in the Admin portal -> Settings page. ####"
-Write-host "#### "
+Write-host "#### Warning!!! ####" -ForegroundColor Yellow
+Write-host "#### If the upgrade is to >=7.5.0, MeterScheduler feature is pre-enabled and changed to DB config instead of the App Service configuration. Please update the IsMeteredBillingEnabled value accordingly in the Admin portal -> Settings page. ####" -ForegroundColor Yellow
+Write-host "#### " 
