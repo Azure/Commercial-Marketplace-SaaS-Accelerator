@@ -11,8 +11,8 @@ public class BlobStorageService
 
     public BlobStorageService(IConfiguration configuration)
     {
-        string connStr = configuration["AzureBlobStorage:ConnectionString"];
-        string container = configuration["AzureBlobStorage:ContainerName"];
+        string connStr = configuration["connectionstrings:blobstorage"];
+        string container = configuration["saasapiconfiguration:containername"];
         containerClient = new BlobContainerClient(connStr, container);
     }
 
