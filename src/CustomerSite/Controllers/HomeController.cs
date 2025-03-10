@@ -90,6 +90,8 @@ public class HomeController : BaseController
 
     private readonly IWebNotificationService _webNotificationService;
 
+    private readonly BlobStorageService blobService;
+    
     private SubscriptionService subscriptionService = null;
 
     private ApplicationLogService applicationLogService = null;
@@ -137,7 +139,8 @@ public class HomeController : BaseController
         ILoggerFactory loggerFactory, 
         IEmailService emailService,
         IWebNotificationService webNotificationService,
-        IAppVersionService appVersionService) : base(appVersionService)
+        IAppVersionService appVersionService, 
+        BlobStorageService blobService) : base(appVersionService)
     {
         this.apiService = apiService;
         this.subscriptionRepository = subscriptionRepo;
@@ -160,6 +163,7 @@ public class HomeController : BaseController
         this.emailService = emailService;
         this.loggerFactory = loggerFactory;
         this._webNotificationService = webNotificationService;
+        this.blobService = blobService;
 
         this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
             apiService,
@@ -533,6 +537,8 @@ public class HomeController : BaseController
                 subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                 subscriptionDetail.CustomerName = this.CurrentUserName;
                 subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
+                subscriptionDetail.DownloadItems.Clear();
+                subscriptionDetail.DownloadItems.AddRange(this.GenerateDownloadLinks(subscriptionId, planId));
             }
 
             return this.View("Index", subscriptionDetail);
@@ -542,6 +548,23 @@ public class HomeController : BaseController
             this.logger.LogError($"Message:{ex.Message} :: {ex.InnerException}   ");
             return this.View("Error", ex);
         }
+    }
+
+    private List<DownloadItem> GenerateDownloadLinks(Guid subscriptionId, string planId)
+    {
+        var downloads = new Dictionary<string, string>
+        {
+            { "Raft WSL Enterprise Installer", "RaftWSLEnterprise_25.0.0.1_x64.msixbundle" },
+            { "Pengwin Enterprise Installer", "PengwinEnterprise9_9.5.0.0_x64.msixbundle" }
+        };
+
+        List<DownloadItem> list = downloads.Select(d => new DownloadItem
+        {
+            Name = d.Key,
+            SasUrl = blobService.GenerateSasUri(d.Value, 15) // Link valid for 15 mins
+        }).ToList();
+        
+        return list;
     }
 
     /// <summary>
@@ -629,7 +652,7 @@ public class HomeController : BaseController
                     }
 
                     if (operation == "Deactivate")
-                    {
+                    {/*
                         this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
                         if (oldValue != null)
                         {
@@ -645,7 +668,13 @@ public class HomeController : BaseController
                             this.subscriptionLogRepository.Save(auditLog);
                         }
 
-                        this.unsubscribeStatusHandlers.Process(subscriptionId);
+                        this.unsubscribeStatusHandlers.Process(subscriptionId);*/
+                        return this.Redirect("https://admin.microsoft.com/#/subscriptions/assets/" + oldValue.Id);
+                    }
+
+                    if (operation == "Manage")
+                    {
+                        return this.Redirect("https://admin.microsoft.com/#/subscriptions/assets/" + oldValue.Id);
                     }
                 }
 

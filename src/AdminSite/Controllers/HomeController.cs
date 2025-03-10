@@ -465,7 +465,7 @@ public class HomeController : BaseController
             }
 
             if (operation == "Deactivate")
-            {
+            { /*
                 this.subscriptionRepository.UpdateStatusForSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString(), true);
                 SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                 {
@@ -479,6 +479,9 @@ public class HomeController : BaseController
                 this.subscriptionLogRepository.Save(auditLog);
 
                 this.unsubscribeStatusHandlers.Process(subscriptionId);
+                */
+                
+                return this.Redirect("https://admin.microsoft.com/#/subscriptions/assets/" + oldValue.Id);
             }
 
             this.notificationStatusHandlers.Process(subscriptionId);

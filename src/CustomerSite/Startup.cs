@@ -131,6 +131,8 @@ public class Startup
             option.EnableEndpointRouting = false;
             option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
         });
+        
+        services.AddSingleton<BlobStorageService>();
     }
 
     /// <summary>

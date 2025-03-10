@@ -218,10 +218,10 @@ public class SchedulerController : BaseController
                 return Json(selectedList);
 
             }
-            return this.PartialView("Error", "Can not find any metered dimension related to selected plan");
+            return this.PartialView("Error", new Exception("Can not find any metered dimension related to selected plan"));
 
         }
-        return this.PartialView("Error", "Subscription is Invalid");
+        return this.PartialView("Error", new Exception("Subscription is Invalid"));
     }
 
     public IActionResult AddNewScheduledTrigger(SchedulerUsageViewModel schedulerUsageViewModel)

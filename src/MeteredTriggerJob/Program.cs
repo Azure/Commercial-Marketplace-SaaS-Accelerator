@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
 using Azure.Identity;
 using Marketplace.SaaS.Accelerator.DataAccess.Context;
@@ -57,6 +56,7 @@ class Program
             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new SaaSClientLogger<MeteredBillingApiService>()))
             .AddSingleton<Executor, Executor>()
             .AddSingleton<IAppVersionService>(versionInfo)
+            
             .BuildServiceProvider();
 
         services

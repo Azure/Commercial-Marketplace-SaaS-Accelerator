@@ -54,6 +54,21 @@
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.SubscriptionStatus)
                         </dd>
+                        @* ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator *@
+                        @foreach (DownloadItem item in Model.DownloadItems)
+                        {
+                            if (Model.SubscriptionStatus != SubscriptionStatusEnumExtension.Subscribed)
+                            {
+                                continue;
+                            }
+
+                            <dt class="col-sm-3 p-2 p10">
+                                @Html.DisplayFor(model => item.Name)
+                            </dt>
+                            <dd class="col-sm-9 p-2 p10">
+                                <a href="@item.SasUrl" target="_blank" rel="noopener noreferrer">Download</a>
+                            </dd>
+                        }
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Offer Name ")
                         </dt>
@@ -190,7 +205,7 @@
                 <div class="text-end">
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                     {
-                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
+                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Manage" class="cm-button-default text-right">Manage</button>
                         <button type="submit" asp-action="Subscriptions" class="cm-button-default text-end">Go to Subscription List</button>
                     }
                     @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported == true)
@@ -208,26 +223,25 @@
 }
 else
 {
-    <div class="pt-5">
-        <div class="card p-3 ">
-            <div class="text-center">
-                <h1 class="display-4">Welcome</h1>
-            </div>
-            <div class="text-left">
-                <p>
-                    Get started with integrating your <b> Software as a Service (SaaS) </b> solution with the <b> SaaS fulfillment APIs version 2 in Microsoft commercial marketplace. </b>
-                </p>
-                <p><a href="https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2" target="_blank">Click here </a><span>for the API documentation.</span> </p>
-            </div>
-            <div>
-                <b>To purchase this SaaS offer:</b>
-                <ul>
-                    <li>Search for resources of type <b> Software as a Service (SaaS) </b></li>
-                    <li>Search for your offer</li>
-                    <li>Click <b> Create</b> to subscribe to the offer</li>
-                    <li>Click <b>Configure Account </b> after the subscription created</li>
-                </ul>
-            </div>
+    <div class="container text-center my-5">
+        <h1 class="display-4 fw-bold" style="color: #1b6ec2">Welcome to Raft WSL Enterprise</h1>
+        <p class="lead mt-3 text-secondary">
+            Here you can view your active subscriptions and download the installers for the applications included in your license.
+        </p>
+
+        <div class="mt-4 d-grid gap-3 d-sm-flex justify-content-sm-center">
+            @if (User.Identity is { IsAuthenticated: true })
+            {
+                <a asp-action="Subscriptions" class="btn btn-outline-primary btn-lg px-5 py-3 cm-button-default">
+                    Go to Subscription List
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="SignIn" class="btn btn-primary btn-lg px-5 py-3 cm-button-default">
+                    Sign In to Continue
+                </a>
+            }
         </div>
     </div>
 }

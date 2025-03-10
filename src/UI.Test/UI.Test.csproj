@@ -18,16 +18,19 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-	  <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
-	  <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
-	  <PackageReference Include="coverlet.collector" Version="6.0.0" />
-	  <PackageReference Include="Selenium.WebDriver" Version="4.16.2" />
-	  <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="124.0.6367.7800" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.2" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.2" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.2" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.2" />
+	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+	  <PackageReference Include="MSTest.TestAdapter" Version="3.8.2" />
+	  <PackageReference Include="MSTest.TestFramework" Version="3.8.2" />
+	  <PackageReference Include="coverlet.collector" Version="6.0.4">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Selenium.WebDriver" Version="4.29.0" />
+	  <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="134.0.6998.3500" />
   </ItemGroup>
 
 </Project>
