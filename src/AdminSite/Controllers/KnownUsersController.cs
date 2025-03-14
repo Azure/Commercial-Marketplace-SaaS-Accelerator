@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
@@ -7,6 +8,8 @@ using Marketplace.SaaS.Accelerator.DataAccess.Services;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
@@ -18,6 +21,7 @@ namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
 public class KnownUsersController : BaseController
 {
     private readonly IKnownUsersRepository knownUsersRepository;
+    private readonly IRoleRepository roleRepository;
     private readonly SaaSClientLogger<KnownUsersController> logger;
 
     /// <summary>
@@ -28,11 +32,13 @@ public class KnownUsersController : BaseController
 
     public KnownUsersController(
         IKnownUsersRepository knownUsersRepository,
+        IRoleRepository roleRepository,
         IAppVersionService appVersionService,
         SaaSClientLogger<KnownUsersController> logger, 
         IApplicationConfigRepository applicationConfigRepository):base(applicationConfigRepository, appVersionService)
     {
         this.knownUsersRepository = knownUsersRepository;
+        this.roleRepository = roleRepository;
         this.logger = logger;
     }
 
@@ -45,7 +51,20 @@ public class KnownUsersController : BaseController
         this.logger.Info("KnownUsers Controller / Index");
         try
         {
+
+            var getAllRoles = this.roleRepository.GetAllRoles().ToList<Roles>();
             var getAllKnownUsers = this.knownUsersRepository.GetAllKnownUsers();
+
+            foreach (var user in getAllKnownUsers)
+            {
+                foreach (var role in getAllRoles)
+                {
+                    if (user.RoleId == role.Id)
+                        user.Role = role;
+                }
+            }
+            ViewBag.Roles = new SelectList(getAllRoles, "Id", "Name"); 
+
             return this.View(getAllKnownUsers);
         }
         catch (Exception ex)

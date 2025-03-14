@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
@@ -50,6 +51,17 @@ public class AccountController : Controller
     public IActionResult AccessDenied(string returnUrl)
     {
         return this.View("Error");
+    }
+
+    /// <summary>
+    /// The Forbidden.
+    /// </summary>
+    /// <returns>
+    /// The <see cref="IActionResult" />.
+    /// </returns>
+    public IActionResult PageAccessForbidden()
+    {
+        return this.View("Error", new Exception("You are Forbidden to this page"));
     }
 
     /// <summary>

@@ -220,6 +220,7 @@ public class Startup
         services.AddScoped<ISubscriptionUsageLogsRepository, SubscriptionUsageLogsRepository>();
         services.AddScoped<IMeteredDimensionsRepository, MeteredDimensionsRepository>();
         services.AddScoped<IKnownUsersRepository, KnownUsersRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
         services.AddScoped<IOffersRepository, OffersRepository>();
         services.AddScoped<IValueTypesRepository, ValueTypesRepository>();
         services.AddScoped<IOfferAttributesRepository, OfferAttributesRepository>();

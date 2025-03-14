@@ -5,12 +5,14 @@ using System;
 using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
+using Marketplace.SaaS.Accelerator.DataAccess.Migrations;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
 using Marketplace.SaaS.Accelerator.Services.StatusHandlers;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace Marketplace.SaaS.Accelerator.CustomerSite.WebHook;
@@ -185,7 +187,7 @@ public class WebHookHandler : IWebhookHandler
         }
 
         this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
-        await this.applicationLogService.AddApplicationLog($"Plan Successfully Changed.SubscriptionId:{payload.SubscriptionId}").ConfigureAwait(false);
+        await this.applicationLogService.AddApplicationLog($"Plan Successfully Changed.SubscriptionId:{payload.SubscriptionId} ToPlan: {payload.PlanId}.").ConfigureAwait(false);
         auditLog.NewValue = payload.PlanId;
         this.subscriptionsLogRepository.Save(auditLog);
         await Task.CompletedTask;
@@ -223,7 +225,7 @@ public class WebHookHandler : IWebhookHandler
         }
 
         this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
-        await this.applicationLogService.AddApplicationLog($"Quantity Successfully Changed.SubscriptionId:{payload.SubscriptionId}").ConfigureAwait(false);
+        await this.applicationLogService.AddApplicationLog($"Quantity Successfully Changed.SubscriptionId:{payload.SubscriptionId} ToQuantity: {payload.Quantity}.").ConfigureAwait(false);
         auditLog.NewValue = payload.Quantity.ToString();
         this.subscriptionsLogRepository.Save(auditLog);
         await Task.CompletedTask;
