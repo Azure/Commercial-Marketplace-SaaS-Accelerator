@@ -20,6 +20,7 @@ using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -112,6 +113,8 @@ public class HomeController : BaseController
 
     private SaaSApiClientConfiguration saaSApiClientConfiguration;
 
+    private IKnownUsersRepository knownUsersRepository;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="HomeController" /> class.
     /// </summary>
@@ -158,7 +161,8 @@ public class HomeController : BaseController
         IOfferAttributesRepository offersAttributeRepository,
         IAppVersionService appVersionService,
         ISAGitReleasesService sAGitReleasesService, 
-        SaaSClientLogger<HomeController> logger) : base(applicationConfigRepository, appVersionService)
+        SaaSClientLogger<HomeController> logger,
+        IKnownUsersRepository knownUsersRepository) : base(applicationConfigRepository, appVersionService)
     {
         this.billingApiService = billingApiService;
         this.subscriptionRepo = subscriptionRepo;
@@ -185,6 +189,7 @@ public class HomeController : BaseController
         this.loggerFactory = loggerFactory;
         this.saaSApiClientConfiguration = saaSApiClientConfiguration;
         this.sAGitReleasesService = sAGitReleasesService;
+        this.knownUsersRepository = knownUsersRepository;
 
         this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
             fulfillApiService,
@@ -992,6 +997,20 @@ public class HomeController : BaseController
         }
 
         return Ok();
+    }
+
+    public override void OnActionExecuting(ActionExecutingContext filterContext)
+    {
+        if (TempData is not null)
+        {
+            string email = this.CurrentUserEmailAddress;
+            KnownUsers knownUser = this.knownUsersRepository.GetKnownUserDetail(email);
+            if (knownUser != null)
+            {
+                TempData["KnownUserRoleName"] = knownUser.Role.Name;
+            }
+        }
+        base.OnActionExecuting(filterContext);
     }
 
 }
