@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Models;
@@ -56,7 +57,6 @@ public class KnownUserAttribute : AuthorizeAttribute, IAuthorizationFilter
             requestPath = context.HttpContext.Request.Path;
             knownUser = this.knownUsersRepository.GetKnownUserDetail(email);
             isKnownuser = knownUser?.Id > 0;
-            //isKnownuser = this.knownUsersRepository.GetKnownUserDetail(email)?.Id > 0;
 
             var routeValues = new RouteValueDictionary();
             if (!isKnownuser)
@@ -68,28 +68,29 @@ public class KnownUserAttribute : AuthorizeAttribute, IAuthorizationFilter
                 return;
             }
 
-            switch (requestPath)
+            if (requestPath.StartsWith("/Plans", StringComparison.OrdinalIgnoreCase) || requestPath.StartsWith("/Offers", StringComparison.OrdinalIgnoreCase) || requestPath.StartsWith("/Scheduler", StringComparison.OrdinalIgnoreCase) || requestPath.StartsWith("/KnownUsers", StringComparison.OrdinalIgnoreCase) || requestPath.StartsWith("/ApplicationConfig", StringComparison.OrdinalIgnoreCase) || requestPath.StartsWith("/ApplicationLog", StringComparison.OrdinalIgnoreCase))
             {
-                case "/Plans":
-                case "/Offers":
-                case "/Scheduler":
-                case "/KnownUsers":
-                case "/ApplicationConfig":
-                     if (knownUser.Role.Name != "PublisherAdmin")
-                     {
-                         routeValues["controller"] = "Account";
-                         routeValues["action"] = "PageAccessForbidden";
-                         context.Result = new RedirectToRouteResult(routeValues);
-                     }
-                        break;
-                case "/Home/Subscriptions":
-                     if (knownUser.Role.Name != "PublisherAdmin" && knownUser.Role.Name != "SubscriptionAdmin")
-                     {
-                         routeValues["controller"] = "Account";
-                         routeValues["action"] = "PageAccessForbidden";
-                         context.Result = new RedirectToRouteResult(routeValues);
-                     }
-                     break;
+                if (knownUser.Role.Name != "PublisherAdmin")
+                {
+                    routeValues["controller"] = "Account";
+                    routeValues["action"] = "PageAccessForbidden";
+                    context.Result = new RedirectToRouteResult(routeValues);
+                    return;
+                }
+            }
+            else if(requestPath.StartsWith("/Home", StringComparison.OrdinalIgnoreCase))
+            {
+                if (knownUser.Role.Name != "PublisherAdmin" && knownUser.Role.Name != "SubscriptionAdmin")
+                {
+                    routeValues["controller"] = "Account";
+                    routeValues["action"] = "PageAccessForbidden";
+                    context.Result = new RedirectToRouteResult(routeValues);
+                    return;
+                }
+            }
+            else
+            {
+
             }
 
         }
