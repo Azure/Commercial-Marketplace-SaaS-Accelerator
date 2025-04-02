@@ -13,6 +13,7 @@ namespace Marketplace.SaaS.Accelerator.Services.Helpers;
 using MeteringDimension = Models.MeteringDimension;
 using RecurrentBillingTerm = Models.RecurrentBillingTerm;
 using MeteringedQuantityIncluded = Models.MeteringedQuantityIncluded;
+using SourceOffer = Models.SourceOffer;
 /// <summary>
 /// Conversion Helper.
 /// </summary>
@@ -121,7 +122,8 @@ static class ConversionHelper
             IsPerUserPlan = plan.IsPricePerSeat ?? false,
             IsStopSell = plan.IsStopSell ?? false,
             Market = plan.Market,
-            PlanComponents = getPlanComponentsFromPlan(plan)
+            PlanComponents = getPlanComponentsFromPlan(plan),
+            SourceOffers = plan.SourceOffers != null ? getSourceoffers(plan) : new List<SourceOffer>()
         };
     }
     /// <summary>
@@ -190,5 +192,19 @@ static class ConversionHelper
             SubscriptionId = operation.SubscriptionId?.ToString(), 
             ActionType = operation.Action?.ToString()
         };
+    }
+    /// <summary>
+    /// Extract Source Offers from Plan.
+    /// </summary>
+    /// <param name="plan">The plan model.</param>
+    /// <returns>
+    /// List of SourceOffer.
+    /// </returns>
+    public static List<SourceOffer> getSourceoffers(this Plan plan)
+    {
+        return plan.SourceOffers?.Select(offer => new SourceOffer
+        {
+            externalId = offer.ExternalId
+        }).ToList() ?? new List<SourceOffer>();
     }
 }

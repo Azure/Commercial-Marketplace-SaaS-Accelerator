@@ -36,4 +36,6 @@ public partial class Subscriptions
     public virtual ICollection<MeteredAuditLogs> MeteredAuditLogs { get; set; }
     public virtual ICollection<SubscriptionAuditLogs> SubscriptionAuditLogs { get; set; }
     public virtual ICollection<MeteredPlanSchedulerManagement> MeteredPlanSchedulerManagements { get; set; }
+
+    public Guid? PrivateOfferId { get; set; }
 }

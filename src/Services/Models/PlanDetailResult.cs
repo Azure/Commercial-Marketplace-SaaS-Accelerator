@@ -125,6 +125,16 @@ public class PlanDetailResult : SaaSApiResult
     public  PlanComponents PlanComponents { get; set; }
 
 
+    [JsonPropertyName("sourceOffers")]
+    [DisplayName("sourceOffers")]
+    /// <summary>
+    /// Gets or sets the private offer ids with the plan.
+    /// </summary>
+    /// <value>
+    /// The Private offer Id list.
+    /// </value>
+    public List<SourceOffer> SourceOffers { get; set; }
+
     /// <summary>
     /// Get  IsmeteringSupported associate with the plan.
     /// </summary>
