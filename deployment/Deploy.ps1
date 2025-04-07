@@ -211,8 +211,8 @@ Write-Host "Starting SaaS Accelerator Deployment..."
 
 
 #region Check If SQL Server Exist
-$sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
-if ($sql_exists) 
+$sqlExists = az sql server list --query "[?name=='$SQLServerName']"
+if ($sqlExists.Length -gt 2) 
 {
 	Write-Host ""
 	Write-Host "🛑 SQl Server name " -NoNewline -ForegroundColor Red
@@ -484,7 +484,7 @@ $VnetName=$WebAppNamePrefix+"-vnet"
 $privateSqlEndpointName=$WebAppNamePrefix+"-db-pe"
 $privateKvEndpointName=$WebAppNamePrefix+"-kv-pe"
 $privateSqlDnsZoneName="privatelink.database.windows.net"
-$privateKvDnsZoneName="privatelink.vaultcore.windows.net"
+$privateKvDnsZoneName="privatelink.vaultcore.azure.net"
 $privateSqlLink =$WebAppNamePrefix+"-db-link"
 $privateKvlink =$WebAppNamePrefix+"-kv-link"
 $WebSubnetName="web"
@@ -575,8 +575,8 @@ Write-host "      ➡️ Generate SQL schema/data script"
 Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$Connection`"}}"
 dotnet-ef migrations script  --output script.sql --idempotent --context SaaSKitContext --project ../src/DataAccess/DataAccess.csproj --startup-project ../src/AdminSite/AdminSite.csproj
 Write-host "      ➡️ Execute SQL schema/data script"
-$dbaccesstoken = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
-Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken $dbaccesstoken
+$dbaccesstoken = az account get-access-token --resource "https://database.windows.net" --query "accessToken" --output tsv
+Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken $dbaccesstoken 
 
 Write-host "      ➡️ Execute SQL script to Add WebApps"
 $AddAppsIdsToDB = "CREATE USER [$WebAppNameAdmin] FROM EXTERNAL PROVIDER;ALTER ROLE db_datareader ADD MEMBER  [$WebAppNameAdmin];ALTER ROLE db_datawriter ADD MEMBER  [$WebAppNameAdmin]; GRANT EXEC TO [$WebAppNameAdmin]; CREATE USER [$WebAppNamePortal] FROM EXTERNAL PROVIDER;ALTER ROLE db_datareader ADD MEMBER [$WebAppNamePortal];ALTER ROLE db_datawriter ADD MEMBER [$WebAppNamePortal]; GRANT EXEC TO [$WebAppNamePortal];"
@@ -607,24 +607,21 @@ $sqlServerId=az sql server show --name $SQLServerName --resource-group $Resource
 # Create a private endpoint
 az network private-endpoint create --name $privateSqlEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $SqlSubnetName --private-connection-resource-id $sqlServerId --group-ids sqlServer --connection-name sqlConnection
 
-
 # Create a SQL private DNS zone
 az network private-dns zone create --name $privateSqlDnsZoneName --resource-group $ResourceGroupForDeployment
 
 # Link the SQL private DNS zone to the VNet
 az network private-dns link vnet create --name $privateSqlLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateSqlDnsZoneName --registration-enabled false
 
-az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateSqlEndpointName --name "sql-zone-group"   --private-dns-zone $privateSqlDnsZoneName   --zone-name "sqlserver"
+az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateSqlEndpointName --name "sql-zone-group" --private-dns-zone $privateSqlDnsZoneName --zone-name "sql-zone"
 #endregion
-
 
 #region Create KV Private Endpoints
 # Get KV Server
 $keyVaultId=az keyvault show --name $KeyVault --resource-group $ResourceGroupForDeployment --query id -o tsv
 
 # Create a KV private endpoint
-az network private-endpoint create --name $privateKvEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $KvSubnetName --private-connection-resource-id $keyVaultId --group-ids vault  --connection-name kvConnection
-
+az network private-endpoint create --name $privateKvEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $KvSubnetName --private-connection-resource-id $keyVaultId --group-ids vault --connection-name kvConnection
 
 # Create a KV private DNS zone
 az network private-dns zone create --name $privateKvDnsZoneName --resource-group $ResourceGroupForDeployment
@@ -632,7 +629,7 @@ az network private-dns zone create --name $privateKvDnsZoneName --resource-group
 # Link the KV private DNS zone to the VNet
 az network private-dns link vnet create --name $privateKvLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateKvDnsZoneName --registration-enabled false
 
-az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateKvEndpointName --name "Kv-zone-group"   --private-dns-zone $privateKvDnsZoneName   --zone-name "Kv-zone"
+az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateKvEndpointName --name "kv-zone-group" --private-dns-zone $privateKvDnsZoneName --zone-name "kv-zone"
 #endregion
 
 
