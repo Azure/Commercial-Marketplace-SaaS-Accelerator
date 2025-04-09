@@ -157,7 +157,8 @@ EXEC(N'
     Create Procedure [dbo].[spGetFormattedEmailBody]  
     (  
     @subscriptionId varchar(225),  
-    @processStatus varchar(225)   
+    @processStatus varchar(225),
+    @sendToCustomer bit
     )  
   
     /*  
@@ -184,7 +185,15 @@ EXEC(N'
     , @UserId int  
   
     Declare @applicationName Varchar(225) =(select [value] from [ApplicationConfiguration] where [Name]=''ApplicationName'')  
+    Declare @adminSiteURL Varchar(225) =(select [value] from [ApplicationConfiguration] where [Name]=''AdminSiteURL'') 
+    Declare @customerSiteURL Varchar(225) =(select [value] from [ApplicationConfiguration] where [Name]=''CustomerSiteURL'') 
     Declare @welcomeText varchar(MAX)=''''  
+    Declare @viewDetailsLink Varchar(225) ='''' 
+		
+    IF (@sendToCustomer= 1)  
+		  set @viewDetailsLink= @customerSiteURL + ''/Home/Subscriptions'' 
+    ELSE
+		  set @viewDetailsLink= @adminSiteURL + ''/Home/SubscriptionDetails?subscriptionId='' + @subscriptionId
   
   
     IF EXISTS (SELECT 1 FROM SUBSCRIPTIONS WHERE AMPSubscriptionId=@subscriptionId)  
@@ -284,7 +293,7 @@ EXEC(N'
   
     IF (@processStatus =''failure'')  
      BEGIN  
-      set @welcomeText= ''Your request for the subscription has been failed.''  
+      set @welcomeText= ''A request for the subscription has been failed.''  
       set @html = (SELECT TemplateBody FROM EmailTemplate WHERE Status = ''Failed'')
      END  
   
@@ -296,11 +305,17 @@ EXEC(N'
        END  
      IF (@subscriptionStatus= ''Subscribed'')  
         BEGIN  
-      set @welcomeText= ''Your request for the purchase has been approved.''  
+          IF (@sendToCustomer= 1)  
+            set @welcomeText= ''Your request for the purchase has been approved.''  
+          ELSE
+            set @welcomeText= ''A request for purchase with the following details has been approved.'' 
        END  
      IF (@subscriptionStatus= ''Unsubscribed'')  
         BEGIN  
-      set @welcomeText= ''A subscription with the following details was deleted from Azure.''  
+          IF (@sendToCustomer= 1)  
+            set @welcomeText= ''Your subscription with the following details was deleted from Azure.''  
+          ELSE
+            set @welcomeText= ''A subscription with the following details was deleted from Azure.''  
        END   
          set @html = (SELECT TemplateBody FROM EmailTemplate WHERE Status = @subscriptionStatus)
     END  
@@ -308,7 +323,8 @@ EXEC(N'
      select  @html=REPLACE(@html,''${subscriptiondetails}'',@subscriptionContent)  
       ,@html=REPLACE(@html,''${welcometext}'',@welcomeText)  
       ,@html=REPLACE(@html,''${ApplicationName}'',@applicationName)  
-   
+      ,@html=REPLACE(@html,''${viewDetailsLink}'',@viewDetailsLink)        
+      ,@html=REPLACE(@html,''${logoPath}'',@adminSiteURL)   
   
      select 1 AS ID,''Email'' AS [Name], @html as [Value]  
   
@@ -352,7 +368,7 @@ VALUES
     ('String','{seedDate}','string'),
     ('Date','{seedDate}','date')
 ");
-          
+
             migrationBuilder.Sql(@$"INSERT INTO Roles (name) VALUES ('PublisherAdmin')");
 
             migrationBuilder.Sql(@$"
@@ -380,7 +396,7 @@ VALUES
 	('IsAutomaticProvisioningSupported','false','Skip Activation - Automatic Provisioning Supported'),
 	('IsEmailEnabledForPendingActivation','false','Email Enabled For Pending Activation')
 ");
-            
+
             migrationBuilder.Sql(@$"
 IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'AcceptSubscriptionUpdates')
 BEGIN
@@ -434,7 +450,7 @@ VALUES
                            <!-- BEGIN HEADER // -->                                  
                            <table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" id=""templateHeader"">
                               <tr>
-                                 <td valign=""top"" class=""headerContent"">                                              <img src=""https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/main/src/CustomerSite/wwwroot/contoso-sales.png"" style=""max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;"" id=""headerImage"" />                                          </td>
+                                 <td valign=""top"" class=""headerContent"">                                              <img src=""${logoPath}/contoso-sales.png"" style=""max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;"" id=""headerImage"" />                                          </td>
                               </tr>
                            </table>
                            <!-- // END HEADER -->                              
@@ -451,7 +467,7 @@ VALUES
                                                                           <table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" id=""templateBody"">
                                                                           ${subscriptiondetails}   
                                                                                                               </table>
-                                    <p style="" margin-left: auto; margin-right: auto; text-align:right;"">                                                  <a href=""https://saaskitdemoapp.azurewebsites.net/"">                                                      <button style=""background-color:#2168A6;line-height:30px;color:white""><b>View Details</b></button>                                                  </a>                                              </p>
+                                    <p style="" margin-left: auto; margin-right: auto; text-align:right;"">                                                  <a href=""${viewDetailsLink}"">                                                      <button style=""background-color:#2168A6;line-height:30px;color:white""><b>View Details</b></button>                                                  </a>                                              </p>
                                     <!--     CTA button -->                                              <!--<table style=""background: #0078D7;"" cellspacing=""0"" cellpadding=""0"" align=""left"">                                                  <tbody>                                                      <tr>                                                          <td style=""padding-left: 15px; font-size: 18px; line-height: 20px; font-family:""Segoe UI Light""; color: #ffffff;"">                                                              <a style=""text-decoration: none; font-size: 18px; line-height: 20px; font-family:""Segoe UI Light""; color: #ffffff;"" href=""${LinkToPortal}/#/login"">${LoginButtonTextInEmail}</a>                                                          </td>                                                          <td style=""line-height: 1px; font-size: 1px; padding: 10px;"">                                                              <a>                                                                  <img src=""https://info.microsoft.com/rs/157-GQE-382/images/Program-CTAButton-whiteltr.png"" border=""0"" alt="""" height=""20"" />                                                              </a>                                                          </td>                                                      </tr>                                                  </tbody>                                              </table>-->                                              <!--     end CTA button -->                                          
                                  </td>
                               </tr>
@@ -497,7 +513,7 @@ VALUES
                            <!-- BEGIN HEADER // -->                                  
                            <table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" id=""templateHeader"">
                               <tr>
-                                 <td valign=""top"" class=""headerContent"">                                              <img src=""https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/main/src/CustomerSite/wwwroot/contoso-sales.png"" style=""max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;"" id=""headerImage"" />                                          </td>
+                                 <td valign=""top"" class=""headerContent"">                                              <img src=""${logoPath}/contoso-sales.png"" style=""max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;"" id=""headerImage"" />                                          </td>
                               </tr>
                            </table>
                            <!-- // END HEADER -->                              
@@ -514,7 +530,7 @@ VALUES
                                                                           <table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" id=""templateBody"">
                                                                           ${subscriptiondetails}   
                                                                                                               </table>
-                                    <p style="" margin-left: auto; margin-right: auto; text-align:right;"">                                                  <a href=""https://saaskitdemoapp.azurewebsites.net/"">                                                      <button style=""background-color:#2168A6;line-height:30px;color:white""><b>View Details</b></button>                                                  </a>                                              </p>
+                                    <p style="" margin-left: auto; margin-right: auto; text-align:right;"">                                                  <a href=""${viewDetailsLink}"">                                                      <button style=""background-color:#2168A6;line-height:30px;color:white""><b>View Details</b></button>                                                  </a>                                              </p>
                                     <!--     CTA button -->                                              <!--<table style=""background: #0078D7;"" cellspacing=""0"" cellpadding=""0"" align=""left"">                                                  <tbody>                                                      <tr>                                                          <td style=""padding-left: 15px; font-size: 18px; line-height: 20px; font-family:""Segoe UI Light""; color: #ffffff;"">                                                              <a style=""text-decoration: none; font-size: 18px; line-height: 20px; font-family:""Segoe UI Light""; color: #ffffff;"" href=""${LinkToPortal}/#/login"">${LoginButtonTextInEmail}</a>                                                          </td>                                                          <td style=""line-height: 1px; font-size: 1px; padding: 10px;"">                                                              <a>                                                                  <img src=""https://info.microsoft.com/rs/157-GQE-382/images/Program-CTAButton-whiteltr.png"" border=""0"" alt="""" height=""20"" />                                                              </a>                                                          </td>                                                      </tr>                                                  </tbody>                                              </table>-->                                              <!--     end CTA button -->                                          
                                  </td>
                               </tr>
@@ -561,7 +577,7 @@ VALUES
                            <!-- BEGIN HEADER // -->                                  
                            <table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" id=""templateHeader"">
                               <tr>
-                                 <td valign=""top"" class=""headerContent"">                                              <img src=""https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/main/src/CustomerSite/wwwroot/contoso-sales.png"" style=""max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;"" id=""headerImage"" />                                          </td>
+                                 <td valign=""top"" class=""headerContent"">                                              <img src=""${logoPath}/contoso-sales.png"" style=""max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;"" id=""headerImage"" />                                          </td>
                               </tr>
                            </table>
                            <!-- // END HEADER -->                              
@@ -578,7 +594,7 @@ VALUES
                                                                           <table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" id=""templateBody"">
                                                                           ${subscriptiondetails}   
                                                                                                               </table>
-                                    <p style="" margin-left: auto; margin-right: auto; text-align:right;"">                                                  <a href=""https://saaskitdemoapp.azurewebsites.net/"">                                                      <button style=""background-color:#2168A6;line-height:30px;color:white""><b>View Details</b></button>                                                  </a>                                              </p>
+                                    <p style="" margin-left: auto; margin-right: auto; text-align:right;"">                                                  <a href=""${viewDetailsLink}"">                                                      <button style=""background-color:#2168A6;line-height:30px;color:white""><b>View Details</b></button>                                                  </a>                                              </p>
                                     <!--     CTA button -->                                              <!--<table style=""background: #0078D7;"" cellspacing=""0"" cellpadding=""0"" align=""left"">                                                  <tbody>                                                      <tr>                                                          <td style=""padding-left: 15px; font-size: 18px; line-height: 20px; font-family:""Segoe UI Light""; color: #ffffff;"">                                                              <a style=""text-decoration: none; font-size: 18px; line-height: 20px; font-family:""Segoe UI Light""; color: #ffffff;"" href=""${LinkToPortal}/#/login"">${LoginButtonTextInEmail}</a>                                                          </td>                                                          <td style=""line-height: 1px; font-size: 1px; padding: 10px;"">                                                              <a>                                                                  <img src=""https://info.microsoft.com/rs/157-GQE-382/images/Program-CTAButton-whiteltr.png"" border=""0"" alt="""" height=""20"" />                                                              </a>                                                          </td>                                                      </tr>                                                  </tbody>                                              </table>-->                                              <!--     end CTA button -->                                          
                                  </td>
                               </tr>
@@ -625,7 +641,7 @@ VALUES
                            <!-- BEGIN HEADER // -->                                  
                            <table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" id=""templateHeader"">
                               <tr>
-                                 <td valign=""top"" class=""headerContent"">                                              <img src=""https://raw.githubusercontent.com/Azure/Commercial-Marketplace-SaaS-Accelerator/main/src/CustomerSite/wwwroot/contoso-sales.png"" style=""max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;"" id=""headerImage"" />                                          </td>
+                                 <td valign=""top"" class=""headerContent"">                                              <img src=""${logoPath}/contoso-sales.png"" style=""max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;"" id=""headerImage"" />                                          </td>
                               </tr>
                            </table>
                            <!-- // END HEADER -->                              
@@ -642,7 +658,7 @@ VALUES
                                                                           <table border=""0"" cellpadding=""0"" cellspacing=""0"" width=""100%"" id=""templateBody"">
                                                                           ${subscriptiondetails}   
                                                                                                               </table>
-                                    <p style="" margin-left: auto; margin-right: auto; text-align:right;"">                                                  <a href=""https://saaskitdemoapp.azurewebsites.net/"">                                                      <button style=""background-color:#2168A6;line-height:30px;color:white""><b>View Details</b></button>                                                  </a>                                              </p>
+                                    <p style="" margin-left: auto; margin-right: auto; text-align:right;"">                                                  <a href=""${viewDetailsLink}"">                                                      <button style=""background-color:#2168A6;line-height:30px;color:white""><b>View Details</b></button>                                                  </a>                                              </p>
                                     <!--     CTA button -->                                              <!--<table style=""background: #0078D7;"" cellspacing=""0"" cellpadding=""0"" align=""left"">                                                  <tbody>                                                      <tr>                                                          <td style=""padding-left: 15px; font-size: 18px; line-height: 20px; font-family:""Segoe UI Light""; color: #ffffff;"">                                                              <a style=""text-decoration: none; font-size: 18px; line-height: 20px; font-family:""Segoe UI Light""; color: #ffffff;"" href=""${LinkToPortal}/#/login"">${LoginButtonTextInEmail}</a>                                                          </td>                                                          <td style=""line-height: 1px; font-size: 1px; padding: 10px;"">                                                              <a>                                                                  <img src=""https://info.microsoft.com/rs/157-GQE-382/images/Program-CTAButton-whiteltr.png"" border=""0"" alt="""" height=""20"" />                                                              </a>                                                          </td>                                                      </tr>                                                  </tbody>                                              </table>-->                                              <!--     end CTA button -->                                          
                                  </td>
                               </tr>
