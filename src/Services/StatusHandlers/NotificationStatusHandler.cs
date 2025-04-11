@@ -172,14 +172,22 @@ public class NotificationStatusHandler : AbstractSubscriptionStatusHandler
         
         if (triggerEmail)
         {
-            var emailContent = this.emailHelper.PrepareEmailContent(subscriptionID, planDetails.PlanGuid, processStatus, planEventName, subscription.SubscriptionStatus);
-            this.emailService.SendEmail(emailContent);
-
-            if (emailContent.CopyToCustomer && !string.IsNullOrEmpty(userdetails.EmailAddress))
+            bool copyToCustomer = false;
+            var subscriptionEvent = this.eventsRepository.GetByName(planEventName);
+            var eventData = this.planEventsMappingRepository.GetPlanEvent(planDetails.PlanGuid, subscriptionEvent.EventsId);
+            if (eventData != null)
             {
-                emailContent.ToEmails = userdetails.EmailAddress;
-                this.emailService.SendEmail(emailContent);
+                copyToCustomer = Convert.ToBoolean(eventData.CopyToCustomer);
             }
+
+            var emailContent = this.emailHelper.PrepareEmailContent(subscriptionID, planDetails.PlanGuid, processStatus, eventData, subscription.SubscriptionStatus);
+            if(copyToCustomer && !string.IsNullOrEmpty(userdetails.EmailAddress))
+            {
+                var emailContentToCustomer = this.emailHelper.PrepareEmailContent(subscriptionID, planDetails.PlanGuid, processStatus, eventData, subscription.SubscriptionStatus , copyToCustomer);
+                emailContentToCustomer.ToEmails = userdetails.EmailAddress;
+                this.emailService.SendEmail(emailContentToCustomer);
+            }
+            this.emailService.SendEmail(emailContent);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
 
@@ -52,10 +53,11 @@ public class EmailHelper
     /// <exception cref="Exception">Error while sending an email, please check the configuration.
     /// or
     /// Error while sending an email, please check the configuration.</exception>
-    public EmailContentModel PrepareEmailContent(Guid subscriptionID, Guid planGuId, string processStatus, string planEventName, string subscriptionStatus)
+    public EmailContentModel PrepareEmailContent(Guid subscriptionID, Guid planGuId, string processStatus, PlanEventsMapping eventData, string subscriptionStatus, bool sendToCustomer = false)
     {
-        string body = this.emailTemplateRepository.GetEmailBodyForSubscription(subscriptionID, processStatus);
-        var subscriptionEvent = this.eventsRepository.GetByName(planEventName);
+        string body = this.emailTemplateRepository.GetEmailBodyForSubscription(subscriptionID, processStatus, sendToCustomer);
+        //20250206 update with sendToCustomer
+        //var subscriptionEvent = this.eventsRepository.GetByName(planEventName);
         var emailTemplateData = this.emailTemplateRepository.GetTemplateForStatus(subscriptionStatus);
         if (processStatus == "failure")
         {
@@ -67,8 +69,8 @@ public class EmailHelper
         string toReceipents = string.Empty;
         string ccReceipents = string.Empty;
         string bccReceipents = string.Empty;
-
-        var eventData = this.planEventsMappingRepository.GetPlanEvent(planGuId, subscriptionEvent.EventsId);
+        //20250206 update with sendToCustomer
+        //var eventData = this.planEventsMappingRepository.GetPlanEvent(planGuId, subscriptionEvent.EventsId);
 
         //First add To, Cc, Bcc email addresses from email template
         if (emailTemplateData != null)
@@ -94,9 +96,19 @@ public class EmailHelper
         //If the plan event data contains plan specific ToEmailAddress then override the above
         if (eventData != null)
         {
-            if (!string.IsNullOrEmpty(eventData.SuccessStateEmails))
+            if (processStatus == "failure")
             {
-                toReceipents = eventData.SuccessStateEmails;
+                if (!string.IsNullOrEmpty(eventData.FailureStateEmails))
+                {
+                    toReceipents = eventData.FailureStateEmails;
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(eventData.SuccessStateEmails))
+                {
+                    toReceipents = eventData.SuccessStateEmails;
+                }
             }
 
             copyToCustomer = Convert.ToBoolean(eventData.CopyToCustomer);

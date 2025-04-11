@@ -143,7 +143,7 @@ az webapp deploy `
 	--type zip
 Write-host "## Deployed code to Customer Portal"
 
-Remove-Item -Path ../Publish -recurse -Force
+#Remove-Item -Path ../Publish -recurse -Force
 Write-host "#### Code deployment complete ####" 
 Write-host ""
 Write-host "#### Warning!!! ####"

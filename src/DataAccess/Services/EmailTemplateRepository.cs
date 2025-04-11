@@ -54,9 +54,9 @@ public class EmailTemplateRepository : IEmailTemplateRepository
     /// <returns>
     /// Email template relevant to the status of the subscription.
     /// </returns>
-    public string GetEmailBodyForSubscription(Guid subscriptionID, string processStatus)
+    public string GetEmailBodyForSubscription(Guid subscriptionID, string processStatus, bool sendToCustomer = false)
     {
-        var emialResult = this.context.SubscriptionEmailOutput.FromSqlRaw("dbo.spGetFormattedEmailBody {0},{1}", subscriptionID, processStatus).ToList();
+        var emialResult = this.context.SubscriptionEmailOutput.FromSqlRaw("dbo.spGetFormattedEmailBody {0},{1},{2}", subscriptionID, processStatus, sendToCustomer).ToList();
         var emailRecord = emialResult.FirstOrDefault();
         if (emailRecord != null)
         {

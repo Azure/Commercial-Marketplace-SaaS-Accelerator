@@ -73,9 +73,19 @@ public class SMTPEmailService : IEmailService
                         mail.To.Add(new MailAddress(multimailid));
                     }
 
+                    if (!string.IsNullOrEmpty(emailContent.CCEmails))
+                    {
+                        string[] ccEmails = emailContent.CCEmails.Split(';');
+                        foreach (string multimailid1 in ccEmails)
+                        {
+                            mail.CC.Add(new MailAddress(multimailid1));
+                        }
+                    }
+
                     if (!string.IsNullOrEmpty(emailContent.BCCEmails))
                     {
-                        foreach (string multimailid1 in toEmails)
+                        string[] bccEmails = emailContent.BCCEmails.Split(';');
+                        foreach (string multimailid1 in bccEmails)
                         {
                             mail.Bcc.Add(new MailAddress(multimailid1));
                         }
