@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Marketplace.SaaS.Accelerator.Services.Models;
 
@@ -73,4 +74,10 @@ public class SubscriptionResultExtension : SubscriptionResult
     /// Gets or sets a value indicating if we allow subscription updates on the customer side.
     /// </summary>
     public bool AcceptSubscriptionUpdates { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Private Offer Id.
+    /// </summary>
+    [DisplayFormat(NullDisplayText = "-")]
+    public Guid? PrivateOfferId { get; set; }
 }

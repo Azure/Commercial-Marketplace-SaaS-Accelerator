@@ -49,7 +49,7 @@ public class SubscriptionService
     /// </summary>
     /// <param name="subscriptionDetail">The subscription detail.</param>
     /// <returns>Subscription Id.</returns>
-    public int AddOrUpdatePartnerSubscriptions(SubscriptionResult subscriptionDetail, int customerUserId = 0)
+    public int AddOrUpdatePartnerSubscriptions(SubscriptionResult subscriptionDetail, Guid? privateOfferId, int customerUserId = 0)
     {
         var isActive = this.IsSubscriptionDeleted(Convert.ToString(subscriptionDetail.SaasSubscriptionStatus));
         Subscriptions newSubscription = new Subscriptions()
@@ -70,7 +70,8 @@ public class SubscriptionService
             AmpOfferId = subscriptionDetail.OfferId,
             Term = subscriptionDetail.Term.TermUnit.ToString(),
             StartDate = subscriptionDetail.Term.StartDate.ToUniversalTime().DateTime,
-            EndDate = subscriptionDetail.Term.EndDate.ToUniversalTime().DateTime
+            EndDate = subscriptionDetail.Term.EndDate.ToUniversalTime().DateTime,
+            PrivateOfferId = privateOfferId
         };
         return this.subscriptionRepository.Save(newSubscription);
     }
@@ -180,6 +181,7 @@ public class SubscriptionService
         subscritpionDetail.Purchaser = new PurchaserResult();
         subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
         subscritpionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
+        subscritpionDetail.PrivateOfferId = subscription.PrivateOfferId;
         return subscritpionDetail;
     }
 

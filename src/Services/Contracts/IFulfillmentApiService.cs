@@ -56,7 +56,7 @@ public interface IFulfillmentApiService
     /// </summary>
     /// <param name="subscriptionId">The subscription identifier.</param>
     /// <returns>Get All Plans For Subscription.</returns>
-    Task<List<PlanDetailResultExtension>> GetAllPlansForSubscriptionAsync(Guid subscriptionId);
+    Task<List<PlanDetailResultExtension>> GetAllPlansForSubscriptionAsync(Guid subscriptionId, string planId=null);
 
     /// <summary>
     /// Activates the subscription.

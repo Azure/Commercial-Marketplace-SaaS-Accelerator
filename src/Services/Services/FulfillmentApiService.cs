@@ -163,14 +163,14 @@ public class FulfillmentApiService : BaseApiService, IFulfillmentApiService
     /// Get AllPlans For SubscriptionId.
     /// </returns>
     /// <exception cref="FulfillmentException">Invalid subscription ID.</exception>
-    public async Task<List<PlanDetailResultExtension>> GetAllPlansForSubscriptionAsync(Guid subscriptionId)
+    public async Task<List<PlanDetailResultExtension>> GetAllPlansForSubscriptionAsync(Guid subscriptionId, string planId= null)
     {
         this.Logger?.Info($"Inside GetAllPlansForSubscriptionAsync() of FulfillmentApiService, trying to Get All Plans for {subscriptionId}");
         if (subscriptionId != default)
         {
             try
             {
-                var availablePlans = (await this.marketplaceClient.Fulfillment.ListAvailablePlansAsync(subscriptionId)).Value;
+                var availablePlans = (await this.marketplaceClient.Fulfillment.ListAvailablePlansAsync(subscriptionId, planId)).Value;
                 return availablePlans.Plans.planResults();
             }
             catch (RequestFailedException ex)

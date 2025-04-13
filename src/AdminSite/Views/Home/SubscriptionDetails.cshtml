@@ -58,6 +58,13 @@
                             @Html.DisplayFor(model => model.PlanId)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Private Offer ID ")
+                            <span><small>(Only for V1 PO. V2 PO already reflects this in above planId.)</small></span>
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.PrivateOfferId)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Term ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">

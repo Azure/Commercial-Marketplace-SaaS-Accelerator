@@ -939,10 +939,18 @@ public class HomeController : BaseController
                     customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Beneficiary.EmailId, EmailAddress = subscription.Beneficiary.EmailId });
                 }
 
-                // Step 6: Add Subscription
-                var subscriptionId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription, customerUserId);
+                //Step 6: Get Private Offer id if exists
+                Guid? privateOfferId = null;
+                if (subscription.SaasSubscriptionStatus != SubscriptionStatusEnum.Unsubscribed)
+                {
+                    var subscriptionPlanDetail2 = this.fulfillApiService.GetAllPlansForSubscriptionAsync(subscription.Id, subscription.PlanId).ConfigureAwait(false).GetAwaiter().GetResult();
+                    privateOfferId = subscriptionPlanDetail2?.FirstOrDefault()?.SourceOffers?.FirstOrDefault()?.externalId;
+                }
 
-                // Step 7: Add Subscription Audit
+                // Step 7: Add Subscription
+                var subscriptionId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription, privateOfferId, customerUserId);
+
+                // Step 8: Add Subscription Audit
                 if (currentSubscription != null && subscription.SaasSubscriptionStatus.ToString() != currentSubscription.SubscriptionStatus.ToString())
                 {
                     this.subscriptionLogRepository.Save(new SubscriptionAuditLogs()

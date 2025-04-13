@@ -251,8 +251,13 @@ public class HomeController : BaseController
                         this.subscriptionService.AddUpdateAllPlanDetailsForSubscription(subscriptionPlanDetail);
 
                         var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
+
+                        //check if Private offer exists for this subscription by passing planid
+                        var subscriptionPlanDetail2 = await this.apiService.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId, newSubscription.PlanId).ConfigureAwait(false);
+                        var privateOfferId = subscriptionPlanDetail2?.FirstOrDefault()?.SourceOffers?.FirstOrDefault()?.externalId;
+
                         var subscriptionData = await this.apiService.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false);
-                        var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
+                        var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData, privateOfferId);
                         if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                         {
                             SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
