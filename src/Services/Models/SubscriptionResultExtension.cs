@@ -76,7 +76,7 @@ public class SubscriptionResultExtension : SubscriptionResult
     public bool AcceptSubscriptionUpdates { get; set; }
 
     /// <summary>
-    /// Gets or sets a value Private Offer Id.
+    /// Gets or sets the Private Offer Id.
     /// </summary>
     [DisplayFormat(NullDisplayText = "-")]
     public Guid? PrivateOfferId { get; set; }
