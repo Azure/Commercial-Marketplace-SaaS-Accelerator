@@ -30,6 +30,15 @@ public interface IKnownUsersRepository : IDisposable, IBaseRepository<KnownUsers
     KnownUsers GetKnownUserDetail(string emailAddress, int roleId);
 
     /// <summary>
+    /// Gets the known user detail.
+    /// </summary>
+    /// <param name="emailAddress">The email address.</param>
+    /// <returns>
+    /// An instance of KnownUser.
+    /// </returns>
+    KnownUsers GetKnownUserDetail(string emailAddress);
+
+    /// <summary>
     /// Adds the know users from application configuration.
     /// </summary>
     /// <param name="knownUsers">The known users.</param>

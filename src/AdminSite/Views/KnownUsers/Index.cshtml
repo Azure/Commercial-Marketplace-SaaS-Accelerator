@@ -21,6 +21,8 @@
                                 <thead class="cm-table-head">
                                     <tr>
                                         <th>User Email</th>
+                                        <th>Role</th>
+                                        <th class="hidden">RoleId</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -29,6 +31,10 @@
                                     {
                                         <tr>
                                             <td>@knownUser.UserEmail</td>
+                                            <td>
+                                                @knownUser.Role.Name
+                                            </td>
+                                            <td class="hidden" id="roleid-@knownUser.RoleId">@knownUser.RoleId</td>
                                             <td><input type="button" class="btn btn-danger btn-sm delete" value="Remove" onclick="Remove(this)"></td>
                                         </tr>
                                     }
@@ -36,6 +42,8 @@
                                 <tfoot>
                                     <tr>
                                         <td><input type="email" id="txtUserEmail" required /></td>
+                                        <td>@Html.DropDownList("ddlRole", (SelectList)ViewBag.Roles, "--Please select--", new {@required = "required"})</td>
+                                        <td class="hidden"></td>
                                         <td><input type="submit" id="btnAdd" class="btn btn-info" value="Add" /></td>
                                     </tr>
                                 </tfoot>
@@ -56,10 +64,17 @@
         if(formValid)
         {
             var txtUserEmail = $("#txtUserEmail");
+            var ddlRole = $("#ddlRole");
             var tBody = $("#tblKnownUsers > TBODY")[0];
             var row = tBody.insertRow(-1);
             var cell = $(row.insertCell(-1));
             cell.html(txtUserEmail.val());
+            var cell = $(row.insertCell(-1));
+            cell.html($("#ddlRole option:selected").text());
+            cell = $(row.insertCell(-1));
+            cell.attr("id", "roleid-" + ddlRole.val())
+            cell.attr("class","hidden");
+            cell.html(ddlRole.val());
             cell = $(row.insertCell(-1));
             var btnRemove = $("<input />");
             btnRemove.attr("class","btn btn-danger btn-sm delete");
@@ -68,6 +83,7 @@
             btnRemove.val("Remove");
             cell.append(btnRemove);
             txtUserEmail.val("");
+            ddlRole.val("");
         }
     });
 
@@ -84,7 +100,7 @@
             var row = $(this);
             var knownUser = {};
             knownUser.UserEmail = row.find("TD").eq(0).html();
-            knownUser.RoleId = "1";
+            knownUser.RoleId = row.find("TD").eq(2).html();
             if (knownUser.UserEmail && knownUser.UserEmail.trim())
             {
                 knownUsers.push(knownUser);
