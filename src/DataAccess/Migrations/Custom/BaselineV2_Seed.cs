@@ -354,6 +354,7 @@ VALUES
 ");
           
             migrationBuilder.Sql(@$"INSERT INTO Roles (name) VALUES ('PublisherAdmin')");
+            migrationBuilder.Sql(@$"INSERT INTO Roles (name) VALUES ('SubscriptionAdmin')");
 
             migrationBuilder.Sql(@$"
 INSERT INTO Events
