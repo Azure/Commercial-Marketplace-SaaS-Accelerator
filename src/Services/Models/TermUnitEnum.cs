@@ -18,12 +18,22 @@ public enum TermUnitEnum
     P1Y,
         
     /// <summary>
-    /// The Yearly.
+    /// Two Year.
     /// </summary>
     P2Y,
-        
+
     /// <summary>
-    /// The Yearly.
+    /// Three Year.
     /// </summary>
     P3Y,
+
+    /// <summary>
+    /// Four Year.
+    /// </summary>
+    P4Y,
+
+    /// <summary>
+    /// Five Year.
+    /// </summary>
+    P5Y,
 }
