@@ -16,14 +16,24 @@ public enum TermUnitEnum
     /// The Yearly.
     /// </summary>
     P1Y,
-        
+
     /// <summary>
-    /// The Yearly.
+    /// Two Year term.
     /// </summary>
     P2Y,
-        
+
     /// <summary>
-    /// The Yearly.
+    /// Three Year term.
     /// </summary>
     P3Y,
+
+    /// <summary>
+    /// Four Year term.
+    /// </summary>
+    P4Y,
+
+    /// <summary>
+    /// Five Year term.
+    /// </summary>
+    P5Y,
 }
