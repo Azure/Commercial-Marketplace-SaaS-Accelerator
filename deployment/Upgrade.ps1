@@ -60,47 +60,13 @@ $ServerUriPrivate = $SQLServerName+".privatelink.database.windows.net"
 #region Deploy Database
 
 # Ask user if their env is private end point protected and run a if else based on the response
-$ispeenv = Read-Host "Is your environment setup with private endpoints? (Y/N)"
+$isPEenv = Read-Host "Is your environment setup with private endpoints? (Y/N)"
 
 #### THIS SECTION DEPLOYS CODE AND DATABASE CHANGES
 Write-host "#### STEP 1 Database deployment start####"
 
-if ($ispeenv -e 'Y' -and $ispeenv -e 'y') {
+if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 	
-	Write-host "## STEP 1.1 Constructing connection string with AAD auth"
-	$ConnectionString="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";TrustServerCertificate=True;Authentication=Active Directory Managed Identity;"
-
-	Write-host "##  STEP 1.2 Update connection string to the Adminsite project"
-	Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
-
-	Write-host "## STEP 1.3 START Generating migration script"	
-	dotnet-ef migrations script `
-		--idempotent `
-		--context SaaSKitContext `
-		--project ../src/DataAccess/DataAccess.csproj `
-		--startup-project ../src/AdminSite/AdminSite.csproj `
-		--output script.sql
-	Write-host "## END Generating migration script"	
-
-	Write-Host " STEP 1.4 Getting the IP"
-	$currentIP = (Invoke-WebRequest -Uri "http://ifconfig.me/ip").Content.Trim()
-	
-	Write-Host "STEP 1.5 Add the current IP to the SQL server firewall rules"
-	az sql server firewall-rule create `
-		--resource-group $ResourceGroupForDeployment `
-		--server $SQLServerName `
-		--name "AllowCurrentIP" `
-		--start-ip-address $currentIP `
-		--end-ip-address $currentIP
-
-	Write-Host "STEP 1.6 Current IP added to SQL server firewall rules." -ForegroundColor Green
-
-	Write-host "STEP 1.7 ➡️ Execute SQL schema/data script"
-	$dbaccesstoken = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
-	Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken $dbaccesstoken
-} else
-{
-
 	Write-host "## STEP 1.1 Retrieved ConnectionString from KeyVault"
 	$ConnectionString = az keyvault secret show `
 		--vault-name $KeyVault `
@@ -159,6 +125,40 @@ if ($ispeenv -e 'Y' -and $ispeenv -e 'y') {
 	Write-host "## STEP 1.5 START: Run migration against database"
 	Invoke-Sqlcmd -inputFile script.sql -ServerInstance $Server -database $Database -Username $User -Password $Pass
 	Write-host "## STEP 1.5 END: Ran migration against database"	
+	
+} else
+{
+	Write-host "## STEP 1.1 Constructing connection string with AAD auth"
+	$ConnectionString="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";TrustServerCertificate=True;Authentication=Active Directory Managed Identity;"
+
+	Write-host "##  STEP 1.2 Update connection string to the Adminsite project"
+	Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
+
+	Write-host "## STEP 1.3 START Generating migration script"	
+	dotnet-ef migrations script `
+		--idempotent `
+		--context SaaSKitContext `
+		--project ../src/DataAccess/DataAccess.csproj `
+		--startup-project ../src/AdminSite/AdminSite.csproj `
+		--output script.sql
+	Write-host "## END Generating migration script"	
+
+	Write-Host " STEP 1.4 Getting the IP"
+	$currentIP = (Invoke-WebRequest -Uri "http://ifconfig.me/ip").Content.Trim()
+	
+	Write-Host "STEP 1.5 Add the current IP to the SQL server firewall rules"
+	az sql server firewall-rule create `
+		--resource-group $ResourceGroupForDeployment `
+		--server $SQLServerName `
+		--name "AllowCurrentIP" `
+		--start-ip-address $currentIP `
+		--end-ip-address $currentIP
+
+	Write-Host "STEP 1.6 Current IP added to SQL server firewall rules." -ForegroundColor Green
+
+	Write-host "STEP 1.7 ➡️ Execute SQL schema/data script"
+	$dbaccesstoken = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
+	Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken $dbaccesstoken
 }
 
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
