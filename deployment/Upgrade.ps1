@@ -65,7 +65,7 @@ $ispeenv = Read-Host "Is your environment setup with private endpoints? (Y/N)"
 #### THIS SECTION DEPLOYS CODE AND DATABASE CHANGES
 Write-host "#### STEP 1 Database deployment start####"
 
-if ($ispeenv -ne 'Y' -and $ispeenv -ne 'y') {
+if ($ispeenv -e 'Y' -and $ispeenv -e 'y') {
 	
 	Write-host "## STEP 1.1 Constructing connection string with AAD auth"
 	$ConnectionString="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";TrustServerCertificate=True;Authentication=Active Directory Managed Identity;"
