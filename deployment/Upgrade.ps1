@@ -25,6 +25,18 @@ Write-Host $message -ForegroundColor Yellow
 # Prompt the user for input
 $response = Read-Host
 
+#Get TenantID if not set as argument
+	Get-AzTenant | Format-Table
+	$TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }
+	#Get Azure Subscription if not set as argument
+	Get-AzSubscription -TenantId $TenantID | Format-Table
+	$AzureSubscriptionID = Read-Host "⌨  Type your SubscriptionID or press Enter to accept your current one [$currentSubscription]")) { $AzureSubscriptionID = $currentSubscription }
+	#Set the AZ Cli context
+	az account set -s $AzureSubscriptionID
+	Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
+
+#endregion
+
 # Check the user's response
 if ($response -ne 'Y' -and $response -ne 'y') {
     Write-Host "You did not agree. Exiting..." -ForegroundColor Red
@@ -131,7 +143,7 @@ if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 	Write-host "## STEP 1.1 Constructing connection string with AAD auth"
 	$ConnectionString="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";TrustServerCertificate=True;Authentication=Active Directory Managed Identity;"
 
-	Write-host "##  STEP 1.2 Update connection string to the Adminsite project"
+	Write-host "## STEP 1.2 Update connection string to the Adminsite project"
 	Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
 
 	Write-host "## STEP 1.3 START Generating migration script"	
