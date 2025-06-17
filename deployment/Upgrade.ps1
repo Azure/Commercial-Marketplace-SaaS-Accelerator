@@ -231,6 +231,8 @@ Write-host "## Deployed code to Customer Portal"
 Remove-Item -Path ../Publish -recurse -Force
 Write-host "#### Code deployment complete ####" 
 Write-host ""
+Write-host "#### The upgrade process has completed successfully ####" 
+Write-host ""
 Write-host "#### Warning!!! ####"
 Write-host "#### If the upgrade is to >=7.5.0, MeterScheduler feature is pre-enabled and changed to DB config instead of the App Service configuration. Please update the IsMeteredBillingEnabled value accordingly in the Admin portal -> Settings page. ####"
 Write-host "#### "
