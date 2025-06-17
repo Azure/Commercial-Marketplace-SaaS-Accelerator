@@ -112,9 +112,6 @@ if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 		--project ../src/DataAccess/DataAccess.csproj `
 		--startup-project ../src/AdminSite/AdminSite.csproj `
 		--output script.sql
-	Write-host "## STEP 1.3 END Generating migration script"	
-
-	Write-host "## STEP 1.4 START Running compatibility script"
 
     $compatibilityScript = "
 	IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL 
@@ -140,13 +137,13 @@ if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 	END;
 	GO"
 
+	
+	Write-host "## STEP 1.4 Running compatibility script"
 	Invoke-Sqlcmd -query $compatibilityScript -ServerInstance $Server -database $Database -Username $User -Password $Pass
-	Write-host "## STEP 1.4 END: Running compatibility script"
 
 
 	Write-host "## STEP 1.5 START: Run migration against database"
 	Invoke-Sqlcmd -inputFile script.sql -ServerInstance $Server -database $Database -Username $User -Password $Pass
-	Write-host "## STEP 1.5 END: Ran migration against database"	
 	
 } else
 {
@@ -163,12 +160,11 @@ if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 		--project ../src/DataAccess/DataAccess.csproj `
 		--startup-project ../src/AdminSite/AdminSite.csproj `
 		--output script.sql
-	Write-host "## END Generating migration script"	
 
-	Write-Host " STEP 1.4 Getting the IP"
+	Write-Host "## STEP 1.4 Getting the IP"
 	$currentIP = (Invoke-WebRequest -Uri "http://ifconfig.me/ip").Content.Trim()
 	
-	Write-Host "STEP 1.5 Add the current IP to the SQL server firewall rules"
+	Write-Host "## STEP 1.5 Add the current IP to the SQL server firewall rules"
 	az sql server firewall-rule create `
 		--resource-group $ResourceGroupForDeployment `
 		--server $SQLServerName `
@@ -176,9 +172,9 @@ if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 		--start-ip-address $currentIP `
 		--end-ip-address $currentIP
 
-	Write-Host "STEP 1.6 Current IP added to SQL server firewall rules." -ForegroundColor Green
+	Write-Host "## STEP 1.6 Current IP added to SQL server firewall rules." -ForegroundColor Green
 
-	Write-host "STEP 1.7 ➡️ Execute SQL schema/data script"
+	Write-host "## STEP 1.7 ➡️ Execute SQL schema/data script"
 	$dbaccesstoken = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
 	Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken $dbaccesstoken
 }
@@ -195,18 +191,20 @@ Write-host "#### Database Deployment complete ####"
 
 Write-host "#### STEP 2 Deploying new code ####" 
 
+Write-host "## STEP 2.1 Building Admin Portal" 
 dotnet publish ../src/AdminSite/AdminSite.csproj -v q -c release -o ../Publish/AdminSite/
-Write-host "## STEP 2.1 Admin Portal built" 
-dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -v q -c release -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob --runtime win-x64 --self-contained true 
-Write-host "## STEP 2.2 Metered Scheduler to Admin Portal Built"
-dotnet publish ../src/CustomerSite/CustomerSite.csproj -v q -c release -o ../Publish/CustomerSite
-Write-host "## STEP 2.3 Customer Portal Built" 
 
+Write-host "## STEP 2.2 Building Meter Scheduler"
+dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -c release -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob/ -v q --runtime win-x64 --self-contained true 
+
+Write-host "## STEP 2.3 Building Customer Portal" 
+dotnet publish ../src/CustomerSite/CustomerSite.csproj -v q -c release -o ../Publish/CustomerSite
+
+Write-host "## STEP 2.4 Compress packages." 
 Compress-Archive -Path ../Publish/CustomerSite/* -DestinationPath ../Publish/CustomerSite.zip -Force
 Compress-Archive -Path ../Publish/AdminSite/* -DestinationPath ../Publish/AdminSite.zip -Force
-Write-host "## Code packages prepared." 
 
-Write-host "## STEP 2.4 Deploying code to Admin Portal"
+Write-host "## STEP 2.5 Deploying code to Admin Portal"
 az webapp deploy `
 	--resource-group $ResourceGroupForDeployment `
 	--name $WebAppNameAdmin `
@@ -214,7 +212,7 @@ az webapp deploy `
 	--type zip
 Write-host "## Deployed code to Admin Portal"
 
-Write-host "## STEP 2.5 Deploying code to Customer Portal"
+Write-host "## STEP 2.6 Deploying code to Customer Portal"
 az webapp deploy `
 	--resource-group $ResourceGroupForDeployment `
 	--name $WebAppNamePortal `
