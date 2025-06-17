@@ -6,7 +6,7 @@ If you need help with the accelerator or would like to report defects or feature
 ---
 
 
-> **Note:** SaaS subscription purchases for the new 4-year and 5-year terms are only supported in version **8.1.0** or later.  
+> **Note:** SaaS subscription purchases for the new 4-year and 5-year terms are only supported in version **8.2.0** or later.  
 > Please upgrade your instance if you have deals using these terms.
 
 # Microsoft Commercial Marketplace - Community Code for SaaS Applications
