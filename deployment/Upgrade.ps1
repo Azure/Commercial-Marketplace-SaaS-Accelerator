@@ -168,7 +168,7 @@ if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 	az sql server firewall-rule create `
 		--resource-group $ResourceGroupForDeployment `
 		--server $SQLServerName `
-		--name "AllowCurrentIP" `
+		--name "SAAllowCurrentIP" `
 		--start-ip-address $currentIP `
 		--end-ip-address $currentIP
 
@@ -177,6 +177,12 @@ if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 	Write-host "## STEP 1.7 ➡️ Execute SQL schema/data script"
 	$dbaccesstoken = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
 	Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken $dbaccesstoken
+
+	Write-host "## STEP 1.8 START: Removing the client IP which was at 1.5"
+	Remove-AzSqlServerFirewallRule `
+    -ResourceGroupName $ResourceGroup `
+    -ServerName $ServerName `
+    -FirewallRuleName "SAAllowCurrentIP"
 }
 
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
