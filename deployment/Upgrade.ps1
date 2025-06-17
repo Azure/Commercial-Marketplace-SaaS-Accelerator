@@ -25,17 +25,6 @@ Write-Host $message -ForegroundColor Yellow
 # Prompt the user for input
 $response = Read-Host
 
-#Get TenantID if not set as argument
-	Get-AzTenant | Format-Table
-	$TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }
-	#Get Azure Subscription if not set as argument
-	Get-AzSubscription -TenantId $TenantID | Format-Table
-	$AzureSubscriptionID = Read-Host "⌨  Type your SubscriptionID or press Enter to accept your current one [$currentSubscription]")) { $AzureSubscriptionID = $currentSubscription }
-	#Set the AZ Cli context
-	az account set -s $AzureSubscriptionID
-	Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
-
-#endregion
 
 # Check the user's response
 if ($response -ne 'Y' -and $response -ne 'y') {
@@ -45,6 +34,27 @@ if ($response -ne 'Y' -and $response -ne 'y') {
 
 # Proceed if the user agrees
 Write-Host "Thank you for agreeing. Proceeding with the script..." -ForegroundColor Green
+
+
+#Get TenantID if not set as argument
+	$currentContext = az account show | ConvertFrom-Json
+	$currentTenant = $currentContext.tenantId
+	$currentSubscription = $currentContext.id
+
+	Get-AzTenant | Format-Table
+	$TenantID = $null
+    if (!($TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }  
+	
+	#Get Azure Subscription if not set as argument
+	Get-AzSubscription -TenantId $TenantID | Format-Table
+	$AzureSubscriptionID = $null
+	if (!($AzureSubscriptionID = Read-Host "⌨  Type your SubscriptionID or press Enter to accept your current one [$currentSubscription]")) { $AzureSubscriptionID = $currentSubscription }
+	#Set the AZ Cli context
+
+	az account set -s $AzureSubscriptionID
+	Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
+
+#endregion
 
 Function String-Between
 {
