@@ -25,6 +25,7 @@ Write-Host $message -ForegroundColor Yellow
 # Prompt the user for input
 $response = Read-Host
 
+
 # Check the user's response
 if ($response -ne 'Y' -and $response -ne 'y') {
     Write-Host "You did not agree. Exiting..." -ForegroundColor Red
@@ -33,6 +34,27 @@ if ($response -ne 'Y' -and $response -ne 'y') {
 
 # Proceed if the user agrees
 Write-Host "Thank you for agreeing. Proceeding with the script..." -ForegroundColor Green
+
+
+#Get TenantID if not set as argument
+	$currentContext = az account show | ConvertFrom-Json
+	$currentTenant = $currentContext.tenantId
+	$currentSubscription = $currentContext.id
+
+	Get-AzTenant | Format-Table
+	$TenantID = $null
+    if (!($TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }  
+	
+	#Get Azure Subscription if not set as argument
+	Get-AzSubscription -TenantId $TenantID | Format-Table
+	$AzureSubscriptionID = $null
+	if (!($AzureSubscriptionID = Read-Host "⌨  Type your SubscriptionID or press Enter to accept your current one [$currentSubscription]")) { $AzureSubscriptionID = $currentSubscription }
+	#Set the AZ Cli context
+
+	az account set -s $AzureSubscriptionID
+	Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
+
+#endregion
 
 Function String-Between
 {
@@ -47,87 +69,148 @@ Function String-Between
 	return $Source.Substring($sIndex, $eIndex-$sIndex)
 }
 
+# Setting variables
 $ErrorActionPreference = "Stop"
 $WebAppNameAdmin=$WebAppNamePrefix+"-admin"
 $WebAppNamePortal=$WebAppNamePrefix+"-portal"
 $KeyVault=$WebAppNamePrefix+"-kv"
+$SQLDatabaseName = $WebAppNamePrefix +"AMPSaaSDB"
+$SQLServerName = $WebAppNamePrefix + "-sql"
+$ServerUri = $SQLServerName+".database.windows.net"
+$ServerUriPrivate = $SQLServerName+".privatelink.database.windows.net"
+
+#region Deploy Database
+
+# Ask user if their env is private end point protected and run a if else based on the response
+$isPEenv = Read-Host "Is your environment setup with private endpoints? (Y/N)"
 
 #### THIS SECTION DEPLOYS CODE AND DATABASE CHANGES
-Write-host "#### Deploying new database ####" 
-$ConnectionString = az keyvault secret show `
-	--vault-name $KeyVault `
-	--name "DefaultConnection" `
-	--query "{value:value}" `
-	--output tsv
+Write-host "#### STEP 1 Database deployment start####"
 
-#Extract components from ConnectionString since Invoke-Sqlcmd needs them separately
-$Server = String-Between -source $ConnectionString -start "Data Source=" -end ";"
-$Database = String-Between -source $ConnectionString -start "Initial Catalog=" -end ";"
-$User = String-Between -source $ConnectionString -start "User Id=" -end ";"
-$Pass = String-Between -source $ConnectionString -start "Password=" -end ";"
-
-Write-host "## Retrieved ConnectionString from KeyVault"
-Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
-
-dotnet-ef migrations script `
-	--idempotent `
-	--context SaaSKitContext `
-	--project ../src/DataAccess/DataAccess.csproj `
-	--startup-project ../src/AdminSite/AdminSite.csproj `
-	--output script.sql
+if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 	
-Write-host "## Generated migration script"	
+	Write-host "## STEP 1.1 Retrieved ConnectionString from KeyVault"
+	$ConnectionString = az keyvault secret show `
+		--vault-name $KeyVault `
+		--name "DefaultConnection" `
+		--query "{value:value}" `
+		--output tsv
 
-Write-host "## !!!Attempting to upgrade database to migration compatibility.!!!"	
-$compatibilityScript = "
-IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL 
--- No __EFMigrations table means Database has not been upgraded to support EF Migrations
-BEGIN
-    CREATE TABLE [__EFMigrationsHistory] (
-        [MigrationId] nvarchar(150) NOT NULL,
-        [ProductVersion] nvarchar(32) NOT NULL,
-        CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
-    );
+	#Extract components from ConnectionString since Invoke-Sqlcmd needs them separately
+	$Server = String-Between -source $ConnectionString -start "Data Source=" -end ";"
+	$Database = String-Between -source $ConnectionString -start "Initial Catalog=" -end ";"
+	$User = String-Between -source $ConnectionString -start "User Id=" -end ";"
+	$Pass = String-Between -source $ConnectionString -start "Password=" -end ";"
 
-    IF (SELECT TOP 1 VersionNumber FROM DatabaseVersionHistory ORDER BY CreateBy DESC) = '2.10'
-	    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion]) 
-	        VALUES (N'20221118045814_Baseline_v2', N'6.0.1');
+	Write-host "## STEP 1.2 Update connection string to the Adminsite project"
+	Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
 
-    IF (SELECT TOP 1 VersionNumber FROM DatabaseVersionHistory ORDER BY CreateBy DESC) = '5.00'
-	    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])  
-	        VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1');
+	Write-host "## STEP 1.3 START Generating migration script"	
+	dotnet-ef migrations script `
+		--idempotent `
+		--context SaaSKitContext `
+		--project ../src/DataAccess/DataAccess.csproj `
+		--startup-project ../src/AdminSite/AdminSite.csproj `
+		--output script.sql
 
-    IF (SELECT TOP 1 VersionNumber FROM DatabaseVersionHistory ORDER BY CreateBy DESC) = '6.10'
-	    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])  
-	        VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1'), (N'20221118211554_Baseline_v6', N'6.0.1');
-END;
-GO"
+    $compatibilityScript = "
+	IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL 
+	-- No __EFMigrations table means Database has not been upgraded to support EF Migrations
+	BEGIN
+		CREATE TABLE [__EFMigrationsHistory] (
+			[MigrationId] nvarchar(150) NOT NULL,
+			[ProductVersion] nvarchar(32) NOT NULL,
+			CONSTRAINT [PK___EFMigrationsHistory] PRIMARY KEY ([MigrationId])
+		);
 
-Invoke-Sqlcmd -query $compatibilityScript -ServerInstance $Server -database $Database -Username $User -Password $Pass
-Write-host "## Ran compatibility script against database"
-Invoke-Sqlcmd -inputFile script.sql -ServerInstance $Server -database $Database -Username $User -Password $Pass
-Write-host "## Ran migration against database"	
+		IF (SELECT TOP 1 VersionNumber FROM DatabaseVersionHistory ORDER BY CreateBy DESC) = '2.10'
+			INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion]) 
+				VALUES (N'20221118045814_Baseline_v2', N'6.0.1');
+
+		IF (SELECT TOP 1 VersionNumber FROM DatabaseVersionHistory ORDER BY CreateBy DESC) = '5.00'
+			INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])  
+				VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1');
+
+		IF (SELECT TOP 1 VersionNumber FROM DatabaseVersionHistory ORDER BY CreateBy DESC) = '6.10'
+			INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])  
+				VALUES (N'20221118045814_Baseline_v2', N'6.0.1'), (N'20221118203340_Baseline_v5', N'6.0.1'), (N'20221118211554_Baseline_v6', N'6.0.1');
+	END;
+	GO"
+
+	
+	Write-host "## STEP 1.4 Running compatibility script"
+	Invoke-Sqlcmd -query $compatibilityScript -ServerInstance $Server -database $Database -Username $User -Password $Pass
+
+
+	Write-host "## STEP 1.5 START: Run migration against database"
+	Invoke-Sqlcmd -inputFile script.sql -ServerInstance $Server -database $Database -Username $User -Password $Pass
+	
+} else
+{
+	Write-host "## STEP 1.1 Constructing connection string with AAD auth"
+	$ConnectionString="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";TrustServerCertificate=True;Authentication=Active Directory Managed Identity;"
+
+	Write-host "## STEP 1.2 Update connection string to the Adminsite project"
+	Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
+
+	Write-host "## STEP 1.3 START Generating migration script"	
+	dotnet-ef migrations script `
+		--idempotent `
+		--context SaaSKitContext `
+		--project ../src/DataAccess/DataAccess.csproj `
+		--startup-project ../src/AdminSite/AdminSite.csproj `
+		--output script.sql
+
+	Write-Host "## STEP 1.4 Getting the IP"
+	$currentIP = (Invoke-WebRequest -Uri "http://ifconfig.me/ip").Content.Trim()
+	
+	Write-Host "## STEP 1.5 Add the current IP to the SQL server firewall rules"
+	az sql server firewall-rule create `
+		--resource-group $ResourceGroupForDeployment `
+		--server $SQLServerName `
+		--name "SAAllowCurrentIP" `
+		--start-ip-address $currentIP `
+		--end-ip-address $currentIP
+
+	Write-Host "## STEP 1.6 Current IP added to SQL server firewall rules." -ForegroundColor Green
+
+	Write-host "## STEP 1.7 ➡️ Execute SQL schema/data script"
+	$dbaccesstoken = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
+	Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken $dbaccesstoken
+
+	Write-host "## STEP 1.8 START: Removing the client IP which was added at 1.5"
+	az sql server firewall-rule delete `
+		--resource-group $ResourceGroupForDeployment `
+		--server $SQLServerName `
+		--name "SAAllowCurrentIP" `
+}
 
 Remove-Item -Path ../src/AdminSite/appsettings.Development.json
 Remove-Item -Path script.sql
+
 Write-host "#### Database Deployment complete ####"	
 
 
+#endregion Deploy Database
 
-Write-host "#### Deploying new code ####" 
+#region Deploy code
 
+Write-host "#### STEP 2 Deploying new code ####" 
+
+Write-host "## STEP 2.1 Building Admin Portal" 
 dotnet publish ../src/AdminSite/AdminSite.csproj -v q -c release -o ../Publish/AdminSite/
-Write-host "## Admin Portal built" 
-dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -v q -c release -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob --runtime win-x64 --self-contained true 
-Write-host "## Metered Scheduler to Admin Portal Built"
-dotnet publish ../src/CustomerSite/CustomerSite.csproj -v q -c release -o ../Publish/CustomerSite
-Write-host "## Customer Portal Built" 
 
+Write-host "## STEP 2.2 Building Meter Scheduler"
+dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -c release -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob/ --runtime win-x64 --self-contained true -p:PublishReadyToRun=false
+
+Write-host "## STEP 2.3 Building Customer Portal" 
+dotnet publish ../src/CustomerSite/CustomerSite.csproj -v q -c release -o ../Publish/CustomerSite
+
+Write-host "## STEP 2.4 Compress packages." 
 Compress-Archive -Path ../Publish/CustomerSite/* -DestinationPath ../Publish/CustomerSite.zip -Force
 Compress-Archive -Path ../Publish/AdminSite/* -DestinationPath ../Publish/AdminSite.zip -Force
-Write-host "## Code packages prepared." 
 
-Write-host "## Deploying code to Admin Portal"
+Write-host "## STEP 2.5 Deploying code to Admin Portal"
 az webapp deploy `
 	--resource-group $ResourceGroupForDeployment `
 	--name $WebAppNameAdmin `
@@ -135,7 +218,7 @@ az webapp deploy `
 	--type zip
 Write-host "## Deployed code to Admin Portal"
 
-Write-host "## Deploying code to Customer Portal"
+Write-host "## STEP 2.6 Deploying code to Customer Portal"
 az webapp deploy `
 	--resource-group $ResourceGroupForDeployment `
 	--name $WebAppNamePortal `
@@ -143,8 +226,12 @@ az webapp deploy `
 	--type zip
 Write-host "## Deployed code to Customer Portal"
 
+#endregion Deploy code
+
 Remove-Item -Path ../Publish -recurse -Force
 Write-host "#### Code deployment complete ####" 
+Write-host ""
+Write-host "#### The upgrade process has completed successfully ####" 
 Write-host ""
 Write-host "#### Warning!!! ####"
 Write-host "#### If the upgrade is to >=7.5.0, MeterScheduler feature is pre-enabled and changed to DB config instead of the App Service configuration. Please update the IsMeteredBillingEnabled value accordingly in the Admin portal -> Settings page. ####"
