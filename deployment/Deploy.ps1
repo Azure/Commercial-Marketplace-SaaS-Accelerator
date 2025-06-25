@@ -572,11 +572,10 @@ Write-host "📜 Deploy Code"
 
 Write-host "   🔵 Deploy Database"
 Write-host "      ➡️ Generate SQL schema/data script"
-$ConnectionString="Server=tcp:"+$ServerUri+";Database="+$SQLDatabaseName+";TrustServerCertificate=True;Authentication=Active Directory Default;"
+$ConnectionString="Server=tcp:"+$ServerUri+";Database="+$SQLDatabaseName+";Authentication=Active Directory Default;"
 Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
 dotnet-ef migrations script  --output script.sql --idempotent --context SaaSKitContext --project ../src/DataAccess/DataAccess.csproj --startup-project ../src/AdminSite/AdminSite.csproj
 Write-host "      ➡️ Execute SQL schema/data script"
-$dbaccesstoken = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
 Invoke-Sqlcmd -InputFile ./script.sql -ConnectionString $ConnectionString
 
 Write-host "      ➡️ Execute SQL script to Add WebApps"
