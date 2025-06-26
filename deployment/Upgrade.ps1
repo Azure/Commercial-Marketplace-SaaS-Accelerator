@@ -148,7 +148,7 @@ if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 } else
 {
 	Write-host "## STEP 1.1 Constructing connection string with AAD auth"
-	$ConnectionString="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";TrustServerCertificate=True;Authentication=Active Directory Managed Identity;"
+	$ConnectionString="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";TrustServerCertificate=True;Authentication=Active Directory Default;"
 
 	Write-host "## STEP 1.2 Update connection string to the Adminsite project"
 	Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
@@ -175,8 +175,7 @@ if ($isPEenv -ne 'Y' -and $isPEenv -ne 'y') {
 	Write-Host "## STEP 1.6 Current IP added to SQL server firewall rules." -ForegroundColor Green
 
 	Write-host "## STEP 1.7 ➡️ Execute SQL schema/data script"
-	$dbaccesstoken = (Get-AzAccessToken -ResourceUrl https://database.windows.net).Token
-	Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -database $SQLDatabaseName -AccessToken $dbaccesstoken
+	Invoke-Sqlcmd -InputFile ./script.sql -ConnectionString $ConnectionString
 
 	Write-host "## STEP 1.8 START: Removing the client IP which was added at 1.5"
 	az sql server firewall-rule delete `
