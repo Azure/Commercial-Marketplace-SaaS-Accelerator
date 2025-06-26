@@ -7,7 +7,7 @@
 	  <Product>Marketplace.SaaS.Accelerator</Product>
 	  <AssemblyName>AdminSite</AssemblyName>
 	  <RootNamespace>Marketplace.SaaS.Accelerator.AdminSite</RootNamespace>
-	  <Version>8.1.0</Version>
+	  <Version>8.2.1</Version>
 	  <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
