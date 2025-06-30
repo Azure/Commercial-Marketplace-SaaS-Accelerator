@@ -6,7 +6,7 @@ If you need help with the accelerator or would like to report defects or feature
 ---
 
 > **Note:** Recently released feature for 4-year and 5-year billing terms are supported starting version **8.2.0**.  
-> Please [upgrade](./docs/Installation-Instructions.md#update-to-a-newer-version-of-the-saas-accelerator) your SaaS Accelerator deployment if you plan in utlizing this new feature.
+> Please [upgrade your SaaS Accelerator deployment](./docs/Installation-Instructions.md#update-to-a-newer-version-of-the-saas-accelerator) if you plan in utlizing this new feature.
 
 # Microsoft Commercial Marketplace - Community Code for SaaS Applications
 
