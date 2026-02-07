@@ -533,6 +533,8 @@ az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment
 Write-host "      ➡️ Grant deployer access to set secrets"
 $deployerObjectId = az ad signed-in-user show --query id -o tsv
 az role assignment create --role "Key Vault Secrets Officer" --assignee $deployerObjectId --scope /subscriptions/$AzureSubscriptionID/resourceGroups/$ResourceGroupForDeployment/providers/Microsoft.KeyVault/vaults/$KeyVault --output $azCliOutput
+Write-host "      ➡️ Wait for RBAC propagation (30 seconds)"
+Start-Sleep -Seconds 30
 Write-host "      ➡️ Add Secrets"
 az keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --output $azCliOutput
 az keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --output $azCliOutput
@@ -549,6 +551,8 @@ Write-host "      ➡️ Create Web App"
 az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:8 --output $azCliOutput
 Write-host "      ➡️ Assign Identity"
 $WebAppNameAdminId = az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] --query principalId -o tsv
+Write-host "      ➡️ Wait for identity propagation (15 seconds)"
+Start-Sleep -Seconds 15
 Write-host "      ➡️ Setup access to KeyVault"
 az role assignment create --role "Key Vault Secrets User" --assignee $WebAppNameAdminId --scope /subscriptions/$AzureSubscriptionID/resourceGroups/$ResourceGroupForDeployment/providers/Microsoft.KeyVault/vaults/$KeyVault --output $azCliOutput
 Write-host "      ➡️ Configure Key Vault Reference Identity"
@@ -570,6 +574,8 @@ Write-host "      ➡️ Create Web App"
 az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:8 --output $azCliOutput
 Write-host "      ➡️ Assign Identity"
 $WebAppNamePortalId= az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] --query principalId -o tsv 
+Write-host "      ➡️ Wait for identity propagation (15 seconds)"
+Start-Sleep -Seconds 15
 Write-host "      ➡️ Setup access to KeyVault"
 az role assignment create --role "Key Vault Secrets User" --assignee $WebAppNamePortalId --scope /subscriptions/$AzureSubscriptionID/resourceGroups/$ResourceGroupForDeployment/providers/Microsoft.KeyVault/vaults/$KeyVault --output $azCliOutput
 Write-host "      ➡️ Configure Key Vault Reference Identity"
