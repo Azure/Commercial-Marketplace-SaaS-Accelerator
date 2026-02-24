@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
 	<Authors>Microsoft.Marketplace</Authors>
 	<Company>Microsoft</Company>
@@ -18,16 +18,19 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-	  <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
-	  <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
-	  <PackageReference Include="coverlet.collector" Version="6.0.0" />
-	  <PackageReference Include="Selenium.WebDriver" Version="4.16.2" />
-	  <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="124.0.6367.7800" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.2" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.2" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.2" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.2" />
+	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+	  <PackageReference Include="MSTest.TestAdapter" Version="4.0.2" />
+	  <PackageReference Include="MSTest.TestFramework" Version="4.0.2" />
+	  <PackageReference Include="coverlet.collector" Version="6.0.4">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Selenium.WebDriver" Version="4.40.0" />
+	  <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="144.0.7559.10900" />
   </ItemGroup>
 
 </Project>
