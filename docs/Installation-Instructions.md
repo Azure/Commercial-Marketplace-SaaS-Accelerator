@@ -34,7 +34,7 @@ Copy the following section to an editor and update it to match your company pref
 - [Optional] Replace `East US` with a region closest to you.
 
 ``` powershell
-wget [https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
+wget https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh; `
 chmod +x dotnet-install.sh; `
 ./dotnet-install.sh -version 8.0.303; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
@@ -81,7 +81,7 @@ If you already have deployed the SaaS Accelerator, but you want to update it so 
 *if upgrading to release version < 8.0.0, please replace the below dotnet and dotnet-ef versions to 6 release.
 
 ``` powershell
-wget https://dotnet.microsoft.com/download/dotnet/scripts/v1/dotnet-install.sh; `
+wget https://builds.dotnet.microsoft.com/dotnet/scripts/v1/dotnet-install.sh; `
 chmod +x dotnet-install.sh; `
 ./dotnet-install.sh -version 8.0.303; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
