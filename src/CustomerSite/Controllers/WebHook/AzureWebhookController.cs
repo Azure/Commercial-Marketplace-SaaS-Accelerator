@@ -157,6 +157,13 @@ public class AzureWebhookController : ControllerBase
                 .ConfigureAwait(false);
             return BadRequest();
         }
+        catch (WebhookValidationException ex)
+        {
+            await this.applicationLogService.AddApplicationLog(
+                    $"Webhook validation rejected: [{ex.Message}].")
+                .ConfigureAwait(false);
+            return ex.Retryable ? StatusCode(500) : StatusCode(400);
+        }
         catch (Exception ex)
         {
             await this.applicationLogService.AddApplicationLog(

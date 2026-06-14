@@ -94,6 +94,12 @@ public class WebHookHandler : IWebhookHandler
     private const string AcceptSubscriptionUpdates = "AcceptSubscriptionUpdates";
 
     /// <summary>
+    /// Application configuration key that enables Get Operation API validation
+    /// of inbound webhook notifications. Defaults to enabled ("true").
+    /// </summary>
+    internal const string ValidateWebhookOperation = "ValidateWebhookOperation";
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="WebHookHandler" /> class.
     /// </summary>
     /// <param name="applicationLogRepository">The application log repository.</param>
@@ -157,6 +163,26 @@ public class WebHookHandler : IWebhookHandler
     }
 
     /// <summary>
+    /// Acknowledges an ACK-required operation by PATCHing the operation status to
+    /// <paramref name="status"/>. When the PATCH response is null or its status is
+    /// not 200, the failure is logged via <see cref="ApplicationLogService"/>.
+    /// Bearer tokens are never logged.
+    /// </summary>
+    /// <param name="subId">The subscription id.</param>
+    /// <param name="opId">The operation id.</param>
+    /// <param name="status">The acknowledgment status (Success or Failure).</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    private async Task AcknowledgeAsync(Guid subId, Guid opId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum status)
+    {
+        var resp = await this.fulfillApiService.PatchOperationStatusResultAsync(subId, opId, status).ConfigureAwait(false);
+        if (resp == null || resp.Status != 200)
+        {
+            await this.applicationLogService.AddApplicationLog(
+                $"PATCH {status} failed. Status:{resp?.Status} Sub:{subId} Op:{opId}").ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Changes the plan asynchronous.
     /// </summary>
     /// <param name="payload">The payload.</param>
@@ -177,18 +203,20 @@ public class WebHookHandler : IWebhookHandler
         // if the old plan is the same as new plan then its a REVERT webhook scenario where we have to accept the change.
         // we also reject if the subscription is not in the DB
         var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
-        if ((!_acceptSubscriptionUpdates && payload.PlanId != payload.Subscription.PlanId) || oldValue == null)
+        if ((!_acceptSubscriptionUpdates && payload.PlanId != payload.Subscription.PlanId) || oldValue == null || oldValue.SubscribeId <= 0)
         {
             auditLog.NewValue = oldValue?.PlanId;
             this.subscriptionsLogRepository.Save(auditLog);
-            throw new MarketplaceException("Plan Change rejected due to Config settings or Subscription not in database");
+            await this.applicationLogService.AddApplicationLog("Plan Change rejected due to Config settings or Subscription not in database.").ConfigureAwait(false);
+            await this.AcknowledgeAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure).ConfigureAwait(false);
+            return;
         }
 
         this.subscriptionService.UpdateSubscriptionPlan(payload.SubscriptionId, payload.PlanId);
         await this.applicationLogService.AddApplicationLog("Plan Successfully Changed.").ConfigureAwait(false);
         auditLog.NewValue = payload.PlanId;
         this.subscriptionsLogRepository.Save(auditLog);
-        await Task.CompletedTask;
+        await this.AcknowledgeAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Success).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -215,18 +243,20 @@ public class WebHookHandler : IWebhookHandler
         // if the old quantity is the same as new quantity then its a REVERT webhook scenario where we have to accept the change.
         // we also reject if the subscription is not in the DB
         var _acceptSubscriptionUpdates = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(AcceptSubscriptionUpdates));
-        if ((!_acceptSubscriptionUpdates && payload.Quantity != payload.Subscription.Quantity) || oldValue == null)
+        if ((!_acceptSubscriptionUpdates && payload.Quantity != payload.Subscription.Quantity) || oldValue == null || oldValue.SubscribeId <= 0)
         {
             auditLog.NewValue = oldValue?.Quantity.ToString();
             this.subscriptionsLogRepository.Save(auditLog);
-            throw new MarketplaceException("Quantity Change Request reject due to Config settings or Subscription not in database");
+            await this.applicationLogService.AddApplicationLog("Quantity Change Request rejected due to Config settings or Subscription not in database.").ConfigureAwait(false);
+            await this.AcknowledgeAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure).ConfigureAwait(false);
+            return;
         }
 
         this.subscriptionService.UpdateSubscriptionQuantity(payload.SubscriptionId, payload.Quantity);
         await this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.").ConfigureAwait(false);
         auditLog.NewValue = payload.Quantity.ToString();
         this.subscriptionsLogRepository.Save(auditLog);
-        await Task.CompletedTask;
+        await this.AcknowledgeAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Success).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -257,20 +287,13 @@ public class WebHookHandler : IWebhookHandler
             this.subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, SubscriptionStatusEnumExtension.Subscribed.ToString(), false);
             await this.applicationLogService.AddApplicationLog("Reinstated Successfully.").ConfigureAwait(false);
             auditLog.NewValue = Convert.ToString(SubscriptionStatusEnum.Subscribed);
-                
+            await this.AcknowledgeAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Success).ConfigureAwait(false);
         }
         else
         {
-            var patchOperation = await fulfillApiService.PatchOperationStatusResultAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure);
-            if (patchOperation != null && patchOperation.Status != 200)
-            {
-                await this.applicationLogService.AddApplicationLog($"Reinstate operation PATCH failed with status statuscode {patchOperation.Status} {patchOperation.ReasonPhrase}.").ConfigureAwait(false);
-                //partner trying to fail update operation from customer but PATCH on operation didnt succeced, hence throwing an error
-                throw new Exception(patchOperation.ReasonPhrase);
-            }
-
             await this.applicationLogService.AddApplicationLog("Reinstate Change Request Rejected Successfully.").ConfigureAwait(false);
             auditLog.NewValue = Convert.ToString(oldValue?.SubscriptionStatus);
+            await this.AcknowledgeAsync(payload.SubscriptionId, payload.OperationId, Microsoft.Marketplace.SaaS.Models.UpdateOperationStatusEnum.Failure).ConfigureAwait(false);
         }
 
         this.subscriptionsLogRepository.Save(auditLog); 
