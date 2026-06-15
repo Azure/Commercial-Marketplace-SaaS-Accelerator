@@ -1,0 +1,118 @@
+{
+  "_description": "Golden snapshot for task 2.3: controller response and DB state produced by the UNFIXED HomeController.SubscriptionOperation with operation='Activate' on a subscription in PendingActivation status.",
+  "_spec": "admin-subscription-fetch-resilience",
+  "_requirement": "3.5",
+  "_property": "Property 2 (Preservation) — per-subscription operations unchanged",
+  "_codePath": "src/AdminSite/Controllers/HomeController.cs SubscriptionOperation(Guid, string, string, int) [POST] + PendingActivationStatusHandler.Process(Guid)",
+  "_capturedFrom": "Static analysis of unfixed code — not runtime execution",
+
+  "_scenario": {
+    "description": "A single subscription exists in the DB with status=PendingActivation. The admin calls POST /Home/SubscriptionOperation with operation=Activate. The Marketplace API (ActivateSubscriptionAsync) succeeds. NotificationStatusHandler is also called after activation.",
+    "subscriptionId": "bbbbbbbb-0002-0002-0002-bbbbbbbbbbbb",
+    "planId": "plan-alpha",
+    "operation": "Activate",
+    "numberofProviders": 0,
+    "adminUser": {
+      "userId": 99,
+      "email": "admin@bugcondition.test"
+    },
+    "seededSubscription": {
+      "id": 2,
+      "ampsubscriptionId": "bbbbbbbb-0002-0002-0002-bbbbbbbbbbbb",
+      "name": "sub-activate-01",
+      "ampOfferId": "offer-00001",
+      "ampplanId": "plan-alpha",
+      "ampquantity": 1,
+      "subscriptionStatus": "PendingActivation",
+      "isActive": true,
+      "userId": 42,
+      "user": { "userId": 42, "emailAddress": "customer@contoso.com", "fullName": "Test Customer" }
+    }
+  },
+
+  "_codeFlowSummary": {
+    "step1": "userRepository.GetPartnerDetailFromEmail(CurrentUserEmailAddress) — returns userDetails with userId=99",
+    "step2": "subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId) — returns oldValue with SubscriptionStatus=PendingActivation",
+    "step3_activate_branch": {
+      "condition": "operation == 'Activate'",
+      "subStep_a": "Check oldValue.SubscriptionStatus != PendingActivation (it IS PendingActivation, so the if-block IS entered).",
+      "_note": "Wait — the code checks `oldValue.SubscriptionStatus.ToString() != SubscriptionStatusEnumExtension.PendingActivation.ToString()`. Since it IS PendingActivation, this condition is FALSE, so UpdateStatusForSubscription and the audit log inside this block are NOT executed here.",
+      "subStep_b": "pendingActivationStatusHandlers.Process(subscriptionId) — delegates to PendingActivationStatusHandler",
+      "pendingActivationHandler": {
+        "step_i": "GetSubscriptionById(subscriptionID) — re-fetches subscription (now status=PendingActivation)",
+        "step_ii": "GetUserById(subscription.UserId) — returns user with userId=42",
+        "step_iii": "Condition: subscription.SubscriptionStatus == 'PendingActivation' → TRUE",
+        "step_iv": "fulfillmentApiService.ActivateSubscriptionAsync(subscriptionID, planId) — calls Marketplace API (sync-over-async), returns success",
+        "step_v": "subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, 'Subscribed', true) — updates DB row isActive=true, status='Subscribed'",
+        "step_vi": "subscriptionLogRepository.Save(auditLog) — writes SubscriptionAuditLogs row: Attribute='Status', OldValue='PendingActivation', NewValue='Subscribed', CreateBy=42",
+        "step_vii": "subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, 'Activated', 'Subscribed') — writes WebJobSubscriptionStatus row"
+      }
+    },
+    "step4_notification": "notificationStatusHandlers.Process(subscriptionId) — NotificationStatusHandler reads subscription (now status=Subscribed), resolves planEventName='Activate', conditionally sends email if IsEmailEnabledForSubscriptionActivation=true. No DB writes except conditional email log.",
+    "step5": "return RedirectToAction(nameof(ActivatedMessage)) — 302 to /Home/ActivatedMessage"
+  },
+
+  "controllerResponse": {
+    "type": "RedirectToActionResult",
+    "actionName": "ActivatedMessage",
+    "controllerName": "Home",
+    "httpStatusCode": 302,
+    "_note": "On success, SubscriptionOperation always redirects to ActivatedMessage regardless of the operation type."
+  },
+
+  "dbStateAfterCall": {
+    "subscriptions": {
+      "id": 2,
+      "subscriptionStatus": "Subscribed",
+      "isActive": true,
+      "_change": "Status updated from 'PendingActivation' to 'Subscribed'; isActive set to true by UpdateStatusForSubscription(subscriptionID, 'Subscribed', true)."
+    },
+    "subscriptionAuditLogs": {
+      "newRowsWritten": [
+        {
+          "Id": "<auto-increment>",
+          "SubscriptionId": 2,
+          "Attribute": "Status",
+          "_note": "Written by PendingActivationStatusHandler — uses SubscriptionLogAttributes.Status.ToString() without '-Refresh' suffix",
+          "OldValue": "PendingActivation",
+          "NewValue": "Subscribed",
+          "CreateDate": "<DateTime.Now at runtime>",
+          "CreateBy": 42,
+          "_source": "PendingActivationStatusHandler.Process() success path"
+        }
+      ],
+      "count": 1
+    },
+    "webJobSubscriptionStatus": {
+      "newRowsWritten": [
+        {
+          "SubscriptionId": "bbbbbbbb-0002-0002-0002-bbbbbbbbbbbb",
+          "SubscriptionStatus": "Subscribed",
+          "Description": "Activated",
+          "InsertDate": "<DateTime.Now at runtime>",
+          "_source": "PendingActivationStatusHandler.Process() → subscriptionLogRepository.LogStatusDuringProvisioning()"
+        }
+      ],
+      "count": 1
+    },
+    "plans": { "_change": "No change." },
+    "offers": { "_change": "No change." },
+    "users": { "_change": "No change." },
+    "meteredAuditLogs": { "_change": "No change." }
+  },
+
+  "_attributeNamingNote": {
+    "fetchAllVsOperation": "IMPORTANT: The Attribute field in SubscriptionAuditLogs differs between FetchAllSubscriptions (uses '{EnumName}-Refresh' e.g. 'Status-Refresh') and the SubscriptionOperation/status-handler path (uses '{EnumName}' without suffix e.g. 'Status'). PBT-2.4 must account for this difference.",
+    "pendingActivationHandler": "Uses: Attribute = SubscriptionLogAttributes.Status.ToString() → 'Status'",
+    "fetchAllSubscriptions": "Uses: Attribute = $'{Convert.ToString(SubscriptionLogAttributes.Status)}-Refresh' → 'Status-Refresh'"
+  },
+
+  "_preservationProperties": {
+    "conditionalStatusCheck": "The if-block that writes the first audit log (inside SubscriptionOperation before calling the handler) only fires when oldValue.SubscriptionStatus != PendingActivation. For a subscription already in PendingActivation state, this block is SKIPPED and only the handler writes the audit log.",
+    "handlerCalledAlways": "pendingActivationStatusHandlers.Process() is called unconditionally regardless of whether the status-guard block fires.",
+    "notificationCalledAlways": "notificationStatusHandlers.Process() is called unconditionally after both Activate and Deactivate branches. It may or may not send email depending on ApplicationConfig settings but does not write to SubscriptionAuditLogs.",
+    "syncOverAsync": "PendingActivationStatusHandler calls ActivateSubscriptionAsync with .GetAwaiter().GetResult() — this is a sync-over-async pattern present in the UNFIXED code.",
+    "redirectOnSuccess": "On success, always redirects to ActivatedMessage (ProcessMessage view). On exception, returns View('Error').",
+    "errorPath": "If ActivateSubscriptionAsync throws, PendingActivationStatusHandler catches it, sets status to 'ActivationFailed', writes an audit log with NewValue='ActivationFailed', and logs to WebJobSubscriptionStatus."
+  }
+}

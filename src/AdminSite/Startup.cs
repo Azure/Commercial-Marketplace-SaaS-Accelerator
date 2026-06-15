@@ -13,6 +13,8 @@ using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Services.Hosted;
+using Marketplace.SaaS.Accelerator.Services.Services.Resilience;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -136,7 +138,15 @@ public class Startup
         }
 
         services
-            .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(fulfillmentBaseApi, creds), config, new FulfillmentApiClientLogger()))
+            .AddSingleton<FulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(fulfillmentBaseApi, creds), config, new FulfillmentApiClientLogger()))
+            .AddSingleton<IFulfillmentApiService>(sp =>
+            {
+                var inner = sp.GetRequiredService<FulfillmentApiService>();
+                var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<MarketplaceResilienceOptions>>().Value;
+                var logger = new FulfillmentApiClientLogger();
+                var pipeline = MarketplaceResiliencePolicy.Build(options, logger);
+                return new FulfillmentApiServiceWithPolicy(inner, pipeline);
+            })
             .AddSingleton<IMeteredBillingApiService>(new MeteredBillingApiService(new MarketplaceMeteringClient(creds), config, new SaaSClientLogger<MeteredBillingApiService>()))
             .AddSingleton<SaaSApiClientConfiguration>(config)
             .AddSingleton<KnownUsersModel>(knownUsers);
@@ -147,8 +157,16 @@ public class Startup
         services
             .AddScoped<ApplicationConfigService>();
 
+        // Read resilience options from configuration early — needed both for
+        // the EF Core command timeout and for the hosted service registration.
+        var resilienceOpts = new MarketplaceResilienceOptions();
+        this.Configuration.GetSection("MarketplaceResilience").Bind(resilienceOpts);
+
         services
-            .AddDbContext<SaasKitContext>(options => options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
+            .AddDbContext<SaasKitContext>(options =>
+                options.UseSqlServer(
+                    this.Configuration.GetConnectionString("DefaultConnection"),
+                    sqlOptions => sqlOptions.CommandTimeout(resilienceOpts.DatabaseQueryTimeoutSeconds)));
 
 
         InitializeRepositoryServices(services);
@@ -173,6 +191,16 @@ public class Startup
         });
 
         services.AddScoped<OffersService>();
+
+        services.Configure<MarketplaceResilienceOptions>(this.Configuration.GetSection("MarketplaceResilience"));
+
+        services.AddScoped<SubscriptionFetchPipeline>();
+
+        // Register the background lazy-loader only when enabled (Requirement 2.5).
+        if (resilienceOpts.BackgroundSyncEnabled)
+        {
+            services.AddHostedService<SubscriptionLazyLoaderHostedService>();
+        }
     }
 
     /// <summary>

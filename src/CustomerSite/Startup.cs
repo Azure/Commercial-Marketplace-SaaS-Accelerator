@@ -10,6 +10,7 @@ using Marketplace.SaaS.Accelerator.DataAccess.Services;
 using Marketplace.SaaS.Accelerator.Services.Configurations;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
 using Marketplace.SaaS.Accelerator.Services.Services;
+using Marketplace.SaaS.Accelerator.Services.Services.Resilience;
 using Marketplace.SaaS.Accelerator.Services.Utilities;
 using Marketplace.SaaS.Accelerator.Services.WebHook;
 using Microsoft.AspNetCore.Authentication;
@@ -115,9 +116,19 @@ public class Startup
         }
 
         services
-            .AddSingleton<IFulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(fulfillmentBaseApi, creds), config, new FulfillmentApiClientLogger()))
+            .AddSingleton<FulfillmentApiService>(new FulfillmentApiService(new MarketplaceSaaSClient(fulfillmentBaseApi, creds), config, new FulfillmentApiClientLogger()))
+            .AddSingleton<IFulfillmentApiService>(sp =>
+            {
+                var inner = sp.GetRequiredService<FulfillmentApiService>();
+                var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<MarketplaceResilienceOptions>>().Value;
+                var logger = new FulfillmentApiClientLogger();
+                var pipeline = MarketplaceResiliencePolicy.Build(options, logger);
+                return new FulfillmentApiServiceWithPolicy(inner, pipeline);
+            })
             .AddSingleton<SaaSApiClientConfiguration>(config)
             .AddSingleton<ValidateJwtToken>();
+
+        services.Configure<MarketplaceResilienceOptions>(this.Configuration.GetSection("MarketplaceResilience"));
 
         // Add the assembly version
         services.AddSingleton<IAppVersionService>(new AppVersionService(Assembly.GetExecutingAssembly()?.GetName()?.Version));

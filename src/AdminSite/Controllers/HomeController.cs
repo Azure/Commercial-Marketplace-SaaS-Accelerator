@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Marketplace.SaaS.Accelerator.AdminSite.Controllers;
@@ -102,7 +103,11 @@ public class HomeController : BaseController
 
     private readonly ApplicationConfigService applicationConfigService;
 
-    private readonly ISAGitReleasesService sAGitReleasesService; 
+    private readonly ISAGitReleasesService sAGitReleasesService;
+
+    private readonly MarketplaceResilienceOptions resilienceOptions;
+
+    private readonly SubscriptionFetchPipeline subscriptionFetchPipeline;
 
     private UserService userService;
 
@@ -157,7 +162,9 @@ public class HomeController : BaseController
         IOffersRepository offersRepository, 
         IOfferAttributesRepository offersAttributeRepository,
         IAppVersionService appVersionService,
-        ISAGitReleasesService sAGitReleasesService, 
+        ISAGitReleasesService sAGitReleasesService,
+        IOptions<MarketplaceResilienceOptions> resilienceOptions,
+        SubscriptionFetchPipeline subscriptionFetchPipeline,
         SaaSClientLogger<HomeController> logger) : base(applicationConfigRepository, appVersionService)
     {
         this.billingApiService = billingApiService;
@@ -180,11 +187,13 @@ public class HomeController : BaseController
         this.planEventsMappingRepository = planEventsMappingRepository;
         this.eventsRepository = eventsRepository;
         this.emailService = emailService;
+        this.resilienceOptions = resilienceOptions?.Value ?? new MarketplaceResilienceOptions();
         this.offersRepository = offersRepository;
         this.offersAttributeRepository = offersAttributeRepository;
         this.loggerFactory = loggerFactory;
         this.saaSApiClientConfiguration = saaSApiClientConfiguration;
         this.sAGitReleasesService = sAGitReleasesService;
+        this.subscriptionFetchPipeline = subscriptionFetchPipeline ?? throw new ArgumentNullException(nameof(subscriptionFetchPipeline));
 
         this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
             fulfillApiService,
@@ -273,20 +282,34 @@ public class HomeController : BaseController
     /// Subscriptionses this instance.
     /// </summary>
     /// <returns> The <see cref="IActionResult" />.</returns>
-    public IActionResult Subscriptions()
+    public IActionResult Subscriptions(int pageIndex = 1, int pageSize = 0)
     {
         this.logger.Info("Home Controller / Subscriptions ");
         try
         {
-            SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
+            // Clamp pageSize: use the value from options if the caller did not
+            // supply one (i.e., pageSize <= 0), then clamp both params to >= 1.
+            int effectivePageSize = pageSize > 0 ? pageSize : this.resilienceOptions.PageSize;
+            if (effectivePageSize < 1) effectivePageSize = 1;
+            if (pageIndex < 1) pageIndex = 1;
+
+            // Cap pageSize to the configured maximum so callers cannot bypass the limit.
+            if (effectivePageSize > this.resilienceOptions.PageSize && this.resilienceOptions.PageSize >= 1)
+            {
+                effectivePageSize = this.resilienceOptions.PageSize;
+            }
+
+            PaginatedSubscriptionViewModel subscriptionDetail = new PaginatedSubscriptionViewModel();
             if (this.User.Identity.IsAuthenticated)
             {
                 this.TempData["ShowWelcomeScreen"] = "True";
 
-                List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
-                var allSubscriptionDetails = this.subscriptionRepo.Get().ToList();
+                // Fetch a single page from the repository.
+                var pagedResult = this.subscriptionRepo.GetPaged(pageIndex, effectivePageSize);
                 var allPlans = this.planRepository.Get().ToList();
-                foreach (var subscription in allSubscriptionDetails)
+
+                List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
+                foreach (var subscription in pagedResult.Items)
                 {
                     Plans planDetail = allPlans.FirstOrDefault(p => p.PlanId == subscription.AmpplanId);
                     SubscriptionResultExtension subscriptionDetailExtension = this.subscriptionService.PrepareSubscriptionResponse(subscription, planDetail);
@@ -298,6 +321,12 @@ public class HomeController : BaseController
                 }
 
                 subscriptionDetail.Subscriptions = allSubscriptions;
+                subscriptionDetail.TotalCount = pagedResult.TotalCount;
+                subscriptionDetail.PageIndex = pagedResult.PageIndex;
+                subscriptionDetail.PageSize = pagedResult.PageSize;
+                subscriptionDetail.IsEmpty = pagedResult.TotalCount == 0;
+                subscriptionDetail.BackgroundSyncEnabled = this.resilienceOptions.BackgroundSyncEnabled;
+                subscriptionDetail.BackgroundSyncIntervalSeconds = this.resilienceOptions.BackgroundSyncIntervalSeconds;
 
                 if (this.TempData["ErrorMsg"] != null)
                 {
@@ -882,116 +911,11 @@ public class HomeController : BaseController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult FetchAllSubscriptions()
+    public async Task<IActionResult> FetchAllSubscriptions()
     {
         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-
-        try
-        {
-            this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, currentUserId);
-
-            // Step 1: Get all subscriptions from the API
-            var subscriptions = this.fulfillApiService.GetAllSubscriptionAsync().GetAwaiter().GetResult();
-            foreach (SubscriptionResult subscription in subscriptions)
-            {
-                var customerUserId = 0;
-                var currentSubscription = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscription.Id);
-
-                // Step 2: Check if they Exist in DB - Create if dont exist
-                if (currentSubscription.Name == null)
-                {
-                    // Step 3: Add/Update the Offer
-                    Guid OfferId = this.offersRepository.Add(new Offers()
-                    {
-                        OfferId = subscription.OfferId,
-                        OfferName = subscription.OfferId,
-                        UserId = currentUserId,
-                        CreateDate = DateTime.Now,
-                        OfferGuid = Guid.NewGuid(),
-                    });
-
-                    // Step 4: Add/Update the Plans. For Unsubscribed Only Add current plan from subscription information
-                    if (subscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Unsubscribed)
-                    {
-                        PlanDetailResultExtension planDetails = new PlanDetailResultExtension
-                        {
-                            PlanId = subscription.PlanId,
-                            DisplayName = subscription.PlanId,
-                            Description = "",
-                            OfferId = OfferId,
-                            PlanGUID = Guid.NewGuid(),
-                            IsPerUserPlan = subscription.Quantity > 0,
-                        };
-                        this.subscriptionService.AddPlanDetailsForSubscription(planDetails);
-                    }
-                    else
-                    {
-                        var subscriptionPlanDetail = this.fulfillApiService.GetAllPlansForSubscriptionAsync(subscription.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-                        subscriptionPlanDetail.ForEach(x =>
-                        {
-                            x.OfferId = OfferId;
-                            x.PlanGUID = Guid.NewGuid();
-                        });
-                        this.subscriptionService.AddUpdateAllPlanDetailsForSubscription(subscriptionPlanDetail);
-                    }
-
-                    // Step 5: Add/Update the current user from Subscription information
-                    customerUserId = this.userService.AddUser(new PartnerDetailViewModel { FullName = subscription.Beneficiary.EmailId, EmailAddress = subscription.Beneficiary.EmailId });
-                }
-
-                // Step 6: Add Subscription
-                var subscriptionId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscription, customerUserId);
-
-                // Step 7: Add Subscription Audit
-                if (currentSubscription != null && subscription.SaasSubscriptionStatus.ToString() != currentSubscription.SubscriptionStatus.ToString())
-                {
-                    this.subscriptionLogRepository.Save(new SubscriptionAuditLogs()
-                    {
-                        Attribute = $"{Convert.ToString(SubscriptionLogAttributes.Status)}-Refresh",
-                        SubscriptionId = subscriptionId,
-                        NewValue = subscription.SaasSubscriptionStatus.ToString(),
-                        OldValue = currentSubscription.SubscriptionStatus.ToString(),
-                        CreateBy = currentUserId,
-                        CreateDate = DateTime.Now
-                    });
-                }
-                if (currentSubscription != null && subscription.PlanId != currentSubscription.PlanId)
-                {
-                    this.subscriptionLogRepository.Save(new SubscriptionAuditLogs()
-                    {
-                        Attribute = $"{Convert.ToString(SubscriptionLogAttributes.Plan)}-Refresh",
-                        SubscriptionId = subscriptionId,
-                        NewValue = subscription.PlanId.ToString(),
-                        OldValue = currentSubscription.PlanId,
-                        CreateBy = currentUserId,
-                        CreateDate = DateTime.Now
-                    });
-                }
-                if (currentSubscription != null && subscription.Quantity != currentSubscription.Quantity)
-                {
-                    this.subscriptionLogRepository.Save(new SubscriptionAuditLogs()
-                    {
-                        Attribute = $"{Convert.ToString(SubscriptionLogAttributes.Quantity)}-Refresh",
-                        SubscriptionId = subscriptionId,
-                        NewValue = subscription.Quantity.ToString(),
-                        OldValue = currentSubscription.Quantity.ToString(),
-                        CreateBy = currentUserId,
-                        CreateDate = DateTime.Now
-                    });
-                }
-
-            }
-        }
-        catch (Exception ex)
-        {
-            var errorMessage = $"Message: {ex.Message} ({ex.InnerException})";
-            this.logger.LogError(errorMessage);
-            applicationLogService.AddApplicationLog(errorMessage).GetAwaiter().GetResult();
-
-            return BadRequest();
-        }
-
-        return Ok();
+        var result = await this.subscriptionFetchPipeline.ExecuteAsync(currentUserId, HttpContext.RequestAborted).ConfigureAwait(false);
+        return result.Failed == result.Total && result.Total > 0 ? BadRequest(result) : Ok(result);
     }
 
 }

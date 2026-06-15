@@ -1,0 +1,114 @@
+{
+  "_description": "Golden snapshot for task 2.3: controller response and DB state produced by the UNFIXED HomeController.SubscriptionDetails when called with a valid subscriptionId on a successfully-seeded subscription.",
+  "_spec": "admin-subscription-fetch-resilience",
+  "_requirement": "3.5",
+  "_property": "Property 2 (Preservation) — per-subscription operations unchanged",
+  "_codePath": "src/AdminSite/Controllers/HomeController.cs SubscriptionDetails(Guid subscriptionId, string planId)",
+  "_capturedFrom": "Static analysis of unfixed code — not runtime execution",
+
+  "_scenario": {
+    "description": "A single subscription exists in the DB (id=1, status=Subscribed). The admin is authenticated. SubscriptionDetails is called with that subscriptionId. The Marketplace API (fulfillApiService.GetSubscriptionByIdAsync) returns a matching subscription with Beneficiary data.",
+    "subscriptionId": "bbbbbbbb-0001-0001-0001-bbbbbbbbbbbb",
+    "planId": "plan-alpha",
+    "adminUser": {
+      "userId": 99,
+      "email": "admin@bugcondition.test"
+    },
+    "seededSubscription": {
+      "id": 1,
+      "ampsubscriptionId": "bbbbbbbb-0001-0001-0001-bbbbbbbbbbbb",
+      "name": "sub-details-01",
+      "ampOfferId": "offer-00001",
+      "ampplanId": "plan-alpha",
+      "ampquantity": 5,
+      "subscriptionStatus": "Subscribed",
+      "isActive": true,
+      "userId": 42,
+      "user": {
+        "userId": 42,
+        "emailAddress": "customer@contoso.com",
+        "fullName": "Test Customer"
+      }
+    },
+    "seededPlan": {
+      "id": 10,
+      "planId": "plan-alpha",
+      "planGuid": "cccccccc-0001-0001-0001-cccccccccccc",
+      "displayName": "Alpha Plan",
+      "isMeteringSupported": false,
+      "isPerUser": false
+    }
+  },
+
+  "_codeFlowSummary": {
+    "step1": "userService.AddUser(GetCurrentUserDetail()) — upserts admin user in Users table; returns userId=99",
+    "step2": "userService.GetUserIdFromEmailAddress(CurrentUserEmailAddress) — returns 99",
+    "step3": "subscriptionService = new SubscriptionService(subscriptionRepo, planRepository, userId=99)",
+    "step4": "subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId) — fetches from DB via subscriptionRepo.GetById(); maps to SubscriptionResultExtension via PrepareSubscriptionResponse()",
+    "step5": "planRepository.GetById(oldValue.PlanId) — fetches Plan row by AmpplanId string",
+    "step6": "subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid) — fetches subscription parameter rows; typically empty list for a simple plan",
+    "step7": "fulfillApiService.GetSubscriptionByIdAsync(subscriptionId) — hits Marketplace API; returns Beneficiary object",
+    "step8": "subscriptionDetail.Beneficiary is populated from API response",
+    "step9": "return View(subscriptionDetail)"
+  },
+
+  "controllerResponse": {
+    "type": "ViewResult",
+    "viewName": "SubscriptionDetails",
+    "modelType": "Marketplace.SaaS.Accelerator.Services.Models.SubscriptionResultExtension",
+    "httpStatusCode": 200
+  },
+
+  "viewModel": {
+    "Id": "bbbbbbbb-0001-0001-0001-bbbbbbbbbbbb",
+    "SubscribeId": 1,
+    "Name": "sub-details-01",
+    "OfferId": "offer-00001",
+    "PlanId": "plan-alpha",
+    "Quantity": 5,
+    "SubscriptionStatus": "Subscribed",
+    "IsActiveSubscription": true,
+    "CustomerEmailAddress": "customer@contoso.com",
+    "CustomerName": "Test Customer",
+    "ShowWelcomeScreen": false,
+    "IsMeteringSupported": false,
+    "IsPerUserPlan": false,
+    "Beneficiary": {
+      "_note": "Populated from API response (fulfillApiService.GetSubscriptionByIdAsync). Fields: EmailId, ObjectId, TenantId."
+    },
+    "SubscriptionParameters": {
+      "_note": "List<SubscriptionParametersModel> from subscriptionService.GetSubscriptionsParametersById(). Empty list when plan has no custom parameters."
+    }
+  },
+
+  "dbStateAfterCall": {
+    "_note": "SubscriptionDetails is a READ-ONLY action. It does NOT modify any DB table. The only write is the implicit AddUser call (step 1) which upserts the authenticated admin — but that is idempotent and unrelated to the subscription record itself.",
+    "subscriptions": {
+      "_change": "No change — the Subscriptions table row for id=1 is NOT modified by this action."
+    },
+    "subscriptionAuditLogs": {
+      "_change": "No new rows written — SubscriptionDetails does not write any audit log entries."
+    },
+    "plans": {
+      "_change": "No change."
+    },
+    "offers": {
+      "_change": "No change."
+    },
+    "users": {
+      "_change": "Admin user row is upserted by AddUser() — this is a side effect of authentication, not specific to SubscriptionDetails."
+    },
+    "webJobSubscriptionStatus": {
+      "_change": "No change."
+    }
+  },
+
+  "_preservationProperties": {
+    "readOnly": "SubscriptionDetails never modifies Subscriptions, Plans, Offers, SubscriptionAuditLogs, or MeteredAuditLogs.",
+    "beneficiaryFromApi": "The Beneficiary field is always populated from a live API call (GetSubscriptionByIdAsync). If the API fails, an exception propagates to View('Error', ex).",
+    "parametersFromDb": "SubscriptionParameters come from the DB (GetSubscriptionsParametersById) and are set twice consecutively (two identical calls in the unfixed code — this is a no-op duplicate but must be preserved).",
+    "subscriptionStatusType": "SubscriptionStatus in the view model is SubscriptionStatusEnumExtension (enum), parsed by GetSubscriptionStatus(). If the status string in the DB is not a recognised enum name, it resolves to UnRecognized (0).",
+    "showWelcomeScreenFalse": "TempData['ShowWelcomeScreen'] is set to false so the banner is hidden on the detail page.",
+    "authGuard": "If User.Identity.IsAuthenticated is false, the action returns an empty SubscriptionResultExtension view model (not a redirect in this case — the code lacks an else branch for unauthenticated users; it falls through to return View(subscriptionDetail) with default fields)."
+  }
+}

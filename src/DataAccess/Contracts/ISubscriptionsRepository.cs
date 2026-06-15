@@ -64,4 +64,22 @@ public interface ISubscriptionsRepository : IDisposable, IBaseRepository<Subscri
     /// </summary>
     /// <param name="subscriptionParametersOutput">The subscription parameters output.</param>
     void AddSubscriptionParameters(SubscriptionParametersOutput subscriptionParametersOutput);
+
+    /// <summary>
+    /// Returns a single page of subscriptions ordered by <c>CreateDate</c> descending
+    /// with the <c>User</c> navigation property eagerly loaded, together with
+    /// the total row count needed for pagination controls.
+    /// </summary>
+    /// <param name="pageIndex">
+    /// 1-based page number. Values less than 1 are clamped to 1.
+    /// </param>
+    /// <param name="pageSize">
+    /// Number of items per page. Values less than 1 are clamped to 1.
+    /// </param>
+    /// <returns>
+    /// A <see cref="PagedResult{Subscriptions}"/> whose <c>Items</c> is the
+    /// requested slice, <c>TotalCount</c> is the unfiltered row count, and
+    /// <c>PageIndex</c> / <c>PageSize</c> reflect the clamped input values.
+    /// </returns>
+    PagedResult<Subscriptions> GetPaged(int pageIndex, int pageSize);
 }

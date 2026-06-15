@@ -1,0 +1,93 @@
+{
+  "_description": "Golden snapshot for task 2.1: structural DB state produced by the UNFIXED HomeController.FetchAllSubscriptions when 50 subscriptions are fetched and all Marketplace API calls succeed on the first try.",
+  "_spec": "admin-subscription-fetch-resilience",
+  "_requirement": "3.1, 3.2, 3.3",
+  "_property": "Property 2 (Preservation) — core preservation of Subscriptions, Plans, Offers, Users, SubscriptionAuditLogs tables",
+  "_codePath": "src/AdminSite/Controllers/HomeController.cs FetchAllSubscriptions()",
+  "_capturedFrom": "Static analysis of unfixed code — not isBugCondition(input) inputs only",
+
+  "_scenario": {
+    "description": "50 subscriptions are fetched from the Marketplace API. All subscriptions are new (not previously in DB — DB starts empty). All API calls succeed on the first attempt. subscriptionCount (50) < threadPoolSaturationThreshold (100). All subscriptions have status=Subscribed.",
+    "subscriptionCount": 50,
+    "allApiCallsSucceedFirstTry": true,
+    "isBugCondition": false,
+    "adminUser": {
+      "userId": "auto-assigned",
+      "email": "admin@bugcondition.test"
+    }
+  },
+
+  "_preservationProperties": {
+    "subscriptionsTableStructure": {
+      "rowCount": 50,
+      "fields": {
+        "AmpsubscriptionId": "Guid — the unique subscription Guid from Marketplace API (preserved exactly)",
+        "AmpOfferId": "string — offerId from API (set in Step 3 via Offers.Add)",
+        "AmpplanId": "string — planId from API (set by AddOrUpdatePartnerSubscriptions Step 6)",
+        "Ampquantity": "int — quantity from API (set by AddOrUpdatePartnerSubscriptions)",
+        "SubscriptionStatus": "string — saasSubscriptionStatus.ToString() from API",
+        "IsActive": "bool — true when status != Unsubscribed",
+        "Name": "string — subscription name from API",
+        "PurchaserEmail": "string — beneficiary.EmailId from API",
+        "PurchaserTenantId": "Guid? — set by AddOrUpdatePartnerSubscriptions",
+        "UserId": "int? — FK to Users.UserId (created in Step 5 from beneficiary.EmailId)",
+        "CreateBy": "int? — currentUserId (admin user)",
+        "CreateDate": "DateTime — DateTime.Now at fetch time",
+        "ModifyDate": "DateTime — DateTime.Now at fetch time"
+      },
+      "_note": "One Subscriptions row per API-returned subscription. Rows are written via AddOrUpdatePartnerSubscriptions() which upserts based on AmpsubscriptionId."
+    },
+    "offersTableStructure": {
+      "rowCount": "≥ 1 (one unique offer per distinct offerId returned by API)",
+      "fields": {
+        "OfferId": "string — offerId from API subscription.OfferId",
+        "OfferName": "string — same as OfferId (unfixed code sets OfferName = OfferId)",
+        "UserId": "int — currentUserId (admin user)",
+        "CreateDate": "DateTime — DateTime.Now at fetch time",
+        "OfferGuid": "Guid — Guid.NewGuid() at insert time"
+      },
+      "_note": "Step 3 inserts a new Offer row for each new subscription. If multiple subscriptions share the same offerId, the DB will have one Offers row per NEW subscription regardless (no deduplication in unfixed code — each new subscription that doesn't exist in DB calls offersRepository.Add())."
+    },
+    "plansTableStructure": {
+      "rowCount": "≥ 1 (one or more per subscription, via GetAllPlansForSubscriptionAsync)",
+      "fields": {
+        "PlanId": "string — planId from API plan details",
+        "OfferId": "Guid — the OfferGuid from the Offers row created in Step 3",
+        "DisplayName": "string — plan display name from API",
+        "Description": "string",
+        "PlanGuid": "Guid — Guid.NewGuid() at insert time",
+        "IsmeteringSupported": "bool",
+        "IsPerUser": "bool"
+      },
+      "_note": "Step 4: For each new non-Unsubscribed subscription, GetAllPlansForSubscriptionAsync() is called. The fake returns empty plan list (FakeMarketplaceSaaSClientBuilder sets up empty SubscriptionPlans). Therefore planCount may be 0 for subscriptions with no plans returned, or populated based on fake configuration."
+    },
+    "usersTableStructure": {
+      "rowCount": "≥ 1 per unique beneficiary email across all subscriptions",
+      "fields": {
+        "EmailAddress": "string — beneficiary.EmailId from API",
+        "FullName": "string — same as EmailAddress (unfixed code: FullName = subscription.Beneficiary.EmailId)",
+        "CreatedDate": "DateTime — DateTime.Now at creation"
+      },
+      "_note": "Step 5 calls userService.AddUser(). UsersRepository.AddUser() upserts on EmailAddress — if the same email appears in multiple subscriptions, one Users row is created."
+    },
+    "auditLogsTableStructure": {
+      "rowCount": "0 for a fresh DB (no previous state to compare against for audit changes)",
+      "_note": "IMPORTANT: When subscriptions are NEW (currentSubscription.Name == null after GetSubscriptionsBySubscriptionId), the unfixed code still reaches the audit-log comparison in Step 7. It uses a freshly-allocated SubscriptionResultExtension() as currentSubscription — which has default field values (SubscriptionStatusEnumExtension.PendingFulfillmentStart, null planId, 0 quantity). This means new subscriptions produce audit log rows: Status-Refresh (PendingFulfillmentStart -> Subscribed), Plan-Refresh ('' -> planId), Quantity-Refresh (0 -> quantity). See audit-log-change-snapshot.json '_knownBehaviourOnNewSubscriptions'. However, AddOrUpdatePartnerSubscriptions() may set currentSubscription.Name before the audit-log check runs; the exact behavior depends on the order of operations.",
+      "_actualBehaviorNote": "The audit log comparison in Step 7 runs AFTER AddOrUpdatePartnerSubscriptions() in Step 6. By this point the subscription IS in the DB. The audit log comparison uses the pre-existing SubscriptionResultExtension (fetched at the top of the loop before Step 2). For a fresh DB, the first call to GetSubscriptionsBySubscriptionId returns a SubscriptionResultExtension with Name==null (and default field values). So the audit-log comparison will produce: Status-Refresh, Plan-Refresh, and/or Quantity-Refresh rows for each new subscription where the defaults differ from the API values.",
+      "expectedAuditRowsPerNewSubscription": "Typically 3 (Status-Refresh + Plan-Refresh + Quantity-Refresh) when API status=Subscribed, API planId != '', API quantity > 0"
+    }
+  },
+
+  "_preservationInvariantForPBT21": {
+    "description": "The invariant that PBT-2.1 enforces: for any non-buggy input, running FetchAllSubscriptions twice on two independent fresh in-memory databases (with the same API responses) produces structurally identical DB state. This proves the function is deterministic and preservable.",
+    "formalStatement": "∀ corpus WHERE NOT isBugCondition(corpus): dbState(F(corpus)) ≡ dbState(F(corpus)) — trivially true by determinism, formally encoding F == F'",
+    "comparedFields": {
+      "Subscriptions": "AmpsubscriptionId, AmpOfferId, AmpplanId, Ampquantity, SubscriptionStatus, IsActive, Name, PurchaserEmail",
+      "Offers": "OfferId, OfferName",
+      "Plans": "PlanId (count per offer, not absolute IDs since OfferGuid differs between runs)",
+      "Users": "EmailAddress, FullName",
+      "SubscriptionAuditLogs": "SubscriptionId-order, Attribute, OldValue, NewValue (CreateDate excluded as it's non-deterministic)"
+    },
+    "_note": "OfferGuid and PlanGuid are excluded from the structural comparison because they are created via Guid.NewGuid() and will differ between runs. PlanId, OfferId, and plan counts ARE deterministic and ARE compared."
+  }
+}

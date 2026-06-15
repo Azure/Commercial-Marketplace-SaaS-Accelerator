@@ -1,0 +1,145 @@
+{
+  "_description": "Golden snapshot for task 2.3: controller response and DB state produced by the UNFIXED HomeController.ChangeSubscriptionPlan and HomeController.ChangeSubscriptionQuantity on a successful non-failing input.",
+  "_spec": "admin-subscription-fetch-resilience",
+  "_requirement": "3.5",
+  "_property": "Property 2 (Preservation) — per-subscription operations unchanged",
+  "_codePath": "src/AdminSite/Controllers/HomeController.cs ChangeSubscriptionPlan([HttpPost]) and ChangeSubscriptionQuantity([HttpPost])",
+  "_capturedFrom": "Static analysis of unfixed code — not runtime execution",
+
+  "_sharedScenario": {
+    "adminUser": { "userId": 99, "email": "admin@bugcondition.test" },
+    "seededSubscription": {
+      "id": 4,
+      "ampsubscriptionId": "bbbbbbbb-0004-0004-0004-bbbbbbbbbbbb",
+      "name": "sub-changeop-01",
+      "ampOfferId": "offer-00001",
+      "ampplanId": "plan-alpha",
+      "ampquantity": 3,
+      "subscriptionStatus": "Subscribed",
+      "isActive": true,
+      "userId": 42
+    }
+  },
+
+  "changePlan": {
+    "_codePath": "HomeController.ChangeSubscriptionPlan(SubscriptionResult subscriptionDetail) [POST, ValidateAntiForgeryToken]",
+    "_scenario": {
+      "subscriptionId": "bbbbbbbb-0004-0004-0004-bbbbbbbbbbbb",
+      "currentPlanId": "plan-alpha",
+      "newPlanId": "plan-beta",
+      "guardConditions": "subscriptionDetail.Id != default AND !string.IsNullOrEmpty(subscriptionDetail.PlanId)"
+    },
+
+    "_codeFlowSummary": {
+      "step1": "userService.GetUserIdFromEmailAddress(CurrentUserEmailAddress) → currentUserId=99",
+      "step2": "fulfillApiService.ChangePlanForSubscriptionAsync(subscriptionId, 'plan-beta') — awaited; returns OperationResult with OperationId (non-default Guid)",
+      "step3": "changePlanOperationStatus = InProgress",
+      "step4_pollingLoop": {
+        "description": "while (InProgress || NotStarted): call GetOperationStatusResultAsync(subscriptionId, operationId); log progress to applicationLogService; await Task.Delay(5000); check counter < 100.",
+        "happyPath": "API returns OperationStatusEnum.Succeeded after first poll."
+      },
+      "step5_succeeded": "fulfillApiService returns Succeeded → log success to applicationLogService",
+      "step6": "return RedirectToAction(nameof(Subscriptions)) — 302 to /Home/Subscriptions",
+      "_note": "ChangeSubscriptionPlan does NOT directly call subscriptionsRepository.UpdatePlanForSubscription(). The DB plan update is triggered by the Marketplace webhook calling back into the system, not by this action directly. The action only initiates the plan change and polls for completion."
+    },
+
+    "controllerResponse": {
+      "type": "RedirectToActionResult",
+      "actionName": "Subscriptions",
+      "controllerName": "Home",
+      "httpStatusCode": 302,
+      "_successPath": "On success (Succeeded), redirects to Subscriptions page.",
+      "_failurePath": "On non-Succeeded operation status or MarketplaceException, sets TempData['ErrorMsg'] and still redirects to Subscriptions (with error message displayed).",
+      "_exceptionPath": "On unhandled Exception (outer catch), returns View('Error')."
+    },
+
+    "dbStateAfterCall": {
+      "_note": "ChangeSubscriptionPlan does NOT write to the Subscriptions, SubscriptionAuditLogs, Plans, Offers, or Users tables directly. The DB update for plan change is performed by the webhook handler (not in scope of this controller action).",
+      "subscriptions": { "_change": "No direct change from this action." },
+      "subscriptionAuditLogs": { "_change": "No new rows written by this action." },
+      "applicationLog": {
+        "newRowsWritten": [
+          {
+            "Message": "Plan Change Progress. SubscriptionId: bbbbbbbb-0004-0004-0004-bbbbbbbbbbbb ToPlan: plan-beta UserId: 99 OperationId: <guid> Operationstatus: InProgress.",
+            "_source": "applicationLogService.AddApplicationLog() inside the polling loop"
+          },
+          {
+            "Message": "Plan Change Success. SubscriptionId: bbbbbbbb-0004-0004-0004-bbbbbbbbbbbb ToPlan: plan-beta UserId: 99 OperationId: <guid>.",
+            "_source": "applicationLogService.AddApplicationLog() on Succeeded"
+          }
+        ],
+        "_note": "ApplicationLog rows are written (one per poll iteration + one on success). The exact number of 'Progress' rows depends on how many polls are needed before Succeeded."
+      },
+      "plans": { "_change": "No change." },
+      "offers": { "_change": "No change." },
+      "users": { "_change": "No change." }
+    },
+
+    "_preservationProperties": {
+      "noDirectDbWrite": "ChangeSubscriptionPlan does not call subscriptionsRepository to update the subscription plan. Plan updates come via webhooks, which is a separate code path.",
+      "pollingLoop": "The action synchronously polls GetOperationStatusResultAsync in a while loop with 5s delays, up to 100 iterations. This means the action can block for up to ~500 seconds. This is an existing behaviour of the unfixed code.",
+      "marketplaceExceptionCatch": "MarketplaceException is caught in the inner try/catch; TempData['ErrorMsg'] is set; the action still redirects to Subscriptions (not an error view). Unhandled exceptions in the outer catch return View('Error').",
+      "antiForgeryRequired": "[ValidateAntiForgeryToken] is applied — the snapshot assumes a valid form submission."
+    }
+  },
+
+  "changeQuantity": {
+    "_codePath": "HomeController.ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail) [POST, ValidateAntiForgeryToken]",
+    "_scenario": {
+      "subscriptionId": "bbbbbbbb-0004-0004-0004-bbbbbbbbbbbb",
+      "currentQuantity": 3,
+      "newQuantity": 7,
+      "guardConditions": "User.Identity.IsAuthenticated AND subscriptionDetail != null AND subscriptionDetail.Id != default AND subscriptionDetail.Quantity > 0"
+    },
+
+    "_codeFlowSummary": {
+      "step1": "userService.GetUserIdFromEmailAddress(CurrentUserEmailAddress) → currentUserId=99",
+      "step2": "fulfillApiService.ChangeQuantityForSubscriptionAsync(subscriptionId, 7) — awaited; returns OperationResult with OperationId",
+      "step3": "changeQuantityOperationStatus = InProgress",
+      "step4_pollingLoop": {
+        "description": "while (InProgress || NotStarted): call GetOperationStatusResultAsync(subscriptionId, operationId); log progress to applicationLogService; await Task.Delay(5000); check counter < 100.",
+        "happyPath": "API returns OperationStatusEnum.Succeeded after first poll."
+      },
+      "step5_succeeded": "log success to applicationLogService",
+      "step6": "return RedirectToAction(nameof(Subscriptions)) — 302 to /Home/Subscriptions",
+      "_note": "Like ChangeSubscriptionPlan, ChangeSubscriptionQuantity does NOT directly update the Subscriptions table. The DB quantity update comes via the webhook callback."
+    },
+
+    "controllerResponse": {
+      "type": "RedirectToActionResult",
+      "actionName": "Subscriptions",
+      "controllerName": "Home",
+      "httpStatusCode": 302,
+      "_failurePath": "On non-Succeeded: sets TempData['ErrorMsg'] + redirects to Subscriptions.",
+      "_exceptionPath": "On unhandled Exception: returns View('Error')."
+    },
+
+    "dbStateAfterCall": {
+      "_note": "ChangeSubscriptionQuantity does NOT write to Subscriptions, SubscriptionAuditLogs, Plans, Offers, or Users tables directly.",
+      "subscriptions": { "_change": "No direct change from this action." },
+      "subscriptionAuditLogs": { "_change": "No new rows written by this action." },
+      "applicationLog": {
+        "newRowsWritten": [
+          {
+            "Message": "Quantity Change Progress. SubscriptionId: bbbbbbbb-0004-0004-0004-bbbbbbbbbbbb ToQuantity: 7 UserId: 99 OperationId: <guid> Operationstatus: InProgress.",
+            "_source": "applicationLogService.AddApplicationLog() inside polling loop"
+          },
+          {
+            "Message": "Quantity Change Success. SubscriptionId: bbbbbbbb-0004-0004-0004-bbbbbbbbbbbb ToQuantity: 7 UserId: 99 OperationId: <guid>.",
+            "_source": "applicationLogService.AddApplicationLog() on Succeeded"
+          }
+        ]
+      },
+      "plans": { "_change": "No change." },
+      "offers": { "_change": "No change." },
+      "users": { "_change": "No change." }
+    },
+
+    "_preservationProperties": {
+      "noDirectDbWrite": "ChangeSubscriptionQuantity does not call subscriptionsRepository to update quantity. Quantity updates come via webhooks.",
+      "pollingLoop": "Same polling pattern as ChangeSubscriptionPlan — up to 100 iterations × 5s delay.",
+      "authGuard": "ChangeSubscriptionQuantity has an explicit authentication check (if User.Identity.IsAuthenticated) with a redirect to Index. ChangeSubscriptionPlan does NOT have an explicit auth guard at the method level (relies on KnownUserAttribute filter).",
+      "quantityZeroGuard": "If subscriptionDetail.Quantity == 0, the inner if-block is skipped, the API is never called, and the action redirects to Subscriptions with no changes."
+    }
+  }
+}

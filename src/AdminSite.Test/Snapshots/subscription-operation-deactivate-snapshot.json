@@ -1,0 +1,121 @@
+{
+  "_description": "Golden snapshot for task 2.3: controller response and DB state produced by the UNFIXED HomeController.SubscriptionOperation with operation='Deactivate' on a Subscribed subscription.",
+  "_spec": "admin-subscription-fetch-resilience",
+  "_requirement": "3.5",
+  "_property": "Property 2 (Preservation) — per-subscription operations unchanged",
+  "_codePath": "src/AdminSite/Controllers/HomeController.cs SubscriptionOperation(Guid, string, string, int) [POST] + UnsubscribeStatusHandler.Process(Guid)",
+  "_capturedFrom": "Static analysis of unfixed code — not runtime execution",
+
+  "_scenario": {
+    "description": "A single subscription exists in the DB with status=Subscribed. The admin calls POST /Home/SubscriptionOperation with operation=Deactivate. The Marketplace API (DeleteSubscriptionAsync) succeeds. NotificationStatusHandler is also called after deactivation.",
+    "subscriptionId": "bbbbbbbb-0003-0003-0003-bbbbbbbbbbbb",
+    "planId": "plan-alpha",
+    "operation": "Deactivate",
+    "numberofProviders": 0,
+    "adminUser": {
+      "userId": 99,
+      "email": "admin@bugcondition.test"
+    },
+    "seededSubscription": {
+      "id": 3,
+      "ampsubscriptionId": "bbbbbbbb-0003-0003-0003-bbbbbbbbbbbb",
+      "name": "sub-deactivate-01",
+      "ampOfferId": "offer-00001",
+      "ampplanId": "plan-alpha",
+      "ampquantity": 1,
+      "subscriptionStatus": "Subscribed",
+      "isActive": true,
+      "userId": 42,
+      "user": { "userId": 42, "emailAddress": "customer@contoso.com", "fullName": "Test Customer" }
+    }
+  },
+
+  "_codeFlowSummary": {
+    "step1": "userRepository.GetPartnerDetailFromEmail(CurrentUserEmailAddress) — returns userDetails with userId=99",
+    "step2": "subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId) — returns oldValue with SubscriptionStatus=Subscribed",
+    "step3_deactivate_branch": {
+      "condition": "operation == 'Deactivate'",
+      "subStep_a": "subscriptionRepository.UpdateStatusForSubscription(subscriptionId, 'PendingUnsubscribe', true) — updates DB status to PendingUnsubscribe",
+      "subStep_b": "subscriptionLogRepository.Save(auditLog) — writes SubscriptionAuditLogs: Attribute='Status', OldValue='Subscribed', NewValue='PendingUnsubscribe', CreateBy=99",
+      "subStep_c": "unsubscribeStatusHandlers.Process(subscriptionId) — delegates to UnsubscribeStatusHandler",
+      "unsubscribeHandler": {
+        "step_i": "GetSubscriptionById(subscriptionID) — re-fetches subscription (now status=PendingUnsubscribe)",
+        "step_ii": "GetUserById(subscription.UserId) — returns user with userId=42",
+        "step_iii": "Condition: subscription.SubscriptionStatus == 'PendingUnsubscribe' → TRUE",
+        "step_iv": "fulfillmentApiService.DeleteSubscriptionAsync(subscriptionID, planId) — calls Marketplace API (sync-over-async), returns success",
+        "step_v": "subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, 'Unsubscribed', false) — updates DB row isActive=false, status='Unsubscribed'",
+        "step_vi": "subscriptionLogRepository.Save(auditLog) — writes SubscriptionAuditLogs: Attribute='Status', OldValue='PendingUnsubscribe', NewValue='Unsubscribed', CreateBy=42",
+        "step_vii": "subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, 'Unsubscribe Failed', 'UnsubscribeFailed') — NOTE: despite the success path, the label is 'Unsubscribe Failed'. This is a quirk of the unfixed code (bug in the success message) and must be preserved."
+      }
+    },
+    "step4_notification": "notificationStatusHandlers.Process(subscriptionId) — NotificationStatusHandler reads subscription (status=Unsubscribed), resolves planEventName='Unsubscribe', conditionally sends email if IsEmailEnabledForUnsubscription=true. No DB writes.",
+    "step5": "return RedirectToAction(nameof(ActivatedMessage)) — 302 to /Home/ActivatedMessage"
+  },
+
+  "controllerResponse": {
+    "type": "RedirectToActionResult",
+    "actionName": "ActivatedMessage",
+    "controllerName": "Home",
+    "httpStatusCode": 302
+  },
+
+  "dbStateAfterCall": {
+    "subscriptions": {
+      "id": 3,
+      "subscriptionStatus": "Unsubscribed",
+      "isActive": false,
+      "_change": "Status progressed: Subscribed → PendingUnsubscribe (by SubscriptionOperation) → Unsubscribed (by UnsubscribeStatusHandler). isActive set to false."
+    },
+    "subscriptionAuditLogs": {
+      "newRowsWritten": [
+        {
+          "Id": "<auto-increment>",
+          "SubscriptionId": 3,
+          "Attribute": "Status",
+          "OldValue": "Subscribed",
+          "NewValue": "PendingUnsubscribe",
+          "CreateDate": "<DateTime.Now at runtime>",
+          "CreateBy": 99,
+          "_source": "HomeController.SubscriptionOperation Deactivate branch — written BEFORE calling UnsubscribeStatusHandler"
+        },
+        {
+          "Id": "<auto-increment>",
+          "SubscriptionId": 3,
+          "Attribute": "Status",
+          "OldValue": "PendingUnsubscribe",
+          "NewValue": "Unsubscribed",
+          "CreateDate": "<DateTime.Now at runtime>",
+          "CreateBy": 42,
+          "_source": "UnsubscribeStatusHandler.Process() success path — CreateBy is the subscription's owner userId (42), NOT the admin userId (99)"
+        }
+      ],
+      "count": 2,
+      "_note": "Two audit log rows are written for a Deactivate operation: one by SubscriptionOperation (Subscribed→PendingUnsubscribe, CreateBy=adminUserId=99) and one by UnsubscribeStatusHandler (PendingUnsubscribe→Unsubscribed, CreateBy=subscriptionOwnerUserId=42)."
+    },
+    "webJobSubscriptionStatus": {
+      "newRowsWritten": [
+        {
+          "SubscriptionId": "bbbbbbbb-0003-0003-0003-bbbbbbbbbbbb",
+          "SubscriptionStatus": "UnsubscribeFailed",
+          "Description": "Unsubscribe Failed",
+          "InsertDate": "<DateTime.Now at runtime>",
+          "_source": "UnsubscribeStatusHandler.Process() success path → LogStatusDuringProvisioning(). NOTE: the status string is 'UnsubscribeFailed' and description is 'Unsubscribe Failed' even in the SUCCESS path — this is a bug in the original code that must be preserved.",
+          "_bugNote": "The unfixed UnsubscribeStatusHandler writes SubscriptionStatus='UnsubscribeFailed' to WebJobSubscriptionStatus on the SUCCESS path. This is incorrect but is the existing behavior. PBT-2.4 must assert this behaviour is preserved (not 'fixed') during the resilience refactor."
+        }
+      ],
+      "count": 1
+    },
+    "plans": { "_change": "No change." },
+    "offers": { "_change": "No change." },
+    "users": { "_change": "No change." },
+    "meteredAuditLogs": { "_change": "No change." }
+  },
+
+  "_preservationProperties": {
+    "twoAuditLogs": "A successful Deactivate always writes exactly two SubscriptionAuditLogs rows: one from the controller (Subscribed→PendingUnsubscribe) and one from the handler (PendingUnsubscribe→Unsubscribed).",
+    "createByDiffers": "The two audit logs have different CreateBy values: row 1 has the admin's userId; row 2 has the subscription owner's userId (from GetUserById(subscription.UserId) inside the handler).",
+    "webJobBugPreserved": "LogStatusDuringProvisioning is called with SubscriptionStatus='UnsubscribeFailed' and Description='Unsubscribe Failed' on the SUCCESS path. This is a pre-existing quirk in the unfixed code. Any fix that changes this behaviour would fail PBT-2.4.",
+    "syncOverAsync": "UnsubscribeStatusHandler calls DeleteSubscriptionAsync with .GetAwaiter().GetResult() — sync-over-async present in unfixed code.",
+    "errorPath": "If DeleteSubscriptionAsync throws, UnsubscribeStatusHandler catches it, sets status='UnsubscribeFailed', writes an audit log with NewValue='UnsubscribeFailed', and logs to WebJobSubscriptionStatus with the exception message."
+  }
+}

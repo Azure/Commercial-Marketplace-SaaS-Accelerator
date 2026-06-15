@@ -1,8 +1,17 @@
 ﻿@using Marketplace.SaaS.Accelerator.Services.Models
-@model Marketplace.SaaS.Accelerator.Services.Models.SubscriptionViewModel
+@model Marketplace.SaaS.Accelerator.Services.Models.PaginatedSubscriptionViewModel
 
 @{
     ViewData["Title"] = "Subscriptions";
+
+    // Compute total pages (at least 1 so controls are always meaningful).
+    int totalPages = Model.PageSize > 0
+        ? (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize)
+        : 1;
+    if (totalPages < 1) totalPages = 1;
+
+    bool hasPrevious = Model.PageIndex > 1;
+    bool hasNext = Model.PageIndex < totalPages;
 }
 
 <div class="text-center">
@@ -39,7 +48,7 @@
                     </div>
 
                     <div class="table-responsive mt20">
-                        @if (Model.Subscriptions.Count() > 0)
+                        @if (!Model.IsEmpty)
                         {
                             <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20" width="100%">
                                 <thead class="cm-table-head text-start">
@@ -114,14 +123,91 @@
                                     }
                                 </tbody>
                             </table>
+
+                            @* ── Pagination controls ─────────────────────────────────────── *@
+                            @if (Model.TotalCount > 0)
+                            {
+                                <div class="d-flex align-items-center justify-content-between mt-3 flex-wrap gap-2">
+                                    @* Previous / page indicator / Next *@
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if (hasPrevious)
+                                        {
+                                            <a href="?pageIndex=@(Model.PageIndex - 1)&pageSize=@Model.PageSize"
+                                               class="btn btn-outline-secondary btn-sm"
+                                               aria-label="Previous page">
+                                                &laquo; Previous
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="btn btn-outline-secondary btn-sm disabled" aria-disabled="true">&laquo; Previous</span>
+                                        }
+
+                                        <span class="px-2">
+                                            Page @Model.PageIndex of @totalPages
+                                            <small class="text-muted">(@Model.TotalCount total)</small>
+                                        </span>
+
+                                        @if (hasNext)
+                                        {
+                                            <a href="?pageIndex=@(Model.PageIndex + 1)&pageSize=@Model.PageSize"
+                                               class="btn btn-outline-secondary btn-sm"
+                                               aria-label="Next page">
+                                                Next &raquo;
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="btn btn-outline-secondary btn-sm disabled" aria-disabled="true">Next &raquo;</span>
+                                        }
+                                    </div>
+
+                                    @* Per-page size selector *@
+                                    <div class="d-flex align-items-center gap-1">
+                                        <small class="text-muted me-1">Rows per page:</small>
+                                        @foreach (var size in new[] { 25, 50, 100, 200 })
+                                        {
+                                            if (Model.PageSize == size)
+                                            {
+                                                <span class="btn btn-secondary btn-sm disabled" aria-current="true">@size</span>
+                                            }
+                                            else
+                                            {
+                                                <a href="?pageIndex=1&pageSize=@size"
+                                                   class="btn btn-outline-secondary btn-sm"
+                                                   aria-label="Show @size rows per page">@size</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
                         }
                         else
                         {
+                            @* ── Enriched empty-state panel ──────────────────────────────── *@
                             <div class="cm-panel-default mt40">
                                 <div class="p-3 mr420">
-                                    <p>
-                                        No subscriptions from your customers yet!
+                                    <p class="mb-2">
+                                        <strong>No subscriptions from your customers yet!</strong>
                                     </p>
+                                    @if (Model.BackgroundSyncEnabled)
+                                    {
+                                        <p class="text-muted mb-2">
+                                            The background sync runs every @Model.BackgroundSyncIntervalSeconds seconds; you can also click
+                                            <strong>Fetch All Subscriptions</strong> to trigger it now.
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted mb-2">
+                                            Click <strong>Fetch All Subscriptions</strong> to pull the latest subscription data
+                                            from the Marketplace API.
+                                        </p>
+                                    }
+                                    <a onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}"
+                                       class="btn btn-primary cm-button mt-2">
+                                        Fetch All Subscriptions
+                                    </a>
                                 </div>
                             </div>
                         }

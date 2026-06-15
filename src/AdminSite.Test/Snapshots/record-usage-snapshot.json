@@ -1,0 +1,155 @@
+{
+  "_description": "Golden snapshot for task 2.3: controller response and DB state produced by the UNFIXED HomeController.RecordUsage (GET) and HomeController.ManageSubscriptionUsage (POST) on a successful non-failing input.",
+  "_spec": "admin-subscription-fetch-resilience",
+  "_requirement": "3.5",
+  "_property": "Property 2 (Preservation) — per-subscription operations unchanged",
+  "_codePath": "src/AdminSite/Controllers/HomeController.cs RecordUsage(int subscriptionId) [GET] and ManageSubscriptionUsage(SubscriptionUsageViewModel) [POST]",
+  "_capturedFrom": "Static analysis of unfixed code — not runtime execution",
+
+  "_sharedScenario": {
+    "description": "A single metered subscription exists in the DB (status=Subscribed, plan has at least one metered dimension). The admin views the RecordUsage page (GET) and then submits a usage event (POST).",
+    "subscriptionId_int": 5,
+    "subscriptionId_guid": "bbbbbbbb-0005-0005-0005-bbbbbbbbbbbb",
+    "adminUser": { "userId": 99, "email": "admin@bugcondition.test" },
+    "seededSubscription": {
+      "id": 5,
+      "ampsubscriptionId": "bbbbbbbb-0005-0005-0005-bbbbbbbbbbbb",
+      "name": "sub-usage-01",
+      "ampOfferId": "offer-00001",
+      "ampplanId": "plan-metered",
+      "ampquantity": 1,
+      "subscriptionStatus": "Subscribed",
+      "isActive": true,
+      "userId": 42
+    },
+    "seededDimension": {
+      "id": 20,
+      "planId": "plan-metered",
+      "dimension": "dim-api-calls",
+      "description": "API Calls"
+    }
+  },
+
+  "recordUsageGet": {
+    "_codePath": "HomeController.RecordUsage(int subscriptionId) [GET]",
+    "_codeFlowSummary": {
+      "step1": "subscriptionRepo.Get(subscriptionId) — fetches Subscriptions row by integer PK",
+      "step2": "dimensionsRepository.GetDimensionsByPlanId(subscriptionDetail.AmpplanId) — fetches list of MeteredDimensions for 'plan-metered'",
+      "step3": "subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId, true) — fetches existing MeteredAuditLogs ordered by CreatedDate desc",
+      "step4": "Build SubscriptionUsageViewModel: SubscriptionDetail, MeteredAuditLogs, DimensionsList (SelectList from dimensions)",
+      "step5": "return View(usageViewModel)"
+    },
+
+    "controllerResponse": {
+      "type": "ViewResult",
+      "viewName": "RecordUsage",
+      "modelType": "Marketplace.SaaS.Accelerator.Services.Models.SubscriptionUsageViewModel",
+      "httpStatusCode": 200
+    },
+
+    "viewModel": {
+      "SubscriptionDetail": {
+        "_note": "Full Subscriptions entity (not a DTO) as returned by subscriptionRepo.Get(int id). Includes Id, AmpsubscriptionId, AmpplanId, Ampquantity, SubscriptionStatus, etc."
+      },
+      "MeteredAuditLogs": {
+        "_note": "List<MeteredAuditLogs> ordered by CreatedDate descending. Empty list if no prior usage events have been submitted."
+      },
+      "DimensionsList": {
+        "_note": "SelectList built from GetDimensionsByPlanId(), DataValueField='Dimension', DataTextField='Description'. Shows 'API Calls' for the seeded dimension."
+      },
+      "Quantity": null,
+      "SelectedDimension": null
+    },
+
+    "dbStateAfterCall": {
+      "_note": "RecordUsage (GET) is a READ-ONLY action. No DB writes.",
+      "meteredAuditLogs": { "_change": "No change." },
+      "subscriptions": { "_change": "No change." },
+      "subscriptionAuditLogs": { "_change": "No change." }
+    }
+  },
+
+  "manageSubscriptionUsagePost": {
+    "_codePath": "HomeController.ManageSubscriptionUsage(SubscriptionUsageViewModel subscriptionData) [POST, ValidateAntiForgeryToken]",
+    "_scenario": {
+      "subscriptionData": {
+        "SubscriptionDetail": {
+          "Id": 5,
+          "AmpsubscriptionId": "bbbbbbbb-0005-0005-0005-bbbbbbbbbbbb",
+          "AmpplanId": "plan-metered"
+        },
+        "SelectedDimension": "dim-api-calls",
+        "Quantity": "10"
+      }
+    },
+
+    "_codeFlowSummary": {
+      "step1": "userRepository.GetPartnerDetailFromEmail(CurrentUserEmailAddress) → currentUserDetail with UserId=99",
+      "step2": "Build MeteringUsageRequest: Dimension='dim-api-calls', EffectiveStartTime=DateTime.UtcNow, PlanId='plan-metered', Quantity=10.0, ResourceId=bbbbbbbb-0005-0005-0005-bbbbbbbbbbbb",
+      "step3": "billingApiService.EmitUsageEventAsync(meteringUsageRequest) — async call (via sync-over-async .GetAwaiter().GetResult()); returns MeteringUsageResult",
+      "step4_success": "responseJson = Serialize(meteringUsageResult); meteringUsageResult.Status = 'Accepted' (typical success status from Marketplace metering API)",
+      "step5": "Build MeteredAuditLogs row: RequestJson=serialized request, ResponseJson=serialized result, StatusCode=meteringUsageResult.Status, RunBy='Manual', SubscriptionId=5, SubscriptionUsageDate=DateTime.UtcNow, CreatedBy=99, CreatedDate=DateTime.Now",
+      "step6": "subscriptionUsageLogsRepository.Save(newMeteredAuditLog) — persists to DB",
+      "step7": "return RedirectToAction(nameof(RecordUsage), new { subscriptionId = 5 }) — 302 to /Home/RecordUsage?subscriptionId=5"
+    },
+
+    "controllerResponse": {
+      "type": "RedirectToActionResult",
+      "actionName": "RecordUsage",
+      "routeValues": { "subscriptionId": 5 },
+      "httpStatusCode": 302,
+      "_note": "ManageSubscriptionUsage always redirects back to RecordUsage(subscriptionId) after attempting to emit the usage event — whether the billing API call succeeds or fails. On failure, a MeteredAuditLog row is still written with the error response and status code."
+    },
+
+    "dbStateAfterCall": {
+      "meteredAuditLogs": {
+        "newRowsWritten": [
+          {
+            "Id": "<auto-increment>",
+            "SubscriptionId": 5,
+            "RequestJson": "{\"Dimension\":\"dim-api-calls\",\"EffectiveStartTime\":\"<DateTime.UtcNow>\",\"PlanId\":\"plan-metered\",\"Quantity\":10.0,\"ResourceId\":\"bbbbbbbb-0005-0005-0005-bbbbbbbbbbbb\"}",
+            "ResponseJson": "<serialized MeteringUsageResult from billingApiService>",
+            "StatusCode": "Accepted",
+            "_statusCodeNote": "StatusCode is the string returned by MeteringUsageResult.Status from the Marketplace Metering API. On success this is typically 'Accepted'.",
+            "RunBy": "Manual",
+            "SubscriptionUsageDate": "<DateTime.UtcNow at time of call>",
+            "CreatedBy": 99,
+            "CreatedDate": "<DateTime.Now at time of call>",
+            "_source": "HomeController.ManageSubscriptionUsage success path"
+          }
+        ],
+        "count": 1
+      },
+      "subscriptions": { "_change": "No change — RecordUsage does not modify subscription status, plan, or quantity." },
+      "subscriptionAuditLogs": { "_change": "No change — RecordUsage does not write subscription audit logs." },
+      "plans": { "_change": "No change." },
+      "offers": { "_change": "No change." },
+      "users": { "_change": "No change." }
+    },
+
+    "_preservationProperties": {
+      "alwaysWritesLog": "ManageSubscriptionUsage always writes a MeteredAuditLogs row — even if the billing API call fails (MarketplaceException path). On failure, ResponseJson = serialized MarketplaceException.MeteredBillingErrorDetail and StatusCode = mex.ErrorCode.",
+      "syncOverAsync": "billingApiService.EmitUsageEventAsync is called with .ConfigureAwait(false).GetAwaiter().GetResult() — sync-over-async in the unfixed code.",
+      "quantityParsing": "Quantity is parsed with Convert.ToDouble(subscriptionData.Quantity ?? '0'). A null or missing Quantity defaults to 0.0.",
+      "nullUserDetail": "If GetPartnerDetailFromEmail returns null, CreatedBy is set to 0 (ternary: currentUserDetail == null ? 0 : currentUserDetail.UserId).",
+      "exceptionHandling": "If an unhandled exception escapes the outer try/catch (not MarketplaceException), it is logged and the action returns the next redirect (RedirectToAction is OUTSIDE the try/catch for the billing call, but the outer try/catch wraps the entire method body).",
+      "_note": "The outer try/catch in ManageSubscriptionUsage catches any Exception from the entire method body (including the repo Save call). On unhandled exception, the code logs the error and returns the RedirectToAction at the bottom — NOT View('Error')."
+    }
+  },
+
+  "_recordUsageNow": {
+    "_codePath": "HomeController.RecordUsageNow(int subscriptionId, string dimId, string quantity) [GET]",
+    "_note": "RecordUsageNow is a secondary GET action used to pre-populate the form (e.g. from a direct link). It returns the same RecordUsage view with SelectedDimension and Quantity pre-filled. No DB writes. Preserved identically — no changes needed.",
+    "controllerResponse": {
+      "type": "ViewResult",
+      "viewName": "RecordUsage",
+      "httpStatusCode": 200,
+      "viewModel": {
+        "SelectedDimension": "<dimId from route>",
+        "Quantity": "<quantity from route>",
+        "MeteredAuditLogs": "<ordered desc by CreatedDate WITHOUT the 'excludeCurrentMonth' flag — RecordUsageNow calls GetMeteredAuditLogsBySubscriptionId(subscriptionId) with no second argument (defaults to false)>"
+      }
+    },
+    "_differenceFromRecordUsageGet": "RecordUsage (GET) calls GetMeteredAuditLogsBySubscriptionId(subscriptionId, true) (excludeCurrentMonth=true). RecordUsageNow calls GetMeteredAuditLogsBySubscriptionId(subscriptionId) without the flag (defaults to false — includes current month). This subtle difference must be preserved."
+  }
+}

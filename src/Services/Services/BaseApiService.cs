@@ -38,6 +38,14 @@ public class BaseApiService
     /// </summary>
     /// <param name="marketplaceAction">The MarketplaceActionEnum.</param>
     /// <param name="ex">The exception from the client library.</param>
+    // Status codes that represent transient Marketplace API failures.
+    // These are re-thrown as RequestFailedException so that an outer Polly
+    // retry/circuit-breaker policy (e.g. FulfillmentApiServiceWithPolicy) can
+    // intercept them. Non-transient codes are converted to MarketplaceException
+    // as before so existing callers still see a consistent exception type.
+    private static readonly System.Collections.Generic.HashSet<int> TransientStatusCodes =
+        new System.Collections.Generic.HashSet<int> { 408, 429, 500, 502, 503, 504 };
+
     public void ProcessErrorResponse(MarketplaceActionEnum marketplaceAction, Exception ex)
     {
         int statusCode = 0;
@@ -48,6 +56,14 @@ public class BaseApiService
         else if (ex is RequestFailedException reqFailedInnerException)
         {
             statusCode = reqFailedInnerException.Status;
+        }
+
+        // Re-throw RequestFailedException for transient status codes so that
+        // an outer Polly policy can retry them. This is the seam that allows
+        // FulfillmentApiServiceWithPolicy to intercept 408/429/5xx errors.
+        if (ex is RequestFailedException rfe && TransientStatusCodes.Contains(rfe.Status))
+        {
+            throw rfe;
         }
 
         if (statusCode != 0)

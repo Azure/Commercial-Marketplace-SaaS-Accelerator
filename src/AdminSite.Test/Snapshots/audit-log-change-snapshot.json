@@ -1,0 +1,287 @@
+{
+  "_description": "Golden snapshot for task 2.2: audit-log rows produced by the UNFIXED HomeController.FetchAllSubscriptions when a subscription's status, plan, or quantity changes between two consecutive fetches.",
+  "_spec": "admin-subscription-fetch-resilience",
+  "_requirement": "3.2",
+  "_property": "Property 2 (Preservation) — audit-log semantics unchanged",
+  "_codePath": "src/AdminSite/Controllers/HomeController.cs FetchAllSubscriptions(), Step 7",
+  "_capturedFrom": "Static analysis of unfixed code — not runtime execution",
+
+  "_scenario": {
+    "description": "Five subscriptions are pre-seeded in the database. Fetch 1 calls FetchAllSubscriptions with the API returning matching values (no changes). Fetch 2 calls FetchAllSubscriptions with the API returning one subscription whose status, plan, and/or quantity has changed.",
+    "subscriptionCount": 5,
+    "adminUser": {
+      "userId": 99,
+      "email": "admin@bugcondition.test"
+    },
+    "seededSubscriptions": [
+      {
+        "id": 1,
+        "ampsubscriptionId": "aaaaaaaa-0001-0001-0001-aaaaaaaaaaaa",
+        "name": "sub-scenario-01",
+        "ampOfferId": "offer-00001",
+        "ampplanId": "plan-alpha",
+        "ampquantity": 3,
+        "subscriptionStatus": "Subscribed",
+        "isActive": true
+      },
+      {
+        "id": 2,
+        "ampsubscriptionId": "aaaaaaaa-0002-0002-0002-aaaaaaaaaaaa",
+        "name": "sub-scenario-02",
+        "ampOfferId": "offer-00001",
+        "ampplanId": "plan-alpha",
+        "ampquantity": 3,
+        "subscriptionStatus": "Subscribed",
+        "isActive": true
+      },
+      {
+        "id": 3,
+        "ampsubscriptionId": "aaaaaaaa-0003-0003-0003-aaaaaaaaaaaa",
+        "name": "sub-scenario-03",
+        "ampOfferId": "offer-00001",
+        "ampplanId": "plan-alpha",
+        "ampquantity": 3,
+        "subscriptionStatus": "Subscribed",
+        "isActive": true,
+        "_note": "This subscription changes between fetch 1 and fetch 2"
+      },
+      {
+        "id": 4,
+        "ampsubscriptionId": "aaaaaaaa-0004-0004-0004-aaaaaaaaaaaa",
+        "name": "sub-scenario-04",
+        "ampOfferId": "offer-00001",
+        "ampplanId": "plan-alpha",
+        "ampquantity": 3,
+        "subscriptionStatus": "Subscribed",
+        "isActive": true
+      },
+      {
+        "id": 5,
+        "ampsubscriptionId": "aaaaaaaa-0005-0005-0005-aaaaaaaaaaaa",
+        "name": "sub-scenario-05",
+        "ampOfferId": "offer-00001",
+        "ampplanId": "plan-alpha",
+        "ampquantity": 3,
+        "subscriptionStatus": "Subscribed",
+        "isActive": true
+      }
+    ]
+  },
+
+  "_auditLogSchemaFromSource": {
+    "class": "Marketplace.SaaS.Accelerator.DataAccess.Entities.SubscriptionAuditLogs",
+    "fields": {
+      "Id": "int (auto-increment primary key)",
+      "SubscriptionId": "int? (FK -> Subscriptions.Id — the integer surrogate key, not the Guid)",
+      "Attribute": "string — one of 'Status-Refresh', 'Plan-Refresh', or 'Quantity-Refresh' (format: $\"{SubscriptionLogAttributes.{X}}-Refresh\")",
+      "OldValue": "string (previous value as ToString())",
+      "NewValue": "string (new value from API as ToString())",
+      "CreateDate": "DateTime? (DateTime.Now at time of fetch)",
+      "CreateBy": "int? (UserId of the logged-in admin, from GetUserIdFromEmailAddress)"
+    },
+    "_sourceReference": "HomeController.FetchAllSubscriptions Step 7, lines ~949-979"
+  },
+
+  "_attributeValues": {
+    "Status-Refresh": {
+      "codeLine": "Attribute = $\"{Convert.ToString(SubscriptionLogAttributes.Status)}-Refresh\"",
+      "enumValue": "SubscriptionLogAttributes.Status = 2",
+      "resolvedString": "Status-Refresh",
+      "triggeredWhen": "subscription.SaasSubscriptionStatus.ToString() != currentSubscription.SubscriptionStatus.ToString()",
+      "oldValueSource": "currentSubscription.SubscriptionStatus.ToString() — SubscriptionStatusEnumExtension parsed from DB",
+      "newValueSource": "subscription.SaasSubscriptionStatus.ToString() — SubscriptionStatusEnum from API"
+    },
+    "Plan-Refresh": {
+      "codeLine": "Attribute = $\"{Convert.ToString(SubscriptionLogAttributes.Plan)}-Refresh\"",
+      "enumValue": "SubscriptionLogAttributes.Plan = 1",
+      "resolvedString": "Plan-Refresh",
+      "triggeredWhen": "subscription.PlanId != currentSubscription.PlanId",
+      "oldValueSource": "currentSubscription.PlanId — string planId from DB via SubscriptionResultExtension.PlanId",
+      "newValueSource": "subscription.PlanId.ToString() — planId string from API SubscriptionResult"
+    },
+    "Quantity-Refresh": {
+      "codeLine": "Attribute = $\"{Convert.ToString(SubscriptionLogAttributes.Quantity)}-Refresh\"",
+      "enumValue": "SubscriptionLogAttributes.Quantity = 3",
+      "resolvedString": "Quantity-Refresh",
+      "triggeredWhen": "subscription.Quantity != currentSubscription.Quantity",
+      "oldValueSource": "currentSubscription.Quantity.ToString() — Ampquantity from DB as int",
+      "newValueSource": "subscription.Quantity.ToString() — Quantity from API as int"
+    }
+  },
+
+  "fetch1": {
+    "description": "First call to FetchAllSubscriptions. The API returns all five subscriptions with values matching what is in the DB (pre-seeded). No changes are detected. No audit log entries are written.",
+    "apiReturns": [
+      { "id": "aaaaaaaa-0001-0001-0001-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0002-0002-0002-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0003-0003-0003-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0004-0004-0004-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0005-0005-0005-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 }
+    ],
+    "auditLogsCreated": [],
+    "auditLogsCount": 0,
+    "_note": "Subscriptions already exist in DB with matching values: currentSubscription.Name != null, so no new rows are created. All three comparisons (status, plan, quantity) evaluate to false (no change), so no SubscriptionAuditLogs rows are written."
+  },
+
+  "fetch2_statusChange": {
+    "description": "Second call to FetchAllSubscriptions. The API returns subscription[3] with status='Unsubscribed' (changed from 'Subscribed'). One audit log entry is created for the status change.",
+    "apiReturns": [
+      { "id": "aaaaaaaa-0001-0001-0001-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed",   "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0002-0002-0002-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed",   "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0003-0003-0003-aaaaaaaaaaaa", "saasSubscriptionStatus": "Unsubscribed", "planId": "plan-alpha", "quantity": 3, "_changed": "status Subscribed -> Unsubscribed" },
+      { "id": "aaaaaaaa-0004-0004-0004-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed",   "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0005-0005-0005-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed",   "planId": "plan-alpha", "quantity": 3 }
+    ],
+    "auditLogsCreated": [
+      {
+        "Id": "<auto-increment>",
+        "SubscriptionId": 3,
+        "Attribute": "Status-Refresh",
+        "OldValue": "Subscribed",
+        "NewValue": "Unsubscribed",
+        "CreateDate": "<DateTime.Now at runtime>",
+        "CreateBy": 99,
+        "_comparisonCode": "subscription.SaasSubscriptionStatus.ToString() != currentSubscription.SubscriptionStatus.ToString()",
+        "_oldValueNote": "currentSubscription.SubscriptionStatus = SubscriptionStatusEnumExtension.Subscribed (parsed from DB string 'Subscribed')",
+        "_newValueNote": "subscription.SaasSubscriptionStatus = SubscriptionStatusEnum.Unsubscribed (from API)"
+      }
+    ],
+    "auditLogsCount": 1
+  },
+
+  "fetch2_planChange": {
+    "description": "Second call to FetchAllSubscriptions. The API returns subscription[3] with planId='plan-beta' (changed from 'plan-alpha'). One audit log entry is created for the plan change.",
+    "apiReturns": [
+      { "id": "aaaaaaaa-0001-0001-0001-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0002-0002-0002-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0003-0003-0003-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-beta",  "quantity": 3, "_changed": "plan plan-alpha -> plan-beta" },
+      { "id": "aaaaaaaa-0004-0004-0004-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0005-0005-0005-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 }
+    ],
+    "auditLogsCreated": [
+      {
+        "Id": "<auto-increment>",
+        "SubscriptionId": 3,
+        "Attribute": "Plan-Refresh",
+        "OldValue": "plan-alpha",
+        "NewValue": "plan-beta",
+        "CreateDate": "<DateTime.Now at runtime>",
+        "CreateBy": 99,
+        "_comparisonCode": "subscription.PlanId != currentSubscription.PlanId",
+        "_oldValueNote": "currentSubscription.PlanId = 'plan-alpha' (string from SubscriptionResultExtension.PlanId via PrepareSubscriptionResponse)",
+        "_newValueNote": "subscription.PlanId = 'plan-beta' (string from API SubscriptionResult.PlanId)"
+      }
+    ],
+    "auditLogsCount": 1
+  },
+
+  "fetch2_quantityChange": {
+    "description": "Second call to FetchAllSubscriptions. The API returns subscription[3] with quantity=7 (changed from 3). One audit log entry is created for the quantity change.",
+    "apiReturns": [
+      { "id": "aaaaaaaa-0001-0001-0001-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0002-0002-0002-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0003-0003-0003-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 7, "_changed": "quantity 3 -> 7" },
+      { "id": "aaaaaaaa-0004-0004-0004-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0005-0005-0005-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed", "planId": "plan-alpha", "quantity": 3 }
+    ],
+    "auditLogsCreated": [
+      {
+        "Id": "<auto-increment>",
+        "SubscriptionId": 3,
+        "Attribute": "Quantity-Refresh",
+        "OldValue": "3",
+        "NewValue": "7",
+        "CreateDate": "<DateTime.Now at runtime>",
+        "CreateBy": 99,
+        "_comparisonCode": "subscription.Quantity != currentSubscription.Quantity",
+        "_oldValueNote": "currentSubscription.Quantity = 3 (int Ampquantity from DB, via SubscriptionResultExtension.Quantity)",
+        "_newValueNote": "subscription.Quantity = 7 (int from API SubscriptionResult.Quantity)"
+      }
+    ],
+    "auditLogsCount": 1
+  },
+
+  "fetch2_allThreeChange": {
+    "description": "Second call to FetchAllSubscriptions. Subscription[3] changes status, plan, AND quantity simultaneously. Three audit log entries are created — one per changed field — in the order: Status-Refresh, Plan-Refresh, Quantity-Refresh.",
+    "apiReturns": [
+      { "id": "aaaaaaaa-0001-0001-0001-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed",   "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0002-0002-0002-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed",   "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0003-0003-0003-aaaaaaaaaaaa", "saasSubscriptionStatus": "Unsubscribed", "planId": "plan-beta",  "quantity": 7, "_changed": "status+plan+quantity all changed" },
+      { "id": "aaaaaaaa-0004-0004-0004-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed",   "planId": "plan-alpha", "quantity": 3 },
+      { "id": "aaaaaaaa-0005-0005-0005-aaaaaaaaaaaa", "saasSubscriptionStatus": "Subscribed",   "planId": "plan-alpha", "quantity": 3 }
+    ],
+    "auditLogsCreated": [
+      {
+        "Id": "<auto-increment>",
+        "SubscriptionId": 3,
+        "Attribute": "Status-Refresh",
+        "OldValue": "Subscribed",
+        "NewValue": "Unsubscribed",
+        "CreateDate": "<DateTime.Now at runtime>",
+        "CreateBy": 99
+      },
+      {
+        "Id": "<auto-increment>",
+        "SubscriptionId": 3,
+        "Attribute": "Plan-Refresh",
+        "OldValue": "plan-alpha",
+        "NewValue": "plan-beta",
+        "CreateDate": "<DateTime.Now at runtime>",
+        "CreateBy": 99
+      },
+      {
+        "Id": "<auto-increment>",
+        "SubscriptionId": 3,
+        "Attribute": "Quantity-Refresh",
+        "OldValue": "3",
+        "NewValue": "7",
+        "CreateDate": "<DateTime.Now at runtime>",
+        "CreateBy": 99
+      }
+    ],
+    "auditLogsCount": 3,
+    "_note": "Three separate if-blocks in FetchAllSubscriptions each independently check and log one field. All three fire when all three fields change for the same subscription."
+  },
+
+  "fetch2_noChange": {
+    "description": "Second call to FetchAllSubscriptions. API returns all five subscriptions with values identical to what is in the DB (as updated by Fetch 1). Zero audit log entries are created.",
+    "auditLogsCount": 0,
+    "_note": "Idempotence: running FetchAllSubscriptions twice with the same API data produces zero additional audit log rows on the second run. This is the key preservation property (Property 4 / Requirement 3.2)."
+  },
+
+  "_preservationProperties": {
+    "exactOneAuditLogPerChangedField": "Exactly one SubscriptionAuditLogs row is written per changed field per subscription per fetch. If N subscriptions change M fields each in one fetch call, N*M rows are written.",
+    "idempotentOnNoChange": "If the API returns the same data as the DB, zero audit log rows are written, regardless of how many times FetchAllSubscriptions is called.",
+    "attributeNamingConvention": "Attribute uses the pattern '{EnumName}-Refresh' where EnumName is the C# ToString() of SubscriptionLogAttributes enum: 'Status', 'Plan', or 'Quantity'.",
+    "oldValueIsCurrentDbValue": "OldValue is always the current DB value (from SubscriptionResultExtension.SubscriptionStatus, .PlanId, or .Quantity) at the time FetchAllSubscriptions runs.",
+    "newValueIsApiValue": "NewValue is always the new value from the Marketplace API (from SubscriptionResult.SaasSubscriptionStatus, .PlanId, or .Quantity) returned in the current fetch.",
+    "subscriptionIdIsIntegerPk": "SubscriptionId in the audit log is the integer PK (Subscriptions.Id), NOT the Guid (Subscriptions.AmpsubscriptionId). It is the return value of AddOrUpdatePartnerSubscriptions().",
+    "createdByIsAdminUserId": "CreateBy is the integer UserId of the authenticated admin, obtained via GetUserIdFromEmailAddress(this.CurrentUserEmailAddress).",
+    "writeOrderWithinSubscription": "Within a single subscription's processing, audit logs are written in field order: Status first, then Plan, then Quantity (matching the if-block order in FetchAllSubscriptions Step 7).",
+    "writeOrderAcrossSubscriptions": "Audit logs for different subscriptions are written in the order the subscriptions are returned by the Marketplace API GetAllSubscriptionAsync call."
+  },
+
+  "_prerequisiteForAuditLogPath": {
+    "description": "The audit-log comparison in Step 7 is only reached if the subscription conversion in Step 1 succeeds. The production ConversionHelper.subscriptionResult() throws a MarketplaceException if any of these SDK Subscription fields are null: Purchaser.ObjectId, Purchaser.TenantId, Beneficiary.EmailId, Beneficiary.ObjectId, Beneficiary.TenantId, or if Term is null. FakeMarketplaceSaaSClientBuilder.CreateMinimalSubscription() only sets the Id field, leaving all others null — so calling FetchAllSubscriptions with minimal subscriptions will throw in ConversionHelper and the catch block will fire (returning BadRequest) BEFORE audit logs are written.",
+    "requiredForAuditLogPath": [
+      "subscription.Purchaser.ObjectId must be non-null",
+      "subscription.Purchaser.TenantId must be non-null",
+      "subscription.Beneficiary.EmailId must be non-null",
+      "subscription.Beneficiary.ObjectId must be non-null",
+      "subscription.Beneficiary.TenantId must be non-null",
+      "subscription.SaasSubscriptionStatus must be parseable to SubscriptionStatusEnum",
+      "subscription.Term must be non-null"
+    ],
+    "testImplication": "PBT tests that use this snapshot to verify audit-log behavior MUST extend FakeMarketplaceSaaSClientBuilder to supply properly-populated SDK Subscription objects. CreateMinimalSubscription is sufficient for bug-condition tests (which verify error handling) but NOT for preservation tests (which verify audit-log output).",
+    "codeReference": "src/Services/Helpers/ConversionHelper.cs subscriptionResult() lines 29-63"
+  },
+
+  "_knownBehaviourOnNewSubscriptions": {
+    "description": "When a subscription is new (not yet in DB, currentSubscription.Name == null), the unfixed code still runs the audit-log comparison because currentSubscription is not null — it is a freshly-allocated SubscriptionResultExtension() with default field values. This can produce unexpected audit log entries for new subscriptions where the default SubscriptionStatusEnumExtension value ('PendingFulfillmentStart') differs from the API status.",
+    "defaultSubscriptionStatus": "PendingFulfillmentStart (enum value 0 of SubscriptionStatusEnumExtension)",
+    "defaultPlanId": "null or empty string",
+    "defaultQuantity": "0",
+    "consequence": "A new subscription with API status='Subscribed', planId='plan-alpha', quantity=3 will produce audit log entries: Status-Refresh (PendingFulfillmentStart -> Subscribed), Plan-Refresh ('' -> plan-alpha), Quantity-Refresh (0 -> 3). This is a side-effect of the unfixed code that PBT-2.1/PBT-2.3 must account for.",
+    "_note": "Task 2.2 snapshot focuses on the change-detection scenario (subscriptions pre-seeded in DB). The new-subscription audit-log side-effect is documented here for completeness and for PBT-2.3 (idempotent fetch)."
+  }
+}

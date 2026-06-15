@@ -137,6 +137,46 @@ public class SubscriptionsRepository : ISubscriptionsRepository
     }
 
     /// <summary>
+    /// Returns a single page of subscriptions ordered by <c>CreateDate</c> descending
+    /// with the <c>User</c> navigation property eagerly loaded, together with
+    /// the total row count needed for pagination controls.
+    /// Both <paramref name="pageIndex"/> and <paramref name="pageSize"/> are
+    /// clamped to a minimum of 1 before use.
+    /// </summary>
+    /// <param name="pageIndex">1-based page number (clamped to >= 1).</param>
+    /// <param name="pageSize">Number of items per page (clamped to >= 1).</param>
+    /// <returns>
+    /// A <see cref="PagedResult{Subscriptions}"/> containing the requested
+    /// slice of the ordered subscription set.
+    /// </returns>
+    public PagedResult<Subscriptions> GetPaged(int pageIndex, int pageSize)
+    {
+        // Clamp inputs so callers passing 0 or negative values get page 1/size 1.
+        pageIndex = pageIndex < 1 ? 1 : pageIndex;
+        pageSize = pageSize < 1 ? 1 : pageSize;
+
+        var query = this.context.Subscriptions
+            .Include(s => s.User)
+            .OrderByDescending(s => s.CreateDate);
+
+        // Issue a separate COUNT query so EF does not materialise all rows.
+        int totalCount = query.Count();
+
+        var items = query
+            .Skip((pageIndex - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return new PagedResult<Subscriptions>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageIndex = pageIndex,
+            PageSize = pageSize,
+        };
+    }
+
+    /// <summary>
     /// Gets the subscriptions by email address.
     /// </summary>
     /// <param name="partnerEmailAddress">The partner email address.</param>
