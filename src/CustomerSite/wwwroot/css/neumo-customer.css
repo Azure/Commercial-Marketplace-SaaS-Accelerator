@@ -1,0 +1,735 @@
+/* Neumo Customer Site — design tokens + landing/subscriptions UI
+   Palette per Neumo Brand Guidelines (Colors, p.19-20):
+   Purple #775ED3 · Lilac #DACDF2 · Cool White #F7F2F9 · Navy #0A1128 · Sunflower #EFE745
+   Brand gradient #AEA7F4 -> #7349F3 */
+
+:root {
+  --neumo-purple: #775ED3;
+  --neumo-purple-dark: #5B44B0;
+  --neumo-purple-light: #F0EAFB;
+  --neumo-lilac: #DACDF2;
+  --neumo-navy: #0A1128;
+  --neumo-sunflower: #EFE745;
+  --neumo-gradient: linear-gradient(90deg, #AEA7F4 0%, #7349F3 100%);
+  --neumo-ink: #0A1128;
+  --neumo-gray: #5C6274;
+  --neumo-line: #E4DFF3;
+  --neumo-bg: #F7F2F9;
+  --neumo-portal-blue: #0A1128;
+  --neumo-portal-icon: #775ED3;
+  --neumo-link: #5B44B0;
+  --neumo-title: #0A1128;
+  --neumo-mono: #4A4358;
+  --neumo-breadcrumb-bg: #FFFFFF;
+  --neumo-breadcrumb-border: #E4DFF3;
+}
+
+body.neumo-body {
+  font-family: 'Aptos', 'Source Sans 3', 'Source Sans Pro', 'Calibri', 'Segoe UI', Arial, sans-serif !important;
+  background: var(--neumo-bg) !important;
+  color: var(--neumo-ink) !important;
+  line-height: 1.5;
+  font-size: 16px !important;
+  margin: 0;
+  padding-bottom: 0;
+  /* clip, not hidden: hidden would make body a scroll container and break
+     the sticky topbar. Absorbs the scrollbar-width overhang of 100vw. */
+  overflow-x: clip;
+  /* Column flex + margin-top:auto on the footer keeps it at the viewport
+     bottom on short pages without taking it out of flow. */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Headline type — Aptos Display, title case, normal spacing (Typography, p.15-16) */
+body.neumo-body h1,
+body.neumo-body h2,
+body.neumo-body h3,
+body.neumo-body .neumo-page-title {
+  font-family: 'Aptos Display', 'Aptos', 'Source Sans 3', 'Segoe UI', Arial, sans-serif;
+}
+
+.neumo-wrap a,
+.neumo-wrap-wide a,
+.neumo-activation-panel a:not(.cm-button-default):not(.cm-button-danger) {
+  color: var(--neumo-link);
+}
+
+.neumo-wrap a:hover,
+.neumo-wrap-wide a:hover,
+.neumo-activation-panel a:not(.cm-button-default):not(.cm-button-danger):hover {
+  color: var(--neumo-purple-dark);
+}
+
+/* Portal top bar */
+.neumo-portal-topbar {
+  background: var(--neumo-navy);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  border-bottom: 3px solid transparent;
+  border-image: var(--neumo-gradient) 1;
+}
+
+.neumo-portal-topbar .neumo-portal-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+}
+
+.neumo-portal-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Logo sits on a white plate so the purple mark keeps contrast on navy
+   and is never recolored or faded (Logo Don'ts, p.9). */
+.neumo-portal-brand-link {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 5px 12px;
+  text-decoration: none;
+}
+
+.neumo-portal-brand-link:focus-visible {
+  outline: 2px solid var(--neumo-lilac);
+  outline-offset: 2px;
+}
+
+.neumo-portal-logo {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
+.neumo-portal-product {
+  color: #ffffff;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.neumo-portal-brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  background: var(--neumo-portal-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.neumo-portal-brand-icon .fa {
+  font-size: 16px;
+}
+
+.neumo-portal-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.neumo-portal-user .neumo-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.neumo-portal-user a {
+  color: #fff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.neumo-portal-user a:hover,
+.neumo-portal-user a:focus {
+  color: #fff;
+  opacity: 0.9;
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
+/* Breadcrumb / secondary nav */
+.neumo-portal-breadcrumb {
+  background: var(--neumo-breadcrumb-bg);
+  border-bottom: 1px solid var(--neumo-breadcrumb-border);
+  padding: 10px 24px;
+}
+
+.neumo-portal-breadcrumb .neumo-portal-wrap {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.neumo-portal-breadcrumb a {
+  color: var(--neumo-link);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.neumo-portal-breadcrumb a:hover,
+.neumo-portal-breadcrumb a:focus {
+  text-decoration: underline;
+}
+
+.neumo-portal-breadcrumb a.neumo-nav-current {
+  color: var(--neumo-ink);
+  font-weight: 600;
+}
+
+.neumo-portal-breadcrumb a.neumo-nav-muted {
+  color: var(--neumo-mono);
+}
+
+/* Main content shell — full width; pages set their own wrap */
+.neumo-main {
+  padding: 0;
+  max-width: none;
+}
+
+.neumo-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.neumo-wrap-wide {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+/* Brand logotype — image mark, never restyled (see Logo Don'ts, p.9) */
+.neumo-logo-img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+}
+
+.neumo-brand-header .neumo-logo-img {
+  height: 44px;
+  margin: 0 auto;
+}
+
+.neumo-logo-banner .neumo-logo-img {
+  height: 34px;
+}
+
+.neumo-footer .neumo-logo-img {
+  height: 20px;
+}
+
+/* Brand wordmark (text fallback) */
+.neumo-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-weight: 700;
+}
+
+.neumo-logo .neumo-wordmark {
+  font-size: 34px;
+  letter-spacing: -0.5px;
+  color: var(--neumo-purple);
+  font-weight: 800;
+}
+
+.neumo-logo .neumo-productmark {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--neumo-purple);
+  letter-spacing: 0.2px;
+}
+
+/* Full-bleed white band: the layout renders this inside Bootstrap's
+   .container, so it is pulled back out to the viewport edges here rather
+   than unconstraining the shared container. */
+.neumo-brand-header {
+  padding: 36px 0 28px;
+  border-bottom: 1px solid var(--neumo-line);
+  background: #ffffff;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/* Setup Underway (Home) */
+.neumo-hero {
+  padding: 56px 0 40px;
+  text-align: center;
+}
+
+.neumo-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--neumo-purple-light);
+  color: var(--neumo-purple-dark);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  border-radius: 999px;
+  margin-bottom: 22px;
+}
+
+.neumo-status-pill .neumo-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--neumo-purple);
+  flex-shrink: 0;
+}
+
+.neumo-hero h1 {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.3;
+  max-width: 680px;
+  margin: 0 auto 16px;
+  color: var(--neumo-ink);
+}
+
+.neumo-hero p {
+  font-size: 17px;
+  color: var(--neumo-gray);
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.neumo-steps-section {
+  padding: 12px 0 60px;
+}
+
+.neumo-steps-heading {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.neumo-steps-heading .neumo-eyebrow {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--neumo-purple);
+  margin-bottom: 8px;
+}
+
+.neumo-steps-heading h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--neumo-ink);
+  margin: 0;
+}
+
+.neumo-timeline {
+  position: relative;
+}
+
+.neumo-timeline::before {
+  content: "";
+  position: absolute;
+  left: 23px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--neumo-line);
+}
+
+.neumo-step {
+  position: relative;
+  display: flex;
+  gap: 24px;
+  padding: 22px 0;
+}
+
+.neumo-step-number {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--neumo-purple);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 6px var(--neumo-bg);
+}
+
+.neumo-step-body {
+  padding-top: 4px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--neumo-line);
+  flex: 1;
+}
+
+.neumo-step:last-child .neumo-step-body {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.neumo-step-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--neumo-ink);
+  margin-bottom: 6px;
+}
+
+.neumo-step-desc {
+  font-size: 15px;
+  color: var(--neumo-gray);
+  max-width: 560px;
+}
+
+.neumo-support {
+  background: var(--neumo-purple-light);
+  border-radius: 14px;
+  padding: 28px 32px;
+  margin-top: 12px;
+  text-align: center;
+}
+
+.neumo-support h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--neumo-purple-dark);
+  margin-bottom: 6px;
+}
+
+.neumo-support p {
+  font-size: 14px;
+  color: var(--neumo-gray);
+  margin: 0;
+}
+
+.neumo-home-actions {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.neumo-home-actions a {
+  color: var(--neumo-link);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Subscriptions page */
+.neumo-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--neumo-title);
+  display: inline-block;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--neumo-link);
+  margin-bottom: 28px;
+  text-transform: uppercase;
+  background: transparent;
+  line-height: 1.2;
+}
+
+.neumo-logo-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 16px;
+  margin-bottom: 24px;
+  border: 1px solid var(--neumo-line);
+  border-radius: 12px;
+  background: var(--neumo-bg);
+}
+
+.neumo-logo-banner .neumo-wordmark {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--neumo-purple);
+}
+
+.neumo-logo-banner .neumo-productmark {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--neumo-purple);
+}
+
+/* Bootstrap's .table-responsive sets overflow-x:auto, which per spec forces
+   overflow-y to auto as well — that clipped the Action dropdown and spawned a
+   stray vertical scrollbar. Scrolling is only needed on narrow screens, so
+   release the clip once the table fits. */
+@media (min-width: 768px) {
+  .neumo-body .table-responsive {
+    overflow: visible;
+  }
+}
+
+.neumo-subscriptions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: #fff;
+}
+
+.neumo-subscriptions-table tbody tr:hover td {
+  background: var(--neumo-bg);
+}
+
+.neumo-subscriptions-table td .dropdown-menu {
+  border: 1px solid var(--neumo-line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(10, 17, 40, 0.12);
+  padding: 6px;
+  z-index: 1055;
+}
+
+.neumo-subscriptions-table td .dropdown-item {
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 8px 12px;
+}
+
+.neumo-subscriptions-table td .dropdown-item:hover,
+.neumo-subscriptions-table td .dropdown-item:focus {
+  background: var(--neumo-purple-light) !important;
+  color: var(--neumo-purple-dark) !important;
+}
+
+.neumo-subscriptions-table .cm-link-button {
+  color: var(--neumo-purple-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+}
+
+.neumo-subscriptions-table .cm-link-button:hover,
+.neumo-subscriptions-table .cm-link-button:focus {
+  background: var(--neumo-purple-light);
+}
+
+.neumo-subscriptions-table thead th {
+  background: var(--neumo-purple-light);
+  border: 1px solid var(--neumo-line);
+  padding: 12px 16px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--neumo-ink);
+}
+
+.neumo-subscriptions-table thead th:first-child {
+  text-align: left;
+}
+
+.neumo-subscriptions-table tbody td {
+  border: 1px solid var(--neumo-line);
+  padding: 14px 16px;
+  text-align: center;
+  color: var(--neumo-ink);
+  vertical-align: middle;
+}
+
+.neumo-subscriptions-table tbody td:first-child {
+  text-align: left;
+}
+
+.neumo-subscriptions-table .neumo-name-text {
+  color: var(--neumo-link);
+}
+
+.neumo-subscriptions-table .neumo-mono-value {
+  font-family: Consolas, 'Courier New', monospace;
+  color: var(--neumo-mono);
+}
+
+/* Activation / detail form (Marketplace path — preserve) */
+.neumo-activation-panel {
+  max-width: 860px;
+  margin: 32px auto;
+  padding: 0 24px 40px;
+}
+
+.neumo-activation-panel .cm-section-heading {
+  font-family: 'Aptos Display', 'Aptos', 'Source Sans 3', 'Segoe UI', Arial, sans-serif !important;
+  font-size: 22px;
+  color: var(--neumo-title);
+  border-bottom: 2px solid var(--neumo-purple);
+  text-transform: uppercase;
+  background: transparent;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  letter-spacing: 0.05em;
+}
+
+.neumo-activation-panel .cm-panel-default {
+  background: #ffffff !important;
+  border: 1px solid var(--neumo-line);
+  border-radius: 12px;
+}
+
+.neumo-activation-panel dt {
+  color: var(--neumo-gray);
+  font-weight: 600;
+}
+
+.neumo-activation-panel dd {
+  color: var(--neumo-ink);
+}
+
+.neumo-activation-panel input[type="text"],
+.neumo-activation-panel input[type="date"],
+.neumo-activation-panel select {
+  border: 1px solid var(--neumo-line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--neumo-ink);
+  background: #ffffff;
+}
+
+.neumo-activation-panel input:focus,
+.neumo-activation-panel select:focus {
+  outline: 2px solid var(--neumo-purple);
+  outline-offset: 1px;
+  border-color: var(--neumo-purple);
+}
+
+.neumo-activation-panel .red-star {
+  color: var(--neumo-purple-dark);
+}
+
+/* Brand-aligned buttons — keep existing cm-* markup untouched */
+.neumo-body .cm-button-default {
+  background-color: var(--neumo-purple);
+  border-color: var(--neumo-purple);
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.neumo-body .cm-button-default:hover,
+.neumo-body .cm-button-default:focus {
+  background-color: var(--neumo-purple-dark);
+  color: #ffffff !important;
+  border-radius: 8px;
+  font-size: inherit;
+  font-weight: 600;
+}
+
+.neumo-body .cm-button-danger {
+  background-color: #ffffff;
+  color: var(--neumo-purple-dark) !important;
+  border: 1px solid var(--neumo-purple);
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.neumo-body .cm-button-danger:hover,
+.neumo-body .cm-button-danger:focus {
+  background-color: var(--neumo-purple-light);
+  color: var(--neumo-purple-dark) !important;
+  border-radius: 8px;
+  font-size: inherit;
+  font-weight: 600;
+}
+
+.neumo-body a.cm-dropdown-option:hover {
+  color: var(--neumo-purple-dark) !important;
+}
+
+.neumo-body .cm-link-button:hover {
+  color: var(--neumo-purple-dark) !important;
+}
+
+/* Footer */
+.neumo-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--neumo-line);
+  padding: 28px 0;
+  background: #ffffff;
+  position: relative;
+  left: auto;
+  bottom: auto;
+  width: 100%;
+  height: auto;
+  line-height: 1.4;
+  font-size: 13px !important;
+  color: var(--neumo-gray) !important;
+}
+
+.neumo-footer .neumo-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.neumo-footer .neumo-footer-logo {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--neumo-purple);
+}
+
+.neumo-footer .neumo-footer-copy {
+  font-size: 13px;
+  color: var(--neumo-gray);
+}
+
+@media (max-width: 600px) {
+  .neumo-hero h1 {
+    font-size: 24px;
+  }
+
+  .neumo-step {
+    gap: 16px;
+  }
+
+  .neumo-step-number {
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
+  }
+
+  .neumo-timeline::before {
+    left: 19px;
+  }
+
+  .neumo-logo .neumo-wordmark {
+    font-size: 28px;
+  }
+
+  .neumo-logo .neumo-productmark {
+    font-size: 18px;
+  }
+
+  .neumo-brand-header .neumo-logo-img {
+    height: 30px;
+  }
+
+  .neumo-logo-banner .neumo-logo-img {
+    height: 24px;
+  }
+
+  .neumo-portal-product {
+    display: none;
+  }
+}

@@ -1,0 +1,101 @@
+@* @using Marketplace.SaaS.Accelerator.Services.Configurations
+@inject AppSiteConfiguration AppSite
+@{
+    // Post-purchase / default Home — Option A: setup status UI; Activate lives on Subscriptions
+} *@
+
+<header class="neumo-brand-header" role="banner">
+    <div class="neumo-wrap">
+        <div class="neumo-logo">
+            <img class="neumo-logo-img" src="~/images/neumo-str-logo.png" alt="neumo Short Term Rental" />
+        </div>
+    </div>
+</header>
+
+<section class="neumo-hero" aria-labelledby="neumo-setup-heading">
+    <div class="neumo-wrap">
+        <span class="neumo-status-pill">
+            <span class="neumo-dot" aria-hidden="true"></span>
+            Setup Underway
+        </span>
+        <h1 id="neumo-setup-heading">Your Neumo STR platform setup is underway.</h1>
+        <p>
+            With your purchase completed, a member of the Neumo sales team will connect with you shortly.
+            Here is what to expect next.
+        </p>
+    </div>
+</section>
+
+<section class="neumo-steps-section" aria-labelledby="neumo-path-heading">
+    <div class="neumo-wrap">
+        <div class="neumo-steps-heading">
+            <span class="neumo-eyebrow">The Path Ahead</span>
+            <h2 id="neumo-path-heading">From subscription to live — in a few simple steps</h2>
+        </div>
+
+        <ol class="neumo-timeline list-unstyled mb-0">
+            <li class="neumo-step">
+                <div class="neumo-step-number" aria-hidden="true">1</div>
+                <div class="neumo-step-body">
+                    <div class="neumo-step-title">Live connection with sales</div>
+                    <div class="neumo-step-desc">
+                        A member of the sales team reaches out directly to confirm purchase details,
+                        answer initial questions, and set expectations for the setup ahead.
+                    </div>
+                </div>
+            </li>
+            <li class="neumo-step">
+                <div class="neumo-step-number" aria-hidden="true">2</div>
+                <div class="neumo-step-body">
+                    <div class="neumo-step-title">Kickoff call with your client delivery team</div>
+                    <div class="neumo-step-desc">
+                        The assigned client delivery team is introduced on a kickoff call, where goals,
+                        timeline, and key contacts are aligned before configuration begins.
+                    </div>
+                </div>
+            </li>
+            <li class="neumo-step">
+                <div class="neumo-step-number" aria-hidden="true">3</div>
+                <div class="neumo-step-body">
+                    <div class="neumo-step-title">Onboarding questionnaire</div>
+                    <div class="neumo-step-desc">
+                        A short onboarding questionnaire is provided to capture initial requirements —
+                        jurisdiction details, ordinance specifics, and program priorities.
+                    </div>
+                </div>
+            </li>
+            <li class="neumo-step">
+                <div class="neumo-step-number" aria-hidden="true">4</div>
+                <div class="neumo-step-body">
+                    <div class="neumo-step-title">Platform configured to your requirements</div>
+                    <div class="neumo-step-desc">
+                        Using the information gathered, the platform is configured to match your
+                        jurisdiction's rules, workflows, and reporting needs.
+                    </div>
+                </div>
+            </li>
+            <li class="neumo-step">
+                <div class="neumo-step-number" aria-hidden="true">5</div>
+                <div class="neumo-step-body">
+                    <div class="neumo-step-title">Compliance monitoring activated</div>
+                    <div class="neumo-step-desc">
+                        Short-term rental listings across your jurisdiction go live for monitoring,
+                        and compliance tracking begins — turning setup into results.
+                    </div>
+                </div>
+            </li>
+        </ol>
+
+        <div class="neumo-support" role="note">
+            <h3>Questions before your sales connection?</h3>
+            <p>Reply to your purchase confirmation email and the Neumo team will be glad to help.</p>
+        </div>
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="neumo-home-actions">
+                <a asp-controller="Home" asp-action="Subscriptions">Manage your subscriptions</a>
+            </div>
+        }
+    </div>
+</section>
