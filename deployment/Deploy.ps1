@@ -195,12 +195,12 @@ if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
 
 #region pre-checks
 
-# check if dotnet 8 is installed
+# check if dotnet 10 is installed
 
 $dotnetversion = dotnet --version
 
-if(!$dotnetversion.StartsWith('8.')) {
-    Throw "🛑 Dotnet 8 not installed. Install dotnet8 and re-run the script."
+if(!$dotnetversion.StartsWith('10.')) {
+    Throw "🛑 Dotnet 10 not installed. Install dotnet10 and re-run the script."
     Exit
 }
 
@@ -543,7 +543,7 @@ az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService -
 
 Write-host "   🔵 Admin Portal WebApp"
 Write-host "      ➡️ Create Web App"
-az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:8 --output $azCliOutput
+az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:10 --output $azCliOutput
 Write-host "      ➡️ Assign Identity"
 $WebAppNameAdminId = az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] --query principalId -o tsv
 Write-host "      ➡️ Setup access to KeyVault"
@@ -555,7 +555,7 @@ az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always
 
 Write-host "   🔵 Customer Portal WebApp"
 Write-host "      ➡️ Create Web App"
-az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:8 --output $azCliOutput
+az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:10 --output $azCliOutput
 Write-host "      ➡️ Assign Identity"
 $WebAppNamePortalId= az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] --query principalId -o tsv 
 Write-host "      ➡️ Setup access to KeyVault"
