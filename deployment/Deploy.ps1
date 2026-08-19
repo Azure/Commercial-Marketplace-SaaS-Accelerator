@@ -211,7 +211,7 @@ Write-Host "Starting SaaS Accelerator Deployment..."
 
 
 #region Check If SQL Server Exist
-$sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
+$sql_exists = Get-AzSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
 if ($sql_exists) 
 {
 	Write-Host ""
