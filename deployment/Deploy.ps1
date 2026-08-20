@@ -154,6 +154,12 @@ if($KeyVault -eq "")
 		$KeyVaultApiUri="https://management.azure.com/subscriptions/$AzureSubscriptionID/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01"
 		$KeyVaultApiBody='{"name": "'+$KeyVault+'","type": "Microsoft.KeyVault/vaults"}'
 
+		if ($PsVersionTable.Platform -ne 'Unix') {
+			#On Windows, we need to escape quotes before sending the payload to az rest.
+			# See: https://github.com/Azure/azure-cli/blob/dev/doc/quoting-issues-with-powershell.md#double-quotes--are-lost
+			$KeyVaultApiBody = $KeyVaultApiBody.replace('"','\"')
+		}
+
 		$kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
 
 		if( $kv_check.reason -eq "AlreadyExists")
@@ -195,12 +201,12 @@ if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
 
 #region pre-checks
 
-# check if dotnet 8 is installed
+# check if dotnet 10 is installed
 
 $dotnetversion = dotnet --version
 
-if(!$dotnetversion.StartsWith('8.')) {
-    Throw "🛑 Dotnet 8 not installed. Install dotnet8 and re-run the script."
+if(!$dotnetversion.StartsWith('10.')) {
+    Throw "🛑 Dotnet 10 not installed. Install dotnet10 and re-run the script."
     Exit
 }
 
@@ -211,7 +217,7 @@ Write-Host "Starting SaaS Accelerator Deployment..."
 
 
 #region Check If SQL Server Exist
-$sql_exists = Get-AzureRmSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
+$sql_exists = Get-AzSqlServer -ServerName $SQLServerName -ResourceGroupName $ResourceGroupForDeployment -ErrorAction SilentlyContinue
 if ($sql_exists) 
 {
 	Write-Host ""
@@ -539,11 +545,12 @@ az keyvault network-rule add --name $KeyVault --resource-group $ResourceGroupFor
 
 Write-host "   🔵 App Service Plan"
 Write-host "      ➡️ Create App Service Plan"
-az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1 --output $azCliOutput
+#Azure CLI defaults --is-linux to true; explicitly request Windows since this app runs the Windows-only dotnet:10 runtime string format
+az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1 --is-linux false --output $azCliOutput
 
 Write-host "   🔵 Admin Portal WebApp"
 Write-host "      ➡️ Create Web App"
-az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:8 --output $azCliOutput
+az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:10 --output $azCliOutput
 Write-host "      ➡️ Assign Identity"
 $WebAppNameAdminId = az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] --query principalId -o tsv
 Write-host "      ➡️ Setup access to KeyVault"
@@ -555,7 +562,7 @@ az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always
 
 Write-host "   🔵 Customer Portal WebApp"
 Write-host "      ➡️ Create Web App"
-az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:8 --output $azCliOutput
+az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:10 --output $azCliOutput
 Write-host "      ➡️ Assign Identity"
 $WebAppNamePortalId= az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] --query principalId -o tsv 
 Write-host "      ➡️ Setup access to KeyVault"
@@ -575,12 +582,17 @@ Write-host "      ➡️ Generate SQL schema/data script"
 $ConnectionString="Server=tcp:"+$ServerUri+";Database="+$SQLDatabaseName+";Authentication=Active Directory Default;"
 Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
 dotnet-ef migrations script  --output script.sql --idempotent --context SaaSKitContext --project ../src/DataAccess/DataAccess.csproj --startup-project ../src/AdminSite/AdminSite.csproj
+
+# Documented pattern: https://learn.microsoft.com/powershell/module/sqlserver/invoke-sqlcmd#-accesstoken
+$SqlAccessToken = az account get-access-token --resource https://database.windows.net --query accessToken --output tsv | ConvertTo-SecureString -AsPlainText -Force
+$SqlDeployConnectionString="Server=tcp:"+$ServerUri+";Database="+$SQLDatabaseName+";"
+
 Write-host "      ➡️ Execute SQL schema/data script"
-Invoke-Sqlcmd -InputFile ./script.sql -ConnectionString $ConnectionString
+Invoke-Sqlcmd -InputFile ./script.sql -ConnectionString $SqlDeployConnectionString -AccessToken $SqlAccessToken
 
 Write-host "      ➡️ Execute SQL script to Add WebApps"
 $AddAppsIdsToDB = "CREATE USER [$WebAppNameAdmin] FROM EXTERNAL PROVIDER;ALTER ROLE db_datareader ADD MEMBER  [$WebAppNameAdmin];ALTER ROLE db_datawriter ADD MEMBER  [$WebAppNameAdmin]; GRANT EXEC TO [$WebAppNameAdmin]; CREATE USER [$WebAppNamePortal] FROM EXTERNAL PROVIDER;ALTER ROLE db_datareader ADD MEMBER [$WebAppNamePortal];ALTER ROLE db_datawriter ADD MEMBER [$WebAppNamePortal]; GRANT EXEC TO [$WebAppNamePortal];"
-Invoke-Sqlcmd -Query $AddAppsIdsToDB -ConnectionString $ConnectionString
+Invoke-Sqlcmd -Query $AddAppsIdsToDB -ConnectionString $SqlDeployConnectionString -AccessToken $SqlAccessToken
 
 Write-host "   🔵 Deploy Code to Admin Portal"
 az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --src-path "../Publish/AdminSite.zip" --type zip --output $azCliOutput

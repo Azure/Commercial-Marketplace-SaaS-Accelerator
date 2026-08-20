@@ -36,9 +36,9 @@ Copy the following section to an editor and update it to match your company pref
 ``` powershell
 wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh; `
 chmod +x dotnet-install.sh; `
-./dotnet-install.sh -version 8.0.303; `
+./dotnet-install.sh -version 10.0.400; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
-dotnet tool install --global dotnet-ef --version 8.0.0; `
+dotnet tool install --global dotnet-ef --version 10.0.11; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 8.2.1 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
@@ -78,14 +78,14 @@ The script above will perform the following actions.
 If you already have deployed the SaaS Accelerator, but you want to update it so that you take advantage of new features developed, you can run the following command:
 
 *you need to ensure that you use the same parameters you used in the initial deployment 
-*if upgrading to release version < 8.0.0, please replace the below dotnet and dotnet-ef versions to 6 release.
+*if upgrading to an older release, use the .NET SDK and dotnet-ef versions required by that release.
 
 ``` powershell
 wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh; `
 chmod +x dotnet-install.sh; `
-./dotnet-install.sh -version 8.0.303; `
+./dotnet-install.sh -version 10.0.400; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
-dotnet tool install --global dotnet-ef --version 8.0.0; `
+dotnet tool install --global dotnet-ef --version 10.0.11; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b <release-version-branch-to-deploy> --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Upgrade.ps1 `
