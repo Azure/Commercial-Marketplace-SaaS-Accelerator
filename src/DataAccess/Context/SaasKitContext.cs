@@ -48,7 +48,6 @@ public partial class SaasKitContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            //dotnet 8lts require this line
             optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=Test");
         }
     }

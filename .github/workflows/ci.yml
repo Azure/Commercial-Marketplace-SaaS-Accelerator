@@ -10,7 +10,7 @@ env:
   CUSTOMER_PROJECT: './src/CustomerSite/CustomerSite.csproj'
   PUBLISHER_PROJECT: './src/AdminSite/AdminSite.csproj'
   SERVICES_TEST_PROJECT: './src/Services.Test/Services.Test.csproj'
-  DOTNET_CORE_VERSION: '8.0.303'
+  DOTNET_CORE_VERSION: '10.0.400'
   
 jobs:
   BuildApps:
@@ -24,7 +24,7 @@ jobs:
 
     # Setup .NET Core SDK
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_CORE_VERSION }} 
 
