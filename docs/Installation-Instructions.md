@@ -85,7 +85,7 @@ wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh; `
 chmod +x dotnet-install.sh; `
 ./dotnet-install.sh -version 10.0.400; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
-dotnet tool install --global dotnet-ef --version 10.0.11; `
+dotnet tool update --global dotnet-ef --version 10.0.11; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b <release-version-branch-to-deploy> --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Upgrade.ps1 `
