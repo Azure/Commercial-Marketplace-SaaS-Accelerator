@@ -54,6 +54,10 @@ public class WebhookProcessor : IWebhookProcessor
 
         switch (payload.Action)
         {
+            case WebhookAction.Subscribe:
+                await this.webhookHandler.SubscribedAsync(payload).ConfigureAwait(false);
+                break;
+
             case WebhookAction.Unsubscribe:
                 await this.webhookHandler.UnsubscribedAsync(payload).ConfigureAwait(false);
                 break;

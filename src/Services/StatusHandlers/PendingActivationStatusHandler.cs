@@ -6,6 +6,7 @@ using System.Text.Json;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Contracts;
+using Marketplace.SaaS.Accelerator.Services.Exceptions;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Microsoft.Extensions.Logging;
 
@@ -73,26 +74,32 @@ public class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
         {
             try
             {
+                // Guard against the race where Microsoft auto-activates the subscription asynchronously (e.g. the
+                // Subscribe webhook hasn't been processed yet, but the customer already clicked Activate on the
+                // landing page). Calling Activate on an already-active subscription errors out on the Marketplace
+                // side, so re-check the live status first and skip the call entirely if it's already Subscribed.
+                var liveSubscription = this.fulfillmentApiService.GetSubscriptionById(subscriptionID);
+                if (liveSubscription != null && liveSubscription.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
+                {
+                    this.logger?.LogInformation("Subscription {0} is already Subscribed on the Marketplace side; skipping Activate call.", subscriptionID);
+                    this.MarkSubscribed(subscription, userdeatils, oldstatus, "Already active on Marketplace, Activate skipped");
+                    return;
+                }
+
                 this.logger?.LogInformation("Get attributelsit");
 
                 var subscriptionData = this.fulfillmentApiService.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
 
                 this.logger?.LogInformation("UpdateWebJobSubscriptionStatus");
 
-                this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.Subscribed.ToString(), true);
-
-                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
-                {
-                    Attribute = SubscriptionLogAttributes.Status.ToString(),
-                    SubscriptionId = subscription.Id,
-                    NewValue = SubscriptionStatusEnumExtension.Subscribed.ToString(),
-                    OldValue = oldstatus,
-                    CreateBy = userdeatils.UserId,
-                    CreateDate = DateTime.Now,
-                };
-                this.subscriptionLogRepository.Save(auditLog);
-
-                this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, "Activated", SubscriptionStatusEnumExtension.Subscribed.ToString());
+                this.MarkSubscribed(subscription, userdeatils, oldstatus, "Activated");
+            }
+            catch (MarketplaceException mex) when (mex.ErrorCode == SaasApiErrorCode.Conflict)
+            {
+                // Microsoft's own auto-activation won the race and already activated the subscription between our
+                // status check above and the Activate call - treat this as success rather than ActivationFailed.
+                this.logger?.LogInformation("Activate returned {0} for {1}; subscription is already active on the Marketplace side, treating as success.", mex.ErrorCode, subscriptionID);
+                this.MarkSubscribed(subscription, userdeatils, oldstatus, $"Already active on Marketplace, Activate returned {mex.ErrorCode}");
             }
             catch (Exception ex)
             {
@@ -115,5 +122,30 @@ public class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
                 this.subscriptionLogRepository.Save(auditLog);
             }
         }
+    }
+
+    /// <summary>
+    /// Marks the subscription as Subscribed locally, and records the audit trail / provisioning log entry.
+    /// </summary>
+    /// <param name="subscription">The local subscription record.</param>
+    /// <param name="userdeatils">The user that owns the subscription.</param>
+    /// <param name="oldStatus">The status the subscription was in before this update.</param>
+    /// <param name="provisioningLogMessage">The message to record in the provisioning log.</param>
+    private void MarkSubscribed(Subscriptions subscription, Users userdeatils, string oldStatus, string provisioningLogMessage)
+    {
+        this.subscriptionsRepository.UpdateStatusForSubscription(subscription.AmpsubscriptionId, SubscriptionStatusEnumExtension.Subscribed.ToString(), true);
+
+        SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+        {
+            Attribute = SubscriptionLogAttributes.Status.ToString(),
+            SubscriptionId = subscription.Id,
+            NewValue = SubscriptionStatusEnumExtension.Subscribed.ToString(),
+            OldValue = oldStatus,
+            CreateBy = userdeatils.UserId,
+            CreateDate = DateTime.Now,
+        };
+        this.subscriptionLogRepository.Save(auditLog);
+
+        this.subscriptionLogRepository.LogStatusDuringProvisioning(subscription.AmpsubscriptionId, provisioningLogMessage, SubscriptionStatusEnumExtension.Subscribed.ToString());
     }
 }

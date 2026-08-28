@@ -8,6 +8,7 @@ using System.Text.Json;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Models;
+using TermUnit = Microsoft.Marketplace.SaaS.Models.TermUnit;
 
 namespace Marketplace.SaaS.Accelerator.Services.Services;
 
@@ -173,9 +174,7 @@ public class SubscriptionService
             IsMeteringSupported = existingPlanDetail != null ? (existingPlanDetail.IsmeteringSupported ?? false) : false,
         };
 
-        if (!Enum.TryParse<TermUnitEnum>(subscription.Term, out var termUnit))
-            termUnit = TermUnitEnum.P1M;
-        subscritpionDetail.Term.TermUnit = termUnit;
+        subscritpionDetail.Term.TermUnit = string.IsNullOrWhiteSpace(subscription.Term) ? TermUnit.P1M : new TermUnit(subscription.Term);
 
         subscritpionDetail.Purchaser = new PurchaserResult();
         subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;

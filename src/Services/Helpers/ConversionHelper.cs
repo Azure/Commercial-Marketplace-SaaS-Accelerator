@@ -51,7 +51,7 @@ static class ConversionHelper
             },
             Term = new TermResult()
             {
-                TermUnit = subscription.Term.TermUnit.HasValue ? (Models.TermUnitEnum)subscription.Term.TermUnit :         Models.TermUnitEnum.P1M,
+                TermUnit = subscription.Term.TermUnit ?? TermUnit.P1M,
                 StartDate = subscription.Term.StartDate ?? default(DateTimeOffset),
                 EndDate = subscription.Term.EndDate ?? default(DateTimeOffset),
             }

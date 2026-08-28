@@ -11,6 +11,15 @@ namespace Marketplace.SaaS.Accelerator.Services.WebHook;
 public interface IWebhookHandler
 {
     /// <summary>
+    /// Subscribed the asynchronous. Handles the Subscribe webhook notification, including subscriptions that
+    /// are auto-activated by Microsoft at purchase time (billing starts immediately without the customer
+    /// visiting the publisher's landing page).
+    /// </summary>
+    /// <param name="payload">The payload.</param>
+    /// <returns>Subscribed Async</returns>
+    Task SubscribedAsync(WebhookPayload payload);
+
+    /// <summary>
     /// Changes the plan asynchronous.
     /// </summary>
     /// <param name="payload">The payload.</param>

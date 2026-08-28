@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
 using Marketplace.SaaS.Accelerator.DataAccess.Entities;
@@ -154,6 +156,117 @@ public class WebHookHandler : IWebhookHandler
             offersRepository,
             emailService,
             this.loggerFactory.CreateLogger<NotificationStatusHandler>());
+    }
+
+    /// <summary>
+    /// Handles the Subscribe webhook notification. This event is sent whenever a subscription is created,
+    /// including subscriptions that are auto-activated by Microsoft at purchase time (the customer never visits
+    /// the publisher's landing page, and billing starts immediately). Per Microsoft's guidance, the webhook body
+    /// is intentionally minimal, so we call the Fulfillment API to get the authoritative subscription details
+    /// before taking any action. If the subscription is not yet known locally we persist it (offer, plan and
+    /// subscription records) so it shows up in this system; otherwise we simply keep the status in sync.
+    /// </summary>
+    /// <param name="payload">The payload.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    public async Task SubscribedAsync(WebhookPayload payload)
+    {
+        var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(payload.SubscriptionId);
+        var subscriptionData = await this.fulfillApiService.GetSubscriptionByIdAsync(payload.SubscriptionId).ConfigureAwait(false);
+
+        if (subscriptionData == null || subscriptionData.Id == default)
+        {
+            await this.applicationLogService.AddApplicationLog($"Subscribe webhook received for SubscriptionId {payload.SubscriptionId}, but the subscription could not be retrieved from the Fulfillment API.").ConfigureAwait(false);
+            return;
+        }
+
+        if (oldValue == null || oldValue.SubscribeId == 0)
+        {
+            // Subscription is not known locally - most likely it was auto-activated at purchase, or the
+            // customer subscribed through the Microsoft admin center instead of the publisher's landing page.
+            // Persist the offer/plan/subscription records now so this system is aware of it.
+            var userId = this.usersRepository.Save(new Users()
+            {
+                EmailAddress = subscriptionData.Purchaser?.EmailId,
+                FullName = subscriptionData.Purchaser?.EmailId,
+                CreatedDate = DateTime.Now,
+            });
+
+            Offers offers = new Offers()
+            {
+                OfferId = subscriptionData.OfferId,
+                OfferName = subscriptionData.OfferId,
+                UserId = userId,
+                CreateDate = DateTime.Now,
+                OfferGuid = Guid.NewGuid(),
+            };
+            var newOfferId = this.offersRepository.Add(offers);
+
+            var subscriptionPlanDetail = await this.fulfillApiService.GetAllPlansForSubscriptionAsync(payload.SubscriptionId).ConfigureAwait(false) ?? new List<PlanDetailResultExtension>();
+            subscriptionPlanDetail.ForEach(x =>
+            {
+                x.OfferId = newOfferId;
+                x.PlanGUID = Guid.NewGuid();
+            });
+            this.subscriptionService.AddUpdateAllPlanDetailsForSubscription(subscriptionPlanDetail);
+
+            // The Marketplace "list available plans for subscription" call can legitimately succeed but
+            // come back without the plan this subscription is actually on (e.g. private/preview offers).
+            // Guarantee a matching Plans row exists locally before we save the Subscriptions row that
+            // references it - otherwise anything that joins Subscriptions to Plans by PlanId (e.g. the
+            // AdminSite Subscriptions list) will null-reference on this record.
+            if (!subscriptionPlanDetail.Any(x => x.PlanId == subscriptionData.PlanId))
+            {
+                await this.applicationLogService.AddApplicationLog($"Subscribe webhook: plan {subscriptionData.PlanId} for SubscriptionId {payload.SubscriptionId} was not returned by the available-plans list; adding a fallback plan record so the subscription resolves locally.").ConfigureAwait(false);
+
+                this.subscriptionService.AddPlanDetailsForSubscription(new PlanDetailResultExtension
+                {
+                    PlanId = subscriptionData.PlanId,
+                    DisplayName = subscriptionData.PlanId,
+                    OfferId = newOfferId,
+                    PlanGUID = Guid.NewGuid(),
+                    IsPerUserPlan = false,
+                });
+            }
+
+            var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData, userId);
+
+            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+            {
+                Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                SubscriptionId = subscribeId,
+                NewValue = Convert.ToString(subscriptionData.SaasSubscriptionStatus),
+                OldValue = "None",
+                CreateBy = userId,
+                CreateDate = DateTime.Now,
+            };
+            this.subscriptionsLogRepository.Save(auditLog);
+
+            await this.applicationLogService.AddApplicationLog($"Subscribe webhook: created local subscription record for SubscriptionId {payload.SubscriptionId} with status {subscriptionData.SaasSubscriptionStatus}.").ConfigureAwait(false);
+        }
+        else if (Convert.ToString(oldValue.SubscriptionStatus) != Convert.ToString(subscriptionData.SaasSubscriptionStatus))
+        {
+            // Subscription already exists locally (e.g. the customer used the landing page) - keep the status in
+            // sync with what Microsoft reports. This also covers the auto-activation case where the landing page
+            // flow started but Microsoft already marked the subscription "Subscribed" before we could.
+            this.subscriptionService.UpdateStateOfSubscription(payload.SubscriptionId, Convert.ToString(subscriptionData.SaasSubscriptionStatus), true);
+
+            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+            {
+                Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                SubscriptionId = oldValue.SubscribeId,
+                NewValue = Convert.ToString(subscriptionData.SaasSubscriptionStatus),
+                OldValue = Convert.ToString(oldValue.SubscriptionStatus),
+                CreateBy = null,
+                CreateDate = DateTime.Now,
+            };
+            this.subscriptionsLogRepository.Save(auditLog);
+
+            await this.applicationLogService.AddApplicationLog($"Subscribe webhook: synced status for SubscriptionId {payload.SubscriptionId} to {subscriptionData.SaasSubscriptionStatus}.").ConfigureAwait(false);
+        }
+        else
+        {
+            await this.applicationLogService.AddApplicationLog($"Subscribe webhook received for SubscriptionId {payload.SubscriptionId}; subscription already up to date, no action required.").ConfigureAwait(false);
+        }
     }
 
     /// <summary>

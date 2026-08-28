@@ -12,6 +12,14 @@ namespace Marketplace.SaaS.Accelerator.Services.WebHook;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum WebhookAction
 {
+    /// (When the subscription has been created/activated - including subscriptions that are auto-activated
+    /// at purchase time without the customer visiting the publisher's landing page)
+    /// <summary>
+    /// The subscribe
+    /// </summary>
+    [EnumMember(Value = "Subscribe")]
+    Subscribe,
+
     /// (When the resource has been deleted)
     /// <summary>
     /// The unsubscribe

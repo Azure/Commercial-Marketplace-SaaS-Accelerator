@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Marketplace.SaaS.Client" Version="2.2.0" />
+    <PackageReference Include="Marketplace.SaaS.Client" Version="3.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	<PackageReference Include="System.Drawing.Common" Version="10.0.11" />
 	  

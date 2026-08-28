@@ -12,7 +12,6 @@ namespace Marketplace.SaaS.Accelerator.UI.Test;
 [TestClass]
 public class CustomerApplicationShould
 {
-    private TestContext testContextInstance;
     private IWebDriver driver;
     private string customerAppURL = string.Empty;
     private string loginUserName = string.Empty;
@@ -41,17 +40,7 @@ public class CustomerApplicationShould
     ///Gets or sets the test context which provides
     ///information about and functionality for the current test run.
     ///</summary>
-    public TestContext TestContext
-    {
-        get
-        {
-            return testContextInstance;
-        }
-        set
-        {
-            testContextInstance = value;
-        }
-    }
+    public TestContext TestContext { get; set; }
 
     [TestInitialize()]
     public void Setup()
