@@ -171,6 +171,25 @@ public class ApplicationConfigController : BaseController
             }
 
             var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            int dotCount = Path.GetFileNameWithoutExtension(file.FileName).Count(f => f == '.');
+
+            if (dotCount > 1)
+            {
+                TempData["Upload"] = "File name cannot contain more than one period";
+                return RedirectToAction("Index");
+            }
+
+            using (var stream = file.OpenReadStream())
+            {
+                byte[] buffer = new byte[2];
+                stream.Read(buffer, 0, 2);
+                bool isExecutableFile = buffer[0] == 0x4D && buffer[1] == 0x5A;
+                if (isExecutableFile)
+                {
+                    TempData["Upload"] = "Executable files are not allowed";
+                    return RedirectToAction("Index");
+                }
+            }
 
             if (fileExtension != ".png" && fileExtension != ".ico")
             {
