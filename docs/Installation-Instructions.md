@@ -24,6 +24,18 @@ If you need help with the accelerator or would like to report defects or feature
 
 You can install the SaaS Accelerator code using a __single command__ line within the Azure Portal Cloud Shell.
 
+⚠️ The SaaS Accelerator relies on SQL and requires `Microsoft.Sql` resource provider to be enabled as described [here](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/resource-providers-and-types), failing to do so may result in the below error:
+
+``` powershell
+Invoke-Sqlcmd: /home/user/Commercial-Marketplace-SaaS-Accelerator/deployment/Deploy.ps1:579
+Line |
+ 579 |  Invoke-Sqlcmd -InputFile ./script.sql -ServerInstance $ServerUri -dat …
+     |  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     | A network-related or instance-specific error occurred while establishing a connection to SQL Server. The server was not found or was not accessible.
+     | Verify that the instance name is correct and that SQL Server is configured to allow remote connections. (provider: TCP Provider, error: 35 - An
+     | internal exception was caught)
+```
+
 > Note: use the [Azure Cloud Shell](https://shell.azure.com)'s PowerShell shell, not the default bash shell. You can select the shell via the drop-down in the top left corner.
 
 Copy the following section to an editor and update it to match your company preference.
