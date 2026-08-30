@@ -513,3 +513,7 @@ button.navbar-toggler:focus, button.navbar-toggler:hover {
         text-decoration: none;
         cursor: pointer;
     }
+
+.hidden {
+    display: none; /* Hidden by default */
+}

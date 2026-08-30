@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Marketplace.SaaS.Accelerator.DataAccess.Contracts;
+using Marketplace.SaaS.Accelerator.DataAccess.Entities;
 using Marketplace.SaaS.Accelerator.Services.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +43,8 @@ public class KnownUserAttribute : AuthorizeAttribute, IAuthorizationFilter
     {
         var isKnownuser = false;
         string email = string.Empty;
+        string requestPath = string.Empty;
+        KnownUsers knownUser;
 
         if (this.knownUsers != null && !string.IsNullOrWhiteSpace(this.knownUsers.KnownUsers))
         {
@@ -50,15 +54,45 @@ public class KnownUserAttribute : AuthorizeAttribute, IAuthorizationFilter
         if (context.HttpContext != null && context.HttpContext.User.Claims.Count() > 0)
         {
             email = context.HttpContext.User?.Claims?.Where(s => s.Type == ClaimConstants.CLAIM_EMAILADDRESS)?.FirstOrDefault()?.Value;
-            isKnownuser = this.knownUsersRepository.GetKnownUserDetail(email, 1)?.Id > 0;
+            requestPath = context.HttpContext.Request.Path;
+            knownUser = this.knownUsersRepository.GetKnownUserDetail(email);
+            isKnownuser = knownUser?.Id > 0;
 
+            var routeValues = new RouteValueDictionary();
             if (!isKnownuser)
             {
-                var routeValues = new RouteValueDictionary();
+
                 routeValues["controller"] = "Account";
                 routeValues["action"] = "AccessDenied";
                 context.Result = new RedirectToRouteResult(routeValues);
+                return;
             }
+
+            if (requestPath.StartsWith("/Plans", StringComparison.OrdinalIgnoreCase) || requestPath.StartsWith("/Offers", StringComparison.OrdinalIgnoreCase) || requestPath.StartsWith("/Scheduler", StringComparison.OrdinalIgnoreCase) || requestPath.StartsWith("/KnownUsers", StringComparison.OrdinalIgnoreCase) || requestPath.StartsWith("/ApplicationConfig", StringComparison.OrdinalIgnoreCase) || requestPath.StartsWith("/ApplicationLog", StringComparison.OrdinalIgnoreCase))
+            {
+                if (knownUser.Role.Name != "PublisherAdmin")
+                {
+                    routeValues["controller"] = "Account";
+                    routeValues["action"] = "PageAccessForbidden";
+                    context.Result = new RedirectToRouteResult(routeValues);
+                    return;
+                }
+            }
+            else if(requestPath.StartsWith("/Home", StringComparison.OrdinalIgnoreCase))
+            {
+                if (knownUser.Role.Name != "PublisherAdmin" && knownUser.Role.Name != "SubscriptionAdmin")
+                {
+                    routeValues["controller"] = "Account";
+                    routeValues["action"] = "PageAccessForbidden";
+                    context.Result = new RedirectToRouteResult(routeValues);
+                    return;
+                }
+            }
+            else
+            {
+
+            }
+
         }
         else
         {

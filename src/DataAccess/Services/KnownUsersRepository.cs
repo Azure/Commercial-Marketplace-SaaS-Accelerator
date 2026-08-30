@@ -57,6 +57,26 @@ public class KnownUsersRepository : IKnownUsersRepository
     }
 
     /// <summary>
+    /// Gets the known user detail.
+    /// </summary>
+    /// <param name="emailAddress">The email address.</param>
+    /// <returns>
+    /// User detail by email and role.
+    /// </returns>
+    public KnownUsers GetKnownUserDetail(string emailAddress)
+    {
+        KnownUsers knownUser;
+        Roles role;
+        knownUser = this.context.KnownUsers.Where(s => s.UserEmail == emailAddress).FirstOrDefault();
+        if (knownUser != null)
+        {
+            role = this.context.Roles.Where(s => s.Id == knownUser.RoleId).FirstOrDefault();
+            knownUser.Role = role;
+        }
+        return knownUser;
+    }
+
+    /// <summary>
     /// Adds the know users from application configuration.
     /// </summary>
     /// <param name="knownUsers">The known users.</param>
