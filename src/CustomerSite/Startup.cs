@@ -171,6 +171,7 @@ public class Startup
         services.AddScoped<ISubscriptionLogRepository, SubscriptionLogRepository>();
         services.AddScoped<IApplicationLogRepository, ApplicationLogRepository>();
         services.AddScoped<IWebhookProcessor, WebhookProcessor>();
+        services.AddScoped<IWebhookOperationValidator, WebhookOperationValidator>();
         services.AddScoped<IWebhookHandler, WebHookHandler>();
         services.AddScoped<IApplicationConfigRepository, ApplicationConfigRepository>();
         services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();

@@ -62,6 +62,7 @@ Application configuration is initialized with the following keys that the publis
 | IsAutomaticProvisioningSupported | Flag that enables activation workflow. If the value is False, the option Change Plan is not available to the customer. Clicking Subscribe button on the landing page would place the subscription in PendingActivation status and doesn't activate the subscription yet. Publisher has the option to activate the subscription, change plan and unsubscribe. If the value is True, customer can activate and change plan without any intervention required from the publisher.|
 | IsEmailEnabledForPendingActivation | Flag to indicate if an email should be sent out to publisher when activation workflow is enabled.|
 | AcceptSubscriptionUpdates | If True, subscription updates are allowed. If False or the key doesn't exist, Subscription updates are denied.(Allowed values : True / False)|
+| ValidateWebhookOperation | If True, each ACK-required webhook notification (Change Plan, Change Quantity, Reinstate) is validated against the marketplace Get Operation API before local subscription state is changed; the operation is then acknowledged with Success or Failure. If False, the legacy behavior of acting on the posted payload without the Get Operation call is used. Defaults to True, so upgrading an existing deployment turns Get Operation validation on. This is a correctness/authenticity check, not edge authentication: keep ValidateWebhookJwtToken enabled as the recommended edge auth control.(Default: True, Allowed values : True / False)|
 | IsMeteredBillingEnabled |Flag to enable Metered Billing Feature. (Allowed values : True / False) | 
 | EnableHourlyMeterSchedules |Flag to enable Hourly meter scheduled frequency. (Allowed values : True / False) |
 | EnableDailyMeterSchedules |Flag to enable Daily meter scheduled frequency. (Allowed values : True / False) |
@@ -75,6 +76,19 @@ Application configuration is initialized with the following keys that the publis
 | SchedulerEmailTo |Scheduler email receiver(s) | 
 | WebNotificationUrl |Setting this URL will enable pushing LandingPage/Webhook events to this external URL | 
 
+> **Upgrade note — `ValidateWebhookOperation`:** This flag defaults to `True`.
+> Upgrading an existing deployment enables Get Operation validation for the
+> ACK-required webhook events (`ChangePlan`, `ChangeQuantity`, `Reinstate`): each
+> notification is verified against the marketplace Get Operation API before any
+> local subscription state changes, and the operation is acknowledged back to the
+> marketplace with `Success` or `Failure`. To keep the previous behavior, set
+> `ValidateWebhookOperation` to `False`, which restores acting on the posted
+> payload without the Get Operation call. This flag is an authenticity and
+> correctness check for operations the marketplace created, not the primary
+> defense against unauthenticated callers. Keep `ValidateWebhookJwtToken` enabled
+> as the recommended edge authentication control so forged or unauthorized
+> requests are rejected at the controller edge before any Get Operation call is
+> made.
 
 ### EmailTemplate
 
