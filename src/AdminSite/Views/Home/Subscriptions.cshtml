@@ -22,9 +22,12 @@
                             <span class="cm-section-heading">Subscriptions</span>
                         
                         </div>
-                        <div style="float:right">
-                            <a onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}" class="btn btn-secondary cm-button">Fetch All Subscriptions</a>
-                        </div>
+                        @if ((this.TempData["KnownUserRoleName"] != null) && (this.TempData["KnownUserRoleName"].ToString() == "PublisherAdmin"))
+                        {
+                            <div style="float:right">
+                                <a onclick="if (confirm('Are you sure you want to fetch all subscriptions?')) { fetchAllSubscriptions(); } else { return false;}" class="btn btn-secondary cm-button">Fetch All Subscriptions</a>
+                            </div>
+                        }
                     </div>
                     <br />
                     <br />
