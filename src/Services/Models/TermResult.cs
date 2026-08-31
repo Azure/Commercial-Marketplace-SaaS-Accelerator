@@ -3,6 +3,7 @@
 
 using System;
 using System.Text.Json.Serialization;
+using Microsoft.Marketplace.SaaS.Models;
 
 namespace Marketplace.SaaS.Accelerator.Services.Models;
 
@@ -36,6 +37,6 @@ public class TermResult
     /// The term unit.
     /// </value>
     [JsonPropertyName("termUnit")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public TermUnitEnum TermUnit { get; set; }
+    [JsonConverter(typeof(TermUnitJsonConverter))]
+    public TermUnit TermUnit { get; set; }
 }
