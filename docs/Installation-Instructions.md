@@ -37,7 +37,7 @@ Copy the following section to an editor and update it to match your company pref
 wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh; `
 chmod +x dotnet-install.sh; `
 ./dotnet-install.sh -version 10.0.400; `
-$ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
+$ENV:PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$ENV:PATH"; `
 dotnet tool install --global dotnet-ef --version 10.0.11; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 10.0.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
@@ -84,7 +84,7 @@ If you already have deployed the SaaS Accelerator, but you want to update it so 
 wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh; `
 chmod +x dotnet-install.sh; `
 ./dotnet-install.sh -version 10.0.400; `
-$ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
+$ENV:PATH="$HOME/.dotnet:$HOME/.dotnet/tools:$ENV:PATH"; `
 dotnet tool update --global dotnet-ef --version 10.0.11; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b <release-version-branch-to-deploy> --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
