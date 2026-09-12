@@ -535,12 +535,17 @@ az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServe
 
 Write-host "   🔵 KeyVault"
 Write-host "      ➡️ Create KeyVault"
-az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment --enable-rbac-authorization false --output $azCliOutput
+az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment --enable-rbac-authorization true --output $azCliOutput
+Write-host "      ➡️ Grant deployer access to set secrets"
+$deployerObjectId = az ad signed-in-user show --query id -o tsv
+az role assignment create --role "Key Vault Secrets Officer" --assignee $deployerObjectId --scope /subscriptions/$AzureSubscriptionID/resourceGroups/$ResourceGroupForDeployment/providers/Microsoft.KeyVault/vaults/$KeyVault --output $azCliOutput
+Write-host "      ➡️ Wait for RBAC propagation (30 seconds)"
+Start-Sleep -Seconds 30
 Write-host "      ➡️ Add Secrets"
 az keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --output $azCliOutput
 az keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --output $azCliOutput
 Write-host "      ➡️ Update Firewall"
-az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --default-action Deny --output $azCliOutput
+az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --default-action Deny --bypass AzureServices --output $azCliOutput
 az keyvault network-rule add --name $KeyVault --resource-group $ResourceGroupForDeployment --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
 
 Write-host "   🔵 App Service Plan"
@@ -553,24 +558,46 @@ Write-host "      ➡️ Create Web App"
 az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:10 --output $azCliOutput
 Write-host "      ➡️ Assign Identity"
 $WebAppNameAdminId = az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] --query principalId -o tsv
+Write-host "      ➡️ Wait for identity propagation (15 seconds)"
+Start-Sleep -Seconds 15
 Write-host "      ➡️ Setup access to KeyVault"
-az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
+az role assignment create --role "Key Vault Secrets User" --assignee $WebAppNameAdminId --scope /subscriptions/$AzureSubscriptionID/resourceGroups/$ResourceGroupForDeployment/providers/Microsoft.KeyVault/vaults/$KeyVault --output $azCliOutput
+Write-host "      ➡️ Configure Key Vault Reference Identity"
+az webapp config appsettings set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --settings WEBSITE_SKIP_CONTENTSHARE_VALIDATION=1 --output $azCliOutput
+az resource update --ids /subscriptions/$AzureSubscriptionID/resourceGroups/$ResourceGroupForDeployment/providers/Microsoft.Web/sites/$WebAppNameAdmin/config/web --set properties.keyVaultReferenceIdentity=SystemAssigned --output $azCliOutput
+Write-host "      ➡️ Wait for RBAC propagation (30 seconds)"
+Start-Sleep -Seconds 30
+Write-host "      ➡️ Configure VNet Integration"
+az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault 
 az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADApplicationIDAdmin SaaSApiConfiguration__IsAdminPortalMultiTenant=$IsAdminPortalMultiTenant SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true  --output $azCliOutput
+Write-host "      ➡️ Restart to apply Key Vault references"
+az webapp restart -g $ResourceGroupForDeployment -n $WebAppNameAdmin --output $azCliOutput
 
 Write-host "   🔵 Customer Portal WebApp"
 Write-host "      ➡️ Create Web App"
 az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:10 --output $azCliOutput
 Write-host "      ➡️ Assign Identity"
 $WebAppNamePortalId= az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] --query principalId -o tsv 
+Write-host "      ➡️ Wait for identity propagation (15 seconds)"
+Start-Sleep -Seconds 15
 Write-host "      ➡️ Setup access to KeyVault"
-az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
+az role assignment create --role "Key Vault Secrets User" --assignee $WebAppNamePortalId --scope /subscriptions/$AzureSubscriptionID/resourceGroups/$ResourceGroupForDeployment/providers/Microsoft.KeyVault/vaults/$KeyVault --output $azCliOutput
+Write-host "      ➡️ Configure Key Vault Reference Identity"
+az webapp config appsettings set -g $ResourceGroupForDeployment -n $WebAppNamePortal --settings WEBSITE_SKIP_CONTENTSHARE_VALIDATION=1 --output $azCliOutput
+az resource update --ids /subscriptions/$AzureSubscriptionID/resourceGroups/$ResourceGroupForDeployment/providers/Microsoft.Web/sites/$WebAppNamePortal/config/web --set properties.keyVaultReferenceIdentity=SystemAssigned --output $azCliOutput
+Write-host "      ➡️ Wait for RBAC propagation (30 seconds)"
+Start-Sleep -Seconds 30
+Write-host "      ➡️ Configure VNet Integration"
+az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
 az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault
 az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationIDPortal SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
 az webapp config set -g $ResourceGroupForDeployment -n $WebAppNamePortal --always-on true --output $azCliOutput
+Write-host "      ➡️ Restart to apply Key Vault references"
+az webapp restart -g $ResourceGroupForDeployment -n $WebAppNamePortal --output $azCliOutput
 
 #endregion
 
@@ -600,9 +627,7 @@ az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppName
 Write-host "   🔵 Deploy Code to Customer Portal"
 az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --src-path "../Publish/CustomerSite.zip" --type zip --output $azCliOutput
 
-Write-host "   🔵 Update Firewall for WebApps and SQL"
-az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
-az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
+Write-host "   🔵 Update Firewall for SQL"
 az sql server vnet-rule create --name $WebAppNamePrefix-vnet --resource-group $ResourceGroupForDeployment --server $SQLServerName --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
 
 Write-host "   🔵 Clean up"
