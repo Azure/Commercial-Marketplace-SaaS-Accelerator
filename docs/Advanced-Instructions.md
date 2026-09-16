@@ -85,7 +85,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 | AzureSubscriptionID | Id of subscription where the resources will be deployed. Subscription must be part of the Tenant Provided. If value not provided, you will be asked to select the subscription during deployment. |
 | ADApplicationID | The value should match the value provided for Active Directory Application ID in the Technical Configuration of the Transactable Offer in Partner Center. If value not provided, a new application will be created. |
 | ADApplicationSecret | Valid secret for the ADApplication. Required if ADApplicationID is provided. If `ADApplicationID` is not provided, a secret will be generated. |
-| ADMTApplicationID | A valid App Id for an Azure AD Application configured for SSO login. If value not provided, a new application will be created. |
+| ADMTApplicationIDPortal | A valid App Id for an Azure AD Application configured for SSO login. If value not provided, a new application will be created. |
 | SQLServerName | A unique name of the database server (without database.windows.net). Default: `WebAppNamePrefix`-sql |
 | LogoURLpng | The url of the company logo image in .png format with a size of 96x96 to be used on the website |
 | LogoURLico | The url of the company logo image in .ico format |
@@ -100,7 +100,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
     -TenantID "tenandId" `
     -ADApplicationID "single-tenant clientId" `
     -ADApplicationSecret "single-tenant secret" `
-    -ADMTApplicationID "multi-tenant clientId" `
+    -ADMTApplicationIDPortal "multi-tenant clientId" `
     -PublisherAdminUsers "user@contoso.com" `              
     -AzureSubscriptionID "subscriptionId" `
     -ResourceGroupForDeployment "resourcegroup" `
