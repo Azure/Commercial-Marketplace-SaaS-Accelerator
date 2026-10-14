@@ -26,6 +26,19 @@ You can install the SaaS Accelerator code using a __single command__ line within
 
 > Note: use the [Azure Cloud Shell](https://shell.azure.com)'s PowerShell shell, not the default bash shell. You can select the shell via the drop-down in the top left corner.
 
+
+- **[Required]** Cloudshell will need explcit loging with:
+``` powershell
+az login --scope https://graph.microsoft.com/.default
+```
+- **[Required]** For new Azure accounts, register SQL, Web, and KeyVault providers on the cloudshell.
+``` powershell
+ az provider register --namespace Microsoft.Web
+az provider register --namespace Microsoft.Sql
+az provider register --namespace Microsoft.KeyVault
+```
+
+
 Copy the following section to an editor and update it to match your company preference.
 
 - Replace `SOME-UNIQUE-STRING` with your Team name or some other meaningful name for your depth. (Ensure that the final name does not exceed 21 characters)
