@@ -210,6 +210,20 @@ if(!$dotnetversion.StartsWith('10.')) {
     Exit
 }
 
+# check if dotnet-ef is installed and on the PATH
+
+if(!(Get-Command dotnet-ef -ErrorAction SilentlyContinue)) {
+    Throw "🛑 dotnet-ef not found on the PATH. Install it with 'dotnet tool install --global dotnet-ef' and make sure the .NET global tools folder is on your PATH."
+    Exit
+}
+
+$efversion = (dotnet-ef --version | Select-Object -Last 1).Trim()
+
+if(!$efversion.StartsWith('10.')) {
+    Throw "🛑 dotnet-ef 10 not installed. Update it with 'dotnet tool update --global dotnet-ef' and re-run the script."
+    Exit
+}
+
 #endregion
 
 

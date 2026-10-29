@@ -36,6 +36,18 @@ if ($response -ne 'Y' -and $response -ne 'y') {
 Write-Host "Thank you for agreeing. Proceeding with the script..." -ForegroundColor Green
 
 
+#region pre-checks
+
+# check if dotnet-ef is installed and on the PATH
+
+if(!(Get-Command dotnet-ef -ErrorAction SilentlyContinue)) {
+    Throw "🛑 dotnet-ef not found on the PATH. Install it with 'dotnet tool install --global dotnet-ef' and make sure the .NET global tools folder is on your PATH."
+    Exit
+}
+
+#endregion
+
+
 #Get TenantID if not set as argument
 	$currentContext = az account show | ConvertFrom-Json
 	$currentTenant = $currentContext.tenantId
