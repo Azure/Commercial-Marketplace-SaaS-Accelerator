@@ -34,6 +34,8 @@ Please note: the SaaS Accelerator is community-supported. If you need help or ha
 ## Deploy web applications and SQL Azure database using Powershell
 
 ### Using Azure Cloud Shell
+
+Select **PowerShell**, not Bash, before running the commands below. Complete the [interpreter check and wrong-shell recovery steps](Installation-Instructions.md#check-the-cloud-shell-interpreter-first). Both scripts require PowerShell Core 7 or later; a PowerShell runtime requirement cannot catch Bash parsing a `.ps1` file.
    
    1. Copy the following section to an editor and update it to match your company preference. Replace SOME-UNIQUE-STRING with your Team name or some other random string.
 ``` powershell
@@ -56,7 +58,7 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 
 Review the [deployment and upgrade prerequisites, authentication, backup and recovery precautions](Installation-Instructions.md#deployment-and-upgrade-prerequisites-and-recovery) before running either script. Private-only resources require a [privately connected execution host](Installation-Instructions.md#private-endpoint-upgrades); ordinary public Cloud Shell is not sufficient. The operator's Azure CLI identity, not the web application's Managed Identity, is used for Entra database migrations.
 
-For upgrades, optional [`-AzureSubscriptionID` and `-UsePrivateEndpoints $true`/`$false`](Installation-Instructions.md#optional-upgrade-parameters) parameters replace the corresponding prompts. Omit either parameter to retain its interactive prompt. Neither parameter opens network access or changes the authentication method.
+For upgrades, optional [`-TenantID`, `-AzureSubscriptionID` and `-UsePrivateEndpoints $true`/`$false`](Installation-Instructions.md#optional-upgrade-parameters) parameters replace the corresponding prompts. Omit a parameter to retain its interactive prompt. These parameters do not sign you in, open network access or change the authentication method. Installation already supports `-TenantID` and `-AzureSubscriptionID`.
 
 ### Local deployment
 

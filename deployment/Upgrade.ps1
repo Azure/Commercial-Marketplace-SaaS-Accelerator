@@ -1,9 +1,13 @@
+#!/usr/bin/env pwsh
+#Requires -Version 7.0
+#Requires -PSEdition Core
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE file in the project root for license information.
 
 Param(
     [string][Parameter(Mandatory)]$WebAppNamePrefix,
     [string][Parameter(Mandatory)]$ResourceGroupForDeployment,
+    [string][Parameter()]$TenantID,
     [string][Parameter()]$AzureSubscriptionID,
     [bool][Parameter()]$UsePrivateEndpoints
 )
@@ -27,9 +31,11 @@ Assert-DeploymentPrerequisites
 $currentContext = Get-DeploymentAzureContext
 $currentTenant = $currentContext.tenantId
 $currentSubscription = $currentContext.id
-Get-AzTenant -ErrorAction Stop | Format-Table
-$TenantID = Read-Host "Type your TenantID or press Enter to accept your current one [$currentTenant]"
-if (-not $TenantID) { $TenantID = $currentTenant }
+if (-not $TenantID) {
+    Get-AzTenant -ErrorAction Stop | Format-Table
+    $TenantID = Read-Host "Type your TenantID or press Enter to accept your current one [$currentTenant]"
+    if (-not $TenantID) { $TenantID = $currentTenant }
+}
 if (-not $AzureSubscriptionID) {
     Get-AzSubscription -TenantId $TenantID -ErrorAction Stop | Format-Table
     $AzureSubscriptionID = Read-Host "Type your SubscriptionID or press Enter to accept your current one [$currentSubscription]"

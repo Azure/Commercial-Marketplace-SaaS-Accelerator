@@ -377,6 +377,37 @@ Describe '<EntryPoint> orchestration' -ForEach @(
         Should -Invoke Write-Warning -Times $expectedWarnings -Exactly -ParameterFilter { $Message -like 'Private endpoints require*' }
     }
 
+    It 'accepts explicit tenant and subscription without listing or prompting for Azure context' {
+        $global:SaaSDeploymentTestState.Answers.Clear()
+        foreach ($answer in @('Y', 'N')) { $global:SaaSDeploymentTestState.Answers.Enqueue($answer) }
+        $script:entryArguments.TenantID = 'test-tenant'
+        $script:entryArguments.AzureSubscriptionID = 'test-subscription'
+        & $script:entryPath @script:entryArguments
+        Should -Invoke Get-AzTenant -Times 0 -Exactly
+        Should -Invoke Get-AzSubscription -Times 0 -Exactly
+        Should -Invoke Read-Host -Times 0 -Exactly -ParameterFilter {
+            $Prompt -like '*TenantID*' -or $Prompt -like '*SubscriptionID*'
+        }
+        $global:SaaSDeploymentTestState.Events | Should -Contain 'apply'
+    }
+
+    It 'rejects an explicit tenant mismatch before restore or SQL' {
+        $script:entryArguments.TenantID = 'other-tenant'
+        $script:entryArguments.AzureSubscriptionID = 'test-subscription'
+        { & $script:entryPath @script:entryArguments } | Should -Throw '*context verification failed*'
+        Should -Invoke dotnet -Times 0 -Exactly
+        Should -Invoke Invoke-Sqlcmd -Times 0 -Exactly
+    }
+
+    It 'requires only consent when all upgrade context parameters are supplied' -Skip:($EntryPoint -ne 'Upgrade.ps1') {
+        $global:SaaSDeploymentTestState.Answers.Clear()
+        $global:SaaSDeploymentTestState.Answers.Enqueue('Y')
+        & $script:entryPath @script:entryArguments -TenantID 'test-tenant' -AzureSubscriptionID 'test-subscription' -UsePrivateEndpoints $false
+        Should -Invoke Read-Host -Times 1 -Exactly
+        $global:SaaSDeploymentTestState.Answers.Count | Should -Be 0
+        $global:SaaSDeploymentTestState.Events | Should -Contain 'apply'
+    }
+
     It 'uses the existing SQL credential flow for upgrades' -Skip:($EntryPoint -ne 'Upgrade.ps1') {
         $global:SaaSDeploymentTestState.ConnectionString = 'Address=example;Initial Catalog=example;UID=operator;PWD="test;password";'
         & $script:entryPath @script:entryArguments
@@ -421,5 +452,15 @@ Describe 'PowerShell syntax' {
         $parseErrors = $null
         [System.Management.Automation.Language.Parser]::ParseFile((Join-Path $deployment $Name), [ref]$tokens, [ref]$parseErrors) | Out-Null
         $parseErrors | Should -BeNullOrEmpty
+    }
+
+    It 'declares PowerShell Core 7 requirements for <Name>' -ForEach @(
+        @{ Name = 'Deploy.ps1' }; @{ Name = 'Upgrade.ps1' }
+    ) {
+        $tokens = $null
+        $parseErrors = $null
+        $ast = [System.Management.Automation.Language.Parser]::ParseFile((Join-Path $deployment $Name), [ref]$tokens, [ref]$parseErrors)
+        $ast.ScriptRequirements.RequiredPSVersion | Should -Be ([version]'7.0')
+        $ast.ScriptRequirements.RequiredPSEditions | Should -Contain 'Core'
     }
 }

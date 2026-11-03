@@ -26,6 +26,20 @@ You can install the SaaS Accelerator code using a __single command__ line within
 
 > Note: use the [Azure Cloud Shell](https://shell.azure.com)'s PowerShell shell, not the default bash shell. You can select the shell via the drop-down in the top left corner.
 
+### Check the Cloud Shell interpreter first
+
+Select **PowerShell** in the Cloud Shell shell selector before pasting **any** installation or upgrade commands. Confirm the prompt starts with `PS`, then run:
+
+```powershell
+$PSVersionTable | Select-Object PSEdition, PSVersion
+```
+
+Expect `Core` and PowerShell 7 or later. Both entry scripts declare these requirements and PowerShell refuses to run them on older or Desktop editions.
+
+Do not run `bash Deploy.ps1`, `bash Upgrade.ps1`, or paste the PowerShell setup snippets into Bash. Bash cannot interpret PowerShell syntax, and checks inside a PowerShell script cannot execute when Bash is parsing it. Errors such as `command not found`, `bad substitution`, or syntax errors around `Param` often indicate the wrong interpreter. Stop, switch to PowerShell, check which earlier setup commands completed, and run the PowerShell instructions again; do not assume the failed paste made no changes.
+
+If staying in a Bash terminal, `pwsh` starts an interactive PowerShell session when installed; run the setup snippets **inside that session**, not in the parent Bash shell. Switching the Azure Cloud Shell selector to PowerShell is recommended because its Azure PowerShell context is initialized for that environment. Merely launching PowerShell does not grant Azure permissions or private network connectivity.
+
 Copy the following section to an editor and update it to match your company preference.
 
 - Replace `SOME-UNIQUE-STRING` with your Team name or some other meaningful name for your depth. (Ensure that the final name does not exceed 21 characters)
@@ -74,6 +88,8 @@ The script above will perform the following actions.
 
 ## Update to a newer version of the SaaS Accelerator
 
+First complete the [Cloud Shell interpreter check](#check-the-cloud-shell-interpreter-first). These upgrade commands require PowerShell, not Bash.
+
 ⚠️Caution: This will deploy/upgrade the Accelerator to the `<branch-to-deploy>` specified while running the upgrade command, which will replace the current version. If you have any custom changes, we recommend you implement a strategy to backup and replace them after the upgrade.
 
 If you already have deployed the SaaS Accelerator, but you want to update it so that you take advantage of new features developed, you can run the following command:
@@ -99,20 +115,22 @@ cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 
 | Parameter | Description |
 |-----------|-------------|
+| TenantID | Tenant ID for the deployment subscription. If omitted, the script prompts and offers the current Azure CLI tenant. The selected subscription must belong to this tenant; a mismatch aborts before restore or deployment. This does not sign you in to a different tenant automatically; use `az login --tenant <tenant-id>` first when needed. |
 | AzureSubscriptionID | Subscription ID for the existing deployment. If omitted, the script prompts and offers the current Azure CLI subscription. The selected subscription and tenant are verified even when this parameter is supplied. |
 | UsePrivateEndpoints | Pass `$true` for a private-endpoint deployment or `$false` for a public-endpoint deployment. If omitted, the existing Y/N prompt is retained. This describes the required execution environment; it does not change networking or authentication. |
 
-For example, to supply both values explicitly:
+For example, to supply tenant, subscription and endpoint mode explicitly:
 
 ```powershell
 .\Upgrade.ps1 `
  -WebAppNamePrefix "SOME-UNIQUE-STRING" `
  -ResourceGroupForDeployment "SOME-RG-NAME" `
+ -TenantID "<tenant-id>" `
  -AzureSubscriptionID "<subscription-id>" `
  -UsePrivateEndpoints $false
 ```
 
-Use `-UsePrivateEndpoints $true` only from a host with the required private connectivity described below. These parameters skip the subscription and private-endpoint prompts, but the consent and tenant prompts remain.
+Use `-UsePrivateEndpoints $true` only from a host with the required private connectivity described below. Supplying all three optional parameters skips the tenant, subscription and private-endpoint prompts; the consent prompt remains.
 
 ### Deployment and upgrade prerequisites and recovery
 
