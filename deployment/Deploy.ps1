@@ -54,13 +54,22 @@ if ($response -ne 'Y' -and $response -ne 'y') {
 # Proceed if the user agrees
 Write-Host "Thank you for agreeing. Proceeding with the script..." -ForegroundColor Green
 
+. (Join-Path $PSScriptRoot 'DeploymentHelpers.ps1')
+$ErrorActionPreference = 'Stop'
+Assert-DeploymentPrerequisites
+$RepositoryRoot = Split-Path $PSScriptRoot -Parent
+$Workspace = New-DeploymentWorkspace
+$TemporaryFirewallRules = @()
+Push-Location $PSScriptRoot
+try {
+
 # Make sure to install Az Module before running this script
 # Install-Module Az
 # Install-Module -Name AzureAD
 
 #region Select Tenant / Subscription for deployment
 
-$currentContext = az account show | ConvertFrom-Json
+$currentContext = Get-DeploymentAzureContext
 $currentTenant = $currentContext.tenantId
 $currentSubscription = $currentContext.id
 
@@ -83,44 +92,14 @@ else {
 }
 
 #Set the AZ Cli context
-az account set -s $AzureSubscriptionID
+Set-DeploymentSubscription -SubscriptionId $AzureSubscriptionID -TenantId $TenantID
 Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
 
 #endregion
 
 
 
-$ErrorActionPreference = "Stop"
 $startTime = Get-Date
-#region Select Tenant / Subscription for deployment
-
-$currentContext = az account show | ConvertFrom-Json
-$currentTenant = $currentContext.tenantId
-$currentSubscription = $currentContext.id
-
-#Get TenantID if not set as argument
-if(!($TenantID)) {    
-    Get-AzTenant | Format-Table
-    if (!($TenantID = Read-Host "⌨  Type your TenantID or press Enter to accept your current one [$currentTenant]")) { $TenantID = $currentTenant }    
-}
-else {
-    Write-Host "🔑 Tenant provided: $TenantID"
-}
-
-#Get Azure Subscription if not set as argument
-if(!($AzureSubscriptionID)) {    
-    Get-AzSubscription -TenantId $TenantID | Format-Table
-    if (!($AzureSubscriptionID = Read-Host "⌨  Type your SubscriptionID or press Enter to accept your current one [$currentSubscription]")) { $AzureSubscriptionID = $currentSubscription }
-}
-else {
-    Write-Host "🔑 Azure Subscription provided: $AzureSubscriptionID"
-}
-
-#Set the AZ Cli context
-az account set -s $AzureSubscriptionID
-Write-Host "🔑 Azure Subscription '$AzureSubscriptionID' selected."
-
-#endregion
 
 
 
@@ -145,10 +124,10 @@ if($KeyVault -eq "")
    $KeyVault=$WebAppNamePrefix+"-kv"
 
    # Check if the KeyVault exists under resource group
-   $kv_check=$(az keyvault show -n $KeyVault -g $ResourceGroupForDeployment) 2>$null    
+   $kv_check = Invoke-AzureCli keyvault list --query "[?name=='$KeyVault' && resourceGroup=='$ResourceGroupForDeployment']" --output json | ConvertFrom-Json
 
    # If KeyVault does not exist under resource group, then we need to check if it deleted KeyVault
-   if($kv_check -eq $null)
+   if(@($kv_check).Count -eq 0)
    {
 	#region Check If KeyVault Exists
 		$KeyVaultApiUri="https://management.azure.com/subscriptions/$AzureSubscriptionID/providers/Microsoft.KeyVault/checkNameAvailability?api-version=2019-09-01"
@@ -160,7 +139,7 @@ if($KeyVault -eq "")
 			$KeyVaultApiBody = $KeyVaultApiBody.replace('"','\"')
 		}
 
-		$kv_check=az rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
+		$kv_check=Invoke-AzureCli rest --method post --uri $KeyVaultApiUri --headers 'Content-Type=application/json' --body $KeyVaultApiBody | ConvertFrom-Json
 
 		if( $kv_check.reason -eq "AlreadyExists")
 		{
@@ -179,7 +158,7 @@ if($KeyVault -eq "")
 
 }
 
-$SaaSApiConfiguration_CodeHash= git log --format='%H' -1
+$SaaSApiConfiguration_CodeHash = Invoke-DeploymentCommand git @('log', '--format=%H', '-1') 'Unable to determine the source revision'
 $azCliOutput = if($Quiet){'none'} else {'json'}
 
 #endregion
@@ -203,7 +182,7 @@ if(!($KeyVault -match "^[a-zA-Z][a-z0-9-]+$")) {
 
 # check if dotnet 10 is installed
 
-$dotnetversion = dotnet --version
+$dotnetversion = Invoke-DeploymentCommand dotnet @('--version') 'Unable to determine the .NET SDK version'
 
 if(!$dotnetversion.StartsWith('10.')) {
     Throw "🛑 Dotnet 10 not installed. Install dotnet10 and re-run the script."
@@ -252,6 +231,13 @@ if($LogoURLico) {
 
 #endregion
  
+#region Prepare Code Packages
+Write-host "📜 Restore dependencies and prepare publish files for the application"
+New-DeploymentPackages -RepositoryRoot $RepositoryRoot -Workspace $Workspace
+$migration = New-DeploymentMigration -RepositoryRoot $RepositoryRoot -Workspace $Workspace
+Compress-DeploymentPackages -Workspace $Workspace
+#endregion
+
 #region Create AAD App Registrations
 
 #Record the current ADApps to reduce deployment instructions at the end
@@ -287,20 +273,19 @@ else {
 if (!($ADApplicationID)) {   
     Write-Host "🔑 Creating Fulfilment API App Registration"
     try {   
-        $ADApplication = az ad app create --only-show-errors --sign-in-audience AzureADMYOrg --display-name "$WebAppNamePrefix-FulfillmentAppReg" | ConvertFrom-Json
+        $ADApplication = Invoke-AzureCli ad app create --only-show-errors --sign-in-audience AzureADMYOrg --display-name "$WebAppNamePrefix-FulfillmentAppReg" | ConvertFrom-Json
 		$ADObjectID = $ADApplication.id
         $ADApplicationID = $ADApplication.appId
         sleep 5 #this is to give time to AAD to register
 		# create service principal
-		az ad sp create --id $ADApplicationID
-        $ADApplicationSecret = az ad app credential reset --id $ADObjectID --append --display-name 'SaaSAPI' --years 2 --query password --only-show-errors --output tsv
+		Invoke-AzureCli ad sp create --id $ADApplicationID
+        $ADApplicationSecret = Invoke-AzureCli ad app credential reset --id $ADObjectID --append --display-name 'SaaSAPI' --years 2 --query password --only-show-errors --output tsv
 				
         Write-Host "   🔵 FulfilmentAPI App Registration created."
 		Write-Host "      ➡️ Application ID:" $ADApplicationID
     }
     catch [System.Net.WebException],[System.IO.IOException] {
-        Write-Host "🚨🚨   $PSItem.Exception"
-        break;
+        throw 'Fulfilment API app registration failed. Check Azure permissions and connectivity.'
     }
 }
 
@@ -348,7 +333,7 @@ if (!($ADApplicationIDAdmin)) {
 			$appCreateRequestBodyJson = $appCreateRequestBodyJson.replace('"','\"').replace("`r`n","")
 		}
 
-		$adminPortalAppReg = $(az rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $appCreateRequestBodyJson  ) | ConvertFrom-Json
+		$adminPortalAppReg = $(Invoke-AzureCli rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $appCreateRequestBodyJson  ) | ConvertFrom-Json
 	
 		$ADApplicationIDAdmin = $adminPortalAppReg.appId
 		$ADMTObjectIDAdmin = $adminPortalAppReg.id
@@ -361,7 +346,7 @@ if (!($ADApplicationIDAdmin)) {
         if($LogoURLpng) { 
 			Write-Host "   🔵 Logo image provided. Setting the Application branding logo"
 			Write-Host "      ➡️ Setting the Application branding logo"
-			$token=(az account get-access-token --resource "https://graph.microsoft.com" --query accessToken --output tsv)
+			$token=(Invoke-AzureCli account get-access-token --resource "https://graph.microsoft.com" --query accessToken --output tsv)
 			$logoWeb = Invoke-WebRequest $LogoURLpng
 			$logoContentType = $logoWeb.Headers["Content-Type"]
 			$logoContent = $logoWeb.Content
@@ -377,8 +362,7 @@ if (!($ADApplicationIDAdmin)) {
 
     }
     catch [System.Net.WebException],[System.IO.IOException] {
-        Write-Host "🚨🚨   $PSItem.Exception"
-        break;
+        throw 'Admin Portal app registration failed. Check Azure permissions and connectivity.'
     }
 }
 
@@ -426,7 +410,7 @@ if (!($ADMTApplicationIDPortal)) {
 			$appCreateRequestBodyJson = $appCreateRequestBodyJson.replace('"','\"').replace("`r`n","")
 		}
 
-		$landingpageLoginAppReg = $(az rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $appCreateRequestBodyJson  ) | ConvertFrom-Json
+		$landingpageLoginAppReg = $(Invoke-AzureCli rest --method POST --headers "Content-Type=application/json" --uri https://graph.microsoft.com/v1.0/applications --body $appCreateRequestBodyJson  ) | ConvertFrom-Json
 	
 		$ADMTApplicationIDPortal = $landingpageLoginAppReg.appId
 		$ADMTObjectIDPortal = $landingpageLoginAppReg.id
@@ -438,7 +422,7 @@ if (!($ADMTApplicationIDPortal)) {
         if($LogoURLpng) { 
 			Write-Host "   🔵 Logo image provided. Setting the Application branding logo"
 			Write-Host "      ➡️ Setting the Application branding logo"
-			$token=(az account get-access-token --resource "https://graph.microsoft.com" --query accessToken --output tsv)
+			$token=(Invoke-AzureCli account get-access-token --resource "https://graph.microsoft.com" --query accessToken --output tsv)
 			$logoWeb = Invoke-WebRequest $LogoURLpng
 			$logoContentType = $logoWeb.Headers["Content-Type"]
 			$logoContent = $logoWeb.Content
@@ -454,29 +438,10 @@ if (!($ADMTApplicationIDPortal)) {
 
     }
     catch [System.Net.WebException],[System.IO.IOException] {
-        Write-Host "🚨🚨   $PSItem.Exception"
-        break;
+        throw 'Landing Page app registration failed. Check Azure permissions and connectivity.'
     }
 }
 
-#endregion
-
-#region Prepare Code Packages
-Write-host "📜 Prepare publish files for the application"
-if (!(Test-Path '../Publish')) {		
-	Write-host "   🔵 Preparing Admin Site"  
-	dotnet publish ../src/AdminSite/AdminSite.csproj -c release -o ../Publish/AdminSite/ -v q
-
-	Write-host "   🔵 Preparing Metered Scheduler"
-	dotnet publish ../src/MeteredTriggerJob/MeteredTriggerJob.csproj -c release -o ../Publish/AdminSite/app_data/jobs/triggered/MeteredTriggerJob/ -v q --runtime win-x64 --self-contained true 
-
-	Write-host "   🔵 Preparing Customer Site"
-	dotnet publish ../src/CustomerSite/CustomerSite.csproj -c release -o ../Publish/CustomerSite/ -v q
-
-	Write-host "   🔵 Zipping packages"
-	Compress-Archive -Path ../Publish/AdminSite/* -DestinationPath ../Publish/AdminSite.zip -Force
-	Compress-Archive -Path ../Publish/CustomerSite/* -DestinationPath ../Publish/CustomerSite.zip -Force
-}
 #endregion
 
 #region Deploy Azure Resources Infrastructure
@@ -507,70 +472,74 @@ $Connection="Server=tcp:"+$ServerUriPrivate+";Database="+$SQLDatabaseName+";Trus
 
 Write-host "   🔵 Resource Group"
 Write-host "      ➡️ Create Resource Group"
-az group create --location $Location --name $ResourceGroupForDeployment --output $azCliOutput
+Invoke-AzureCli group create --location $Location --name $ResourceGroupForDeployment --output $azCliOutput
 
 Write-host "      ➡️ Create VNET and Subnet"
-az network vnet create --resource-group $ResourceGroupForDeployment --name $VnetName --address-prefixes "10.0.0.0/20" --output $azCliOutput
-az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $DefaultSubnetName --address-prefixes "10.0.0.0/24" --output $azCliOutput
-az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $WebSubnetName --address-prefixes "10.0.1.0/24" --service-endpoints Microsoft.Sql Microsoft.KeyVault --delegations Microsoft.Web/serverfarms  --output $azCliOutput 
-az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $SqlSubnetName --address-prefixes "10.0.2.0/24"  --output $azCliOutput 
-az network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $KvSubnetName --address-prefixes "10.0.3.0/24"   --output $azCliOutput 
+Invoke-AzureCli network vnet create --resource-group $ResourceGroupForDeployment --name $VnetName --address-prefixes "10.0.0.0/20" --output $azCliOutput
+Invoke-AzureCli network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $DefaultSubnetName --address-prefixes "10.0.0.0/24" --output $azCliOutput
+Invoke-AzureCli network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $WebSubnetName --address-prefixes "10.0.1.0/24" --service-endpoints Microsoft.Sql Microsoft.KeyVault --delegations Microsoft.Web/serverfarms  --output $azCliOutput
+Invoke-AzureCli network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $SqlSubnetName --address-prefixes "10.0.2.0/24"  --output $azCliOutput
+Invoke-AzureCli network vnet subnet create --resource-group $ResourceGroupForDeployment --vnet-name $VnetName -n $KvSubnetName --address-prefixes "10.0.3.0/24"   --output $azCliOutput
 
 Write-host "      ➡️ Create Sql Server"
-$userId = az ad signed-in-user show --query id -o tsv 
-$userdisplayname = az ad signed-in-user show --query displayName -o tsv 
-az sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location  --enable-ad-only-auth --external-admin-principal-type User --external-admin-name $userdisplayname --external-admin-sid $userId --output $azCliOutput
+$userId = Invoke-AzureCli ad signed-in-user show --query id -o tsv
+$userdisplayname = Invoke-AzureCli ad signed-in-user show --query displayName -o tsv
+Invoke-AzureCli sql server create --name $SQLServerName --resource-group $ResourceGroupForDeployment --location $Location  --enable-ad-only-auth --external-admin-principal-type User --external-admin-name $userdisplayname --external-admin-sid $userId --output $azCliOutput
 Write-host "      ➡️ Set minimalTlsVersion to 1.2"
-az sql server update --name $SQLServerName --resource-group $ResourceGroupForDeployment --set minimalTlsVersion="1.2"
+Invoke-AzureCli sql server update --name $SQLServerName --resource-group $ResourceGroupForDeployment --set minimalTlsVersion="1.2"
 Write-host "      ➡️ Add SQL Server Firewall rules"
-az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowAzureIP --start-ip-address "0.0.0.0" --end-ip-address "0.0.0.0" --output $azCliOutput
-if ($env:ACC_CLOUD -eq $null){
-    Write-host "      ➡️ Running in local environment - Add current IP to firewall"
-	$publicIp = (Invoke-WebRequest -uri "https://api.ipify.org").Content
-    az sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n AllowIP --start-ip-address "$publicIp" --end-ip-address "$publicIp" --output $azCliOutput
+$publicIp = (Invoke-WebRequest -Uri "https://api.ipify.org" -ErrorAction Stop).Content.Trim()
+$parsedIp = $null
+if (-not [System.Net.IPAddress]::TryParse($publicIp, [ref]$parsedIp) -or
+    $parsedIp.AddressFamily -ne [System.Net.Sockets.AddressFamily]::InterNetwork) {
+    throw 'Unable to determine the client IPv4 address for the temporary SQL firewall rule.'
 }
+$ruleName = 'SaaSDeployment-' + [guid]::NewGuid().ToString('N')
+# Record the unique name before creation so a timed-out create is also cleaned up.
+$TemporaryFirewallRules += $ruleName
+Invoke-AzureCli sql server firewall-rule create --resource-group $ResourceGroupForDeployment --server $SQLServerName -n $ruleName --start-ip-address $publicIp --end-ip-address $publicIp --output none | Out-Null
 
 Write-host "      ➡️ Create SQL DB"
-az sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name $SQLDatabaseName  --edition Standard  --capacity 10 --zone-redundant false --output $azCliOutput
+Invoke-AzureCli sql db create --resource-group $ResourceGroupForDeployment --server $SQLServerName --name $SQLDatabaseName  --edition Standard  --capacity 10 --zone-redundant false --output $azCliOutput
 
 Write-host "   🔵 KeyVault"
 Write-host "      ➡️ Create KeyVault"
-az keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment --enable-rbac-authorization false --output $azCliOutput
+Invoke-AzureCli keyvault create --name $KeyVault --resource-group $ResourceGroupForDeployment --enable-rbac-authorization false --output $azCliOutput
 Write-host "      ➡️ Add Secrets"
-az keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --output $azCliOutput
-az keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --output $azCliOutput
+Invoke-AzureCli keyvault secret set --vault-name $KeyVault --name ADApplicationSecret --value="$ADApplicationSecret" --output none | Out-Null
+Invoke-AzureCli keyvault secret set --vault-name $KeyVault --name DefaultConnection --value $Connection --output none | Out-Null
 Write-host "      ➡️ Update Firewall"
-az keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --default-action Deny --output $azCliOutput
-az keyvault network-rule add --name $KeyVault --resource-group $ResourceGroupForDeployment --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
+Invoke-AzureCli keyvault update --name $KeyVault --resource-group $ResourceGroupForDeployment --default-action Deny --output $azCliOutput
+Invoke-AzureCli keyvault network-rule add --name $KeyVault --resource-group $ResourceGroupForDeployment --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
 
 Write-host "   🔵 App Service Plan"
 Write-host "      ➡️ Create App Service Plan"
 #Azure CLI defaults --is-linux to true; explicitly request Windows since this app runs the Windows-only dotnet:10 runtime string format
-az appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1 --is-linux false --output $azCliOutput
+Invoke-AzureCli appservice plan create -g $ResourceGroupForDeployment -n $WebAppNameService --sku B1 --is-linux false --output $azCliOutput
 
 Write-host "   🔵 Admin Portal WebApp"
 Write-host "      ➡️ Create Web App"
-az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:10 --output $azCliOutput
+Invoke-AzureCli webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNameAdmin  --runtime dotnet:10 --output $azCliOutput
 Write-host "      ➡️ Assign Identity"
-$WebAppNameAdminId = az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] --query principalId -o tsv
+$WebAppNameAdminId = Invoke-AzureCli webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --identities [system] --query principalId -o tsv
 Write-host "      ➡️ Setup access to KeyVault"
-az keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
+Invoke-AzureCli keyvault set-policy --name $KeyVault  --object-id $WebAppNameAdminId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
-az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault 
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADApplicationIDAdmin SaaSApiConfiguration__IsAdminPortalMultiTenant=$IsAdminPortalMultiTenant SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
-az webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true  --output $azCliOutput
+Invoke-AzureCli webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNameAdmin -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault
+Invoke-AzureCli webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNameAdmin --output $azCliOutput --settings KnownUsers=$PublisherAdminUsers SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADApplicationIDAdmin SaaSApiConfiguration__IsAdminPortalMultiTenant=$IsAdminPortalMultiTenant SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-admin.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+Invoke-AzureCli webapp config set -g $ResourceGroupForDeployment -n $WebAppNameAdmin --always-on true  --output $azCliOutput
 
 Write-host "   🔵 Customer Portal WebApp"
 Write-host "      ➡️ Create Web App"
-az webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:10 --output $azCliOutput
+Invoke-AzureCli webapp create -g $ResourceGroupForDeployment -p $WebAppNameService -n $WebAppNamePortal --runtime dotnet:10 --output $azCliOutput
 Write-host "      ➡️ Assign Identity"
-$WebAppNamePortalId= az webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] --query principalId -o tsv 
+$WebAppNamePortalId= Invoke-AzureCli webapp identity assign -g $ResourceGroupForDeployment  -n $WebAppNamePortal --identities [system] --query principalId -o tsv
 Write-host "      ➡️ Setup access to KeyVault"
-az keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
+Invoke-AzureCli keyvault set-policy --name $KeyVault  --object-id $WebAppNamePortalId --secret-permissions get list --key-permissions get list --resource-group $ResourceGroupForDeployment --output $azCliOutput
 Write-host "      ➡️ Set Configuration"
-az webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault
-az webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationIDPortal SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
-az webapp config set -g $ResourceGroupForDeployment -n $WebAppNamePortal --always-on true --output $azCliOutput
+Invoke-AzureCli webapp config connection-string set -g $ResourceGroupForDeployment -n $WebAppNamePortal -t SQLAzure --output $azCliOutput --settings DefaultConnection=$DefaultConnectionKeyVault
+Invoke-AzureCli webapp config appsettings set -g $ResourceGroupForDeployment  -n $WebAppNamePortal --output $azCliOutput --settings SaaSApiConfiguration__AdAuthenticationEndPoint=https://login.microsoftonline.com SaaSApiConfiguration__ClientId=$ADApplicationID SaaSApiConfiguration__ClientSecret=$ADApplicationSecretKeyVault SaaSApiConfiguration__FulFillmentAPIBaseURL=https://marketplaceapi.microsoft.com/api SaaSApiConfiguration__FulFillmentAPIVersion=2018-08-31 SaaSApiConfiguration__GrantType=client_credentials SaaSApiConfiguration__MTClientId=$ADMTApplicationIDPortal SaaSApiConfiguration__Resource=20e940b3-4c77-4b0b-9a53-9e16a1b010a7 SaaSApiConfiguration__TenantId=$TenantID SaaSApiConfiguration__SignedOutRedirectUri=https://$WebAppNamePrefix-portal.azurewebsites.net/Home/Index/ SaaSApiConfiguration_CodeHash=$SaaSApiConfiguration_CodeHash
+Invoke-AzureCli webapp config set -g $ResourceGroupForDeployment -n $WebAppNamePortal --always-on true --output $azCliOutput
 
 #endregion
 
@@ -580,78 +549,84 @@ Write-host "📜 Deploy Code"
 Write-host "   🔵 Deploy Database"
 Write-host "      ➡️ Generate SQL schema/data script"
 $ConnectionString="Server=tcp:"+$ServerUri+";Database="+$SQLDatabaseName+";Authentication=Active Directory Default;"
-Set-Content -Path ../src/AdminSite/appsettings.Development.json -value "{`"ConnectionStrings`": {`"DefaultConnection`":`"$ConnectionString`"}}"
-dotnet-ef migrations script  --output script.sql --idempotent --context SaaSKitContext --project ../src/DataAccess/DataAccess.csproj --startup-project ../src/AdminSite/AdminSite.csproj
-
-# Documented pattern: https://learn.microsoft.com/powershell/module/sqlserver/invoke-sqlcmd#-accesstoken
-$SqlAccessToken = az account get-access-token --resource https://database.windows.net --query accessToken --output tsv | ConvertTo-SecureString -AsPlainText -Force
-$SqlDeployConnectionString="Server=tcp:"+$ServerUri+";Database="+$SQLDatabaseName+";"
+$configuration = Get-DeploymentSqlConfiguration -ConnectionString $ConnectionString
+$SqlParams = Get-DeploymentSqlParameters -Configuration $configuration
+Test-DeploymentSqlAccess -SqlParameters $SqlParams
 
 Write-host "      ➡️ Execute SQL schema/data script"
-Invoke-Sqlcmd -InputFile ./script.sql -ConnectionString $SqlDeployConnectionString -AccessToken $SqlAccessToken
+Invoke-DeploymentSql -InputFile $migration -SqlParameters $SqlParams
 
 Write-host "      ➡️ Execute SQL script to Add WebApps"
 $AddAppsIdsToDB = "CREATE USER [$WebAppNameAdmin] FROM EXTERNAL PROVIDER;ALTER ROLE db_datareader ADD MEMBER  [$WebAppNameAdmin];ALTER ROLE db_datawriter ADD MEMBER  [$WebAppNameAdmin]; GRANT EXEC TO [$WebAppNameAdmin]; CREATE USER [$WebAppNamePortal] FROM EXTERNAL PROVIDER;ALTER ROLE db_datareader ADD MEMBER [$WebAppNamePortal];ALTER ROLE db_datawriter ADD MEMBER [$WebAppNamePortal]; GRANT EXEC TO [$WebAppNamePortal];"
-Invoke-Sqlcmd -Query $AddAppsIdsToDB -ConnectionString $SqlDeployConnectionString -AccessToken $SqlAccessToken
+Invoke-DeploymentSql -Query $AddAppsIdsToDB -SqlParameters $SqlParams
 
 Write-host "   🔵 Deploy Code to Admin Portal"
-az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --src-path "../Publish/AdminSite.zip" --type zip --output $azCliOutput
-
-Write-host "   🔵 Deploy Code to Customer Portal"
-az webapp deploy --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --src-path "../Publish/CustomerSite.zip" --type zip --output $azCliOutput
+Publish-DeploymentPackages -Workspace $Workspace -ResourceGroup $ResourceGroupForDeployment -AdminApp $WebAppNameAdmin -CustomerApp $WebAppNamePortal
 
 Write-host "   🔵 Update Firewall for WebApps and SQL"
-az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
-az webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
-az sql server vnet-rule create --name $WebAppNamePrefix-vnet --resource-group $ResourceGroupForDeployment --server $SQLServerName --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
-
-Write-host "   🔵 Clean up"
-Remove-Item -Path ../src/AdminSite/appsettings.Development.json
-Remove-Item -Path script.sql
-#Remove-Item -Path ../Publish -recurse -Force
+Invoke-AzureCli webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNamePortal --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
+Invoke-AzureCli webapp vnet-integration add --resource-group $ResourceGroupForDeployment --name $WebAppNameAdmin --vnet $VnetName --subnet $WebSubnetName --output $azCliOutput
+Invoke-AzureCli sql server vnet-rule create --name $WebAppNamePrefix-vnet --resource-group $ResourceGroupForDeployment --server $SQLServerName --vnet-name $VnetName --subnet $WebSubnetName --output $azCliOutput
 
 #endregion
 
 #region Create SQL Private Endpoints
 # Get SQL Server
-$sqlServerId=az sql server show --name $SQLServerName --resource-group $ResourceGroupForDeployment --query id -o tsv
+$sqlServerId=Invoke-AzureCli sql server show --name $SQLServerName --resource-group $ResourceGroupForDeployment --query id -o tsv
 
 # Create a private endpoint
-az network private-endpoint create --name $privateSqlEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $SqlSubnetName --private-connection-resource-id $sqlServerId --group-ids sqlServer --connection-name sqlConnection
+Invoke-AzureCli network private-endpoint create --name $privateSqlEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $SqlSubnetName --private-connection-resource-id $sqlServerId --group-ids sqlServer --connection-name sqlConnection
 
 
 # Create a SQL private DNS zone
-az network private-dns zone create --name $privateSqlDnsZoneName --resource-group $ResourceGroupForDeployment
+Invoke-AzureCli network private-dns zone create --name $privateSqlDnsZoneName --resource-group $ResourceGroupForDeployment
 
 # Link the SQL private DNS zone to the VNet
-az network private-dns link vnet create --name $privateSqlLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateSqlDnsZoneName --registration-enabled false
+Invoke-AzureCli network private-dns link vnet create --name $privateSqlLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateSqlDnsZoneName --registration-enabled false
 
-az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateSqlEndpointName --name "sql-zone-group"   --private-dns-zone $privateSqlDnsZoneName   --zone-name "sqlserver"
+Invoke-AzureCli network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateSqlEndpointName --name "sql-zone-group"   --private-dns-zone $privateSqlDnsZoneName   --zone-name "sqlserver"
 #endregion
 
 
 #region Create KV Private Endpoints
 # Get KV Server
-$keyVaultId=az keyvault show --name $KeyVault --resource-group $ResourceGroupForDeployment --query id -o tsv
+$keyVaultId=Invoke-AzureCli keyvault show --name $KeyVault --resource-group $ResourceGroupForDeployment --query id -o tsv
 
 # Create a KV private endpoint
-az network private-endpoint create --name $privateKvEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $KvSubnetName --private-connection-resource-id $keyVaultId --group-ids vault  --connection-name kvConnection
+Invoke-AzureCli network private-endpoint create --name $privateKvEndpointName --resource-group $ResourceGroupForDeployment --vnet-name $vnetName --subnet $KvSubnetName --private-connection-resource-id $keyVaultId --group-ids vault  --connection-name kvConnection
 
 
 # Create a KV private DNS zone
-az network private-dns zone create --name $privateKvDnsZoneName --resource-group $ResourceGroupForDeployment
+Invoke-AzureCli network private-dns zone create --name $privateKvDnsZoneName --resource-group $ResourceGroupForDeployment
 
 # Link the KV private DNS zone to the VNet
-az network private-dns link vnet create --name $privateKvLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateKvDnsZoneName --registration-enabled false
+Invoke-AzureCli network private-dns link vnet create --name $privateKvLink --resource-group $ResourceGroupForDeployment --virtual-network $vnetName --zone-name $privateKvDnsZoneName --registration-enabled false
 
-az network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateKvEndpointName --name "Kv-zone-group"   --private-dns-zone $privateKvDnsZoneName   --zone-name "Kv-zone"
+Invoke-AzureCli network private-endpoint dns-zone-group create --resource-group $ResourceGroupForDeployment --endpoint-name $privateKvEndpointName --name "Kv-zone-group"   --private-dns-zone $privateKvDnsZoneName   --zone-name "Kv-zone"
 #endregion
 
 
 
 #region Present Output
 
-Write-host "✅ If the intallation completed without error complete the folllowing checklist:"
+}
+finally {
+    try {
+        foreach ($rule in $TemporaryFirewallRules) {
+            Invoke-AzureCli sql server firewall-rule delete --resource-group $ResourceGroupForDeployment --server $SQLServerName --name $rule --output none | Out-Null
+        }
+    }
+    finally {
+        try {
+            Remove-Item -LiteralPath $Workspace -Recurse -Force -ErrorAction Stop
+        }
+        finally {
+            Pop-Location
+        }
+    }
+}
+
+Write-host "✅ Installation completed successfully. Complete the following checklist:"
 if ($ISLoginAppProvided) {  #If provided then show the user where to add the landing page in AAD, otherwise script did this already for the user.
 	Write-host "   🔵 Add The following URLs to the multi-tenant Landing Page AAD App Registration in Azure Portal:"
 	Write-host "      ➡️ https://$WebAppNamePrefix-portal.azurewebsites.net"

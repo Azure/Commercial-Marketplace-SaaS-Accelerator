@@ -4,6 +4,9 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 # User-specific files
+/src/AdminSite/appsettings.Development.json
+/deployment/script.sql
+/Publish/
 *.rsuser
 *.suo
 *.user

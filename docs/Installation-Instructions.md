@@ -39,6 +39,7 @@ chmod +x dotnet-install.sh; `
 ./dotnet-install.sh -version 10.0.400; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
 dotnet tool install --global dotnet-ef --version 10.0.11; `
+$ENV:PATH += ":$HOME/.dotnet/tools"; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b 10.0.0 --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Deploy.ps1 `
@@ -86,12 +87,50 @@ chmod +x dotnet-install.sh; `
 ./dotnet-install.sh -version 10.0.400; `
 $ENV:PATH="$HOME/.dotnet:$ENV:PATH"; `
 dotnet tool update --global dotnet-ef --version 10.0.11; `
+$ENV:PATH += ":$HOME/.dotnet/tools"; `
 git clone https://github.com/Azure/Commercial-Marketplace-SaaS-Accelerator.git -b <release-version-branch-to-deploy> --depth 1; `
 cd ./Commercial-Marketplace-SaaS-Accelerator/deployment; `
 .\Upgrade.ps1 `
  -WebAppNamePrefix "marketplace-SOME-UNIQUE-STRING" `
- -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING" `
+ -ResourceGroupForDeployment "marketplace-SOME-UNIQUE-STRING"
  ```
+
+### Optional upgrade parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| AzureSubscriptionID | Subscription ID for the existing deployment. If omitted, the script prompts and offers the current Azure CLI subscription. The selected subscription and tenant are verified even when this parameter is supplied. |
+| UsePrivateEndpoints | Pass `$true` for a private-endpoint deployment or `$false` for a public-endpoint deployment. If omitted, the existing Y/N prompt is retained. This describes the required execution environment; it does not change networking or authentication. |
+
+For example, to supply both values explicitly:
+
+```powershell
+.\Upgrade.ps1 `
+ -WebAppNamePrefix "SOME-UNIQUE-STRING" `
+ -ResourceGroupForDeployment "SOME-RG-NAME" `
+ -AzureSubscriptionID "<subscription-id>" `
+ -UsePrivateEndpoints $false
+```
+
+Use `-UsePrivateEndpoints $true` only from a host with the required private connectivity described below. These parameters skip the subscription and private-endpoint prompts, but the consent and tenant prompts remain.
+
+### Deployment and upgrade prerequisites and recovery
+
+- Sign in with `az login` (Cloud Shell normally signs in automatically). Check `az account show` and select the intended subscription and tenant when prompted. The Az PowerShell context used to list tenants/subscriptions must also be signed in (`Connect-AzAccount` when running locally). The scripts verify the Azure CLI subscription and tenant before proceeding.
+- Install the `SqlServer` PowerShell module, version 22 or later (`Install-Module SqlServer -MinimumVersion 22.0.0 -Scope CurrentUser`). The scripts check that `Invoke-Sqlcmd` supports access tokens, terminating SQL errors and encryption settings. Keep the SDK and `dotnet-ef` versions appropriate to the release being deployed. The PATH additions above are for Linux Cloud Shell and must be repeated in each session.
+- The operator needs permission to read the `DefaultConnection` Key Vault secret, deploy to both web apps, and access the database. Database migrations require `db_owner` membership or `CONTROL DATABASE`; the scripts check this before migration. New installations also create database users for the web applications and require permission to create the documented Azure resources and app registrations.
+- Upgrades support SQL credentials (`User ID`/`UID` and `Password`/`PWD`, with no `Authentication` setting or with `Authentication=Sql Password`). They also support `Authentication=Active Directory Managed Identity` (or `MSI`), `Active Directory Default`, and `Active Directory Interactive`. In those Entra modes, **the signed-in Azure CLI operator** obtains an Azure SQL token, not the web application's Managed Identity. Provision that operator as a database user with the required permissions. A managed-identity client ID in the application's connection string is not used as the operator's identity. Password-based Entra authentication, service-principal/workload-identity connection strings, integrated Windows authentication and ambiguous credential combinations are rejected.
+- `Server`/`Data Source`/`Address`/`Addr`/`Network Address`, `Database`/`Initial Catalog`, and SQL credential aliases are parsed without substring assumptions. Conflicting aliases are rejected. Encryption defaults follow the installed SqlServer module; explicit `Encrypt` and `TrustServerCertificate` settings are honored. Prefer a correctly trusted SQL certificate rather than disabling validation.
+- **Before upgrading, take a database backup or confirm Azure SQL point-in-time restore retention and test your recovery procedure.** Save customizations and record the currently deployed application version. Plan a maintenance window: migrations and application deployment are **not atomic**, and there is no automatic rollback.
+- Both scripts restore the solution, build all application components, generate a fresh idempotent migration, and package the applications before database changes. Command failures stop the process; a build/restore/generation failure does not run SQL. A migration or later deployment failure can leave partial changes. Inspect the database and application versions before retrying or restoring a backup; do not assume that failure rolled anything back.
+- Generated migration scripts and publish output are isolated in a unique temporary directory and removed in `finally`. Existing development settings, legacy `deployment/script.sql`, and existing `Publish` directories are not overwritten or deleted. Real connection strings are not written into temporary JSON; EF generates the script offline with a non-secret environment override, restored afterwards. Development settings are excluded from deployment packages.
+- For upgrades, allow the execution host through your existing SQL/Key Vault network controls before starting. The upgrade script does not add firewall rules or enable public network access. New installations retain the existing provisioning topology and temporarily allow only the client's IPv4 address for SQL setup; their unique firewall rule is removed on success or failure. A cleanup failure is reported as a failure and may require manual removal of that rule.
+
+### Private endpoint upgrades
+
+Use a host with private network routing and private DNS resolution to SQL and Key Vault, plus access to App Service deployment endpoints (for example a suitably configured VM or VNet-isolated Cloud Shell). Ordinary public Cloud Shell cannot reach private-only resources. Selecting private endpoints does not grant connectivity, switch authentication, or open a public firewall. The same migration and authentication flow runs for both network topologies; inaccessible resources cause a terminating error.
+
+The private network path and initial provisioning topology still require integration validation in your environment. These changes do not claim complete private endpoint support or alter public-network-access policies automatically.
 
 ## Install script parameter descriptions
 
